@@ -32,14 +32,6 @@ class dpp
     value_type e:E;
   } v_;
 
-  struct nan_{};
-
-  constexpr dpp(nan_&&) noexcept
-  {
-    v_.m = {};
-    v_.e = -pow2(E);
-  }
-
   constexpr void normalize() noexcept
   {
     if (!is_nan() && v_.m)
@@ -52,8 +44,6 @@ class dpp
   }
 
 public:
-  static inline dpp nan{nan_{}};
-
   constexpr dpp() noexcept
   {
     v_.m = {};
@@ -79,6 +69,14 @@ public:
     normalize();
   }
 
+  struct nan_{};
+
+  constexpr dpp(nan_&&) noexcept
+  {
+    v_.m = {};
+    v_.e = -pow2(E - 1);
+  }
+
   constexpr auto mantissa() const noexcept
   {
     return v_.m;
@@ -91,7 +89,7 @@ public:
 
   constexpr bool is_nan() const noexcept
   {
-    return v_.e == -pow2(E);
+    return v_.e == -pow2(E - 1);
   }
 
   explicit operator bool() noexcept
