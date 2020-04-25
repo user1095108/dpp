@@ -32,9 +32,9 @@ class dpp
     value_type e:E;
   } v_;
 
-  struct nan{};
+  struct nan_{};
 
-  constexpr dpp(nan&&) noexcept
+  constexpr dpp(nan_&&) noexcept
   {
     v_.m = {};
     v_.e = -pow2(E);
@@ -52,6 +52,8 @@ class dpp
   }
 
 public:
+  static inline dpp nan{nan_{}};
+
   constexpr dpp() noexcept
   {
     v_.m = {};
@@ -98,6 +100,24 @@ public:
   }
 
   //
+  constexpr auto operator==(dpp const& o) noexcept
+  {
+    if (is_nan() || o.is_nan())
+    {
+      return false;
+    }
+    else
+    {
+      return (v_.m == o.v_.m) && (v_.e == o.v_.e);
+    }
+  }
+
+  constexpr auto operator!=(dpp const& o) noexcept
+  {
+    return !operator==(o);
+  }
+
+  //
   constexpr auto operator+(dpp const& o) noexcept
   {
     constexpr auto op([](dpp tmp, dpp const& o) noexcept
@@ -116,7 +136,7 @@ public:
 
     if (is_nan() || o.is_nan())
     {
-      return dpp<M, E>(nan{});
+      return dpp{nan_{}};
     }
     else
     {
@@ -161,7 +181,7 @@ public:
 
     if (is_nan() || o.is_nan())
     {
-      return dpp<M, E>(nan{});
+      return dpp{nan_{}};
     }
     else
     {
@@ -209,7 +229,7 @@ public:
 
     if (is_nan() || o.is_nan())
     {
-      return dpp<M, E>(nan{});
+      return dpp{nan_{}};
     }
     else
     {
@@ -254,7 +274,7 @@ public:
 
     if (is_nan() || o.is_nan())
     {
-      return dpp<M, E>(nan{});
+      return dpp{nan_{}};
     }
     else
     {
@@ -288,7 +308,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      return dpp<M, E>(nan{});
+      return dpp{nan_{}};
     }
     else
     {
@@ -307,7 +327,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      *this = dpp<M, E>(nan{});
+      *this = dpp{nan_{}};
     }
     else
     {
@@ -325,7 +345,7 @@ public:
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
     {
-      return dpp<M, E>(nan{});
+      return dpp{nan_{}};
     }
     else
     {
@@ -344,7 +364,7 @@ public:
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
     {
-      *this = dpp<M, E>(nan{});
+      *this = dpp{nan_{}};
     }
     else
     {

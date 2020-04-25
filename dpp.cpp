@@ -4,8 +4,8 @@
 
 int main()
 {
-  dec64 a(123, -2);
-  dec64 b(456, -1);
+  dec16 a(12, -2);
+  dec16 b(45, -1);
 
   auto const tmp(a * b);
 
