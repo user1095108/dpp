@@ -6,7 +6,10 @@
 
 #include <type_traits>
 
-namespace
+namespace dpp
+{
+
+namespace detail
 {
 
 template <typename T>
@@ -74,7 +77,7 @@ public:
   constexpr dpp(nan_&&) noexcept
   {
     v_.m = {};
-    v_.e = -pow2(E - 1);
+    v_.e = -detail::pow2(E - 1);
   }
 
   constexpr auto mantissa() const noexcept
@@ -89,10 +92,10 @@ public:
 
   constexpr bool is_nan() const noexcept
   {
-    return v_.e == -pow2(E - 1);
+    return v_.e == -detail::pow2(E - 1);
   }
 
-  explicit operator bool() noexcept
+  constexpr explicit operator bool() noexcept
   {
     return is_nan() || v_.m;
   }
@@ -113,6 +116,21 @@ public:
   constexpr auto operator!=(dpp const& o) noexcept
   {
     return !operator==(o);
+  }
+
+  //
+  constexpr auto operator+() noexcept
+  {
+    return *this;
+  }
+
+  constexpr auto operator-() noexcept
+  {
+    auto tmp(*this);
+
+    tmp.v_.m = -tmp.v_.m;
+
+    return tmp;
   }
 
   //
@@ -379,5 +397,7 @@ public:
 using dec64 = dpp<56, 8>;
 using dec32 = dpp<26, 6>;
 using dec16 = dpp<12, 4>;
+
+}
 
 #endif // DPP_HPP
