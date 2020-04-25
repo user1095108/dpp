@@ -15,7 +15,7 @@ constexpr auto pow2(T const e) noexcept
   return T(1) << e;
 }
 
-};
+}
 
 template <unsigned M, unsigned E>
 class dpp
