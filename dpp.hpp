@@ -131,6 +131,11 @@ public:
     return (v_.m << E) | v_.e;
   }
 
+  constexpr auto sign() const noexcept
+  {
+    return (v_.m > 0) - (v_.m < 0);
+  }
+
   constexpr bool is_nan() const noexcept
   {
     return v_.e == -pow<2>(E - 1);
@@ -314,12 +319,50 @@ public:
       if (o.v_.e > v_.e)
       {
         tmp = equalize(o, *this);
-        tmp.v_.m += v_.m;
+
+        if (o.v_.m <= 0)
+        {
+          tmp.v_.m += v_.m;
+        }
+        else
+        {
+          auto tmp2(*this);
+
+          while (tmp.v_.m > pow<2>(M - 1) - 1 - tmp2.v_.m)
+          {
+            tmp.v_.m /= 10;
+            tmp2.v_.m /= 10;
+
+            ++tmp.v_.e;
+            ++tmp2.v_.e;
+          }
+
+          tmp.v_.m += tmp2.v_.m;
+        }
       }
       else if (v_.e > o.v_.e)
       {
         tmp = equalize(*this, o);
-        tmp.v_.m += o.v_.m;
+
+        if (o.v_.m <= 0)
+        {
+          tmp.v_.m += o.v_.m;
+        }
+        else
+        {
+          auto tmp2(o);
+
+          while (tmp.v_.m > pow<2>(M - 1) - 1 - tmp2.v_.m)
+          {
+            tmp.v_.m /= 10;
+            tmp2.v_.m /= 10;
+
+            ++tmp.v_.e;
+            ++tmp2.v_.e;
+          }
+
+          tmp.v_.m += tmp2.v_.m;
+        }
       }
       else
       {
@@ -513,7 +556,7 @@ public:
 
       std::intmax_t r(tmp.v_.m);
 
-      while (r < std::numeric_limits<std::intmax_t>::max() / 10)
+      while (std::abs(r) < std::numeric_limits<std::intmax_t>::max() / 10)
       {
         r *= 10;
         --tmp.v_.e;
@@ -547,7 +590,7 @@ public:
 
       std::intmax_t r(v_.m);
 
-      while (r < std::numeric_limits<std::intmax_t>::max() / 10)
+      while (std::abs(r) < std::numeric_limits<std::intmax_t>::max() / 10)
       {
         r *= 10;
         --v_.e;
