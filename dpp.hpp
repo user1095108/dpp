@@ -179,15 +179,6 @@ public:
   //
   constexpr auto operator<(dpp const& o) noexcept
   {
-    constexpr auto op([](dpp tmp, dpp const& o) noexcept
-      {
-        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-        tmp.v_.e = o.v_.e;
-
-        return tmp;
-      }
-    );
-
     if (is_nan() || o.is_nan())
     {
       return false;
@@ -196,13 +187,13 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        dpp const tmp(op(o, *this));
+        dpp const tmp(equalize(o, *this));
 
         return v_.m < tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        dpp const tmp(op(*this, o));
+        dpp const tmp(equalize(*this, o));
 
         return tmp.v_.m < o.v_.m;
       }
@@ -215,15 +206,6 @@ public:
 
   constexpr auto operator<=(dpp const& o) noexcept
   {
-    constexpr auto op([](dpp tmp, dpp const& o) noexcept
-      {
-        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-        tmp.v_.e = o.v_.e;
-
-        return tmp;
-      }
-    );
-
     if (is_nan() || o.is_nan())
     {
       return false;
@@ -232,19 +214,73 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        dpp const tmp(op(o, *this));
+        dpp const tmp(equalize(o, *this));
 
         return v_.m <= tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        dpp const tmp(op(*this, o));
+        dpp const tmp(equalize(*this, o));
 
         return tmp.v_.m <= o.v_.m;
       }
       else
       {
         return v_.m <= o.v_.m;
+      }
+    }
+  }
+
+  constexpr auto operator>(dpp const& o) noexcept
+  {
+    if (is_nan() || o.is_nan())
+    {
+      return false;
+    }
+    else
+    {
+      if (o.v_.e > v_.e)
+      {
+        dpp const tmp(equalize(o, *this));
+
+        return v_.m > tmp.v_.m;
+      }
+      else if (v_.e > o.v_.e)
+      {
+        dpp const tmp(equalize(*this, o));
+
+        return tmp.v_.m > o.v_.m;
+      }
+      else
+      {
+        return v_.m > o.v_.m;
+      }
+    }
+  }
+
+  constexpr auto operator>=(dpp const& o) noexcept
+  {
+    if (is_nan() || o.is_nan())
+    {
+      return false;
+    }
+    else
+    {
+      if (o.v_.e > v_.e)
+      {
+        dpp const tmp(equalize(o, *this));
+
+        return v_.m >= tmp.v_.m;
+      }
+      else if (v_.e > o.v_.e)
+      {
+        dpp const tmp(equalize(*this, o));
+
+        return tmp.v_.m >= o.v_.m;
+      }
+      else
+      {
+        return v_.m >= o.v_.m;
       }
     }
   }
