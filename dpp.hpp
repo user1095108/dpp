@@ -640,9 +640,16 @@ constexpr auto floor(dpp<M, E> const& x) noexcept
 template <unsigned M, unsigned E>
 constexpr auto round(dpp<M, E> const& x) noexcept
 {
-  constexpr dpp<M, E> c(5, -1);
+  if (x.exponent() < 0)
+  {
+    constexpr dpp<M, E> c(5, -1);
 
-  return dpp<M, E>(typename dpp<M, E>::value_type(x > 0 ? x + c : x - c));
+    return dpp<M, E>(typename dpp<M, E>::value_type(x > 0 ? x + c : x - c));
+  }
+  else
+  {
+    return x;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
