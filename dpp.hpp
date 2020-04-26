@@ -74,10 +74,23 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
-  static constexpr auto equalize(dpp a, dpp const& b) noexcept
+  static constexpr auto equalize(dpp a, dpp& b) noexcept
   {
-    a.v_.m *= pow<10>(a.v_.e - b.v_.e);
-    a.v_.e = b.v_.e;
+    //a.v_.m *= pow<10>(a.v_.e - b.v_.e);
+    //a.v_.e = b.v_.e;
+
+    while ((std::abs(a.v_.m) < (pow<2>(M - 1) - 1) / 10) &&
+      (a.v_.e != b.v_.e))
+    {
+      a.v_.m *= 10;
+      --a.v_.e;
+    }
+
+    while (a.v_.e != b.v_.e)
+    {
+      b.v_.m /= 10;
+      ++b.v_.e;
+    }
 
     return a;
   }
@@ -282,21 +295,24 @@ public:
     }
     else
     {
-      if (o.v_.e > v_.e)
-      {
-        auto const tmp(equalize(o, *this));
+      dpp tmp1(*this);
+      dpp tmp2(o);
 
-        return v_.m < tmp.v_.m;
+      if (tmp1.v_.e > tmp2.v_.e)
+      {
+        tmp1 = equalize(tmp1, tmp2);
+
+        return tmp1.v_.m < tmp2.v_.m;
       }
-      else if (v_.e > o.v_.e)
+      else if (tmp2.v_.e > tmp1.v_.e)
       {
-        auto const tmp(equalize(*this, o));
+        tmp2 = equalize(tmp2, tmp1);
 
-        return tmp.v_.m < o.v_.m;
+        return tmp1.v_.m < tmp2.v_.m;
       }
       else
       {
-        return v_.m < o.v_.m;
+        return tmp1.v_.m < tmp2.v_.m;
       }
     }
   }
@@ -309,21 +325,24 @@ public:
     }
     else
     {
-      if (o.v_.e > v_.e)
-      {
-        auto const tmp(equalize(o, *this));
+      dpp tmp1(*this);
+      dpp tmp2(o);
 
-        return v_.m <= tmp.v_.m;
+      if (tmp1.v_.e > tmp2.v_.e)
+      {
+        tmp1 = equalize(tmp1, tmp2);
+
+        return tmp1.v_.m <= tmp2.v_.m;
       }
-      else if (v_.e > o.v_.e)
+      else if (tmp2.v_.e > tmp1.v_.e)
       {
-        auto const tmp(equalize(*this, o));
+        tmp2 = equalize(tmp2, tmp1);
 
-        return tmp.v_.m <= o.v_.m;
+        return tmp1.v_.m <= tmp2.v_.m;
       }
       else
       {
-        return v_.m <= o.v_.m;
+        return tmp1.v_.m <= tmp2.v_.m;
       }
     }
   }
@@ -336,21 +355,24 @@ public:
     }
     else
     {
-      if (o.v_.e > v_.e)
-      {
-        auto const tmp(equalize(o, *this));
+      dpp tmp1(*this);
+      dpp tmp2(o);
 
-        return v_.m > tmp.v_.m;
+      if (tmp1.v_.e > tmp2.v_.e)
+      {
+        tmp1 = equalize(tmp1, tmp2);
+
+        return tmp1.v_.m > tmp2.v_.m;
       }
-      else if (v_.e > o.v_.e)
+      else if (tmp2.v_.e > tmp1.v_.e)
       {
-        auto const tmp(equalize(*this, o));
+        tmp2 = equalize(tmp2, tmp1);
 
-        return tmp.v_.m > o.v_.m;
+        return tmp1.v_.m > tmp2.v_.m;
       }
       else
       {
-        return v_.m > o.v_.m;
+        return tmp1.v_.m > tmp2.v_.m;
       }
     }
   }
@@ -363,21 +385,24 @@ public:
     }
     else
     {
-      if (o.v_.e > v_.e)
-      {
-        auto const tmp(equalize(o, *this));
+      dpp tmp1(*this);
+      dpp tmp2(o);
 
-        return v_.m >= tmp.v_.m;
+      if (tmp1.v_.e > tmp2.v_.e)
+      {
+        tmp1 = equalize(tmp1, tmp2);
+
+        return tmp1.v_.m >= tmp2.v_.m;
       }
-      else if (v_.e > o.v_.e)
+      else if (tmp2.v_.e > tmp1.v_.e)
       {
-        auto const tmp(equalize(*this, o));
+        tmp2 = equalize(tmp2, tmp1);
 
-        return tmp.v_.m >= o.v_.m;
+        return tmp1.v_.m <= tmp2.v_.m;
       }
       else
       {
-        return v_.m >= o.v_.m;
+        return tmp1.v_.m >= tmp2.v_.m;
       }
     }
   }
