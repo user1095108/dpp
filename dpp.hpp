@@ -133,7 +133,7 @@ public:
 
   constexpr auto sign() const noexcept
   {
-    return (v_.m > 0) - (v_.m < 0);
+    return (v_.m > 0) - (v_.m < 0) + !v_.m;
   }
 
   constexpr bool is_nan() const noexcept
@@ -314,29 +314,58 @@ public:
     }
     else
     {
-      dpp tmp;
+      dpp tmp1;
+      dpp tmp2;
 
       if (o.v_.e > v_.e)
       {
-        tmp = equalize(o, *this);
-
-        tmp.v_.m += v_.m;
+        tmp1 = equalize(o, *this);
+        tmp2 = *this;
       }
       else if (v_.e > o.v_.e)
       {
-        tmp = equalize(*this, o);
-
-        tmp.v_.m += o.v_.m;
+        tmp1 = equalize(*this, o);
+        tmp2 = o;
       }
       else
       {
-        tmp = *this;
-        tmp.v_.m += o.v_.m;
+        tmp1 = *this;
+        tmp2 = o;
       }
 
-      tmp.normalize();
+      if (tmp1.sign() == tmp2.sign())
+      {
+        if (1 == tmp1.sign())
+        {
+          while ((tmp1.v_.m > std::numeric_limits<value_type>::max() - tmp2.v_.m) ||
+            (tmp2.v_.m > std::numeric_limits<value_type>::max() - tmp1.v_.m))
+          {
+            tmp1.v_.m /= 10;
+            tmp2.v_.m /= 10;
 
-      return tmp;
+            ++tmp1.v_.e;
+            ++tmp2.v_.e;
+          }
+        }
+        else
+        {
+          while ((tmp1.v_.m < std::numeric_limits<value_type>::min() - tmp2.v_.m) ||
+            (tmp2.v_.m < std::numeric_limits<value_type>::min() - tmp1.v_.m))
+          {
+            tmp1.v_.m /= 10;
+            tmp2.v_.m /= 10;
+
+            ++tmp1.v_.e;
+            ++tmp2.v_.e;
+          }
+        }
+      }
+
+      tmp1.v_.m += tmp2.v_.m;
+
+      tmp1.normalize();
+
+      return tmp1;
     }
   }
 
