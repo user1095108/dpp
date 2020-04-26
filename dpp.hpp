@@ -444,7 +444,6 @@ public:
       else
       {
         v_.m -= o.v_.m;
-
         normalize();
 
         return *this;
@@ -465,22 +464,15 @@ public:
 
       tmp.v_.e += o.v_.e;
 
-      if constexpr (std::is_same_v<value_type, std::int64_t>)
-      {
-        tmp.v_.m *= o.v_.m;
-      }
-      else
-      {
-        auto r(tmp.v_.m * std::int64_t(o.v_.m));
+      auto r(tmp.v_.m * std::intmax_t(o.v_.m));
 
-        while (std::abs(r) > pow<2>(M - 1) - 1)
-        {
-          r /= 10;
-          ++tmp.v_.e;
-        }
-
-        tmp.v_.m = r;
+      while (std::abs(r) > pow<2>(M - 1) - 1)
+      {
+        r /= 10;
+        ++tmp.v_.e;
       }
+
+      tmp.v_.m = r;
 
       tmp.normalize();
 
@@ -498,22 +490,15 @@ public:
     {
       v_.e += o.v_.e;
 
-      if constexpr (std::is_same_v<value_type, std::int64_t>)
-      {
-        v_.m *= o.v_.m;
-      }
-      else
-      {
-        auto r(v_.m * std::int64_t(o.v_.m));
+      auto r(v_.m * std::intmax_t(o.v_.m));
 
-        while (std::abs(r) > pow<2>(M - 1) - 1)
-        {
-          r /= 10;
-          ++v_.e;
-        }
-
-        v_.m = r;
+      while (std::abs(r) > pow<2>(M - 1) - 1)
+      {
+        r /= 10;
+        ++v_.e;
       }
+
+      v_.m = r;
 
       normalize();
     }
@@ -532,25 +517,18 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto k(std::numeric_limits<std::int64_t>::digits10 / 2);
+      constexpr auto k(std::numeric_limits<std::intmax_t>::digits10 / 2);
       tmp.v_.e -= o.v_.e + k;
 
-      if constexpr (std::is_same_v<value_type, std::int64_t>)
-      {
-        tmp.v_.m = tmp.v_.m * pow<10>(k) / o.v_.m;
-      }
-      else
-      {
-        auto r(tmp.v_.m * pow<10, std::int64_t>(k) / o.v_.m);
+      auto r(tmp.v_.m * pow<10, std::intmax_t>(k) / o.v_.m);
 
-        while (std::abs(r) > pow<2>(M - 1) - 1)
-        {
-          r /= 10;
-          ++tmp.v_.e;
-        }
-
-        tmp.v_.m = r;
+      while (std::abs(r) > pow<2>(M - 1) - 1)
+      {
+        r /= 10;
+        ++tmp.v_.e;
       }
+
+      tmp.v_.m = r;
 
       tmp.normalize();
 
@@ -566,25 +544,18 @@ public:
     }
     else
     {
-      constexpr auto k(std::numeric_limits<std::int64_t>::digits10 / 2);
+      constexpr auto k(std::numeric_limits<std::intmax_t>::digits10 / 2);
       v_.e -= o.v_.e + k;
 
-      if constexpr (std::is_same_v<value_type, std::int64_t>)
-      {
-        v_.m = v_.m * pow<10>(k) / o.v_.m;
-      }
-      else
-      {
-        auto r(v_.m * pow<10, std::int64_t>(k) / o.v_.m);
+      auto r(v_.m * pow<10, std::intmax_t>(k) / o.v_.m);
 
-        while (std::abs(r) > pow<2>(M - 1) - 1)
-        {
-          r /= 10;
-          ++v_.e;
-        }
-
-        v_.m = r;
+      while (std::abs(r) > pow<2>(M - 1) - 1)
+      {
+        r /= 10;
+        ++v_.e;
       }
+
+      v_.m = r;
 
       normalize();
     }
