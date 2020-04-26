@@ -487,8 +487,8 @@ public:
 
       constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
 
-      tmp.v_.m = pow<10>(k) * tmp.v_.m / o.v_.m;
       tmp.v_.e -= o.v_.e + k;
+      tmp.v_.m = pow<10>(k) * tmp.v_.m / o.v_.m;
 
       tmp.normalize();
 
@@ -508,8 +508,8 @@ public:
 
       constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
 
-      v_.m = pow<10>(k) * v_.m / o.v_.m;
       v_.e -= o.v_.e + k;
+      v_.m = pow<10>(k) * v_.m / o.v_.m;
 
       normalize();
     }
