@@ -39,7 +39,7 @@ private:
     }
   }
 
-  template <unsigned B>
+  template <value_type B>
   static constexpr auto pow(value_type e) noexcept
   {
     if (e)
