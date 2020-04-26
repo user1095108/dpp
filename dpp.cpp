@@ -9,12 +9,15 @@ constexpr auto sqrt1(T const S) noexcept
 {
   constexpr auto half(dpp::to_decimal<T>(".5"));
 
+  T x;
   T xn(S);
 
-  xn = half * (xn + S/xn);
-  xn = half * (xn + S/xn);
-  xn = half * (xn + S/xn);
-  xn = half * (xn + S/xn);
+  do
+  {
+    x = xn;
+    xn = half * (xn + S/xn);
+  }
+  while (x != xn);
 
   return xn;
 }

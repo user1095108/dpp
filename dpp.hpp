@@ -86,10 +86,12 @@ private:
       --a.v_.e;
     }
 
-    if (a.v_.e != b.v_.e)
+    while (a.v_.e != b.v_.e)
     {
-      b.v_.m /= pow<10>(a.v_.e - b.v_.e);
-      b.v_.e = a.v_.e;
+      b.v_.m > 0 ? b.v_.m += 5 : b.v_.m -= 5;
+      b.v_.m /= 10;
+
+      ++b.v_.e;
     }
 
     return a;
@@ -115,6 +117,9 @@ private:
         while ((tmp1.v_.m > max - tmp2.v_.m) ||
           (tmp2.v_.m > max - tmp1.v_.m))
         {
+          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
+          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
@@ -129,6 +134,9 @@ private:
         while ((tmp1.v_.m < min - tmp2.v_.m) ||
           (tmp2.v_.m < min - tmp1.v_.m))
         {
+          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
+          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
@@ -161,6 +169,9 @@ private:
         while ((tmp1.v_.m > max + tmp2.v_.m) ||
           (tmp2.v_.m > max + tmp1.v_.m))
         {
+          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
+          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
@@ -175,6 +186,9 @@ private:
         while ((tmp1.v_.m < min + tmp2.v_.m) ||
           (tmp2.v_.m < min + tmp1.v_.m))
         {
+          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
+          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
@@ -510,6 +524,8 @@ public:
 
       while (std::abs(r) > pow<2>(M - 1) - 1)
       {
+        r > 0 ? r += 5 : r -= 5;
+
         r /= 10;
         ++tmp.v_.e;
       }
@@ -536,6 +552,8 @@ public:
 
       while (std::abs(r) > pow<2>(M - 1) - 1)
       {
+        r > 0 ? r += 5 : r -= 5;
+
         r /= 10;
         ++v_.e;
       }
@@ -573,6 +591,8 @@ public:
 
       while (std::abs(r) > pow<2>(M - 1) - 1)
       {
+        r > 0 ? r += 5 : r -= 5;
+
         r /= 10;
         ++tmp.v_.e;
       }
@@ -607,6 +627,8 @@ public:
 
       while (std::abs(r) > pow<2>(M - 1) - 1)
       {
+        r > 0 ? r += 5 : r -= 5;
+
         r /= 10;
         ++v_.e;
       }
