@@ -517,10 +517,17 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto k(std::numeric_limits<std::intmax_t>::digits10 / 2);
-      tmp.v_.e -= o.v_.e + k;
+      tmp.v_.e -= o.v_.e;
 
-      auto r(tmp.v_.m * pow<10, std::intmax_t>(k) / o.v_.m);
+      std::intmax_t r(tmp.v_.m);
+
+      while (r < std::numeric_limits<std::intmax_t>::max() / 10)
+      {
+        r *= 10;
+        --tmp.v_.e;
+      }
+
+      r /= o.v_.m;
 
       while (std::abs(r) > pow<2>(M - 1) - 1)
       {
@@ -544,10 +551,17 @@ public:
     }
     else
     {
-      constexpr auto k(std::numeric_limits<std::intmax_t>::digits10 / 2);
-      v_.e -= o.v_.e + k;
+      v_.e -= o.v_.e;
 
-      auto r(v_.m * pow<10, std::intmax_t>(k) / o.v_.m);
+      std::intmax_t r(v_.m);
+
+      while (r < std::numeric_limits<std::intmax_t>::max() / 10)
+      {
+        r *= 10;
+        --v_.e;
+      }
+
+      r /= o.v_.m;
 
       while (std::abs(r) > pow<2>(M - 1) - 1)
       {
