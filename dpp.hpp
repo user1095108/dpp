@@ -4,31 +4,24 @@
 
 #include <cstdint>
 
+#include <ostream>
+
 #include <type_traits>
 
 namespace dpp
 {
 
-namespace detail
-{
-
-template <typename T>
-constexpr auto pow2(T const e) noexcept
-{
-  return T(1) << e;
-}
-
-}
-
 template <unsigned M, unsigned E>
 class dpp
 {
+public:
   using value_type = std::conditional_t<M + E <= 16, std::int16_t,
     std::conditional_t<M + E <= 32, std::int32_t,
       std::conditional_t<M + E <= 64, std::int64_t, void>
     >
   >;
 
+private:
   struct
   {
     value_type m:M;
@@ -44,6 +37,41 @@ class dpp
         ++v_.e;
       }
     }
+  }
+
+  template <unsigned B>
+  static constexpr auto pow(value_type e) noexcept
+  {
+    if (e)
+    {
+      value_type x(B);
+      value_type y(1);
+
+      while (1 != e)
+      {
+        if (e % 2)
+        {
+          //--e;
+          y *= x;
+        }
+
+        x *= x;
+        e /= 2;
+      }
+
+      return x * y;
+    }
+    else
+    {
+      return value_type(1);
+    }
+  }
+
+  template <unsigned B>
+  static constexpr value_type log(value_type const n,
+    value_type const e = 0) noexcept
+  {
+    return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
 public:
@@ -77,12 +105,7 @@ public:
   constexpr dpp(nan_&&) noexcept
   {
     v_.m = {};
-    v_.e = -detail::pow2(E - 1);
-  }
-
-  constexpr auto mantissa() const noexcept
-  {
-    return v_.m;
+    v_.e = -pow<2>(E - 1);
   }
 
   constexpr auto exponent() const noexcept
@@ -90,14 +113,41 @@ public:
     return v_.e;
   }
 
-  constexpr bool is_nan() const noexcept
+  constexpr auto mantissa() const noexcept
   {
-    return v_.e == -detail::pow2(E - 1);
+    return v_.m;
   }
 
+  constexpr auto value() const noexcept
+  {
+    return (v_.m << E) | v_.e;
+  }
+
+  constexpr bool is_nan() const noexcept
+  {
+    return v_.e == -pow<2>(E - 1);
+  }
+
+  //
   constexpr explicit operator bool() noexcept
   {
     return is_nan() || v_.m;
+  }
+
+  constexpr explicit operator value_type() noexcept
+  {
+    value_type r(v_.m);
+
+    if (v_.e < 0)
+    {
+      r /= pow<10>(-v_.e);
+    }
+    else
+    {
+      r *= pow<10>(v_.e);
+    }
+
+    return r;
   }
 
   //
@@ -119,12 +169,85 @@ public:
   }
 
   //
+  constexpr auto operator<(dpp const& o) noexcept
+  {
+    constexpr auto op([](dpp tmp, dpp const& o) noexcept
+      {
+        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+        tmp.v_.e = o.v_.e;
+
+        return tmp;
+      }
+    );
+
+    if (is_nan() || o.is_nan())
+    {
+      return false;
+    }
+    else
+    {
+      if (o.v_.e > v_.e)
+      {
+        dpp const tmp(op(o, *this));
+
+        return v_.m < tmp.v_.m;
+      }
+      else if (v_.e > o.v_.e)
+      {
+        dpp const tmp(op(*this, o));
+
+        return tmp.v_.m < o.v_.m;
+      }
+      else
+      {
+        return v_.m < o.v_.m;
+      }
+    }
+  }
+
+  constexpr auto operator<=(dpp const& o) noexcept
+  {
+    constexpr auto op([](dpp tmp, dpp const& o) noexcept
+      {
+        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+        tmp.v_.e = o.v_.e;
+
+        return tmp;
+      }
+    );
+
+    if (is_nan() || o.is_nan())
+    {
+      return false;
+    }
+    else
+    {
+      if (o.v_.e > v_.e)
+      {
+        dpp const tmp(op(o, *this));
+
+        return v_.m <= tmp.v_.m;
+      }
+      else if (v_.e > o.v_.e)
+      {
+        dpp const tmp(op(*this, o));
+
+        return tmp.v_.m <= o.v_.m;
+      }
+      else
+      {
+        return v_.m <= o.v_.m;
+      }
+    }
+  }
+
+  //
   constexpr auto operator+() noexcept
   {
     return *this;
   }
 
-  constexpr auto operator-() noexcept
+  constexpr auto operator-() const noexcept
   {
     auto tmp(*this);
 
@@ -134,15 +257,12 @@ public:
   }
 
   //
-  constexpr auto operator+(dpp const& o) noexcept
+  constexpr auto operator+(dpp const& o) const noexcept
   {
     constexpr auto op([](dpp tmp, dpp const& o) noexcept
       {
-        while (tmp.v_.e != o.v_.e)
-        {
-          tmp.v_.m *= 10;
-          --tmp.v_.e;
-        }
+        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+        tmp.v_.e = o.v_.e;
 
         tmp.v_.m += o.v_.m;
 
@@ -183,11 +303,8 @@ public:
   {
     constexpr auto op([](dpp tmp, dpp const& o) noexcept
       {
-        while (tmp.v_.e != o.v_.e)
-        {
-          tmp.v_.m *= 10;
-          --tmp.v_.e;
-        }
+        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+        tmp.v_.e = o.v_.e;
 
         tmp.v_.m += o.v_.m;
 
@@ -201,15 +318,21 @@ public:
     }
     else
     {
-      dpp tmp;
-
       if (o.v_.e > v_.e)
       {
-        tmp = op(o, *this);
+        auto tmp(op(o, *this));
+
+        tmp.normalize();
+
+        return *this = tmp;
       }
       else if (v_.e > o.v_.e)
       {
-        tmp = op(*this, o);
+        auto tmp(op(*this, o));
+
+        tmp.normalize();
+
+        return *this = tmp;
       }
       else
       {
@@ -219,25 +342,16 @@ public:
 
         return *this;
       }
-
-      tmp.normalize();
-
-      return *this = tmp;
     }
   }
 
   //
-  constexpr auto operator-(dpp const& o) noexcept
+  constexpr auto operator-(dpp const& o) const noexcept
   {
     constexpr auto op([](dpp tmp, dpp const& o) noexcept
       {
-        while (tmp.v_.e != o.v_.e)
-        {
-          tmp.v_.m *= 10;
-          --tmp.v_.e;
-        }
-
-        tmp.v_.m -= o.v_.m;
+        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+        tmp.v_.e = o.v_.e;
 
         return tmp;
       }
@@ -254,10 +368,15 @@ public:
       if (o.v_.e > v_.e)
       {
         tmp = op(o, *this);
+
+        tmp.v_.m -= v_.m;
+        tmp.v_.m = -tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
         tmp = op(*this, o);
+
+        tmp.v_.m -= o.v_.m;
       }
       else
       {
@@ -276,13 +395,8 @@ public:
   {
     constexpr auto op([](dpp tmp, dpp const& o) noexcept
       {
-        while (tmp.v_.e != o.v_.e)
-        {
-          tmp.v_.m *= 10;
-          --tmp.v_.e;
-        }
-
-        tmp.v_.m -= o.v_.m;
+        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+        tmp.v_.e = o.v_.e;
 
         return tmp;
       }
@@ -290,19 +404,27 @@ public:
 
     if (is_nan() || o.is_nan())
     {
-      return dpp{nan_{}};
+      return *this = dpp{nan_{}};
     }
     else
     {
-      dpp tmp;
-
       if (o.v_.e > v_.e)
       {
-        tmp = op(o, *this);
+        auto tmp(op(o, *this));
+
+        v_.m -= tmp.v_.m;
+        normalize();
+
+        return *this;
       }
       else if (v_.e > o.v_.e)
       {
-        tmp = op(*this, o);
+        auto tmp(op(*this, o));
+
+        tmp.v_.m -= o.v_.m;
+        tmp.normalize();
+
+        return *this = tmp;
       }
       else
       {
@@ -312,15 +434,11 @@ public:
 
         return *this;
       }
-
-      tmp.normalize();
-
-      return *this = tmp;
     }
   }
 
   //
-  constexpr auto operator*(dpp const& o) noexcept
+  constexpr auto operator*(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan())
     {
@@ -357,7 +475,7 @@ public:
   }
 
   //
-  constexpr auto operator/(dpp const& o) noexcept
+  constexpr auto operator/(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
     {
@@ -367,8 +485,10 @@ public:
     {
       dpp tmp(*this);
 
-      tmp.v_.m /= o.v_.m;
-      tmp.v_.e -= o.v_.e;
+      constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
+
+      tmp.v_.m = pow<10>(k) * tmp.v_.m / o.v_.m;
+      tmp.v_.e -= o.v_.e + k;
 
       tmp.normalize();
 
@@ -384,8 +504,12 @@ public:
     }
     else
     {
-      v_.m /= o.v_.m;
       v_.e -= o.v_.e;
+
+      constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
+
+      v_.m = pow<10>(k) * v_.m / o.v_.m;
+      v_.e -= o.v_.e + k;
 
       normalize();
     }
@@ -397,6 +521,170 @@ public:
 using dec64 = dpp<56, 8>;
 using dec32 = dpp<26, 6>;
 using dec16 = dpp<12, 4>;
+
+template <typename T, typename It>
+inline T to_decimal(It i, It const end) noexcept
+{
+  if (i == end)
+  {
+    return {};
+  }
+  else
+  {
+    bool positive{true};
+
+    switch (*i)
+    {
+      case '+':
+        i = std::next(i);
+        break;
+
+      case '-':
+        positive = false;
+        i = std::next(i);
+        break;
+
+      case '0': case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9':
+      case '.':
+        break;
+
+      default:
+        return {};
+    }
+
+    int fcount{};
+
+    typename T::value_type r{};
+
+    for (; i != end; i = std::next(i))
+    {
+      switch (*i)
+      {
+        case '.':
+          i = std::next(i);
+          break;
+
+        case '0': case '1': case '2': case '3': case '4':
+        case '5': case '6': case '7': case '8': case '9':
+          r = 10 * r + (*i - '0');
+          continue;
+
+        case '\0':
+          goto produce_result;
+
+        default:
+          return {};
+      }
+
+      break;
+    }
+
+    for (; i != end; ++fcount, i = std::next(i))
+    {
+      switch (*i)
+      {
+        case '0': case '1': case '2': case '3': case '4':
+        case '5': case '6': case '7': case '8': case '9':
+          r = 10 * r + (*i - '0');
+          continue;
+
+        case '\0':
+          break;
+
+        default:
+          return {};
+      }
+
+      break;
+    }
+
+    produce_result:
+    auto const tmp(T(r, -fcount));
+    return positive ? tmp : -tmp;
+  }
+}
+
+template <typename T, typename S>
+inline auto to_decimal(S const& s) noexcept ->
+  decltype(std::cbegin(s), std::cend(s), T())
+{
+  return to_decimal<T>(std::cbegin(s), std::cend(s));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+inline auto to_string(dpp<M, E> p)
+{
+  std::string r;
+
+  if (p < 0)
+  {
+    p = -p;
+    r.append(1, '-');
+  }
+
+  {
+    typename dpp<M, E>::value_type i(p);
+    r.append(std::to_string(i));
+
+    p -= i;
+  }
+
+  if (p)
+  {
+    r.append(1, '.');
+
+    while (p)
+    {
+      p *= 10;
+
+      typename dpp<M, E>::value_type i(p);
+      r.append(std::to_string(i));
+
+      p -= i;
+    }
+  }
+
+  return r;
+}
+
+template <unsigned M, unsigned E>
+inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
+{
+  if (std::ostream::sentry s(os); s)
+  {
+    if (p < 0)
+    {
+      p = -p;
+      os << '-';
+    }
+
+    {
+      typename dpp<M, E>::value_type i(p);
+      os << i;
+
+      p -= i;
+    }
+
+    if (p)
+    {
+      os << '.';
+
+      while (p)
+      {
+        p *= 10;
+
+        typename dpp<M, E>::value_type i(p);
+        os << i;
+
+        p -= i;
+      }
+    }
+  }
+
+  return os;
+}
 
 }
 

@@ -4,16 +4,17 @@
 
 int main()
 {
-  dpp::dec32 nan(dpp::dec32::nan_{});
+  dpp::dec32 const nan(dpp::dec32::nan_{});
   std::cout << nan.is_nan() << std::endl;
 
-  dpp::dec32 a(123, -2);
-  dpp::dec32 b(456, -1);
+  auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
+  auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
 
-  auto const tmp(a + b);
-
-  std::cout << tmp.mantissa() << std::endl;
-  std::cout << tmp.exponent() << std::endl;
+  std::cout << a + b << std::endl;
+  std::cout << a - b << std::endl;
+  std::cout << a * b << std::endl;
+  std::cout << a / b << std::endl;
+  std::cout << b / a << std::endl;
 
   return 0;
 }
