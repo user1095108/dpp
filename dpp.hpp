@@ -534,6 +534,7 @@ public:
 using dec64 = dpp<56, 8>;
 using dec32 = dpp<26, 6>;
 
+//////////////////////////////////////////////////////////////////////////////
 template <typename T, typename It>
 inline T to_decimal(It i, It const end) noexcept
 {
