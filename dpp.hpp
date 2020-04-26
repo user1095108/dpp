@@ -83,28 +83,23 @@ private:
   }
 
 public:
-  constexpr dpp() noexcept
+  constexpr dpp() noexcept :
+    v_{}
   {
-    v_.m = {};
-    v_.e = {};
   }
 
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
-  constexpr dpp(U&& v) noexcept
+  constexpr dpp(U&& v) noexcept :
+    v_{v, {}}
   {
-    v_.m = v;
-    v_.e = {};
-
     normalize();
   }
 
-  constexpr dpp(value_type const m, value_type const e) noexcept
+  constexpr dpp(value_type const m, value_type const e) noexcept :
+    v_{m, e}
   {
-    v_.m = m;
-    v_.e = e;
-
     normalize();
   }
 
@@ -662,7 +657,6 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    produce_result:
     auto const tmp(T(r, -fcount));
     return positive ? tmp : -tmp;
   }

@@ -7,7 +7,7 @@ inline auto sqrt(T const S) noexcept
 {
   auto xn(S);
 
-  auto const half(dpp::to_decimal<dpp::dec32>(".5"));
+  constexpr auto half(dpp::to_decimal<dpp::dec32>(".5"));
 
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
