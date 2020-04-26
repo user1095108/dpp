@@ -1,5 +1,3 @@
-#include <decimal/decimal>
-
 #include <iostream>
 
 #include "dpp.hpp"
