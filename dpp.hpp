@@ -124,6 +124,11 @@ public:
     v_.e = v & (pow<2>(E) - 1);
   }
 
+  constexpr bool is_nan() const noexcept
+  {
+    return v_.e == -pow<2>(E - 1);
+  }
+
   constexpr auto exponent() const noexcept
   {
     return v_.e;
@@ -139,11 +144,6 @@ public:
     return (v_.m << E) | v_.e;
   }
 
-  constexpr bool is_nan() const noexcept
-  {
-    return v_.e == -pow<2>(E - 1);
-  }
-
   //
   constexpr explicit operator bool() noexcept
   {
@@ -152,7 +152,7 @@ public:
 
   constexpr explicit operator value_type() noexcept
   {
-    value_type r(v_.m);
+    auto r(v_.m);
 
     if (v_.e < 0)
     {
@@ -195,13 +195,13 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        dpp const tmp(equalize(o, *this));
+        auto const tmp(equalize(o, *this));
 
         return v_.m < tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        dpp const tmp(equalize(*this, o));
+        auto const tmp(equalize(*this, o));
 
         return tmp.v_.m < o.v_.m;
       }
@@ -222,13 +222,13 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        dpp const tmp(equalize(o, *this));
+        auto const tmp(equalize(o, *this));
 
         return v_.m <= tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        dpp const tmp(equalize(*this, o));
+        auto const tmp(equalize(*this, o));
 
         return tmp.v_.m <= o.v_.m;
       }
@@ -249,13 +249,13 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        dpp const tmp(equalize(o, *this));
+        auto const tmp(equalize(o, *this));
 
         return v_.m > tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        dpp const tmp(equalize(*this, o));
+        auto const tmp(equalize(*this, o));
 
         return tmp.v_.m > o.v_.m;
       }
@@ -276,13 +276,13 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        dpp const tmp(equalize(o, *this));
+        auto const tmp(equalize(o, *this));
 
         return v_.m >= tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        dpp const tmp(equalize(*this, o));
+        auto const tmp(equalize(*this, o));
 
         return tmp.v_.m >= o.v_.m;
       }
