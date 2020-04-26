@@ -86,10 +86,10 @@ private:
       --a.v_.e;
     }
 
-    while (a.v_.e != b.v_.e)
+    if (a.v_.e != b.v_.e)
     {
-      b.v_.m /= 10;
-      ++b.v_.e;
+      b.v_.m /= pow<10>(a.v_.e - b.v_.e);
+      b.v_.e = a.v_.e;
     }
 
     return a;
