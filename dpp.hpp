@@ -341,14 +341,7 @@ public:
   {
     auto r(v_.m);
 
-    if (v_.e < 0)
-    {
-      r /= pow<10>(-v_.e);
-    }
-    else
-    {
-      r *= pow<10>(v_.e);
-    }
+    v_.e < 0 ? r /= pow<10>(-v_.e) : r *= pow<10>(v_.e);
 
     return r;
   }
