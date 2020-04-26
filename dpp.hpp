@@ -74,10 +74,10 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
-  static constexpr auto equalize(dpp tmp, dpp const& o) noexcept
+  static constexpr auto equalize(dpp a, dpp const& b) noexcept
   {
-    tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-    tmp.v_.e = o.v_.e;
+    a.v_.m *= pow<10>(a.v_.e - b.v_.e);
+    a.v_.e = b.v_.e;
 
     return tmp;
   }
