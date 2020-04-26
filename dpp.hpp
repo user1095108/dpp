@@ -124,11 +124,6 @@ public:
     v_.e = v & (pow<2>(E) - 1);
   }
 
-  constexpr bool is_nan() const noexcept
-  {
-    return v_.e == -pow<2>(E - 1);
-  }
-
   constexpr auto exponent() const noexcept
   {
     return v_.e;
@@ -142,6 +137,11 @@ public:
   constexpr auto value() const noexcept
   {
     return (v_.m << E) | v_.e;
+  }
+
+  constexpr bool is_nan() const noexcept
+  {
+    return v_.e == -pow<2>(E - 1);
   }
 
   //
