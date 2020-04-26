@@ -4,7 +4,7 @@
 
 int main()
 {
-  auto const nan(dpp::dec32::nan{});
+  dpp::dec32 const nan(dpp::dec32::nan{});
   std::cout << nan.is_nan() << std::endl;
 
   auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
