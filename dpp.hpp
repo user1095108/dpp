@@ -79,7 +79,7 @@ private:
     a.v_.m *= pow<10>(a.v_.e - b.v_.e);
     a.v_.e = b.v_.e;
 
-    return tmp;
+    return a;
   }
 
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
@@ -109,7 +109,7 @@ private:
           ++tmp2.v_.e;
         }
       }
-      else
+      else if (-1 == tmp1.sign())
       {
         constexpr auto min(-pow<2>(M - 1));
 
@@ -179,7 +179,7 @@ public:
 
   constexpr auto sign() const noexcept
   {
-    return (v_.m > 0) - (v_.m < 0) + !v_.m;
+    return (v_.m > 0) - (v_.m < 0);
   }
 
   constexpr bool is_nan() const noexcept
