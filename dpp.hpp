@@ -30,12 +30,9 @@ private:
 
   constexpr void normalize() noexcept
   {
-    if (!is_nan() && v_.m)
+    for (; !(v_.m % 10); v_.m /= 10)
     {
-      for (; !(v_.m % 10); v_.m /= 10)
-      {
-        ++v_.e;
-      }
+      ++v_.e;
     }
   }
 
