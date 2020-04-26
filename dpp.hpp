@@ -74,6 +74,14 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
+  static constexpr auto equalize(dpp tmp, dpp const& o) noexcept
+  {
+    tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
+    tmp.v_.e = o.v_.e;
+
+    return tmp;
+  }
+
 public:
   constexpr dpp() noexcept
   {
@@ -259,17 +267,6 @@ public:
   //
   constexpr auto operator+(dpp const& o) const noexcept
   {
-    constexpr auto op([](dpp tmp, dpp const& o) noexcept
-      {
-        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-        tmp.v_.e = o.v_.e;
-
-        tmp.v_.m += o.v_.m;
-
-        return tmp;
-      }
-    );
-
     if (is_nan() || o.is_nan())
     {
       return dpp{nan_{}};
@@ -280,16 +277,17 @@ public:
 
       if (o.v_.e > v_.e)
       {
-        tmp = op(o, *this);
+        tmp = equalize(o, *this);
+        tmp.v_.m += v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        tmp = op(*this, o);
+        tmp = equalize(*this, o);
+        tmp.v_.m += o.v_.m;
       }
       else
       {
         tmp = *this;
-
         tmp.v_.m += o.v_.m;
       }
 
@@ -301,17 +299,6 @@ public:
 
   constexpr auto& operator+=(dpp const& o) noexcept
   {
-    constexpr auto op([](dpp tmp, dpp const& o) noexcept
-      {
-        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-        tmp.v_.e = o.v_.e;
-
-        tmp.v_.m += o.v_.m;
-
-        return tmp;
-      }
-    );
-
     if (is_nan() || o.is_nan())
     {
       return dpp{nan_{}};
@@ -320,16 +307,18 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        auto tmp(op(o, *this));
+        auto tmp(equalize(o, *this));
 
+        tmp.v_.m += v_.m;
         tmp.normalize();
 
         return *this = tmp;
       }
       else if (v_.e > o.v_.e)
       {
-        auto tmp(op(*this, o));
+        auto tmp(equalize(*this, o));
 
+        tmp.v_.m += o.v_.m;
         tmp.normalize();
 
         return *this = tmp;
@@ -348,15 +337,6 @@ public:
   //
   constexpr auto operator-(dpp const& o) const noexcept
   {
-    constexpr auto op([](dpp tmp, dpp const& o) noexcept
-      {
-        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-        tmp.v_.e = o.v_.e;
-
-        return tmp;
-      }
-    );
-
     if (is_nan() || o.is_nan())
     {
       return dpp{nan_{}};
@@ -367,14 +347,14 @@ public:
 
       if (o.v_.e > v_.e)
       {
-        tmp = op(o, *this);
+        tmp = equalize(o, *this);
 
         tmp.v_.m -= v_.m;
         tmp.v_.m = -tmp.v_.m;
       }
       else if (v_.e > o.v_.e)
       {
-        tmp = op(*this, o);
+        tmp = equalize(*this, o);
 
         tmp.v_.m -= o.v_.m;
       }
@@ -393,15 +373,6 @@ public:
 
   constexpr auto& operator-=(dpp const& o) noexcept
   {
-    constexpr auto op([](dpp tmp, dpp const& o) noexcept
-      {
-        tmp.v_.m *= pow<10>(tmp.v_.e - o.v_.e);
-        tmp.v_.e = o.v_.e;
-
-        return tmp;
-      }
-    );
-
     if (is_nan() || o.is_nan())
     {
       return *this = dpp{nan_{}};
@@ -410,7 +381,7 @@ public:
     {
       if (o.v_.e > v_.e)
       {
-        auto tmp(op(o, *this));
+        auto tmp(equalize(o, *this));
 
         v_.m -= tmp.v_.m;
         normalize();
@@ -419,7 +390,7 @@ public:
       }
       else if (v_.e > o.v_.e)
       {
-        auto tmp(op(*this, o));
+        auto tmp(equalize(*this, o));
 
         tmp.v_.m -= o.v_.m;
         tmp.normalize();
@@ -520,7 +491,6 @@ public:
 
 using dec64 = dpp<56, 8>;
 using dec32 = dpp<26, 6>;
-using dec16 = dpp<12, 4>;
 
 template <typename T, typename It>
 inline T to_decimal(It i, It const end) noexcept
