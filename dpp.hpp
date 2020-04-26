@@ -511,8 +511,6 @@ public:
     }
     else
     {
-      v_.e -= o.v_.e;
-
       constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
 
       v_.e -= o.v_.e + k;
