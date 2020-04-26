@@ -113,10 +113,9 @@ public:
 
   struct val{};
 
-  constexpr dpp(value_type const v, val&&) noexcept
+  constexpr dpp(value_type const v, val&&) noexcept :
+    v_{v >> E, v & (pow<2>(E) - 1)}
   {
-    v_.m = v >> E;
-    v_.e = v & (pow<2>(E) - 1);
   }
 
   constexpr auto exponent() const noexcept
