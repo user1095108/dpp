@@ -68,7 +68,7 @@ private:
   }
 
   template <unsigned B>
-  static constexpr value_type log(value_type const n,
+  static constexpr auto log(value_type const n,
     value_type const e = 0) noexcept
   {
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
