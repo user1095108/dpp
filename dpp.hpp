@@ -91,8 +91,7 @@ public:
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
-  constexpr dpp(U&& v) noexcept :
-    v_{v, {}}
+  constexpr dpp(U&& v) noexcept : v_{v, {}}
   {
     normalize();
   }
