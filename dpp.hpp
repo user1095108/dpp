@@ -463,8 +463,24 @@ public:
     {
       dpp tmp(*this);
 
-      tmp.v_.m *= o.v_.m;
       tmp.v_.e += o.v_.e;
+
+      if constexpr (std::is_same_v<value_type, std::int64_t>)
+      {
+        tmp.v_.m *= o.v_.m;
+      }
+      else
+      {
+        auto r(tmp.v_.m * std::int64_t(o.v_.m));
+
+        while (std::abs(r) > pow<2>(M - 1) - 1)
+        {
+          r /= 10;
+          ++tmp.v_.e;
+        }
+
+        tmp.v_.m = r;
+      }
 
       tmp.normalize();
 
@@ -480,8 +496,24 @@ public:
     }
     else
     {
-      v_.m *= o.v_.m;
       v_.e += o.v_.e;
+
+      if constexpr (std::is_same_v<value_type, std::int64_t>)
+      {
+        v_.m *= o.v_.m;
+      }
+      else
+      {
+        auto r(v_.m * std::int64_t(o.v_.m));
+
+        while (std::abs(r) > pow<2>(M - 1) - 1)
+        {
+          r /= 10;
+          ++v_.e;
+        }
+
+        v_.m = r;
+      }
 
       normalize();
     }
@@ -504,15 +536,22 @@ public:
 
       tmp.v_.e -= o.v_.e + k;
 
-      auto r(tmp.v_.m * pow<10, std::int64_t>(k) / o.v_.m);
-
-      while (std::abs(r) > pow<2>(M - 1) - 1)
+      if constexpr (std::is_same_v<value_type, std::int64_t>)
       {
-        r /= 10;
-        ++tmp.v_.e;
+        tmp.v_.m = tmp.v_.m * pow<10>(k) / o.v_.m;
       }
+      else
+      {
+        auto r(tmp.v_.m * pow<10, std::int64_t>(k) / o.v_.m);
 
-      tmp.v_.m = r;
+        while (std::abs(r) > pow<2>(M - 1) - 1)
+        {
+          r /= 10;
+          ++tmp.v_.e;
+        }
+
+        tmp.v_.m = r;
+      }
 
       tmp.normalize();
 
@@ -532,15 +571,22 @@ public:
 
       v_.e -= o.v_.e + k;
 
-      auto r(v_.m * pow<10, std::int64_t>(k) / o.v_.m);
-
-      while (std::abs(r) > pow<2>(M - 1) - 1)
+      if constexpr (std::is_same_v<value_type, std::int64_t>)
       {
-        r /= 10;
-        ++v_.e;
+        v_.m = v_.m * pow<10>(k) / o.v_.m;
       }
+      else
+      {
+        auto r(v_.m * pow<10, std::int64_t>(k) / o.v_.m);
 
-      v_.m = r;
+        while (std::abs(r) > pow<2>(M - 1) - 1)
+        {
+          r /= 10;
+          ++v_.e;
+        }
+
+        v_.m = r;
+      }
 
       normalize();
     }
