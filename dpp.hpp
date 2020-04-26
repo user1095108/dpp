@@ -215,9 +215,9 @@ public:
   {
   }
 
-  struct val{};
+  struct unpack{};
 
-  constexpr dpp(value_type const v, val&&) noexcept :
+  constexpr dpp(value_type const v, unpack&&) noexcept :
     v_{v >> E, v & (pow<2>(E) - 1)}
   {
   }
@@ -232,7 +232,7 @@ public:
     return v_.m;
   }
 
-  constexpr auto value() const noexcept
+  constexpr auto pack() const noexcept
   {
     return (v_.m << E) | v_.e;
   }
@@ -253,7 +253,7 @@ public:
     return is_nan() || v_.m;
   }
 
-  constexpr explicit operator value_type() noexcept
+  constexpr explicit operator value_type() const noexcept
   {
     auto r(v_.m);
 
@@ -620,6 +620,24 @@ public:
   }
 };
 
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr auto ceil(dpp<M, E> const& x) noexcept
+{
+  typename dpp<M, E>::value_type const t(x);
+
+  return t + (dpp<M, E>(t) < x);
+}
+
+template <unsigned M, unsigned E>
+constexpr auto floor(dpp<M, E> const& x) noexcept
+{
+  typename dpp<M, E>::value_type const t(x);
+
+  return t - (dpp<M, E>(t) > x);
+}
+
+//////////////////////////////////////////////////////////////////////////////
 using dec64 = dpp<56, 8>;
 using dec32 = dpp<26, 6>;
 

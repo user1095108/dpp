@@ -45,6 +45,7 @@ int main()
   std::cout << sqrt1(dpp::dec32(9)) << std::endl;
   std::cout << sqrt2(dpp::dec32(9)) << std::endl;
 
+  //
   auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
   auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
 
@@ -53,6 +54,10 @@ int main()
   std::cout << a * b << std::endl;
   std::cout << a / b << std::endl;
   std::cout << b / a << std::endl;
+
+  //
+  std::cout << dpp::ceil(a) << std::endl;
+  std::cout << dpp::floor(b) << std::endl;
 
   return 0;
 }
