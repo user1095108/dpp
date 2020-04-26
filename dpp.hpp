@@ -79,19 +79,44 @@ private:
     //a.v_.m *= pow<10>(a.v_.e - b.v_.e);
     //a.v_.e = b.v_.e;
 
-    while ((std::abs(a.v_.m) < (pow<2>(M - 1) - 1) / 10) &&
-      (a.v_.e != b.v_.e))
+    if (a.v_.m > 0)
     {
-      a.v_.m *= 10;
-      --a.v_.e;
+      while ((a.v_.m < (pow<2>(M - 1) - 1) / 10) &&
+        (a.v_.e != b.v_.e))
+      {
+        a.v_.m *= 10;
+        --a.v_.e;
+      }
+    }
+    else if (a.v_.m < 0)
+    {
+      while ((a.v_.m < -pow<2>(M - 1) / 10) &&
+        (a.v_.e != b.v_.e))
+      {
+        a.v_.m *= 10;
+        --a.v_.e;
+      }
+    }
+    else
+    {
+      a.v_.e = b.v_.e;
     }
 
-    while (a.v_.e != b.v_.e)
+    if (a.v_.e != b.v_.e)
     {
-      b.v_.m > 0 ? b.v_.m += 5 : b.v_.m -= 5;
-      b.v_.m /= 10;
+      if ((b.v_.m > 0) && (b.v_.m < pow<2>(M - 1) - 1 - 5))
+      {
+        b.v_.m += 5;
+      }
+      else if ((b.v_.m < 0) && (b.v_.m > -pow<2>(M - 1) + 5))
+      {
+        b.v_.m -= 5;
+      }
 
-      ++b.v_.e;
+      auto const d(a.v_.e - b.v_.e);
+
+      b.v_.m /= pow<10>(d);
+      b.v_.e += d;
     }
 
     return a;
@@ -522,12 +547,30 @@ public:
 
       auto r(tmp.v_.m * std::intmax_t(o.v_.m));
 
-      while (std::abs(r) > pow<2>(M - 1) - 1)
+      if (r > 0)
       {
-        r > 0 ? r += 5 : r -= 5;
+        while (r > pow<2>(M - 1) - 1)
+        {
+          auto const d(r % 10);
 
-        r /= 10;
-        ++tmp.v_.e;
+          r /= 10;
+          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
+
+          ++tmp.v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2>(M - 1))
+        {
+          auto const d(-r % 10);
+
+          r /= 10;
+
+          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
+
+          ++tmp.v_.e;
+        }
       }
 
       tmp.v_.m = r;
@@ -538,35 +581,6 @@ public:
     }
   }
 
-  constexpr auto& operator*=(dpp const& o) noexcept
-  {
-    if (is_nan() || o.is_nan())
-    {
-      *this = dpp{nan{}};
-    }
-    else
-    {
-      v_.e += o.v_.e;
-
-      auto r(v_.m * std::intmax_t(o.v_.m));
-
-      while (std::abs(r) > pow<2>(M - 1) - 1)
-      {
-        r > 0 ? r += 5 : r -= 5;
-
-        r /= 10;
-        ++v_.e;
-      }
-
-      v_.m = r;
-
-      normalize();
-    }
-
-    return *this;
-  }
-
-  //
   constexpr auto operator/(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
@@ -581,20 +595,49 @@ public:
 
       std::intmax_t r(tmp.v_.m);
 
-      while (std::abs(r) < std::numeric_limits<std::intmax_t>::max() / 10)
+      if (r > 0)
       {
-        r *= 10;
-        --tmp.v_.e;
+        while (r < std::numeric_limits<std::intmax_t>::max() / 10)
+        {
+          r *= 10;
+          --tmp.v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r > std::numeric_limits<std::intmax_t>::min() / 10)
+        {
+          r *= 10;
+          --tmp.v_.e;
+        }
       }
 
       r /= o.v_.m;
 
-      while (std::abs(r) > pow<2>(M - 1) - 1)
+      if (r > 0)
       {
-        r > 0 ? r += 5 : r -= 5;
+        while (r > pow<2>(M - 1) - 1)
+        {
+          auto const d(r % 10);
 
-        r /= 10;
-        ++tmp.v_.e;
+          r /= 10;
+          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
+
+          ++tmp.v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2>(M - 1))
+        {
+          auto const d(-r % 10);
+
+          r /= 10;
+
+          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
+
+          ++tmp.v_.e;
+        }
       }
 
       tmp.v_.m = r;
@@ -603,6 +646,53 @@ public:
 
       return tmp;
     }
+  }
+
+  //
+  constexpr auto& operator*=(dpp const& o) noexcept
+  {
+    if (is_nan() || o.is_nan())
+    {
+      *this = dpp{nan{}};
+    }
+    else
+    {
+      v_.e += o.v_.e;
+
+      auto r(v_.m * std::intmax_t(o.v_.m));
+
+      if (r > 0)
+      {
+        while (r > pow<2>(M - 1) - 1)
+        {
+          auto const d(r % 10);
+
+          r /= 10;
+          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
+
+          ++v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2>(M - 1))
+        {
+          auto const d(-r % 10);
+
+          r /= 10;
+
+          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
+
+          ++v_.e;
+        }
+      }
+
+      v_.m = r;
+
+      normalize();
+    }
+
+    return *this;
   }
 
   constexpr auto& operator/=(dpp const& o) noexcept
@@ -617,20 +707,53 @@ public:
 
       std::intmax_t r(v_.m);
 
-      while (std::abs(r) < std::numeric_limits<std::intmax_t>::max() / 10)
+      if (r > 0)
       {
-        r *= 10;
-        --v_.e;
+        while (r > pow<2>(M - 1) - 1)
+        {
+          auto const d(r % 10);
+
+          r /= 10;
+          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
+
+          ++v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2>(M - 1))
+        {
+          auto const d(-r % 10);
+
+          r /= 10;
+
+          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
+
+          ++v_.e;
+        }
       }
 
       r /= o.v_.m;
 
-      while (std::abs(r) > pow<2>(M - 1) - 1)
+      if (r > 0)
       {
-        r > 0 ? r += 5 : r -= 5;
+        while (r > pow<2>(M - 1) - 1)
+        {
+          r += 5;
 
-        r /= 10;
-        ++v_.e;
+          r /= 10;
+          ++v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2>(M - 1))
+        {
+          r -= 5;
+
+          r /= 10;
+          ++v_.e;
+        }
       }
 
       v_.m = r;
