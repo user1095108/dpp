@@ -5,7 +5,7 @@
 #include "dpp.hpp"
 
 template <typename T>
-inline auto sqrt(T const S) noexcept
+constexpr auto sqrt1(T const S) noexcept
 {
   auto xn(S);
 
@@ -18,10 +18,29 @@ inline auto sqrt(T const S) noexcept
   return xn;
 }
 
+template <typename T>
+constexpr auto sqrt2(T const n) noexcept
+{
+  T x;
+  T xn(n);
+
+  do
+  {
+    x = xn;
+    xn = (x + n/x) / 2;
+  }
+  while (x != xn);
+
+  return x;
+}
+
+
 int main()
 {
-  std::cout << sqrt(dpp::dec32(2)) << std::endl;
-  std::cout << sqrt(dpp::dec32(3)) << std::endl;
+  std::cout << sqrt1(dpp::dec32(2)) << std::endl;
+  std::cout << sqrt2(dpp::dec32(2)) << std::endl;
+  std::cout << sqrt1(dpp::dec32(3)) << std::endl;
+  std::cout << sqrt2(dpp::dec32(3)) << std::endl;
 
   auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
   auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
