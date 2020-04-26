@@ -74,6 +74,18 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
+  static constexpr auto round_mantissa(dpp& tmp) noexcept
+  {
+    if ((tmp.v_.m > 0) && (tmp.v_.m < pow<2>(M - 1) - 1 - 5))
+    {
+      tmp.v_.m += 5;
+    }
+    else if ((tmp.v_.m < 0) && (tmp.v_.m > -pow<2>(M - 1) + 5))
+    {
+      tmp.v_.m -= 5;
+    }
+  }
+
   static constexpr auto equalize(dpp a, dpp& b) noexcept
   {
     //a.v_.m *= pow<10>(a.v_.e - b.v_.e);
@@ -102,16 +114,19 @@ private:
       a.v_.e = b.v_.e;
     }
 
+/*
+    while (a.v_.e != b.v_.e)
+    {
+      round_mantissa(b);
+
+      b.v_.m /= 10;
+      ++b.v_.e;
+    }
+*/
+
     if (a.v_.e != b.v_.e)
     {
-      if ((b.v_.m > 0) && (b.v_.m < pow<2>(M - 1) - 1 - 5))
-      {
-        b.v_.m += 5;
-      }
-      else if ((b.v_.m < 0) && (b.v_.m > -pow<2>(M - 1) + 5))
-      {
-        b.v_.m -= 5;
-      }
+      round_mantissa(b);
 
       auto const d(a.v_.e - b.v_.e);
 
@@ -142,8 +157,8 @@ private:
         while ((tmp1.v_.m > max - tmp2.v_.m) ||
           (tmp2.v_.m > max - tmp1.v_.m))
         {
-          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
-          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+          round_mantissa(tmp1);
+          round_mantissa(tmp2);
 
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
@@ -159,8 +174,8 @@ private:
         while ((tmp1.v_.m < min - tmp2.v_.m) ||
           (tmp2.v_.m < min - tmp1.v_.m))
         {
-          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
-          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+          round_mantissa(tmp1);
+          round_mantissa(tmp2);
 
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
@@ -194,8 +209,8 @@ private:
         while ((tmp1.v_.m > max + tmp2.v_.m) ||
           (tmp2.v_.m > max + tmp1.v_.m))
         {
-          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
-          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+          round_mantissa(tmp1);
+          round_mantissa(tmp2);
 
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
@@ -211,8 +226,8 @@ private:
         while ((tmp1.v_.m < min + tmp2.v_.m) ||
           (tmp2.v_.m < min + tmp1.v_.m))
         {
-          tmp1.v_.m > 0 ? tmp1.v_.m += 5 : tmp1.v_.m -= 5;
-          tmp2.v_.m > 0 ? tmp2.v_.m += 5 : tmp2.v_.m -= 5;
+          round_mantissa(tmp1);
+          round_mantissa(tmp2);
 
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
@@ -566,7 +581,6 @@ public:
           auto const d(-r % 10);
 
           r /= 10;
-
           r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
 
           ++tmp.v_.e;
@@ -618,11 +632,12 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          auto const d(r % 10);
+          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          {
+            r += 5;
+          }
 
           r /= 10;
-          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
-
           ++tmp.v_.e;
         }
       }
@@ -630,12 +645,12 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          auto const d(-r % 10);
+          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          {
+            r -= 5;
+          }
 
           r /= 10;
-
-          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
-
           ++tmp.v_.e;
         }
       }
@@ -665,11 +680,12 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          auto const d(r % 10);
+          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          {
+            r += 5;
+          }
 
           r /= 10;
-          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
-
           ++v_.e;
         }
       }
@@ -677,12 +693,12 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          auto const d(-r % 10);
+          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          {
+            r -= 5;
+          }
 
           r /= 10;
-
-          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
-
           ++v_.e;
         }
       }
@@ -726,7 +742,6 @@ public:
           auto const d(-r % 10);
 
           r /= 10;
-
           r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
 
           ++v_.e;
@@ -739,7 +754,10 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          r += 5;
+          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          {
+            r += 5;
+          }
 
           r /= 10;
           ++v_.e;
@@ -749,7 +767,10 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          r -= 5;
+          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          {
+            r -= 5;
+          }
 
           r /= 10;
           ++v_.e;
