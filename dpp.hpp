@@ -562,6 +562,7 @@ public:
 
       auto r(tmp.v_.m * std::intmax_t(o.v_.m));
 
+/*
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
@@ -583,6 +584,34 @@ public:
           r /= 10;
           r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
 
+          ++tmp.v_.e;
+        }
+      }
+*/
+
+      if (r > 0)
+      {
+        while (r > pow<2>(M - 1) - 1)
+        {
+          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          {
+            r += 5;
+          }
+
+          r /= 10;
+          ++tmp.v_.e;
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2>(M - 1))
+        {
+          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          {
+            r -= 5;
+          }
+
+          r /= 10;
           ++tmp.v_.e;
         }
       }
