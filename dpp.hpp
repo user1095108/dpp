@@ -105,10 +105,9 @@ public:
 
   struct nan{};
 
-  constexpr dpp(nan&&) noexcept
+  constexpr dpp(nan&&) noexcept :
+    v_{{}, -pow<2>(E - 1)}
   {
-    v_.m = {};
-    v_.e = -pow<2>(E - 1);
   }
 
   struct val{};
