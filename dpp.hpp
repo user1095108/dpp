@@ -533,7 +533,6 @@ public:
       dpp tmp(*this);
 
       constexpr auto k(std::numeric_limits<std::int64_t>::digits10 / 2);
-
       tmp.v_.e -= o.v_.e + k;
 
       if constexpr (std::is_same_v<value_type, std::int64_t>)
