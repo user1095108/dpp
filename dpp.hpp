@@ -39,13 +39,13 @@ private:
     }
   }
 
-  template <value_type B>
+  template <value_type B, typename T = value_type>
   static constexpr auto pow(value_type e) noexcept
   {
     if (e)
     {
-      value_type x(B);
-      value_type y(1);
+      T x(B);
+      T y(1);
 
       while (1 != e)
       {
@@ -63,7 +63,7 @@ private:
     }
     else
     {
-      return value_type(1);
+      return T(1);
     }
   }
 
@@ -500,10 +500,19 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
+      constexpr auto k(std::numeric_limits<std::int64_t>::digits10 / 2);
 
       tmp.v_.e -= o.v_.e + k;
-      tmp.v_.m = pow<10>(k) * tmp.v_.m / o.v_.m;
+
+      auto r(tmp.v_.m * pow<10, std::int64_t>(k) / o.v_.m);
+
+      while (std::abs(r) > pow<2>(M - 1) - 1)
+      {
+        r /= 10;
+        ++tmp.v_.e;
+      }
+
+      tmp.v_.m = r;
 
       tmp.normalize();
 
@@ -519,10 +528,19 @@ public:
     }
     else
     {
-      constexpr auto k(log<10>(pow<2>(M - 1)) / 2);
+      constexpr auto k(std::numeric_limits<std::int64_t>::digits10 / 2);
 
       v_.e -= o.v_.e + k;
-      v_.m = pow<10>(k) * v_.m / o.v_.m;
+
+      auto r(v_.m * pow<10, std::int64_t>(k) / o.v_.m);
+
+      while (std::abs(r) > pow<2>(M - 1) - 1)
+      {
+        r /= 10;
+        ++v_.e;
+      }
+
+      v_.m = r;
 
       normalize();
     }
