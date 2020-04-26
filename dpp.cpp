@@ -14,6 +14,7 @@ constexpr auto sqrt1(T const S) noexcept
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
+  xn = half * (xn + S/xn);
 
   return xn;
 }
@@ -41,8 +42,8 @@ int main()
   std::cout << sqrt1(dpp::dec32(3)) << std::endl;
   std::cout << sqrt2(dpp::dec32(3)) << std::endl;
 
-  std::cout << sqrt1(dpp::dec32(9)) << std::endl;
-  std::cout << sqrt2(dpp::dec32(9)) << std::endl;
+  std::cout << sqrt1(dpp::dec64(9)) << std::endl;
+  std::cout << sqrt2(dpp::dec64(9)) << std::endl;
 
   auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
   auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
