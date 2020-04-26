@@ -337,8 +337,10 @@ public:
       {
         if (1 == tmp1.sign())
         {
-          while ((tmp1.v_.m > std::numeric_limits<value_type>::max() - tmp2.v_.m) ||
-            (tmp2.v_.m > std::numeric_limits<value_type>::max() - tmp1.v_.m))
+          auto const max(std::numeric_limits<value_type>::max());
+
+          while ((tmp1.v_.m > max - tmp2.v_.m) ||
+            (tmp2.v_.m > max - tmp1.v_.m))
           {
             tmp1.v_.m /= 10;
             tmp2.v_.m /= 10;
@@ -349,8 +351,10 @@ public:
         }
         else
         {
-          while ((tmp1.v_.m < std::numeric_limits<value_type>::min() - tmp2.v_.m) ||
-            (tmp2.v_.m < std::numeric_limits<value_type>::min() - tmp1.v_.m))
+          auto const min(std::numeric_limits<value_type>::min());
+
+          while ((tmp1.v_.m < min - tmp2.v_.m) ||
+            (tmp2.v_.m < min - tmp1.v_.m))
           {
             tmp1.v_.m /= 10;
             tmp2.v_.m /= 10;
