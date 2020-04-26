@@ -583,7 +583,7 @@ using dec32 = dpp<26, 6>;
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, typename It>
-inline T to_decimal(It i, It const end) noexcept
+constexpr T to_decimal(It i, It const end) noexcept
 {
   if (i == end)
   {
@@ -631,7 +631,10 @@ inline T to_decimal(It i, It const end) noexcept
           continue;
 
         case '\0':
-          goto produce_result;
+        {
+          auto const tmp(T(r, -fcount));
+          return positive ? tmp : -tmp;
+        }
 
         default:
           return {};
@@ -666,7 +669,7 @@ inline T to_decimal(It i, It const end) noexcept
 }
 
 template <typename T, typename S>
-inline auto to_decimal(S const& s) noexcept ->
+constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T())
 {
   return to_decimal<T>(std::cbegin(s), std::cend(s));
