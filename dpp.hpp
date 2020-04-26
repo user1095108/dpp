@@ -82,7 +82,7 @@ private:
     return tmp;
   }
 
-  static constexpr std::pair<dpp, dpp> add_prep(dpp tmp1, dpp tmp2) noexcept
+  static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
   {
     if (tmp1.v_.e > tmp2.v_.e)
     {
@@ -97,7 +97,7 @@ private:
     {
       if (1 == tmp1.sign())
       {
-        auto const max(pow<2>((M - 1)) - 1);
+        constexpr auto max(pow<2>(M - 1) - 1);
 
         while ((tmp1.v_.m > max - tmp2.v_.m) ||
           (tmp2.v_.m > max - tmp1.v_.m))
@@ -111,7 +111,7 @@ private:
       }
       else
       {
-        auto const min(-pow<2>(M - 1));
+        constexpr auto min(-pow<2>(M - 1));
 
         while ((tmp1.v_.m < min - tmp2.v_.m) ||
           (tmp2.v_.m < min - tmp1.v_.m))
