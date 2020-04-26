@@ -108,12 +108,20 @@ public:
     normalize();
   }
 
-  struct nan_{};
+  struct nan{};
 
-  constexpr dpp(nan_&&) noexcept
+  constexpr dpp(nan&&) noexcept
   {
     v_.m = {};
     v_.e = -pow<2>(E - 1);
+  }
+
+  struct val{};
+
+  constexpr dpp(value_type const v, val&&) noexcept
+  {
+    v_.m = v >> E;
+    v_.e = v & (pow<2>(E) - 1);
   }
 
   constexpr auto exponent() const noexcept
@@ -305,7 +313,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      return dpp{nan_{}};
+      return dpp{nan{}};
     }
     else
     {
@@ -337,7 +345,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      return dpp{nan_{}};
+      return dpp{nan{}};
     }
     else
     {
@@ -375,7 +383,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      return dpp{nan_{}};
+      return dpp{nan{}};
     }
     else
     {
@@ -411,7 +419,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      return *this = dpp{nan_{}};
+      return *this = dpp{nan{}};
     }
     else
     {
@@ -449,7 +457,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      return dpp{nan_{}};
+      return dpp{nan{}};
     }
     else
     {
@@ -468,7 +476,7 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      *this = dpp{nan_{}};
+      *this = dpp{nan{}};
     }
     else
     {
@@ -486,7 +494,7 @@ public:
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
     {
-      return dpp{nan_{}};
+      return dpp{nan{}};
     }
     else
     {
@@ -507,7 +515,7 @@ public:
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
     {
-      *this = dpp{nan_{}};
+      *this = dpp{nan{}};
     }
     else
     {
