@@ -232,7 +232,7 @@ public:
     return v_.m;
   }
 
-  constexpr auto pack() const noexcept
+  constexpr auto packed() const noexcept
   {
     return (v_.m << E) | v_.e;
   }
@@ -288,7 +288,7 @@ public:
   }
 
   //
-  constexpr auto operator<(dpp const& o) noexcept
+  constexpr auto operator<(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan())
     {
@@ -318,7 +318,7 @@ public:
     }
   }
 
-  constexpr auto operator<=(dpp const& o) noexcept
+  constexpr auto operator<=(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan())
     {
@@ -348,7 +348,7 @@ public:
     }
   }
 
-  constexpr auto operator>(dpp const& o) noexcept
+  constexpr auto operator>(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan())
     {
@@ -378,7 +378,7 @@ public:
     }
   }
 
-  constexpr auto operator>=(dpp const& o) noexcept
+  constexpr auto operator>=(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan())
     {
@@ -635,6 +635,21 @@ constexpr auto floor(dpp<M, E> const& x) noexcept
   typename dpp<M, E>::value_type const t(x);
 
   return t - (dpp<M, E>(t) > x);
+}
+
+template <unsigned M, unsigned E>
+constexpr auto round(dpp<M, E> const& x) noexcept
+{
+  if (auto const e(x.exponent()); e < 0)
+  {
+    auto const c(dpp<M, E>(5, e));
+
+    return dpp<M, E>(typename dpp<M, E>::value_type(x > 0 ? x + c : x - c));
+  }
+  else
+  {
+    return x;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
