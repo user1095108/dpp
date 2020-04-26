@@ -7,9 +7,9 @@
 template <typename T>
 constexpr auto sqrt1(T const S) noexcept
 {
-  auto xn(S);
-
   constexpr auto half(dpp::to_decimal<T>(".5"));
+
+  auto xn(S);
 
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
@@ -33,7 +33,6 @@ constexpr auto sqrt2(T const n) noexcept
 
   return x;
 }
-
 
 int main()
 {
