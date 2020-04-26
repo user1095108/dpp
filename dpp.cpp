@@ -1,3 +1,5 @@
+#include <decimal/decimal>
+
 #include <iostream>
 
 #include "dpp.hpp"
@@ -9,6 +11,7 @@ inline auto sqrt(T const S) noexcept
 
   constexpr auto half(dpp::to_decimal<T>(".5"));
 
+  xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
 
