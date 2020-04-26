@@ -128,6 +128,53 @@ private:
     return std::pair(tmp1, tmp2);
   }
 
+  static constexpr auto sub_prep(dpp tmp1, dpp tmp2) noexcept
+  {
+    if (tmp1.v_.e > tmp2.v_.e)
+    {
+      tmp1 = equalize(tmp1, tmp2);
+    }
+    else if (tmp2.v_.e > tmp1.v_.e)
+    {
+      tmp2 = equalize(tmp2, tmp1);
+    }
+
+    if (tmp1.sign() == tmp2.sign())
+    {
+      if (1 == tmp1.sign())
+      {
+        constexpr auto max(pow<2>(M - 1) - 1);
+
+        while ((tmp1.v_.m > max + tmp2.v_.m) ||
+          (tmp2.v_.m > max + tmp1.v_.m))
+        {
+          tmp1.v_.m /= 10;
+          tmp2.v_.m /= 10;
+
+          ++tmp1.v_.e;
+          ++tmp2.v_.e;
+        }
+      }
+      else if (-1 == tmp1.sign())
+      {
+        constexpr auto min(-pow<2>(M - 1));
+
+        while ((tmp1.v_.m < min + tmp2.v_.m) ||
+          (tmp2.v_.m < min + tmp1.v_.m))
+        {
+          tmp1.v_.m /= 10;
+          tmp2.v_.m /= 10;
+
+          ++tmp1.v_.e;
+          ++tmp2.v_.e;
+        }
+      }
+    }
+
+    return std::pair(tmp1, tmp2);
+  }
+
+
 public:
   constexpr dpp() noexcept :
     v_{}
@@ -377,7 +424,7 @@ public:
     }
     else
     {
-      auto [tmp1, tmp2](add_prep(*this, o));
+      auto [tmp1, tmp2](sub_prep(*this, o));
 
       tmp1.v_.m -= tmp2.v_.m;
       tmp1.normalize();
@@ -412,7 +459,7 @@ public:
     }
     else
     {
-      auto [tmp1, tmp2](add_prep(*this, o));
+      auto [tmp1, tmp2](sub_prep(*this, o));
 
       tmp1.v_.m -= tmp2.v_.m;
       tmp1.normalize();
