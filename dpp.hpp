@@ -139,7 +139,7 @@ private:
       tmp2 = equalize(tmp2, tmp1);
     }
 
-    if (tmp1.sign() == tmp2.sign())
+    if (tmp1.sign() != tmp2.sign())
     {
       if (1 == tmp1.sign())
       {
@@ -173,7 +173,6 @@ private:
 
     return std::pair(tmp1, tmp2);
   }
-
 
 public:
   constexpr dpp() noexcept :

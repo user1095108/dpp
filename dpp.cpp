@@ -9,7 +9,7 @@ constexpr auto sqrt1(T const S) noexcept
 {
   constexpr auto half(dpp::to_decimal<T>(".5"));
 
-  auto xn(S);
+  T xn(S);
 
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
@@ -40,6 +40,9 @@ int main()
   std::cout << sqrt2(dpp::dec32(2)) << std::endl;
   std::cout << sqrt1(dpp::dec32(3)) << std::endl;
   std::cout << sqrt2(dpp::dec32(3)) << std::endl;
+
+  std::cout << sqrt1(dpp::dec32(9)) << std::endl;
+  std::cout << sqrt2(dpp::dec32(9)) << std::endl;
 
   auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
   auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
