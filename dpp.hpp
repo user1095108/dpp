@@ -320,49 +320,13 @@ public:
       {
         tmp = equalize(o, *this);
 
-        if (o.v_.m <= 0)
-        {
-          tmp.v_.m += v_.m;
-        }
-        else
-        {
-          auto tmp2(*this);
-
-          while (tmp.v_.m > pow<2>(M - 1) - 1 - tmp2.v_.m)
-          {
-            tmp.v_.m /= 10;
-            tmp2.v_.m /= 10;
-
-            ++tmp.v_.e;
-            ++tmp2.v_.e;
-          }
-
-          tmp.v_.m += tmp2.v_.m;
-        }
+        tmp.v_.m += v_.m;
       }
       else if (v_.e > o.v_.e)
       {
         tmp = equalize(*this, o);
 
-        if (o.v_.m <= 0)
-        {
-          tmp.v_.m += o.v_.m;
-        }
-        else
-        {
-          auto tmp2(o);
-
-          while (tmp.v_.m > pow<2>(M - 1) - 1 - tmp2.v_.m)
-          {
-            tmp.v_.m /= 10;
-            tmp2.v_.m /= 10;
-
-            ++tmp.v_.e;
-            ++tmp2.v_.e;
-          }
-
-          tmp.v_.m += tmp2.v_.m;
-        }
+        tmp.v_.m += o.v_.m;
       }
       else
       {
