@@ -7,9 +7,8 @@ inline auto sqrt(T const S) noexcept
 {
   auto xn(S);
 
-  constexpr auto half(dpp::to_decimal<dpp::dec32>(".5"));
+  constexpr auto half(dpp::to_decimal<T>(".5"));
 
-  xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
   xn = half * (xn + S/xn);
 
@@ -18,8 +17,8 @@ inline auto sqrt(T const S) noexcept
 
 int main()
 {
-  std::cout << sqrt(dpp::dec32(3)) << std::endl;
   std::cout << sqrt(dpp::dec32(2)) << std::endl;
+  std::cout << sqrt(dpp::dec32(3)) << std::endl;
 
   auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
   auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
