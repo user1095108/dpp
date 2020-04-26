@@ -82,6 +82,52 @@ private:
     return tmp;
   }
 
+  static constexpr std::pair<dpp, dpp> add_prep(dpp tmp1, dpp tmp2) noexcept
+  {
+    if (tmp1.v_.e > tmp2.v_.e)
+    {
+      tmp1 = equalize(tmp1, tmp2);
+    }
+    else if (tmp2.v_.e > tmp1.v_.e)
+    {
+      tmp2 = equalize(tmp2, tmp1);
+    }
+
+    if (tmp1.sign() == tmp2.sign())
+    {
+      if (1 == tmp1.sign())
+      {
+        auto const max(pow<2>((M - 1)) - 1);
+
+        while ((tmp1.v_.m > max - tmp2.v_.m) ||
+          (tmp2.v_.m > max - tmp1.v_.m))
+        {
+          tmp1.v_.m /= 10;
+          tmp2.v_.m /= 10;
+
+          ++tmp1.v_.e;
+          ++tmp2.v_.e;
+        }
+      }
+      else
+      {
+        auto const min(-pow<2>(M - 1));
+
+        while ((tmp1.v_.m < min - tmp2.v_.m) ||
+          (tmp2.v_.m < min - tmp1.v_.m))
+        {
+          tmp1.v_.m /= 10;
+          tmp2.v_.m /= 10;
+
+          ++tmp1.v_.e;
+          ++tmp2.v_.e;
+        }
+      }
+    }
+
+    return std::pair(tmp1, tmp2);
+  }
+
 public:
   constexpr dpp() noexcept :
     v_{}
@@ -314,103 +360,15 @@ public:
     }
     else
     {
-      dpp tmp1;
-      dpp tmp2;
-
-      if (o.v_.e > v_.e)
-      {
-        tmp1 = equalize(o, *this);
-        tmp2 = *this;
-      }
-      else if (v_.e > o.v_.e)
-      {
-        tmp1 = equalize(*this, o);
-        tmp2 = o;
-      }
-      else
-      {
-        tmp1 = *this;
-        tmp2 = o;
-      }
-
-      if (tmp1.sign() == tmp2.sign())
-      {
-        if (1 == tmp1.sign())
-        {
-          auto const max(std::numeric_limits<value_type>::max());
-
-          while ((tmp1.v_.m > max - tmp2.v_.m) ||
-            (tmp2.v_.m > max - tmp1.v_.m))
-          {
-            tmp1.v_.m /= 10;
-            tmp2.v_.m /= 10;
-
-            ++tmp1.v_.e;
-            ++tmp2.v_.e;
-          }
-        }
-        else
-        {
-          auto const min(std::numeric_limits<value_type>::min());
-
-          while ((tmp1.v_.m < min - tmp2.v_.m) ||
-            (tmp2.v_.m < min - tmp1.v_.m))
-          {
-            tmp1.v_.m /= 10;
-            tmp2.v_.m /= 10;
-
-            ++tmp1.v_.e;
-            ++tmp2.v_.e;
-          }
-        }
-      }
+      auto [tmp1, tmp2](add_prep(*this, o));
 
       tmp1.v_.m += tmp2.v_.m;
-
       tmp1.normalize();
 
       return tmp1;
     }
   }
 
-  constexpr auto& operator+=(dpp const& o) noexcept
-  {
-    if (is_nan() || o.is_nan())
-    {
-      return dpp{nan{}};
-    }
-    else
-    {
-      if (o.v_.e > v_.e)
-      {
-        auto tmp(equalize(o, *this));
-
-        tmp.v_.m += v_.m;
-        tmp.normalize();
-
-        return *this = tmp;
-      }
-      else if (v_.e > o.v_.e)
-      {
-        auto tmp(equalize(*this, o));
-
-        tmp.v_.m += o.v_.m;
-        tmp.normalize();
-
-        return *this = tmp;
-      }
-      else
-      {
-        v_.m += o.v_.m;
-
-        normalize();
-
-        return *this;
-      }
-    }
-  }
-
-  //
   constexpr auto operator-(dpp const& o) const noexcept
   {
     if (is_nan() || o.is_nan())
@@ -419,67 +377,47 @@ public:
     }
     else
     {
-      dpp tmp;
+      auto [tmp1, tmp2](add_prep(*this, o));
 
-      if (o.v_.e > v_.e)
-      {
-        tmp = equalize(o, *this);
+      tmp1.v_.m -= tmp2.v_.m;
+      tmp1.normalize();
 
-        tmp.v_.m -= v_.m;
-        tmp.v_.m = -tmp.v_.m;
-      }
-      else if (v_.e > o.v_.e)
-      {
-        tmp = equalize(*this, o);
-
-        tmp.v_.m -= o.v_.m;
-      }
-      else
-      {
-        tmp = *this;
-
-        tmp.v_.m -= o.v_.m;
-      }
-
-      tmp.normalize();
-
-      return tmp;
+      return tmp1;
     }
   }
 
-  constexpr auto& operator-=(dpp const& o) noexcept
+  //
+  constexpr auto& operator+=(dpp const& o) noexcept
   {
-    if (is_nan() || o.is_nan())
+     if (is_nan() || o.is_nan())
     {
       return *this = dpp{nan{}};
     }
     else
     {
-      if (o.v_.e > v_.e)
-      {
-        auto tmp(equalize(o, *this));
+      auto [tmp1, tmp2](add_prep(*this, o));
 
-        v_.m -= tmp.v_.m;
-        normalize();
+      tmp1.v_.m += tmp2.v_.m;
+      tmp1.normalize();
 
-        return *this;
-      }
-      else if (v_.e > o.v_.e)
-      {
-        auto tmp(equalize(*this, o));
+      return *this = tmp1;
+    }
+  }
 
-        tmp.v_.m -= o.v_.m;
-        tmp.normalize();
+  constexpr auto& operator-=(dpp const& o) noexcept
+  {
+     if (is_nan() || o.is_nan())
+    {
+      return *this = dpp{nan{}};
+    }
+    else
+    {
+      auto [tmp1, tmp2](add_prep(*this, o));
 
-        return *this = tmp;
-      }
-      else
-      {
-        v_.m -= o.v_.m;
-        normalize();
+      tmp1.v_.m -= tmp2.v_.m;
+      tmp1.normalize();
 
-        return *this;
-      }
+      return *this = tmp1;
     }
   }
 
