@@ -634,7 +634,7 @@ public:
 
       if (tmp.increase_exponent(o.v_.e))
       {
-        return dpp{nan};
+        return dpp{nan{}};
       }
 
       auto r(tmp.v_.m * std::intmax_t(o.v_.m));
@@ -720,7 +720,10 @@ public:
     {
       dpp tmp(*this);
 
-      tmp.v_.e -= o.v_.e;
+      if (tmp.decrease_exponent(o.v_.e))
+      {
+        return dpp{nan{}};
+      }
 
       std::intmax_t r(tmp.v_.m);
 
@@ -806,7 +809,10 @@ public:
     }
     else
     {
-      v_.e += o.v_.e;
+      if (increase_exponent(o.v_.e))
+      {
+        *this = dpp{nan{}};
+      }
 
       auto r(v_.m * std::intmax_t(o.v_.m));
 
@@ -861,7 +867,10 @@ public:
     }
     else
     {
-      v_.e -= o.v_.e;
+      if (decrease_exponent(o.v_.e))
+      {
+        *this = dpp{nan{}};
+      }
 
       std::intmax_t r(v_.m);
 
