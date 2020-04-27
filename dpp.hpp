@@ -86,7 +86,7 @@ private:
         (a.v_.e != b.v_.e))
       {
         a.v_.m *= 10;
-        --a.v_.e;
+        a.decrease_exponent();
       }
     }
     else if (a.v_.m < 0)
@@ -95,7 +95,7 @@ private:
         (a.v_.e != b.v_.e))
       {
         a.v_.m *= 10;
-        --a.v_.e;
+        a.decrease_exponent();
       }
     }
     else
@@ -109,7 +109,7 @@ private:
       round_mantissa(b);
 
       b.v_.m /= 10;
-      ++b.v_.e;
+      b.increase_exponent(d);
     }
 */
 
@@ -120,7 +120,7 @@ private:
       auto const d(a.v_.e - b.v_.e);
 
       b.v_.m /= pow<10>(d);
-      b.v_.e += d;
+      b.increase_exponent(d);
     }
 
     return a;
@@ -152,8 +152,10 @@ private:
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
-          ++tmp1.v_.e;
-          ++tmp2.v_.e;
+          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          {
+            break;
+          }
         }
       }
       else if (-1 == tmp1.sign())
@@ -169,8 +171,10 @@ private:
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
-          ++tmp1.v_.e;
-          ++tmp2.v_.e;
+          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          {
+            break;
+          }
         }
       }
     }
@@ -234,11 +238,27 @@ private:
     return std::pair(tmp1, tmp2);
   }
 
-  constexpr bool increase_exponent() noexcept
+  constexpr bool decrease_exponent(int const e = 1) noexcept
   {
-    if (v_.e < pow<2>(E - 1) - 1)
+    if (v_.e >= -pow<2>(E - 1) + e)
     {
-      ++v_.e;
+      v_.e -= e;
+
+      return false;
+    }
+    else
+    {
+      *this = dpp{nan{}};
+
+      return true;
+    }
+  }
+
+  constexpr bool increase_exponent(int const e = 1) noexcept
+  {
+    if (v_.e <= pow<2>(E - 1) - 1 - e)
+    {
+      v_.e += e;
 
       return false;
     }
