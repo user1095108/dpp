@@ -632,7 +632,10 @@ public:
     {
       dpp tmp(*this);
 
-      tmp.v_.e += o.v_.e;
+      if (tmp.increase_exponent(o.v_.e))
+      {
+        return dpp{nan};
+      }
 
       auto r(tmp.v_.m * std::intmax_t(o.v_.m));
 
@@ -663,6 +666,7 @@ public:
       }
 */
 
+      // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
@@ -673,7 +677,11 @@ public:
           }
 
           r /= 10;
-          ++tmp.v_.e;
+
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
       }
       else if (r < 0)
@@ -686,7 +694,11 @@ public:
           }
 
           r /= 10;
-          ++tmp.v_.e;
+
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
       }
 
