@@ -56,9 +56,8 @@ private:
     }
   }
 
-  template <unsigned B>
-  static constexpr value_type log(value_type const n,
-    value_type const e = 0) noexcept
+  template <unsigned B, typename T = value_type>
+  static constexpr value_type log(T const n, T const e = 0) noexcept
   {
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
@@ -675,41 +674,14 @@ public:
         return dpp{nan{}};
       }
 
-      auto r(tmp.v_.m * std::intmax_t(o.v_.m));
-
-/*
-      if (r > 0)
-      {
-        while (r > pow<2>(M - 1) - 1)
-        {
-          auto const d(r % 10);
-
-          r /= 10;
-          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
-
-          ++tmp.v_.e;
-        }
-      }
-      else if (r < 0)
-      {
-        while (r < -pow<2>(M - 1))
-        {
-          auto const d(-r % 10);
-
-          r /= 10;
-          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
-
-          ++tmp.v_.e;
-        }
-      }
-*/
+      __int128_t r(tmp.v_.m * o.v_.m);
 
       // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          if (r <= std::numeric_limits<__int128_t>::max() - 5)
           {
             r += 5;
           }
@@ -726,7 +698,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          if (r >= std::numeric_limits<__int128_t>::min() + 5)
           {
             r -= 5;
           }
@@ -758,48 +730,23 @@ public:
     {
       dpp tmp(*this);
 
-      if (tmp.decrease_exponent(o.v_.e))
+      constexpr auto e(37);
+
+      if (tmp.decrease_exponent(e + o.v_.e))
       {
         return dpp{nan{}};
       }
 
-      std::intmax_t r(tmp.v_.m);
+      __int128_t r(pow<10, __int128_t>(e) / o.v_.m);
 
-      // shift left as much as possible
-      if (r > 0)
-      {
-        while (r <= std::numeric_limits<std::intmax_t>::max() / 10)
-        {
-          r *= 10;
-
-          if (tmp.decrease_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
-      }
-      else if (r < 0)
-      {
-        while (r >= std::numeric_limits<std::intmax_t>::min() / 10)
-        {
-          r *= 10;
-
-          if (tmp.decrease_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
-      }
-
-      // divide
-      r /= o.v_.m;
+      r *= v_.m;
 
       // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          if (r <= std::numeric_limits<__int128_t>::max() - 5)
           {
             r += 5;
           }
@@ -816,7 +763,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          if (r >= std::numeric_limits<__int128_t>::min() + 5)
           {
             r -= 5;
           }
@@ -854,7 +801,7 @@ public:
 
       auto r(v_.m * std::intmax_t(o.v_.m));
 
-      if (r > 0)
+      if (r > pow<2>(M - 1) - 1)
       {
         while (r > pow<2>(M - 1) - 1)
         {
@@ -871,7 +818,7 @@ public:
           }
         }
       }
-      else if (r < 0)
+      else if (r < -pow<2>(M - 1))
       {
         while (r < -pow<2>(M - 1))
         {
@@ -942,7 +889,7 @@ public:
       r /= o.v_.m;
 
       // fit into target mantissa
-      if (r > 0)
+      if (r > pow<2>(M - 1) - 1)
       {
         while (r > pow<2>(M - 1) - 1)
         {
@@ -959,7 +906,7 @@ public:
           }
         }
       }
-      else if (r < 0)
+      else if (r < -pow<2>(M - 1))
       {
         while (r < -pow<2>(M - 1))
         {
