@@ -28,17 +28,6 @@ private:
     value_type e:E;
   } v_;
 
-  constexpr void normalize() noexcept
-  {
-    if (v_.m)
-    {
-      for (; !(v_.m % 10); v_.m /= 10)
-      {
-        ++v_.e;
-      }
-    }
-  }
-
   template <value_type B, typename T = value_type>
   static constexpr auto pow(value_type e) noexcept
   {
@@ -239,6 +228,17 @@ private:
     }
 
     return std::pair(tmp1, tmp2);
+  }
+
+  constexpr void normalize() noexcept
+  {
+    if (v_.m)
+    {
+      for (; !(v_.m % 10); v_.m /= 10)
+      {
+        ++v_.e;
+      }
+    }
   }
 
 public:
