@@ -22,7 +22,7 @@ constexpr auto sqrt(T const S) noexcept
 
 int main()
 {
-  std::cout << sqrt(dpp::dec64(2)) << std::endl;
+  std::cout << sqrt(dpp::dec32(2)) << std::endl;
   std::cout << sqrt(dpp::dec64(3)) << std::endl;
   std::cout << sqrt(dpp::dec64(9)) << std::endl;
 
