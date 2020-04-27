@@ -860,7 +860,7 @@ public:
         {
           r *= 10;
 
-          if (tmp.decrease_exponent())
+          if (decrease_exponent())
           {
             return *this = dpp{nan{}};
           }
@@ -872,7 +872,7 @@ public:
         {
           r *= 10;
 
-          if (tmp.decrease_exponent())
+          if (decrease_exponent())
           {
             return *this = dpp{nan{}};
           }
@@ -894,7 +894,7 @@ public:
 
           r /= 10;
 
-          if (tmp.increase_exponent())
+          if (increase_exponent())
           {
             return *this = dpp{nan{}};
           }
@@ -911,7 +911,7 @@ public:
 
           r /= 10;
 
-          if (tmp.increase_exponent())
+          if (increase_exponent())
           {
             return *this = dpp{nan{}};
           }
