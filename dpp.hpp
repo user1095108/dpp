@@ -65,11 +65,11 @@ private:
 
   static constexpr auto round_mantissa(dpp& tmp) noexcept
   {
-    if ((tmp.v_.m > 0) && (tmp.v_.m < pow<2>(M - 1) - 1 - 5))
+    if ((tmp.v_.m > 0) && (tmp.v_.m <= pow<2>(M - 1) - 1 - 5))
     {
       tmp.v_.m += 5;
     }
-    else if ((tmp.v_.m < 0) && (tmp.v_.m > -pow<2>(M - 1) + 5))
+    else if ((tmp.v_.m < 0) && (tmp.v_.m >= -pow<2>(M - 1) + 5))
     {
       tmp.v_.m -= 5;
     }
