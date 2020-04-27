@@ -236,7 +236,16 @@ private:
     {
       for (; !(v_.m % 10); v_.m /= 10)
       {
-        ++v_.e;
+        if (v_.e < pow<2>(E - 1) - 1)
+        {
+          ++v_.e;
+        }
+        else
+        {
+          *this = dpp{nan{}};
+
+          break;
+        }
       }
     }
   }
