@@ -732,11 +732,6 @@ public:
 
       constexpr auto e(37);
 
-      if (tmp.decrease_exponent(e + o.v_.e))
-      {
-        return dpp{nan{}};
-      }
-
       __int128_t r(pow<10, __int128_t>(e) / o.v_.m);
 
       r *= v_.m;
@@ -779,6 +774,11 @@ public:
 
       tmp.v_.m = r;
 
+      if (tmp.decrease_exponent(e + o.v_.e))
+      {
+        return dpp{nan{}};
+      }
+
       tmp.normalize();
 
       return tmp;
@@ -794,54 +794,57 @@ public:
     }
     else
     {
-      if (increase_exponent(o.v_.e))
+      dpp tmp(*this);
+
+      if (tmp.increase_exponent(o.v_.e))
       {
         return *this = dpp{nan{}};
       }
 
-      auto r(v_.m * std::intmax_t(o.v_.m));
+      __int128_t r(tmp.v_.m * o.v_.m);
 
-      if (r > pow<2>(M - 1) - 1)
+      // fit into target mantissa
+      if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
+          if (r <= std::numeric_limits<__int128_t>::max() - 5)
           {
             r += 5;
           }
 
           r /= 10;
 
-          if (increase_exponent())
+          if (tmp.increase_exponent())
           {
             return *this = dpp{nan{}};
           }
         }
       }
-      else if (r < -pow<2>(M - 1))
+      else if (r < 0)
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          if (r >= std::numeric_limits<__int128_t>::min() + 5)
           {
             r -= 5;
           }
 
           r /= 10;
 
-          if (increase_exponent())
+          if (tmp.increase_exponent())
           {
             return *this = dpp{nan{}};
           }
         }
       }
 
-      v_.m = r;
+      tmp.v_.m = r;
 
-      normalize();
+      tmp.normalize();
+
+      return *this = tmp;
     }
-
-    return *this;
   }
 
   constexpr auto& operator/=(dpp const& o) noexcept
@@ -852,21 +855,27 @@ public:
     }
     else
     {
-      if (decrease_exponent(o.v_.e))
-      {
-        return *this = dpp{nan{}};
-      }
+      dpp tmp(*this);
 
-      std::intmax_t r(v_.m);
+      constexpr auto e(37);
 
-      // shift left as much as possible
+      __int128_t r(pow<10, __int128_t>(e) / o.v_.m);
+
+      r *= v_.m;
+
+      // fit into target mantissa
       if (r > 0)
       {
-        while (r <= std::numeric_limits<std::intmax_t>::max() / 10)
+        while (r > pow<2>(M - 1) - 1)
         {
-          r *= 10;
+          if (r <= std::numeric_limits<__int128_t>::max() - 5)
+          {
+            r += 5;
+          }
 
-          if (decrease_exponent())
+          r /= 10;
+
+          if (tmp.increase_exponent())
           {
             return *this = dpp{nan{}};
           }
@@ -874,62 +883,33 @@ public:
       }
       else if (r < 0)
       {
-        while (r >= std::numeric_limits<std::intmax_t>::min() / 10)
-        {
-          r *= 10;
-
-          if (decrease_exponent())
-          {
-            return *this = dpp{nan{}};
-          }
-        }
-      }
-
-      // divide
-      r /= o.v_.m;
-
-      // fit into target mantissa
-      if (r > pow<2>(M - 1) - 1)
-      {
-        while (r > pow<2>(M - 1) - 1)
-        {
-          if (r <= std::numeric_limits<std::intmax_t>::max() - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (increase_exponent())
-          {
-            return *this = dpp{nan{}};
-          }
-        }
-      }
-      else if (r < -pow<2>(M - 1))
-      {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<std::intmax_t>::min() + 5)
+          if (r >= std::numeric_limits<__int128_t>::min() + 5)
           {
             r -= 5;
           }
 
           r /= 10;
 
-          if (increase_exponent())
+          if (tmp.increase_exponent())
           {
             return *this = dpp{nan{}};
           }
         }
       }
 
-      v_.m = r;
+      tmp.v_.m = r;
 
-      normalize();
+      if (tmp.decrease_exponent(e + o.v_.e))
+      {
+        return *this = dpp{nan{}};
+      }
+
+      tmp.normalize();
+
+      return *this = tmp;
     }
-
-    return *this;
   }
 };
 
