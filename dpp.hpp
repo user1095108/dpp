@@ -307,14 +307,25 @@ public:
     normalize();
   }
 
-  constexpr dpp(value_type m, value_type e) noexcept :
+  constexpr dpp(value_type m, value_type const e) noexcept :
     v_{}
   {
+    if ((e <= pow<2>(E - 1) - 1) && (e >= -pow<2>(E - 1)))
+    {
+      v_.e = e;
+    }
+    else
+    {
+      *this = dpp{nan{}};
+
+      return;
+    }
+
     if (m > 0)
     {
       while (m > pow<2>(M - 1) - 1)
       {
-        if (m <= std::numeric_limits<std::intmax_t>::max() - 5)
+        if (m <= std::numeric_limits<value_type>::max() - 5)
         {
           m += 5;
         }
@@ -333,7 +344,7 @@ public:
     {
       while (m < -pow<2>(M - 1))
       {
-        if (m >= std::numeric_limits<std::intmax_t>::min() + 5)
+        if (m >= std::numeric_limits<value_type>::min() + 5)
         {
           m -= 5;
         }
@@ -350,7 +361,6 @@ public:
     }
 
     v_.m = m;
-    v_.e = e;
 
     normalize();
   }
