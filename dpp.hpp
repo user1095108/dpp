@@ -833,13 +833,13 @@ public:
   {
     if (is_nan() || o.is_nan())
     {
-      *this = dpp{nan{}};
+      return *this = dpp{nan{}};
     }
     else
     {
       if (increase_exponent(o.v_.e))
       {
-        *this = dpp{nan{}};
+        return *this = dpp{nan{}};
       }
 
       auto r(v_.m * std::intmax_t(o.v_.m));
@@ -857,7 +857,7 @@ public:
 
           if (increase_exponent())
           {
-            *this = dpp{nan{}};
+            return *this = dpp{nan{}};
           }
         }
       }
@@ -874,7 +874,7 @@ public:
 
           if (increase_exponent())
           {
-            *this = dpp{nan{}};
+            return *this = dpp{nan{}};
           }
         }
       }
@@ -897,7 +897,7 @@ public:
     {
       if (decrease_exponent(o.v_.e))
       {
-        *this = dpp{nan{}};
+        return *this = dpp{nan{}};
       }
 
       std::intmax_t r(v_.m);
