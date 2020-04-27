@@ -246,7 +246,7 @@ private:
     return std::pair(tmp1, tmp2);
   }
 
-  constexpr bool decrease_exponent(unsigned const e = 1) noexcept
+  constexpr bool decrease_exponent(int const e = 1) noexcept
   {
     if (v_.e >= -pow<2>(E - 1) + e)
     {
