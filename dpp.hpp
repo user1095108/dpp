@@ -131,7 +131,7 @@ private:
       b.increase_exponent(d);
     }
 
-    return b.is_nan() || a.is_nan() ? dpp{nan{}} : a;
+    return a.is_nan() || b.is_nan() ? dpp{nan{}} : a;
   }
 
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
