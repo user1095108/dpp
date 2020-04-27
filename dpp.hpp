@@ -230,20 +230,30 @@ private:
     return std::pair(tmp1, tmp2);
   }
 
+  constexpr bool increase_exponent() noexcept
+  {
+    if (v_.e < pow<2>(E - 1) - 1)
+    {
+      ++v_.e;
+
+      return false;
+    }
+    else
+    {
+      *this = dpp{nan{}};
+
+      return true;
+    }
+  }
+
   constexpr void normalize() noexcept
   {
     if (v_.m)
     {
       for (; !(v_.m % 10); v_.m /= 10)
       {
-        if (v_.e < pow<2>(E - 1) - 1)
+        if (increase_exponent())
         {
-          ++v_.e;
-        }
-        else
-        {
-          *this = dpp{nan{}};
-
           break;
         }
       }
