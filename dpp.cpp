@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include <iostream>
 
 #include "dpp.hpp"
@@ -14,12 +12,8 @@ constexpr auto sqrt(T const S) noexcept
 
   do
   {
-    assert(!x.is_nan());
-
     x = xn;
-    xn = half * (xn + S/xn);
-
-    std::cout << x << std::endl;
+    xn = half * (x + S/x);
   }
   while (x != xn);
 
@@ -28,13 +22,13 @@ constexpr auto sqrt(T const S) noexcept
 
 int main()
 {
-  std::cout << sqrt(dpp::dec32(2)) << std::endl;
+  std::cout << sqrt(dpp::dec64(2)) << std::endl;
   std::cout << sqrt(dpp::dec64(3)) << std::endl;
-  std::cout << sqrt(dpp::dec32(9)) << std::endl;
+  std::cout << sqrt(dpp::dec64(9)) << std::endl;
 
   //
-  auto const a(dpp::to_decimal<dpp::dec32>("1.23"));
-  auto const b(dpp::to_decimal<dpp::dec32>("45.6"));
+  auto const a(dpp::to_decimal<dpp::dec64>("1.23"));
+  auto const b(dpp::to_decimal<dpp::dec64>("45.6"));
 
   std::cout << a + b << std::endl;
   std::cout << a - b << std::endl;
