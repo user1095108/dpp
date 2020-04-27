@@ -1,6 +1,5 @@
 # dpp
-Not so long ago, computer users were expected to write their own floating point libraries. Various floating point routines were floating around; snippets out of which users could compose their own libraries. These, of course, were not standardized and often unstable. I wrote this library for my personal use. If you decide to use it yourself, be cautious.
-
+This is a sample decimal floating point library for testing purposes.
 # example
 ```c++
 int main()
