@@ -1119,6 +1119,11 @@ constexpr auto to_decimal(S const& s) noexcept ->
 template <unsigned M, unsigned E>
 inline auto to_string(dpp<M, E> p)
 {
+  if (p.is_nan())
+  {
+    return std::string("nan");
+  }
+
   std::string r;
 
   if (p < 0)
@@ -1157,7 +1162,11 @@ inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
 {
   if (std::ostream::sentry s(os); s)
   {
-    if (p < 0)
+    if (p.is_nan())
+    {
+      return os << "nan";
+    }
+    else if (p < 0)
     {
       p = -p;
       os << '-';
