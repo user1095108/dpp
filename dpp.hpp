@@ -82,7 +82,7 @@ private:
 
     if (a.v_.m > 0)
     {
-      while ((a.v_.m < (pow<2>(M - 1) - 1) / 10) &&
+      while ((a.v_.m <= (pow<2>(M - 1) - 1) / 10) &&
         (a.v_.e != b.v_.e))
       {
         a.v_.m *= 10;
@@ -95,7 +95,7 @@ private:
     }
     else if (a.v_.m < 0)
     {
-      while ((a.v_.m < -pow<2>(M - 1) / 10) &&
+      while ((a.v_.m >= -pow<2>(M - 1) / 10) &&
         (a.v_.e != b.v_.e))
       {
         a.v_.m *= 10;
