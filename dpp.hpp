@@ -320,7 +320,13 @@ public:
         }
 
         m /= 10;
-        ++e;
+
+        if (increase_exponent())
+        {
+          *this = dpp{nan{}};
+
+          return;
+        }
       }
     }
     else if (m < 0)
@@ -333,7 +339,13 @@ public:
         }
 
         m /= 10;
-        ++e;
+
+        if (increase_exponent())
+        {
+          *this = dpp{nan{}};
+
+          return;
+        }
       }
     }
 
