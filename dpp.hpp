@@ -712,25 +712,36 @@ public:
 
       std::intmax_t r(tmp.v_.m);
 
+      // shift left as much as possible
       if (r > 0)
       {
-        while (r < std::numeric_limits<std::intmax_t>::max() / 10)
+        while (r <= std::numeric_limits<std::intmax_t>::max() / 10)
         {
           r *= 10;
-          --tmp.v_.e;
+
+          if (tmp.decrease_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
       }
       else if (r < 0)
       {
-        while (r > std::numeric_limits<std::intmax_t>::min() / 10)
+        while (r >= std::numeric_limits<std::intmax_t>::min() / 10)
         {
           r *= 10;
-          --tmp.v_.e;
+
+          if (tmp.decrease_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
       }
 
+      // divide
       r /= o.v_.m;
 
+      // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
@@ -741,7 +752,11 @@ public:
           }
 
           r /= 10;
-          ++tmp.v_.e;
+
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
       }
       else if (r < 0)
@@ -754,7 +769,11 @@ public:
           }
 
           r /= 10;
-          ++tmp.v_.e;
+
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
       }
 
@@ -789,7 +808,11 @@ public:
           }
 
           r /= 10;
-          ++v_.e;
+
+          if (increase_exponent())
+          {
+            *this = dpp{nan{}};
+          }
         }
       }
       else if (r < 0)
@@ -802,7 +825,11 @@ public:
           }
 
           r /= 10;
-          ++v_.e;
+
+          if (increase_exponent())
+          {
+            *this = dpp{nan{}};
+          }
         }
       }
 
@@ -818,7 +845,7 @@ public:
   {
     if (is_nan() || o.is_nan() || !o.v_.m)
     {
-      *this = dpp{nan{}};
+      return *this = dpp{nan{}};
     }
     else
     {
@@ -826,33 +853,36 @@ public:
 
       std::intmax_t r(v_.m);
 
+      // shift left as much as possible
       if (r > 0)
       {
-        while (r > pow<2>(M - 1) - 1)
+        while (r <= std::numeric_limits<std::intmax_t>::max() / 10)
         {
-          auto const d(r % 10);
+          r *= 10;
 
-          r /= 10;
-          r += (r < std::numeric_limits<std::intmax_t>::max()) && d >= 5;
-
-          ++v_.e;
+          if (tmp.decrease_exponent())
+          {
+            return *this = dpp{nan{}};
+          }
         }
       }
       else if (r < 0)
       {
-        while (r < -pow<2>(M - 1))
+        while (r >= std::numeric_limits<std::intmax_t>::min() / 10)
         {
-          auto const d(-r % 10);
+          r *= 10;
 
-          r /= 10;
-          r -= (r > std::numeric_limits<std::intmax_t>::min()) && d >= 5;
-
-          ++v_.e;
+          if (tmp.decrease_exponent())
+          {
+            return *this = dpp{nan{}};
+          }
         }
       }
 
+      // divide
       r /= o.v_.m;
 
+      // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
@@ -863,7 +893,11 @@ public:
           }
 
           r /= 10;
-          ++v_.e;
+
+          if (tmp.increase_exponent())
+          {
+            return *this = dpp{nan{}};
+          }
         }
       }
       else if (r < 0)
@@ -876,7 +910,11 @@ public:
           }
 
           r /= 10;
-          ++v_.e;
+
+          if (tmp.increase_exponent())
+          {
+            return *this = dpp{nan{}};
+          }
         }
       }
 
