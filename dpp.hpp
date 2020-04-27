@@ -121,7 +121,7 @@ private:
     }
 */
 
-    if (!a.is_nan() && !b.is_nan() && (a.v_.e != b.v_.e))
+    if (!a.is_nan() && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
 
@@ -131,7 +131,7 @@ private:
       b.increase_exponent(d);
     }
 
-    return a;
+    return b.is_nan() || a.is_nan() ? dpp{nan{}} : a;
   }
 
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
@@ -562,8 +562,12 @@ public:
     {
       auto [tmp1, tmp2](add_prep(*this, o));
 
-      tmp1.v_.m += tmp2.v_.m;
-      tmp1.normalize();
+      if (!tmp1.is_nan() && !tmp2.is_nan())
+      {
+        tmp1.v_.m += tmp2.v_.m;
+
+        tmp1.normalize();
+      }
 
       return tmp1;
     }
@@ -579,8 +583,12 @@ public:
     {
       auto [tmp1, tmp2](sub_prep(*this, o));
 
-      tmp1.v_.m -= tmp2.v_.m;
-      tmp1.normalize();
+      if (!tmp1.is_nan() && !tmp2.is_nan())
+      {
+        tmp1.v_.m -= tmp2.v_.m;
+
+        tmp1.normalize();
+      }
 
       return tmp1;
     }
@@ -597,8 +605,12 @@ public:
     {
       auto [tmp1, tmp2](add_prep(*this, o));
 
-      tmp1.v_.m += tmp2.v_.m;
-      tmp1.normalize();
+      if (!tmp1.is_nan() && !tmp2.is_nan())
+      {
+        tmp1.v_.m += tmp2.v_.m;
+
+        tmp1.normalize();
+      }
 
       return *this = tmp1;
     }
@@ -614,8 +626,12 @@ public:
     {
       auto [tmp1, tmp2](sub_prep(*this, o));
 
-      tmp1.v_.m -= tmp2.v_.m;
-      tmp1.normalize();
+      if (!tmp1.is_nan() && !tmp2.is_nan())
+      {
+        tmp1.v_.m -= tmp2.v_.m;
+
+        tmp1.normalize();
+      }
 
       return *this = tmp1;
     }
