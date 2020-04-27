@@ -732,9 +732,7 @@ public:
 
       constexpr auto e(37);
 
-      __int128_t r(pow<10, __int128_t>(e) / o.v_.m);
-
-      r *= v_.m;
+      __int128_t r((pow<10, __int128_t>(e) / o.v_.m) * tmp.v_.m);
 
       // fit into target mantissa
       if (r > 0)
@@ -859,9 +857,7 @@ public:
 
       constexpr auto e(37);
 
-      __int128_t r(pow<10, __int128_t>(e) / o.v_.m);
-
-      r *= v_.m;
+      __int128_t r((pow<10, __int128_t>(e) / o.v_.m) * tmp.v_.m);
 
       // fit into target mantissa
       if (r > 0)
