@@ -86,7 +86,11 @@ private:
         (a.v_.e != b.v_.e))
       {
         a.v_.m *= 10;
-        a.decrease_exponent();
+
+        if (a.decrease_exponent())
+        {
+          break;
+        }
       }
     }
     else if (a.v_.m < 0)
@@ -95,7 +99,11 @@ private:
         (a.v_.e != b.v_.e))
       {
         a.v_.m *= 10;
-        a.decrease_exponent();
+
+        if (a.decrease_exponent())
+        {
+          break;
+        }
       }
     }
     else
@@ -113,7 +121,7 @@ private:
     }
 */
 
-    if (a.v_.e != b.v_.e)
+    if (!a.is_nan() && !b.is_nan() && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
 
