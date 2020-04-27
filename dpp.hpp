@@ -681,7 +681,7 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<__int128_t>::max() - 5)
+          if (r <= pow<2, __int128_t>(127) - 1 - 5)
           {
             r += 5;
           }
@@ -698,7 +698,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<__int128_t>::min() + 5)
+          if (r >= -pow<2, __int128_t>(127) + 5)
           {
             r -= 5;
           }
@@ -739,7 +739,7 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<__int128_t>::max() - 5)
+          if (r <= pow<2, __int128_t>(127) - 1 - 5)
           {
             r += 5;
           }
@@ -756,7 +756,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<__int128_t>::min() + 5)
+          if (r >= -pow<2, __int128_t>(127) + 5)
           {
             r -= 5;
           }
@@ -806,7 +806,7 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<__int128_t>::max() - 5)
+          if (r <= pow<2, __int128_t>(127) - 1 - 5)
           {
             r += 5;
           }
@@ -823,7 +823,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<__int128_t>::min() + 5)
+          if (r >= -pow<2, __int128_t>(127) + 5)
           {
             r -= 5;
           }
@@ -864,7 +864,7 @@ public:
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= std::numeric_limits<__int128_t>::max() - 5)
+          if (r <= pow<2, __int128_t>(127) - 1 - 5)
           {
             r += 5;
           }
@@ -881,7 +881,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= std::numeric_limits<__int128_t>::min() + 5)
+          if (r >= -pow<2, __int128_t>(127) + 5)
           {
             r -= 5;
           }
