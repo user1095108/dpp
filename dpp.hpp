@@ -204,8 +204,10 @@ private:
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
-          ++tmp1.v_.e;
-          ++tmp2.v_.e;
+          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          {
+            break;
+          }
         }
       }
       else if (-1 == tmp1.sign())
@@ -221,8 +223,10 @@ private:
           tmp1.v_.m /= 10;
           tmp2.v_.m /= 10;
 
-          ++tmp1.v_.e;
-          ++tmp2.v_.e;
+          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          {
+            break;
+          }
         }
       }
     }
