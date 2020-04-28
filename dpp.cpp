@@ -13,7 +13,7 @@ constexpr auto sqrt(T const S) noexcept
   do
   {
     x = xn;
-    xn = half * (x + S/x);
+    xn = half * (xn + S/xn);
   }
   while (x != xn);
 
