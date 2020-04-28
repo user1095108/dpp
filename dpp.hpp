@@ -696,7 +696,8 @@ public:
 
       if (r > 0)
       {
-        while (r > (pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1) / tmp.v_.m)
+        while (r > (pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1) /
+          tmp.v_.m)
         {
           if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
           {
@@ -713,7 +714,8 @@ public:
       }
       else if (r < 0)
       {
-        while (r < -pow<2, doubled_t>(bit_size<doubled_t>() - 1) / tmp.v_.m)
+        while (r < -pow<2, doubled_t>(bit_size<doubled_t>() - 1) /
+          tmp.v_.m)
         {
           if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
           {
