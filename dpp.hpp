@@ -450,7 +450,7 @@ public:
     return is_nan() || v_.m;
   }
 
-  constexpr explicit operator value_type() const noexcept
+  constexpr explicit operator std::intmax_t() const noexcept
   {
     assert(!is_nan());
     return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
