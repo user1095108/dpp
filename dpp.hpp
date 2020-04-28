@@ -983,37 +983,7 @@ inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
 {
   if (std::ostream::sentry s(os); s)
   {
-    if (p.isnan())
-    {
-      return os << "nan";
-    }
-    else if (p < 0)
-    {
-      p = -p;
-      os << '-';
-    }
-
-    {
-      std::intmax_t i(p);
-      os << i;
-
-      p -= i;
-    }
-
-    if (p)
-    {
-      os << '.';
-
-      while (p)
-      {
-        p *= 10;
-
-        std::intmax_t i(p);
-        os << i;
-
-        p -= i;
-      }
-    }
+    os << to_string(p);
   }
 
   return os;
