@@ -24,7 +24,7 @@ int main()
 {
   std::cout << sqrt(dpp::dec32(2)) << std::endl;
   std::cout << sqrt(dpp::dec64(3)) << std::endl;
-  std::cout << sqrt(dpp::dec64(9)) << std::endl;
+  std::cout << sqrt(dpp::dec32(9)) << std::endl;
 
   //
   auto const a(dpp::to_decimal<dpp::dec64>("1.23"));

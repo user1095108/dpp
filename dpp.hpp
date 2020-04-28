@@ -2,6 +2,8 @@
 # define DPP_HPP
 # pragma once
 
+#include <cmath>
+
 #include <cstdint>
 
 #include <ostream>
@@ -22,6 +24,38 @@ public:
   >;
 
 private:
+  using doubled_t = std::conditional_t<M + E <= 16, std::int32_t,
+    std::conditional_t<M + E <= 32, std::int64_t,
+      std::conditional_t<M + E <= 64, __int128_t, void>
+    >
+  >;
+
+  template <typename T>
+  struct decimal_places : std::conditional_t<std::is_same_v<T, __int128_t>,
+    std::integral_constant<int, 38>,
+    std::conditional_t<std::is_same_v<T, std::int64_t>,
+      std::integral_constant<int, 18>,
+      std::conditional_t<std::is_same_v<T, std::int32_t>,
+        std::integral_constant<int, 9>,
+        std::conditional_t<std::is_same_v<T, std::int16_t>,
+          std::integral_constant<int, 4>,
+          void
+        >
+      >
+    >
+  >
+  {
+  };
+
+  template <typename T>
+  constexpr static auto decimal_places_v{decimal_places<T>::value};
+
+  template <typename U>
+  constexpr static auto bit_size() noexcept
+  {
+    return 8 * sizeof(U);
+  }
+
   struct
   {
     value_type m:M;
@@ -405,6 +439,12 @@ public:
   }
 
   //
+  friend constexpr dpp trunc(dpp const& o) noexcept
+  {
+    return o.v_.e < 0 ? dpp{o.v_.m / pow<10>(-o.v_.e)} : o;
+  }
+
+  //
   constexpr explicit operator bool() noexcept
   {
     return is_nan() || v_.m;
@@ -412,11 +452,7 @@ public:
 
   constexpr explicit operator value_type() const noexcept
   {
-    auto r(v_.m);
-
-    v_.e < 0 ? r /= pow<10>(-v_.e) : r *= pow<10>(v_.e);
-
-    return r;
+    return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
   }
 
   //
@@ -675,14 +711,14 @@ public:
         return dpp{nan{}};
       }
 
-      __int128_t r(tmp.v_.m * o.v_.m);
+      auto r(doubled_t(tmp.v_.m) * o.v_.m);
 
       // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= pow<2, __int128_t>(127) - 1 - 5)
+          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
           {
             r += 5;
           }
@@ -699,7 +735,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= -pow<2, __int128_t>(127) + 5)
+          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
           {
             r -= 5;
           }
@@ -731,16 +767,16 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto e(37);
+      constexpr auto e(decimal_places_v<doubled_t> - 1);
 
-      __int128_t r((pow<10, __int128_t>(e) / o.v_.m) * tmp.v_.m);
+      auto r((pow<10, doubled_t>(e) / o.v_.m) * tmp.v_.m);
 
       // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= pow<2, __int128_t>(127) - 1 - 5)
+          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
           {
             r += 5;
           }
@@ -757,7 +793,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= -pow<2, __int128_t>(127) + 5)
+          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
           {
             r -= 5;
           }
@@ -800,14 +836,14 @@ public:
         return *this = dpp{nan{}};
       }
 
-      __int128_t r(tmp.v_.m * o.v_.m);
+      auto r(tmp.v_.m * doubled_t(o.v_.m));
 
       // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= pow<2, __int128_t>(127) - 1 - 5)
+          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
           {
             r += 5;
           }
@@ -824,7 +860,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= -pow<2, __int128_t>(127) + 5)
+          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
           {
             r -= 5;
           }
@@ -856,16 +892,16 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto e(37);
+      constexpr auto e(decimal_places_v<doubled_t> - 1);
 
-      __int128_t r((pow<10, __int128_t>(e) / o.v_.m) * tmp.v_.m);
+      auto r((pow<10, doubled_t>(e) / o.v_.m) * tmp.v_.m);
 
       // fit into target mantissa
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= pow<2, __int128_t>(127) - 1 - 5)
+          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
           {
             r += 5;
           }
@@ -882,7 +918,7 @@ public:
       {
         while (r < -pow<2>(M - 1))
         {
-          if (r >= -pow<2, __int128_t>(127) + 5)
+          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
           {
             r -= 5;
           }
@@ -914,17 +950,17 @@ public:
 template <unsigned M, unsigned E>
 constexpr auto ceil(dpp<M, E> const& x) noexcept
 {
-  typename dpp<M, E>::value_type const t(x);
+  auto const t(trunc(x));
 
-  return t + (dpp<M, E>(t) < x);
+  return t + (t < x);
 }
 
 template <unsigned M, unsigned E>
 constexpr auto floor(dpp<M, E> const& x) noexcept
 {
-  typename dpp<M, E>::value_type const t(x);
+  auto const t(trunc(x));
 
-  return t - (dpp<M, E>(t) > x);
+  return t - (t > x);
 }
 
 template <unsigned M, unsigned E>
@@ -934,7 +970,7 @@ constexpr auto round(dpp<M, E> const& x) noexcept
   {
     constexpr dpp<M, E> c(5, -1);
 
-    return dpp<M, E>(typename dpp<M, E>::value_type(x > 0 ? x + c : x - c));
+    return trunc(x > 0 ? x + c : x - c);
   }
   else
   {
