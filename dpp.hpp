@@ -281,7 +281,7 @@ private:
 
   constexpr bool decrease_exponent(int const e = 1) noexcept
   {
-    if ((v_.e >= -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
+    if ((v_.e > -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
     {
       v_.e -= e;
 
@@ -297,7 +297,7 @@ private:
 
   constexpr bool increase_exponent(int const e = 1) noexcept
   {
-    if ((v_.e >= -pow<2>(E - 1) - e) && (v_.e <= pow<2>(E - 1) - 1 - e))
+    if ((v_.e > -pow<2>(E - 1) - e) && (v_.e <= pow<2>(E - 1) - 1 - e))
     {
       v_.e += e;
 
