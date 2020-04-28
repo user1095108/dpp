@@ -1029,7 +1029,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 {
   if (i == end)
   {
-    return dpp{nan{}};
+    return T{typename T::nan{}};
   }
   else
   {
@@ -1052,7 +1052,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         break;
 
       default:
-        return dpp{nan{}};
+        return T{typename T::nan{}};
     }
 
     int fcount{};
@@ -1079,7 +1079,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         }
 
         default:
-          return dpp{nan{}};
+          return T{typename T::nan{}};
       }
 
       break;
@@ -1098,7 +1098,7 @@ constexpr T to_decimal(It i, It const end) noexcept
           break;
 
         default:
-          return dpp{nan{}};
+          return T{typename T::nan{}};
       }
 
       break;
