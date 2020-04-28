@@ -627,44 +627,12 @@ public:
   //
   constexpr auto& operator+=(dpp const& o) noexcept
   {
-     if (isnan() || o.isnan())
-    {
-      return *this = dpp{nan{}};
-    }
-    else
-    {
-      auto [tmp1, tmp2](add_prep(*this, o));
-
-      if (!tmp1.isnan() && !tmp2.isnan())
-      {
-        tmp1.v_.m += tmp2.v_.m;
-
-        tmp1.normalize();
-      }
-
-      return *this = tmp1;
-    }
+    return *this = *this + o;
   }
 
   constexpr auto& operator-=(dpp const& o) noexcept
   {
-     if (isnan() || o.isnan())
-    {
-      return *this = dpp{nan{}};
-    }
-    else
-    {
-      auto [tmp1, tmp2](sub_prep(*this, o));
-
-      if (!tmp1.isnan() && !tmp2.isnan())
-      {
-        tmp1.v_.m -= tmp2.v_.m;
-
-        tmp1.normalize();
-      }
-
-      return *this = tmp1;
-    }
+    return *this = *this - o;
   }
 
   //
