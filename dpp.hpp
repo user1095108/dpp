@@ -154,7 +154,7 @@ private:
     }
 */
 
-    if (!a.is_nan() && (a.v_.e != b.v_.e))
+    if (!a.isnan() && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
 
@@ -164,7 +164,7 @@ private:
       b.increase_exponent(d);
     }
 
-    return a.is_nan() || b.is_nan() ? dpp{nan{}} : a;
+    return a.isnan() || b.isnan() ? dpp{nan{}} : a;
   }
 
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
@@ -473,7 +473,7 @@ public:
     return (v_.m > 0) - (v_.m < 0);
   }
 
-  constexpr bool is_nan() const noexcept
+  constexpr bool isnan() const noexcept
   {
     return v_.e == -pow<2>(E - 1);
   }
@@ -487,19 +487,19 @@ public:
   //
   constexpr explicit operator bool() noexcept
   {
-    return is_nan() || v_.m;
+    return isnan() || v_.m;
   }
 
   constexpr explicit operator std::intmax_t() const noexcept
   {
-    assert(!is_nan());
+    assert(!isnan());
     return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
   }
 
   //
   constexpr auto operator==(dpp const& o) noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return false;
     }
@@ -517,121 +517,57 @@ public:
   //
   constexpr auto operator<(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return false;
     }
     else
     {
-      dpp tmp1(*this);
-      dpp tmp2(o);
+      auto const tmp(*this - o);
 
-      if (tmp1.v_.e > tmp2.v_.e)
-      {
-        tmp1 = equalize(tmp1, tmp2);
-
-        return tmp1.is_nan() ? false : tmp1.v_.m < tmp2.v_.m;
-      }
-      else if (tmp2.v_.e > tmp1.v_.e)
-      {
-        tmp2 = equalize(tmp2, tmp1);
-
-        return tmp2.is_nan() ? false : tmp1.v_.m < tmp2.v_.m;
-      }
-      else
-      {
-        return tmp1.v_.m < tmp2.v_.m;
-      }
+      return tmp.isnan() ? false : tmp.v_.m < 0;
     }
   }
 
   constexpr auto operator<=(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return false;
     }
     else
     {
-      dpp tmp1(*this);
-      dpp tmp2(o);
+      auto const tmp(*this - o);
 
-      if (tmp1.v_.e > tmp2.v_.e)
-      {
-        tmp1 = equalize(tmp1, tmp2);
-
-        return tmp1.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
-      }
-      else if (tmp2.v_.e > tmp1.v_.e)
-      {
-        tmp2 = equalize(tmp2, tmp1);
-
-        return tmp2.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
-      }
-      else
-      {
-        return tmp1.v_.m <= tmp2.v_.m;
-      }
+      return tmp.isnan() ? false : tmp.v_.m <= 0;
     }
   }
 
   constexpr auto operator>(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return false;
     }
     else
     {
-      dpp tmp1(*this);
-      dpp tmp2(o);
+      auto const tmp(*this - o);
 
-      if (tmp1.v_.e > tmp2.v_.e)
-      {
-        tmp1 = equalize(tmp1, tmp2);
-
-        return tmp1.is_nan() ? false : tmp1.v_.m > tmp2.v_.m;
-      }
-      else if (tmp2.v_.e > tmp1.v_.e)
-      {
-        tmp2 = equalize(tmp2, tmp1);
-
-        return tmp2.is_nan() ? false : tmp1.v_.m > tmp2.v_.m;
-      }
-      else
-      {
-        return tmp1.v_.m > tmp2.v_.m;
-      }
+      return tmp.isnan() ? false : tmp.v_.m > 0;
     }
   }
 
   constexpr auto operator>=(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return false;
     }
     else
     {
-      dpp tmp1(*this);
-      dpp tmp2(o);
+      auto const tmp(*this - o);
 
-      if (tmp1.v_.e > tmp2.v_.e)
-      {
-        tmp1 = equalize(tmp1, tmp2);
-
-        return tmp1.is_nan() ? false : tmp1.v_.m >= tmp2.v_.m;
-      }
-      else if (tmp2.v_.e > tmp1.v_.e)
-      {
-        tmp2 = equalize(tmp2, tmp1);
-
-        return tmp2.is_nan() ? false : tmp1.v_.m >= tmp2.v_.m;
-      }
-      else
-      {
-        return tmp1.v_.m >= tmp2.v_.m;
-      }
+      return tmp.isnan() ? false : tmp.v_.m >= 0;
     }
   }
 
@@ -653,7 +589,7 @@ public:
   //
   constexpr auto operator+(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return dpp{nan{}};
     }
@@ -661,7 +597,7 @@ public:
     {
       auto [tmp1, tmp2](add_prep(*this, o));
 
-      if (!tmp1.is_nan() && !tmp2.is_nan())
+      if (!tmp1.isnan() && !tmp2.isnan())
       {
         tmp1.v_.m += tmp2.v_.m;
 
@@ -674,7 +610,7 @@ public:
 
   constexpr auto operator-(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return dpp{nan{}};
     }
@@ -682,7 +618,7 @@ public:
     {
       auto [tmp1, tmp2](sub_prep(*this, o));
 
-      if (!tmp1.is_nan() && !tmp2.is_nan())
+      if (!tmp1.isnan() && !tmp2.isnan())
       {
         tmp1.v_.m -= tmp2.v_.m;
 
@@ -696,7 +632,7 @@ public:
   //
   constexpr auto& operator+=(dpp const& o) noexcept
   {
-     if (is_nan() || o.is_nan())
+     if (isnan() || o.isnan())
     {
       return *this = dpp{nan{}};
     }
@@ -704,7 +640,7 @@ public:
     {
       auto [tmp1, tmp2](add_prep(*this, o));
 
-      if (!tmp1.is_nan() && !tmp2.is_nan())
+      if (!tmp1.isnan() && !tmp2.isnan())
       {
         tmp1.v_.m += tmp2.v_.m;
 
@@ -717,7 +653,7 @@ public:
 
   constexpr auto& operator-=(dpp const& o) noexcept
   {
-     if (is_nan() || o.is_nan())
+     if (isnan() || o.isnan())
     {
       return *this = dpp{nan{}};
     }
@@ -725,7 +661,7 @@ public:
     {
       auto [tmp1, tmp2](sub_prep(*this, o));
 
-      if (!tmp1.is_nan() && !tmp2.is_nan())
+      if (!tmp1.isnan() && !tmp2.isnan())
       {
         tmp1.v_.m -= tmp2.v_.m;
 
@@ -739,7 +675,7 @@ public:
   //
   constexpr auto operator*(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return dpp{nan{}};
     }
@@ -800,7 +736,7 @@ public:
 
   constexpr auto operator/(dpp const& o) const noexcept
   {
-    if (is_nan() || o.is_nan() || !o.v_.m)
+    if (isnan() || o.isnan() || !o.v_.m)
     {
       return dpp{nan{}};
     }
@@ -864,7 +800,7 @@ public:
   //
   constexpr auto& operator*=(dpp const& o) noexcept
   {
-    if (is_nan() || o.is_nan())
+    if (isnan() || o.isnan())
     {
       return *this = dpp{nan{}};
     }
@@ -925,7 +861,7 @@ public:
 
   constexpr auto& operator/=(dpp const& o) noexcept
   {
-    if (is_nan() || o.is_nan() || !o.v_.m)
+    if (isnan() || o.isnan() || !o.v_.m)
     {
       return *this = dpp{nan{}};
     }
@@ -988,6 +924,12 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr auto isnan(dpp<M, E> const& x) noexcept
+{
+  return x.isnan();
+}
+
 template <unsigned M, unsigned E>
 constexpr auto ceil(dpp<M, E> const& x) noexcept
 {
@@ -1120,7 +1062,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
 template <unsigned M, unsigned E>
 inline auto to_string(dpp<M, E> p)
 {
-  if (p.is_nan())
+  if (p.isnan())
   {
     return std::string("nan");
   }
@@ -1163,7 +1105,7 @@ inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
 {
   if (std::ostream::sentry s(os); s)
   {
-    if (p.is_nan())
+    if (p.isnan())
     {
       return os << "nan";
     }
