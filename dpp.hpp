@@ -481,6 +481,7 @@ public:
   //
   friend constexpr dpp trunc(dpp const& o) noexcept
   {
+    assert(!isnan());
     return o.v_.e < 0 ? dpp{o.v_.m / pow<10>(-o.v_.e)} : o;
   }
 
