@@ -144,16 +144,15 @@ private:
       a.v_.e = b.v_.e;
     }
 
-/*
-    while (a.v_.e != b.v_.e)
+    while (!a.isnan() && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
 
       b.v_.m /= 10;
-      b.increase_exponent(d);
+      b.increase_exponent();
     }
-*/
 
+/*
     if (!a.isnan() && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
@@ -163,6 +162,7 @@ private:
       b.v_.m /= pow<10>(d);
       b.increase_exponent(d);
     }
+*/
 
     return a.isnan() || b.isnan() ? dpp{nan{}} : a;
   }
@@ -473,7 +473,7 @@ public:
   //
   friend constexpr dpp trunc(dpp const& o) noexcept
   {
-    assert(!isnan());
+    assert(!o.isnan());
     return o.v_.e < 0 ? dpp{o.v_.m / pow<10>(-o.v_.e)} : o;
   }
 
@@ -686,13 +686,51 @@ public:
     }
     else
     {
+      constexpr auto abs([](auto x){return x < 0 ? -x : x;});
+
       dpp tmp(*this);
 
       constexpr auto e(decimal_places_v<doubled_t>);
 
-      auto r((pow<10, doubled_t>(e) / o.v_.m) * tmp.v_.m);
+      auto r(pow<10, doubled_t>(e) / o.v_.m);
 
-      // fit into target mantissa
+      if (r > 0)
+      {
+        while (r > (pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1) / tmp.v_.m)
+        {
+          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+          {
+            r += 5;
+          }
+
+          r /= 10;
+
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
+      }
+      else if (r < 0)
+      {
+        while (r < -pow<2, doubled_t>(bit_size<doubled_t>() - 1) / tmp.v_.m)
+        {
+          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+          {
+            r -= 5;
+          }
+
+          r /= 10;
+
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
+      }
+
+      r *= tmp.v_.m;
+
       if (r > 0)
       {
         while (r > pow<2>(M - 1) - 1)
