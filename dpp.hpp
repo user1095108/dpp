@@ -688,7 +688,7 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto e(decimal_places_v<doubled_t> - 1);
+      constexpr auto e(decimal_places_v<doubled_t>);
 
       auto r((pow<10, doubled_t>(e) / o.v_.m) * tmp.v_.m);
 
