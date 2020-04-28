@@ -500,7 +500,7 @@ public:
   constexpr auto operator==(dpp const& o) noexcept
   {
     return isnan() || o.isnan() ?  false :
-      (v_.m == o.v_.m) && (v_.e == o.v_.e);
+      (v_.e == o.v_.e) && (v_.m == o.v_.m);
   }
 
   constexpr auto operator!=(dpp const& o) noexcept
