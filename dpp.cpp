@@ -5,15 +5,13 @@
 template <typename T>
 constexpr auto sqrt(T const S) noexcept
 {
-  constexpr auto half(T(5, -1));
-
   T x;
   T xn(S);
 
   do
   {
     x = xn;
-    xn = half * (xn + S/xn);
+    xn = (x + S/x) / T(2);
   }
   while (x != xn);
 
@@ -22,6 +20,7 @@ constexpr auto sqrt(T const S) noexcept
 
 int main()
 {
+  //
   std::cout << sqrt(dpp::dec32(2)) << std::endl;
   std::cout << sqrt(dpp::dec64(3)) << std::endl;
   std::cout << sqrt(dpp::dec32(9)) << std::endl;
