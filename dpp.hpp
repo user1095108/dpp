@@ -499,14 +499,8 @@ public:
   //
   constexpr auto operator==(dpp const& o) noexcept
   {
-    if (isnan() || o.isnan())
-    {
-      return false;
-    }
-    else
-    {
-      return (v_.m == o.v_.m) && (v_.e == o.v_.e);
-    }
+    return isnan() || o.isnan() ?  false :
+      (v_.m == o.v_.m) && (v_.e == o.v_.e);
   }
 
   constexpr auto operator!=(dpp const& o) noexcept
