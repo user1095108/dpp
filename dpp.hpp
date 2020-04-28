@@ -161,7 +161,6 @@ private:
       auto const d(a.v_.e - b.v_.e);
 
       b.v_.m /= pow<10>(d);
-
       b.increase_exponent(d);
     }
 
