@@ -335,9 +335,50 @@ public:
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
-  constexpr dpp(U&& v) noexcept :
-    v_{v, {}}
+  constexpr dpp(U&& m) noexcept :
+    v_{}
   {
+    if (m > 0)
+    {
+      while (m > pow<2>(M - 1) - 1)
+      {
+        if (m <= std::numeric_limits<value_type>::max() - 5)
+        {
+          m += 5;
+        }
+
+        m /= 10;
+
+        if (increase_exponent())
+        {
+          *this = dpp{nan{}};
+
+          return;
+        }
+      }
+    }
+    else if (m < 0)
+    {
+      while (m < -pow<2>(M - 1))
+      {
+        if (m >= std::numeric_limits<value_type>::min() + 5)
+        {
+          m -= 5;
+        }
+
+        m /= 10;
+
+        if (increase_exponent())
+        {
+          *this = dpp{nan{}};
+
+          return;
+        }
+      }
+    }
+
+    v_.m = m;
+
     normalize();
   }
 
