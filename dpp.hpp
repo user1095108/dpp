@@ -29,7 +29,7 @@ private:
   } v_;
 
   template <value_type B, typename T = value_type>
-  static constexpr auto pow(value_type e) noexcept
+  static constexpr auto pow(unsigned e) noexcept
   {
     if (e)
     {
@@ -57,7 +57,7 @@ private:
   }
 
   template <unsigned B, typename T = value_type>
-  static constexpr value_type log(T const n, T const e = 0) noexcept
+  static constexpr value_type log(T const n, unsigned const e = 0) noexcept
   {
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
@@ -127,6 +127,7 @@ private:
       auto const d(a.v_.e - b.v_.e);
 
       b.v_.m /= pow<10>(d);
+
       b.increase_exponent(d);
     }
 
