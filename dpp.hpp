@@ -350,8 +350,6 @@ public:
 
         if (increase_exponent())
         {
-          *this = dpp{nan{}};
-
           return;
         }
       }
@@ -369,8 +367,6 @@ public:
 
         if (increase_exponent())
         {
-          *this = dpp{nan{}};
-
           return;
         }
       }
@@ -408,8 +404,6 @@ public:
 
         if (increase_exponent())
         {
-          *this = dpp{nan{}};
-
           return;
         }
       }
@@ -427,8 +421,6 @@ public:
 
         if (increase_exponent())
         {
-          *this = dpp{nan{}};
-
           return;
         }
       }
