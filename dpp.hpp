@@ -384,7 +384,7 @@ public:
   constexpr dpp(value_type m, value_type const e) noexcept :
     v_{}
   {
-    if ((e <= pow<2>(E - 1) - 1) && (e >= -pow<2>(E - 1)))
+    if ((e <= pow<2>(E - 1) - 1) && (e > -pow<2>(E - 1)))
     {
       v_.e = e;
     }
