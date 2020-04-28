@@ -795,126 +795,12 @@ public:
   //
   constexpr auto& operator*=(dpp const& o) noexcept
   {
-    if (isnan() || o.isnan())
-    {
-      return *this = dpp{nan{}};
-    }
-    else
-    {
-      dpp tmp(*this);
-
-      if (tmp.increase_exponent(o.v_.e))
-      {
-        return *this = dpp{nan{}};
-      }
-
-      auto r(tmp.v_.m * doubled_t(o.v_.m));
-
-      // fit into target mantissa
-      if (r > 0)
-      {
-        while (r > pow<2>(M - 1) - 1)
-        {
-          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return *this = dpp{nan{}};
-          }
-        }
-      }
-      else if (r < 0)
-      {
-        while (r < -pow<2>(M - 1))
-        {
-          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-          {
-            r -= 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return *this = dpp{nan{}};
-          }
-        }
-      }
-
-      tmp.v_.m = r;
-
-      tmp.normalize();
-
-      return *this = tmp;
-    }
+    return *this = *this * o;
   }
 
   constexpr auto& operator/=(dpp const& o) noexcept
   {
-    if (isnan() || o.isnan() || !o.v_.m)
-    {
-      return *this = dpp{nan{}};
-    }
-    else
-    {
-      dpp tmp(*this);
-
-      constexpr auto e(decimal_places_v<doubled_t> - 1);
-
-      auto r((pow<10, doubled_t>(e) / o.v_.m) * tmp.v_.m);
-
-      // fit into target mantissa
-      if (r > 0)
-      {
-        while (r > pow<2>(M - 1) - 1)
-        {
-          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return *this = dpp{nan{}};
-          }
-        }
-      }
-      else if (r < 0)
-      {
-        while (r < -pow<2>(M - 1))
-        {
-          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-          {
-            r -= 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return *this = dpp{nan{}};
-          }
-        }
-      }
-
-      tmp.v_.m = r;
-
-      if (tmp.decrease_exponent(e + o.v_.e))
-      {
-        return *this = dpp{nan{}};
-      }
-
-      tmp.normalize();
-
-      return *this = tmp;
-    }
+    return *this = *this / o;
   }
 };
 
