@@ -452,13 +452,13 @@ public:
       {
         tmp1 = equalize(tmp1, tmp2);
 
-        return tmp1.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
+        return tmp1.is_nan() ? false : tmp1.v_.m < tmp2.v_.m;
       }
       else if (tmp2.v_.e > tmp1.v_.e)
       {
         tmp2 = equalize(tmp2, tmp1);
 
-        return tmp2.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
+        return tmp2.is_nan() ? false : tmp1.v_.m < tmp2.v_.m;
       }
       else
       {
@@ -512,13 +512,13 @@ public:
       {
         tmp1 = equalize(tmp1, tmp2);
 
-        return tmp1.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
+        return tmp1.is_nan() ? false : tmp1.v_.m > tmp2.v_.m;
       }
       else if (tmp2.v_.e > tmp1.v_.e)
       {
         tmp2 = equalize(tmp2, tmp1);
 
-        return tmp2.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
+        return tmp2.is_nan() ? false : tmp1.v_.m > tmp2.v_.m;
       }
       else
       {
@@ -542,13 +542,13 @@ public:
       {
         tmp1 = equalize(tmp1, tmp2);
 
-        return tmp1.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
+        return tmp1.is_nan() ? false : tmp1.v_.m >= tmp2.v_.m;
       }
       else if (tmp2.v_.e > tmp1.v_.e)
       {
         tmp2 = equalize(tmp2, tmp1);
 
-        return tmp2.is_nan() ? false : tmp1.v_.m <= tmp2.v_.m;
+        return tmp2.is_nan() ? false : tmp1.v_.m >= tmp2.v_.m;
       }
       else
       {
