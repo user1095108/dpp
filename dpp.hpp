@@ -1094,7 +1094,7 @@ inline auto to_string(dpp<M, E> p)
   }
 
   {
-    typename dpp<M, E>::value_type i(p);
+    std::intmax_t i(p);
     r.append(std::to_string(i));
 
     p -= i;
@@ -1108,7 +1108,7 @@ inline auto to_string(dpp<M, E> p)
     {
       p *= 10;
 
-      typename dpp<M, E>::value_type i(p);
+      std::intmax_t i(p);
       r.append(std::to_string(i));
 
       p -= i;
@@ -1134,7 +1134,7 @@ inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
     }
 
     {
-      typename dpp<M, E>::value_type i(p);
+      std::intmax_t i(p);
       os << i;
 
       p -= i;
@@ -1148,7 +1148,7 @@ inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
       {
         p *= 10;
 
-        typename dpp<M, E>::value_type i(p);
+        std::intmax_t i(p);
         os << i;
 
         p -= i;
