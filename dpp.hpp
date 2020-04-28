@@ -2,7 +2,7 @@
 # define DPP_HPP
 # pragma once
 
-#include <cmath>
+#include <cassert>
 
 #include <cstdint>
 
@@ -452,6 +452,7 @@ public:
 
   constexpr explicit operator value_type() const noexcept
   {
+    assert(!is_nan());
     return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
   }
 
