@@ -686,8 +686,6 @@ public:
     }
     else
     {
-      constexpr auto abs([](auto x){return x < 0 ? -x : x;});
-
       dpp tmp(*this);
 
       constexpr auto e(decimal_places_v<doubled_t>);
