@@ -625,17 +625,6 @@ public:
   }
 
   //
-  constexpr auto& operator+=(dpp const& o) noexcept
-  {
-    return *this = *this + o;
-  }
-
-  constexpr auto& operator-=(dpp const& o) noexcept
-  {
-    return *this = *this - o;
-  }
-
-  //
   constexpr auto operator*(dpp const& o) const noexcept
   {
     if (isnan() || o.isnan())
@@ -761,6 +750,16 @@ public:
   }
 
   //
+  constexpr auto& operator+=(dpp const& o) noexcept
+  {
+    return *this = *this + o;
+  }
+
+  constexpr auto& operator-=(dpp const& o) noexcept
+  {
+    return *this = *this - o;
+  }
+
   constexpr auto& operator*=(dpp const& o) noexcept
   {
     return *this = *this * o;
