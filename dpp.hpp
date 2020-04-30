@@ -789,6 +789,39 @@ public:
   {
     return *this = *this / o;
   }
+
+  friend std::string to_string(dpp p)
+  {
+    if (p.isnan())
+    {
+      return {"nan", 3};
+    }
+
+    std::string r;
+
+    if (p < 0)
+    {
+      p = -p;
+      r.append(1, '-');
+    }
+
+    {
+      std::intmax_t i(p);
+      r.append(std::to_string(i));
+
+      p -= i;
+    }
+
+    if (p)
+    {
+      auto const tmp(std::to_string(p.v_.m));
+
+      r.append(1, '.').append(-p.exponent() - tmp.size(), '0').
+        append(tmp);
+    }
+
+    return r;
+  }
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -924,48 +957,6 @@ constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T())
 {
   return to_decimal<T>(std::cbegin(s), std::cend(s));
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
-inline std::string to_string(dpp<M, E> p)
-{
-  if (p.isnan())
-  {
-    return {"nan", 3};
-  }
-
-  std::string r;
-
-  if (p < 0)
-  {
-    p = -p;
-    r.append(1, '-');
-  }
-
-  {
-    std::intmax_t i(p);
-    r.append(std::to_string(i));
-
-    p -= i;
-  }
-
-  if (p)
-  {
-    r.append(1, '.');
-
-    while (p)
-    {
-      p *= 10;
-
-      std::intmax_t i(p);
-      r.append(std::to_string(i));
-
-      p -= i;
-    }
-  }
-
-  return r;
 }
 
 template <unsigned M, unsigned E>
