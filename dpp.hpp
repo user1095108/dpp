@@ -968,7 +968,7 @@ inline std::string to_string(dpp<M, E> p)
 }
 
 template <unsigned M, unsigned E>
-inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
+inline auto& operator<<(std::ostream& os, dpp<M, E> p)
 {
   return os << to_string(p);
 }
