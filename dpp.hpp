@@ -326,7 +326,7 @@ public:
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
-  constexpr dpp(U&& m) noexcept :
+  constexpr dpp(U m) noexcept :
     v_{}
   {
     if (m > 0)
@@ -846,7 +846,7 @@ public:
     }
 
     {
-      auto i(to_integral(p));
+      auto const i(to_integral(p));
 
       if (i.has_value())
       {
