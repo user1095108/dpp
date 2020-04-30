@@ -164,20 +164,16 @@ private:
     }
   }
 
-  static constexpr bool fix_floats(dpp& tmp1, dpp& tmp2)
+  static constexpr bool fix_floats(dpp& a, dpp& b)
   {
-    round_mantissa(tmp1);
-    round_mantissa(tmp2);
+    // both floats need to be fixed to preserve the identical exponents
+    round_mantissa(a);
+    a.v_.m /= 10;
 
-    tmp1.v_.m /= 10;
-    tmp2.v_.m /= 10;
+    round_mantissa(b);
+    b.v_.m /= 10;
 
-    if (tmp1.increase_exponent() || tmp2.increase_exponent())
-    {
-      return true;
-    }
-
-    return false;
+    return a.increase_exponent() || b.increase_exponent();
   }
 
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
