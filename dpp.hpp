@@ -463,14 +463,14 @@ public:
   }
 
   //
-  friend constexpr dpp trunc(dpp const& o) noexcept
+  friend constexpr dpp trunc(dpp const& o) const noexcept
   {
     assert(!o.isnan());
     return o.v_.e < 0 ? o.v_.m / pow<10>(-o.v_.e) : o;
   }
 
   //
-  constexpr explicit operator bool() noexcept
+  constexpr explicit operator bool() const noexcept
   {
     return isnan() || v_.m;
   }
@@ -482,13 +482,13 @@ public:
   }
 
   //
-  constexpr auto operator==(dpp const& o) noexcept
+  constexpr auto operator==(dpp const& o) const noexcept
   {
     return isnan() || o.isnan() ? false :
       (v_.e == o.v_.e) && (v_.m == o.v_.m);
   }
 
-  constexpr auto operator!=(dpp const& o) noexcept
+  constexpr auto operator!=(dpp const& o) const noexcept
   {
     return !operator==(o);
   }
@@ -551,7 +551,7 @@ public:
   }
 
   //
-  constexpr auto operator+() noexcept
+  constexpr auto operator+() const noexcept
   {
     return *this;
   }
