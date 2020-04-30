@@ -140,6 +140,7 @@ private:
       a.v_.e = b.v_.e;
     }
 
+/*
     if (!a.isnan())
     {
       while (a.v_.e != b.v_.e)
@@ -150,8 +151,8 @@ private:
         b.increase_exponent();
       }
     }
+*/
 
-/*
     if (!a.isnan() && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
@@ -161,7 +162,6 @@ private:
       b.v_.m /= pow<10>(d);
       b.increase_exponent(d);
     }
-*/
   }
 
   static constexpr bool fix_float(dpp& tmp1, dpp& tmp2)
