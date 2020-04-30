@@ -800,11 +800,11 @@ public:
 
       if (auto const e(p.v_.e); e < 0)
       {
-        return r / pow<10>(-e);
+        return r / pow<10, std::intmax_t>(-e);
       }
       else
       {
-        auto const c(pow<10>(e));
+        auto const c(pow<10, std::intmax_t>(e));
 
         if (r > 0)
         {
