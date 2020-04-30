@@ -862,9 +862,9 @@ public:
       }
     }
 
-    if (p)
+    if (p.mantissa())
     {
-      auto const tmp(std::to_string(p.v_.m));
+      auto const tmp(std::to_string(p.mantissa()));
 
       r.append(1, '.').append(-p.exponent() - tmp.size(), '0').
         append(tmp);
