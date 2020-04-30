@@ -463,7 +463,7 @@ public:
   friend constexpr dpp trunc(dpp const& o) noexcept
   {
     assert(!o.isnan());
-    return o.v_.e < 0 ? dpp{o.v_.m / pow<10>(-o.v_.e)} : o;
+    return o.v_.e < 0 ? o.v_.m / pow<10>(-o.v_.e) : o;
   }
 
   //
