@@ -108,7 +108,7 @@ private:
     }
   }
 
-  static constexpr auto equalize(dpp a, dpp& b) noexcept
+  static constexpr void equalize(dpp& a, dpp& b) noexcept
   {
     //a.v_.m *= pow<10>(a.v_.e - b.v_.e);
     //a.v_.e = b.v_.e;
@@ -163,19 +163,17 @@ private:
       b.increase_exponent(d);
     }
 */
-
-    return a.isnan() || b.isnan() ? dpp{nan{}} : a;
   }
 
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
   {
     if (tmp1.v_.e > tmp2.v_.e)
     {
-      tmp1 = equalize(tmp1, tmp2);
+      equalize(tmp1, tmp2);
     }
     else if (tmp2.v_.e > tmp1.v_.e)
     {
-      tmp2 = equalize(tmp2, tmp1);
+      equalize(tmp2, tmp1);
     }
 
     if (tmp1.sign() == tmp2.sign())
@@ -227,11 +225,11 @@ private:
   {
     if (tmp1.v_.e > tmp2.v_.e)
     {
-      tmp1 = equalize(tmp1, tmp2);
+      equalize(tmp1, tmp2);
     }
     else if (tmp2.v_.e > tmp1.v_.e)
     {
-      tmp2 = equalize(tmp2, tmp1);
+      equalize(tmp2, tmp1);
     }
 
     if (tmp1.sign() != tmp2.sign())
