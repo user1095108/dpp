@@ -164,7 +164,7 @@ private:
     }
   }
 
-  static constexpr bool fix_float(dpp& tmp1, dpp& tmp2)
+  static constexpr bool fix_floats(dpp& tmp1, dpp& tmp2)
   {
     round_mantissa(tmp1);
     round_mantissa(tmp2);
@@ -199,7 +199,7 @@ private:
 
         while (tmp1.v_.m > max - tmp2.v_.m)
         {
-          if (fix_float(tmp1, tmp2))
+          if (fix_floats(tmp1, tmp2))
           {
             break;
           }
@@ -211,7 +211,7 @@ private:
 
         while (tmp1.v_.m < min - tmp2.v_.m)
         {
-          if (fix_float(tmp1, tmp2))
+          if (fix_floats(tmp1, tmp2))
           {
             break;
           }
@@ -241,7 +241,7 @@ private:
 
         while (tmp1.v_.m > max + tmp2.v_.m)
         {
-          if (fix_float(tmp1, tmp2))
+          if (fix_floats(tmp1, tmp2))
           {
             break;
           }
@@ -253,7 +253,7 @@ private:
 
         while (tmp1.v_.m < min + tmp2.v_.m)
         {
-          if (fix_float(tmp1, tmp2))
+          if (fix_floats(tmp1, tmp2))
           {
             break;
           }
