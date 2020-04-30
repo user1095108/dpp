@@ -118,9 +118,7 @@ private:
       while ((a.v_.m <= (pow<2>(M - 1) - 1) / 10) &&
         (a.v_.e != b.v_.e))
       {
-        a.v_.m *= 10;
-
-        if (a.decrease_exponent())
+        if (a.v_.m *= 10; a.decrease_exponent())
         {
           break;
         }
@@ -131,9 +129,7 @@ private:
       while ((a.v_.m >= -pow<2>(M - 1) / 10) &&
         (a.v_.e != b.v_.e))
       {
-        a.v_.m *= 10;
-
-        if (a.decrease_exponent())
+        if (a.v_.m *= 10; a.decrease_exponent())
         {
           break;
         }
@@ -144,12 +140,15 @@ private:
       a.v_.e = b.v_.e;
     }
 
-    while (!a.isnan() && (a.v_.e != b.v_.e))
+    if (!a.isnan())
     {
-      round_mantissa(b);
+      while (a.v_.e != b.v_.e)
+      {
+        round_mantissa(b);
 
-      b.v_.m /= 10;
-      b.increase_exponent();
+        b.v_.m /= 10;
+        b.increase_exponent();
+      }
     }
 
 /*
@@ -182,8 +181,7 @@ private:
       {
         constexpr auto max(pow<2>(M - 1) - 1);
 
-        while ((tmp1.v_.m > max - tmp2.v_.m) ||
-          (tmp2.v_.m > max - tmp1.v_.m))
+        while (tmp1.v_.m > max - tmp2.v_.m)
         {
           round_mantissa(tmp1);
           round_mantissa(tmp2);
@@ -201,8 +199,7 @@ private:
       {
         constexpr auto min(-pow<2>(M - 1));
 
-        while ((tmp1.v_.m < min - tmp2.v_.m) ||
-          (tmp2.v_.m < min - tmp1.v_.m))
+        while (tmp1.v_.m < min - tmp2.v_.m)
         {
           round_mantissa(tmp1);
           round_mantissa(tmp2);
@@ -238,8 +235,7 @@ private:
       {
         constexpr auto max(pow<2>(M - 1) - 1);
 
-        while ((tmp1.v_.m > max + tmp2.v_.m) ||
-          (tmp2.v_.m > max + tmp1.v_.m))
+        while (tmp1.v_.m > max + tmp2.v_.m)
         {
           round_mantissa(tmp1);
           round_mantissa(tmp2);
@@ -257,8 +253,7 @@ private:
       {
         constexpr auto min(-pow<2>(M - 1));
 
-        while ((tmp1.v_.m < min + tmp2.v_.m) ||
-          (tmp2.v_.m < min + tmp1.v_.m))
+        while ((tmp1.v_.m < min + tmp2.v_.m)
         {
           round_mantissa(tmp1);
           round_mantissa(tmp2);
