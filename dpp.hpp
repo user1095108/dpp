@@ -966,12 +966,7 @@ inline auto to_string(dpp<M, E> p)
 template <unsigned M, unsigned E>
 inline std::ostream& operator<<(std::ostream& os, dpp<M, E> p)
 {
-  if (std::ostream::sentry s(os); s)
-  {
-    os << to_string(p);
-  }
-
-  return os;
+  return os << to_string(p);
 }
 
 }
