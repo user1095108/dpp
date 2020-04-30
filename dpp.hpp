@@ -302,6 +302,7 @@ private:
 
   constexpr void normalize() noexcept
   {
+    assert(!isnan());
     if (v_.m)
     {
       for (; !(v_.m % 10); v_.m /= 10)
