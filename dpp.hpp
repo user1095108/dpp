@@ -960,7 +960,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
 }
 
 template <unsigned M, unsigned E>
-inline auto& operator<<(std::ostream& os, dpp<M, E> p)
+inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
 {
   return os << to_string(p);
 }
