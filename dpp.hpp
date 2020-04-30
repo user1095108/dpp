@@ -253,7 +253,7 @@ private:
       {
         constexpr auto min(-pow<2>(M - 1));
 
-        while ((tmp1.v_.m < min + tmp2.v_.m)
+        while (tmp1.v_.m < min + tmp2.v_.m)
         {
           round_mantissa(tmp1);
           round_mantissa(tmp2);
