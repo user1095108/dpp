@@ -796,9 +796,9 @@ public:
   {
     if (!p.isnan())
     {
-      auto const r(p.v_.m);
+      auto const r(p.mantissa());
 
-      if (auto const e(p.v_.e); e < 0)
+      if (auto const e(p.exponent()); e < 0)
       {
         return r / pow<10, std::intmax_t>(-e);
       }
