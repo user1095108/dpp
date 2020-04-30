@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+#include <optional>
+
 #include <ostream>
 
 #include <type_traits>
@@ -790,6 +792,44 @@ public:
     return *this = *this / o;
   }
 
+  friend std::optional<std::intmax_t> to_integral(dpp const& p) noexcept
+  {
+    if (!p.isnan())
+    {
+      auto const r(p.v_.m);
+
+      if (auto const e(p.v_.e); e < 0)
+      {
+        return p.v_.m / pow<10>(-e);
+      }
+      else
+      {
+        auto const c(pow<10>(e));
+
+        if (r > 0)
+        {
+          if (r <= std::numeric_limits<std::intmax_t>::max() / c)
+          {
+            return r * c;
+          }
+        }
+        else if (r < 0)
+        {
+          if (r >= std::numeric_limits<std::intmax_t>::min() / c)
+          {
+            return r * c;
+          }
+        }
+        else
+        {
+          return 0;
+        }
+      }
+    }
+
+    return {};
+  }
+
   friend std::string to_string(dpp p)
   {
     if (p.isnan())
@@ -806,10 +846,18 @@ public:
     }
 
     {
-      std::intmax_t i(p);
-      r.append(std::to_string(i));
+      auto i(to_integral(p));
 
-      p -= i;
+      if (i.has_value())
+      {
+        r.append(std::to_string(i.value()));
+
+        p -= i.value();
+      }
+      else
+      {
+        return {"nan", 3};
+      }
     }
 
     if (p)
