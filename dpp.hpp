@@ -164,6 +164,22 @@ private:
 */
   }
 
+  static constexpr bool fix_float(dpp& tmp1, dpp& tmp2)
+  {
+    round_mantissa(tmp1);
+    round_mantissa(tmp2);
+
+    tmp1.v_.m /= 10;
+    tmp2.v_.m /= 10;
+
+    if (tmp1.increase_exponent() || tmp2.increase_exponent())
+    {
+      return true;
+    }
+
+    return false;
+  }
+
   static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
   {
     if (tmp1.v_.e > tmp2.v_.e)
@@ -183,13 +199,7 @@ private:
 
         while (tmp1.v_.m > max - tmp2.v_.m)
         {
-          round_mantissa(tmp1);
-          round_mantissa(tmp2);
-
-          tmp1.v_.m /= 10;
-          tmp2.v_.m /= 10;
-
-          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          if (fix_float(tmp1, tmp2))
           {
             break;
           }
@@ -201,13 +211,7 @@ private:
 
         while (tmp1.v_.m < min - tmp2.v_.m)
         {
-          round_mantissa(tmp1);
-          round_mantissa(tmp2);
-
-          tmp1.v_.m /= 10;
-          tmp2.v_.m /= 10;
-
-          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          if (fix_float(tmp1, tmp2))
           {
             break;
           }
@@ -237,13 +241,7 @@ private:
 
         while (tmp1.v_.m > max + tmp2.v_.m)
         {
-          round_mantissa(tmp1);
-          round_mantissa(tmp2);
-
-          tmp1.v_.m /= 10;
-          tmp2.v_.m /= 10;
-
-          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          if (fix_float(tmp1, tmp2))
           {
             break;
           }
@@ -255,13 +253,7 @@ private:
 
         while (tmp1.v_.m < min + tmp2.v_.m)
         {
-          round_mantissa(tmp1);
-          round_mantissa(tmp2);
-
-          tmp1.v_.m /= 10;
-          tmp2.v_.m /= 10;
-
-          if (tmp1.increase_exponent() || tmp2.increase_exponent())
+          if (fix_float(tmp1, tmp2))
           {
             break;
           }
