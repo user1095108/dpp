@@ -800,7 +800,7 @@ public:
 
       if (auto const e(p.v_.e); e < 0)
       {
-        return p.v_.m / pow<10>(-e);
+        return r / pow<10>(-e);
       }
       else
       {
@@ -850,9 +850,11 @@ public:
 
       if (i.has_value())
       {
-        r.append(std::to_string(i.value()));
+        auto const v(i.value());
 
-        p -= i.value();
+        r.append(std::to_string(v));
+
+        p -= v;
       }
       else
       {
