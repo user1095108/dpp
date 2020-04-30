@@ -839,7 +839,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 {
   if (i == end)
   {
-    return T{typename T::nan{}};
+    return {typename T::nan{}};
   }
   else
   {
