@@ -923,11 +923,11 @@ constexpr auto to_decimal(S const& s) noexcept ->
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-inline auto to_string(dpp<M, E> p)
+inline std::string to_string(dpp<M, E> p)
 {
   if (p.isnan())
   {
-    return std::string("nan");
+    return {"nan", 3};
   }
 
   std::string r;
