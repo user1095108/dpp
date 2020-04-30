@@ -845,21 +845,17 @@ public:
       r.append(1, '-');
     }
 
+    if (auto const i(to_integral(p)); i.has_value())
     {
-      auto const i(to_integral(p));
+      auto const v(i.value());
 
-      if (i.has_value())
-      {
-        auto const v(i.value());
+      r.append(std::to_string(v));
 
-        r.append(std::to_string(v));
-
-        p -= v;
-      }
-      else
-      {
-        return {"nan", 3};
-      }
+      p -= v;
+    }
+    else
+    {
+      return {"nan", 3};
     }
 
     if (p.mantissa())
