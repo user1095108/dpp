@@ -459,7 +459,7 @@ public:
 
   constexpr bool isnan() const noexcept
   {
-    return v_.e == -pow<2>(E - 1);
+    return -pow<2>(E - 1) == v_.e;
   }
 
   //
@@ -504,7 +504,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m < 0;
+      return tmp.isnan() ? false : tmp.v_.m < {};
     }
   }
 
@@ -518,7 +518,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m <= 0;
+      return tmp.isnan() ? false : tmp.v_.m <= {};
     }
   }
 
@@ -532,7 +532,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m > 0;
+      return tmp.isnan() ? false : tmp.v_.m > {};
     }
   }
 
@@ -546,7 +546,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m >= 0;
+      return tmp.isnan() ? false : tmp.v_.m >= {};
     }
   }
 
