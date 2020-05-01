@@ -505,7 +505,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m < {};
+      return tmp.isnan() ? false : tmp.v_.m < 0;
     }
   }
 
@@ -519,7 +519,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m <= {};
+      return tmp.isnan() ? false : tmp.v_.m <= 0;
     }
   }
 
@@ -533,7 +533,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m > {};
+      return tmp.isnan() ? false : tmp.v_.m > 0;
     }
   }
 
@@ -547,7 +547,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m >= {};
+      return tmp.isnan() ? false : tmp.v_.m >= 0;
     }
   }
 
