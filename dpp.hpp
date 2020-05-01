@@ -33,7 +33,8 @@ private:
   >;
 
   template <typename T>
-  struct decimal_places : std::conditional_t<std::is_same_v<T, __int128_t>,
+  struct decimal_places : std::conditional_t<
+    std::is_same_v<T, __int128_t>,
     std::integral_constant<int, 38>,
     std::conditional_t<std::is_same_v<T, std::int64_t>,
       std::integral_constant<int, 18>,
