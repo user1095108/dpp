@@ -1036,17 +1036,12 @@ std::string to_string(dpp<M, E> p)
     r.append(1, '-');
   }
 
-  if (auto const i(to_integral(p)); i.has_value())
   {
-    auto const v(i.value());
+    auto const i(trunc(p));
 
-    r.append(std::to_string(v));
+    r.append(std::to_string(i.mantissa()));
 
-    p -= v;
-  }
-  else
-  {
-    return {"nan", 3};
+    p -= i;
   }
 
   if (p.mantissa())
