@@ -19,16 +19,31 @@ template <unsigned M, unsigned E>
 class dpp
 {
 public:
-  using value_type = std::conditional_t<M + E <= 16, std::int16_t,
-    std::conditional_t<M + E <= 32, std::int32_t,
-      std::conditional_t<M + E <= 64, std::int64_t, void>
+  using value_type = std::conditional_t<
+    M + E <= 16,
+    std::int16_t,
+    std::conditional_t<M + E <= 32,
+      std::int32_t,
+      std::conditional_t<
+        M + E <= 64,
+        std::int64_t,
+        void
+      >
     >
   >;
 
 private:
-  using doubled_t = std::conditional_t<M + E <= 16, std::int32_t,
-    std::conditional_t<M + E <= 32, std::int64_t,
-      std::conditional_t<M + E <= 64, __int128_t, void>
+  using doubled_t = std::conditional_t<
+    M + E <= 16,
+    std::int32_t,
+    std::conditional_t<
+      M + E <= 32,
+      std::int64_t,
+      std::conditional_t<
+        M + E <= 64,
+        __int128_t,
+        void
+      >
     >
   >;
 
