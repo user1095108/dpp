@@ -339,7 +339,7 @@ private:
     assert(!isnan(*this));
     if (v_.m)
     {
-      for (; !(v_.m % 10) && increase_exponent(); v_.m /= 10);
+      for (; !((v_.m % 10) || increase_exponent()); v_.m /= 10);
     }
   }
 
