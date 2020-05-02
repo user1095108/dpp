@@ -878,18 +878,18 @@ constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
   {
     auto tmp(o);
 
-    auto const e(o.exponent());
-
-    if (tmp.increase_exponent(-e))
+    if (auto const e(o.exponent()); tmp.increase_exponent(-e))
     {
       return dpp<M, E>{typename dpp<M, E>::nan{}};
     }
+    else
+    {
+      tmp.v_.m /= dpp<M, E>::template pow<10>(-e);
 
-    tmp.v_.m /= dpp<M, E>::template pow<10>(-e);
+      tmp.normalize();
 
-    tmp.normalize();
-
-    return tmp;
+      return tmp;
+    }
   }
   else
   {
