@@ -808,6 +808,15 @@ public:
     return *this = *this / o;
   }
 
+  friend auto abs(dpp const& p) noexcept
+  {
+    auto tmp(p);
+
+    tmp.v_.m = std::abs(p.v_.m);
+
+    return tmp;
+  }
+
   friend std::optional<std::intmax_t> to_integral(dpp const& p) noexcept
   {
     if (!p.isnan())
