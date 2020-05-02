@@ -22,7 +22,8 @@ public:
   using value_type = std::conditional_t<
     M + E <= 16,
     std::int16_t,
-    std::conditional_t<M + E <= 32,
+    std::conditional_t<
+      M + E <= 32,
       std::int32_t,
       std::conditional_t<
         M + E <= 64,
