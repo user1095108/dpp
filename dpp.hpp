@@ -820,8 +820,8 @@ public:
 
   friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
 
-  friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
-    dpp<M, E> const&) noexcept;
+  friend constexpr std::optional<std::intmax_t>
+  to_integral<M, E>(dpp<M, E> const&) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
