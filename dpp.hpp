@@ -465,7 +465,7 @@ public:
     {
       while (f)
       {
-        if (int d(f *= 10);
+        if (int const d(f *= 10);
           r <= (std::numeric_limits<std::intmax_t>::max()) / 10)
         {
           r *= 10;
@@ -488,7 +488,7 @@ public:
     {
       while (f)
       {
-        if (int d(f *= 10);
+        if (int const d(f *= 10);
           r >= std::numeric_limits<std::intmax_t>::min() / 10)
         {
           r *= 10;
