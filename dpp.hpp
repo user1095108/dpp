@@ -16,6 +16,15 @@ namespace dpp
 {
 
 template <unsigned M, unsigned E>
+class dpp;
+
+template <unsigned M, unsigned E>
+constexpr auto abs(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
+constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
 class dpp
 {
 public:
@@ -809,94 +818,23 @@ public:
     return *this = *this / o;
   }
 
-  friend auto abs(dpp const& p) noexcept
-  {
-    auto tmp(p);
+  friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
 
-    tmp.v_.m = std::abs(p.v_.m);
-
-    return tmp;
-  }
-
-  friend std::optional<std::intmax_t> to_integral(dpp const& p) noexcept
-  {
-    if (!p.isnan())
-    {
-      auto const r(p.mantissa());
-
-      if (auto const e(p.exponent()); e < 0)
-      {
-        return r / pow<10, std::intmax_t>(-e);
-      }
-      else
-      {
-        auto const c(pow<10, std::intmax_t>(e));
-
-        if (r > 0)
-        {
-          if (r <= std::numeric_limits<std::intmax_t>::max() / c)
-          {
-            return r * c;
-          }
-        }
-        else if (r < 0)
-        {
-          if (r >= std::numeric_limits<std::intmax_t>::min() / c)
-          {
-            return r * c;
-          }
-        }
-        else
-        {
-          return 0;
-        }
-      }
-    }
-
-    return {};
-  }
-
-  friend std::string to_string(dpp p)
-  {
-    if (p.isnan())
-    {
-      return {"nan", 3};
-    }
-
-    std::string r;
-
-    if (p < 0)
-    {
-      p = -p;
-      r.append(1, '-');
-    }
-
-    if (auto const i(to_integral(p)); i.has_value())
-    {
-      auto const v(i.value());
-
-      r.append(std::to_string(v));
-
-      p -= v;
-    }
-    else
-    {
-      return {"nan", 3};
-    }
-
-    if (p.mantissa())
-    {
-      auto const tmp(std::to_string(p.mantissa()));
-
-      r.append(1, '.').append(-p.exponent() - tmp.size(), '0').
-        append(tmp);
-    }
-
-    return r;
-  }
+  friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
+    dpp<M, E> const&) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr auto abs(dpp<M, E> const& p) noexcept
+{
+  auto tmp(p);
+
+  tmp.v_.m = std::abs(p.v_.m);
+
+  return tmp;
+}
+
 template <unsigned M, unsigned E>
 constexpr auto isnan(dpp<M, E> const& x) noexcept
 {
@@ -939,6 +877,45 @@ using dec64 = dpp<56, 8>;
 using dec32 = dpp<26, 6>;
 
 //////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const& p) noexcept
+{
+  if (!p.isnan())
+  {
+    auto const r(p.mantissa());
+
+    if (auto const e(p.exponent()); e < 0)
+    {
+      return r / dpp<M, E>::template pow<10, std::intmax_t>(-e);
+    }
+    else
+    {
+      auto const c(dpp<M, E>::template pow<10, std::intmax_t>(e));
+
+      if (r > 0)
+      {
+        if (r <= std::numeric_limits<std::intmax_t>::max() / c)
+        {
+          return r * c;
+        }
+      }
+      else if (r < 0)
+      {
+        if (r >= std::numeric_limits<std::intmax_t>::min() / c)
+        {
+          return r * c;
+        }
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  }
+
+  return {};
+}
+
 template <typename T, typename It>
 constexpr T to_decimal(It i, It const end) noexcept
 {
@@ -1035,6 +1012,46 @@ template <unsigned M, unsigned E>
 inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
 {
   return os << to_string(p);
+}
+
+template <unsigned M, unsigned E>
+std::string to_string(dpp<M, E> p)
+{
+  if (p.isnan())
+  {
+    return {"nan", 3};
+  }
+
+  std::string r;
+
+  if (p < 0)
+  {
+    p = -p;
+    r.append(1, '-');
+  }
+
+  if (auto const i(to_integral(p)); i.has_value())
+  {
+    auto const v(i.value());
+
+    r.append(std::to_string(v));
+
+    p -= v;
+  }
+  else
+  {
+    return {"nan", 3};
+  }
+
+  if (p.mantissa())
+  {
+    auto const tmp(std::to_string(p.mantissa()));
+
+    r.append(1, '.').append(-p.exponent() - tmp.size(), '0').
+      append(tmp);
+  }
+
+  return r;
 }
 
 }
