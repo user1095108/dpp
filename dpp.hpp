@@ -868,10 +868,8 @@ constexpr auto round(dpp<M, E> const& x) noexcept
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
 {
-  if (!isnan(o) && (o.v_.e < 0))
+  if (auto const e(o.exponent()); !isnan(o) && (o.exponent() < 0))
   {
-    auto const e(o.exponent());
-
     if (auto tmp(o); tmp.increase_exponent(-e))
     {
       return dpp<M, E>{typename dpp<M, E>::nan{}};
