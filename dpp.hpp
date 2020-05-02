@@ -857,7 +857,7 @@ constexpr auto round(dpp<M, E> const& x) noexcept
   {
     constexpr dpp<M, E> c(5, -1);
 
-    return trunc(x > 0 ? x + c : x - c);
+    return trunc(x.mantissa() > 0 ? x + c : x - c);
   }
   else
   {
@@ -868,7 +868,7 @@ constexpr auto round(dpp<M, E> const& x) noexcept
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
 {
-  if (o.v_.e < 0)
+  if (!isnan(o) && (o.v_.e < 0))
   {
     auto const e(o.exponent());
 
