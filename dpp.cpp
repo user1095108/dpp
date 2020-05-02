@@ -28,9 +28,8 @@ int main()
 {
   //
   std::cout << dpp::to_decimal<dpp::dec32>("1000.0123") << std::endl;;
-  std::cout << dpp::dec32(1000.0123) << std::endl;;
   std::cout << dpp::dec32(1000.0123f) << std::endl;;
-  std::cout << dpp::dec64(3.14) << std::endl;;
+  std::cout << dpp::dec64(-3.14) << std::endl;;
 
   //
   std::cout << sqrt(dpp::dec32(2)) << std::endl;
