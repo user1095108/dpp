@@ -883,6 +883,8 @@ constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
     tmp.v_.m /= dpp<M, E>::template pow<10>(-e);
     tmp.increase_exponent(-e);
 
+    tmp.normalize();
+
     return tmp;
   }
   else
