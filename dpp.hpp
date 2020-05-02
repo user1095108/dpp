@@ -820,8 +820,8 @@ public:
 
   friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
 
-  friend constexpr std::optional<std::intmax_t>
-  to_integral<M, E>(dpp<M, E> const&) noexcept;
+  friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
+    dpp<M, E> const&) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -878,7 +878,8 @@ using dec32 = dpp<26, 6>;
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const& p) noexcept
+constexpr std::optional<std::intmax_t> to_integral(
+  dpp<M, E> const& p) noexcept
 {
   if (!p.isnan())
   {
