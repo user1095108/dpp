@@ -25,6 +25,9 @@ template <unsigned M, unsigned E>
 constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
+constexpr dpp<M, E> trunc(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
 class dpp
 {
 public:
@@ -489,13 +492,6 @@ public:
   }
 
   //
-  friend constexpr dpp trunc(dpp const& o) noexcept
-  {
-    assert(!o.isnan());
-    return o.v_.e < 0 ? o.v_.m / pow<10>(-o.v_.e) : o;
-  }
-
-  //
   constexpr explicit operator bool() const noexcept
   {
     return isnan() || v_.m;
@@ -822,6 +818,8 @@ public:
 
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
     dpp<M, E> const&) noexcept;
+
+  friend constexpr dpp<M, E> trunc<M, E>(dpp<M, E> const& o) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -870,6 +868,13 @@ constexpr auto round(dpp<M, E> const& x) noexcept
   {
     return x;
   }
+}
+
+template <unsigned M, unsigned E>
+constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
+{
+  assert(!o.isnan());
+  return o.v_.e < 0 ? o.v_.m / dpp<M, E>::template pow<10>(-o.v_.e) : o;
 }
 
 //////////////////////////////////////////////////////////////////////////////
