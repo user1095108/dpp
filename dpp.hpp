@@ -19,6 +19,9 @@ template <unsigned M, unsigned E>
 class dpp;
 
 template <unsigned M, unsigned E>
+constexpr bool isnan(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
 constexpr auto abs(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
@@ -180,7 +183,7 @@ private:
     }
 
 /*
-    if (!a.isnan())
+    if (!isnan(a))
     {
       while (a.v_.e != b.v_.e)
       {
@@ -192,7 +195,7 @@ private:
     }
 */
 
-    if (!a.isnan() && (a.v_.e != b.v_.e))
+    if (!isnan(a) && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
 
@@ -333,7 +336,7 @@ private:
 
   constexpr void normalize() noexcept
   {
-    assert(!isnan());
+    assert(!isnan(*this));
     if (v_.m)
     {
       for (; !(v_.m % 10); v_.m /= 10)
@@ -486,27 +489,22 @@ public:
     return (v_.m > 0) - (v_.m < 0);
   }
 
-  constexpr bool isnan() const noexcept
-  {
-    return -pow<2>(E - 1) == v_.e;
-  }
-
   //
   constexpr explicit operator bool() const noexcept
   {
-    return isnan() || v_.m;
+    return isnan(*this) || v_.m;
   }
 
   constexpr explicit operator std::intmax_t() const noexcept
   {
-    assert(!isnan());
+    assert(!isnan(*this));
     return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
   }
 
   //
   constexpr auto operator==(dpp const& o) const noexcept
   {
-    return isnan() || o.isnan() ? false :
+    return isnan(*this) || isnan(o) ? false :
       (v_.e == o.v_.e) && (v_.m == o.v_.m);
   }
 
@@ -518,7 +516,7 @@ public:
   //
   constexpr auto operator<(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return false;
     }
@@ -526,13 +524,13 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m < 0;
+      return isnan(tmp) ? false : tmp.v_.m < 0;
     }
   }
 
   constexpr auto operator<=(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return false;
     }
@@ -540,13 +538,13 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m <= 0;
+      return isnan(tmp) ? false : tmp.v_.m <= 0;
     }
   }
 
   constexpr auto operator>(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return false;
     }
@@ -554,13 +552,13 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m > 0;
+      return isnan(tmp) ? false : tmp.v_.m > 0;
     }
   }
 
   constexpr auto operator>=(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return false;
     }
@@ -568,7 +566,7 @@ public:
     {
       auto const tmp(*this - o);
 
-      return tmp.isnan() ? false : tmp.v_.m >= 0;
+      return isnan(tmp) ? false : tmp.v_.m >= 0;
     }
   }
 
@@ -590,7 +588,7 @@ public:
   //
   constexpr auto operator+(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return dpp{nan{}};
     }
@@ -598,7 +596,7 @@ public:
     {
       auto [tmp1, tmp2](add_prep(*this, o));
 
-      if (!tmp1.isnan() && !tmp2.isnan())
+      if (!isnan(tmp1) && !isnan(tmp2))
       {
         tmp1.v_.m += tmp2.v_.m;
 
@@ -611,7 +609,7 @@ public:
 
   constexpr auto operator-(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return dpp{nan{}};
     }
@@ -619,7 +617,7 @@ public:
     {
       auto [tmp1, tmp2](sub_prep(*this, o));
 
-      if (!tmp1.isnan() && !tmp2.isnan())
+      if (!isnan(tmp1) && !isnan(tmp2))
       {
         tmp1.v_.m -= tmp2.v_.m;
 
@@ -633,7 +631,7 @@ public:
   //
   constexpr auto operator*(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan())
+    if (isnan(*this) || isnan(o))
     {
       return dpp{nan{}};
     }
@@ -694,7 +692,7 @@ public:
 
   constexpr auto operator/(dpp const& o) const noexcept
   {
-    if (isnan() || o.isnan() || !o.v_.m)
+    if (isnan(*this) || isnan(o) || !o.v_.m)
     {
       return dpp{nan{}};
     }
@@ -814,6 +812,8 @@ public:
     return *this = *this / o;
   }
 
+  friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
+
   friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
 
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
@@ -824,6 +824,13 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
+constexpr bool isnan(dpp<M, E> const& o) noexcept
+{
+  return -dpp<M, E>::template pow<2>(E - 1) == o.v_.e;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
 constexpr auto abs(dpp<M, E> const& p) noexcept
 {
   auto tmp(p);
@@ -831,12 +838,6 @@ constexpr auto abs(dpp<M, E> const& p) noexcept
   tmp.v_.m = std::abs(p.v_.m);
 
   return tmp;
-}
-
-template <unsigned M, unsigned E>
-constexpr auto isnan(dpp<M, E> const& x) noexcept
-{
-  return x.isnan();
 }
 
 template <unsigned M, unsigned E>
@@ -873,7 +874,7 @@ constexpr auto round(dpp<M, E> const& x) noexcept
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
 {
-  assert(!o.isnan());
+  assert(!isnan(o));
   return o.v_.e < 0 ? o.v_.m / dpp<M, E>::template pow<10>(-o.v_.e) : o;
 }
 
@@ -886,7 +887,7 @@ template <unsigned M, unsigned E>
 constexpr std::optional<std::intmax_t> to_integral(
   dpp<M, E> const& p) noexcept
 {
-  if (!p.isnan())
+  if (!isnan(p))
   {
     auto const r(p.mantissa());
 
@@ -1023,7 +1024,7 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
 template <unsigned M, unsigned E>
 std::string to_string(dpp<M, E> p)
 {
-  if (p.isnan())
+  if (isnan(p))
   {
     return {"nan", 3};
   }
