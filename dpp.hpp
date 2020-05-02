@@ -1053,6 +1053,7 @@ std::string to_string(dpp<M, E> p)
   if (p < 0)
   {
     p = -p;
+
     r.append(1, '-');
   }
 
@@ -1061,6 +1062,7 @@ std::string to_string(dpp<M, E> p)
     auto const v(o.value());
 
     r.append(std::to_string(v));
+
     p -= v;
   }
   else
