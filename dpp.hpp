@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+#include <cmath>
+
 #include <optional>
 
 #include <ostream>
@@ -395,7 +397,7 @@ public:
     normalize();
   }
 
-  constexpr dpp(value_type m, value_type const e) noexcept :
+  constexpr dpp(std::intmax_t m, int const e) noexcept :
     v_{}
   {
     if ((e <= pow<2>(E - 1) - 1) && (e > -pow<2>(E - 1)))
@@ -448,6 +450,67 @@ public:
 
     normalize();
   }
+
+  template <typename U,
+    std::enable_if_t<std::is_floating_point_v<std::decay_t<U>>, int> = 0
+  >
+  constexpr dpp(U f) noexcept
+  {
+    std::intmax_t r(f);
+    f -= r;
+
+    int e{};
+
+    if (r > 0)
+    {
+      for (int d; f;)
+      {
+        if (d = f *= 10;
+          r <= (std::numeric_limits<std::intmax_t>::max()) / 10)
+        {
+          r *= 10;
+
+          if (r <= std::numeric_limits<std::intmax_t>::max() - d)
+          {
+            r += d;
+            f -= d;
+
+            --e;
+
+            continue;
+          }
+        }
+
+        break;
+      }
+    }
+    else if (r < 0)
+    {
+      for (int d; f;)
+      {
+        if (d = f *= 10;
+          r >= std::numeric_limits<std::intmax_t>::min() / 10)
+        {
+          r *= 10;
+
+          if (r >= std::numeric_limits<std::intmax_t>::min() - d)
+          {
+            r += d;
+            f -= d;
+
+            --e;
+
+            continue;
+          }
+        }
+
+        break;
+      }
+    }
+
+    *this = dpp(r, e);
+  }
+
 
   struct nan{};
 
