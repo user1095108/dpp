@@ -876,9 +876,9 @@ constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
 {
   if (o.v_.e < 0)
   {
-    auto tmp(o);
+    auto const e(o.exponent());
 
-    if (auto const e(o.exponent()); tmp.increase_exponent(-e))
+    if (auto tmp(o); tmp.increase_exponent(-e))
     {
       return dpp<M, E>{typename dpp<M, E>::nan{}};
     }
