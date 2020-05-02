@@ -874,7 +874,21 @@ constexpr auto round(dpp<M, E> const& x) noexcept
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
 {
-  return o.v_.e < 0 ? o.v_.m / dpp<M, E>::template pow<10>(-o.v_.e) : o;
+  if (o.v_.e < 0)
+  {
+    auto tmp(o);
+
+    auto const e(o.exponent());
+
+    tmp.v_.m /= dpp<M, E>::template pow<10>(-e);
+    tmp.increase_exponent(-e);
+
+    return tmp;
+  }
+  else
+  {
+    return o;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
