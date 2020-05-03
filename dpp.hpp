@@ -1028,9 +1028,9 @@ constexpr T to_decimal(It i, It const end) noexcept
         return {typename T::nan{}};
     }
 
-    int fcount{};
-
     typename T::value_type r{};
+
+    constexpr auto max(std::numeric_limits<std::intmax_t>::max());
 
     for (; i != end; i = std::next(i))
     {
@@ -1042,12 +1042,25 @@ constexpr T to_decimal(It i, It const end) noexcept
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          r = 10 * r + (*i - '0');
-          continue;
+          if (r <= max / 10)
+          {
+            r = 10 * r;
+
+            auto const d(*i - '0');
+
+            if (r <= max - d)
+            {
+              r += d;
+
+              continue;
+            }
+          }
+
+          break;
 
         case '\0':
         {
-          auto const tmp(T(r, -fcount));
+          auto const tmp(T(r, 0));
           return positive ? tmp : -tmp;
         }
 
@@ -1058,14 +1071,29 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    for (; i != end; ++fcount, i = std::next(i))
+    int e{};
+
+    for (; i != end; --e, i = std::next(i))
     {
       switch (*i)
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          r = 10 * r + (*i - '0');
-          continue;
+          if (r <= max / 10)
+          {
+            r = 10 * r;
+
+            auto const d(*i - '0');
+
+            if (r <= max - d)
+            {
+              r += d;
+
+              continue;
+            }
+          }
+
+          break;
 
         case '\0':
           break;
@@ -1077,7 +1105,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    auto const tmp(T(r, -fcount));
+    auto const tmp(T(r, e));
     return positive ? tmp : -tmp;
   }
 }
@@ -1133,6 +1161,24 @@ std::string to_string(dpp<M, E> p)
   }
 
   return r;
+}
+
+namespace literals
+{
+
+//////////////////////////////////////////////////////////////////////////////
+constexpr auto operator "" _d32(char const* const s,
+  std::size_t const N) noexcept
+{
+  return to_decimal<dec32>(std::string_view(s, N));
+}
+
+constexpr auto operator "" _d64(char const* const s,
+  std::size_t const N) noexcept
+{
+  return to_decimal<dec64>(std::string_view(s, N));
+}
+
 }
 
 }
