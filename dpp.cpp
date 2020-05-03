@@ -2,6 +2,8 @@
 
 #include "dpp.hpp"
 
+using namespace dpp::literals;
+
 template <typename T>
 constexpr auto sqrt(T const S) noexcept
 {
@@ -27,14 +29,14 @@ constexpr auto sqrt(T const S) noexcept
 int main()
 {
   //
-  std::cout << dpp::to_decimal<dpp::dec32>("1000.0123") << std::endl;;
+  std::cout << "1000.0123"_d32 << std::endl;;
   std::cout << dpp::dec32(1000.0123f) << std::endl;;
   std::cout << dpp::dec64(-3.14) << std::endl;;
 
   //
-  std::cout << sqrt(dpp::dec32(2)) << std::endl;
-  std::cout << sqrt(dpp::dec64(3)) << std::endl;
-  std::cout << sqrt(dpp::dec32(9)) << std::endl;
+  std::cout << sqrt("2"_d32) << std::endl;
+  std::cout << sqrt("3"_d64) << std::endl;
+  std::cout << sqrt("9"_d32) << std::endl;
 
   //
   auto const a(dpp::to_decimal<dpp::dec64>("1.23"));
