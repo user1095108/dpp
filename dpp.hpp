@@ -42,6 +42,9 @@ template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
 
+template <typename T, unsigned M, unsigned E>
+constexpr T to_float(dpp<M, E> const&) noexcept;
+
 template <unsigned M, unsigned E>
 class dpp
 {
@@ -585,7 +588,6 @@ public:
   }
 
   //
-
   constexpr explicit operator bool() const noexcept
   {
     return isnan(*this) || v_.m;
@@ -595,6 +597,21 @@ public:
   {
     assert(!isnan(*this));
     return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
+  }
+
+  constexpr explicit operator float() const noexcept
+  {
+    return to_float<float>(*this);
+  }
+
+  constexpr explicit operator double() const noexcept
+  {
+    return to_float<double>(*this);
+  }
+
+  constexpr explicit operator long double() const noexcept
+  {
+    return to_float<long double>(*this);
   }
 
   //
