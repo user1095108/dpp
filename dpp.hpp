@@ -1160,12 +1160,6 @@ constexpr T to_float(dpp<M, E> const& p) noexcept
 }
 
 template <unsigned M, unsigned E>
-inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
-{
-  return os << to_string(p);
-}
-
-template <unsigned M, unsigned E>
 std::string to_string(dpp<M, E> p)
 {
   if (isnan(p))
@@ -1203,6 +1197,12 @@ std::string to_string(dpp<M, E> p)
   }
 
   return r;
+}
+
+template <unsigned M, unsigned E>
+inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
+{
+  return os << to_string(p);
 }
 
 //////////////////////////////////////////////////////////////////////////////
