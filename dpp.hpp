@@ -465,12 +465,13 @@ public:
     {
       while (f)
       {
-        if (int const d(f *= 10);
-          r <= (std::numeric_limits<std::intmax_t>::max()) / 10)
+        constexpr auto max(std::numeric_limits<std::intmax_t>::max());
+
+        if (int const d(f *= 10); r <= max / 10)
         {
           r *= 10;
 
-          if (r <= std::numeric_limits<std::intmax_t>::max() - d)
+          if (r <= max - d)
           {
             r += d;
             f -= d;
@@ -488,12 +489,13 @@ public:
     {
       while (f)
       {
-        if (int const d(f *= 10);
-          r >= std::numeric_limits<std::intmax_t>::min() / 10)
+        constexpr auto min(std::numeric_limits<std::intmax_t>::min());
+
+        if (int const d(f *= 10); r >= min / 10)
         {
           r *= 10;
 
-          if (r >= std::numeric_limits<std::intmax_t>::min() - d)
+          if (r >= min - d)
           {
             r += d;
             f -= d;
@@ -510,7 +512,6 @@ public:
 
     *this = dpp(r, e);
   }
-
 
   struct nan{};
 
