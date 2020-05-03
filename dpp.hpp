@@ -1156,8 +1156,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
 template <typename T, unsigned M, unsigned E>
 constexpr T to_float(dpp<M, E> const& p) noexcept
 {
-  return isnan(p) ? std::nan("") :
-    p.mantissa() * std::pow(T(10), p.exponent());
+  return isnan(p) ? NAN : p.mantissa() * std::pow(T(10), p.exponent());
 }
 
 template <unsigned M, unsigned E>
