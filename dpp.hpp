@@ -6,9 +6,13 @@
 
 #include <cstdint>
 
+#include <iterator>
+
 #include <optional>
 
 #include <ostream>
+
+#include <string_view>
 
 #include <type_traits>
 
@@ -31,6 +35,10 @@ constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const&) noexcept;
+
+template <typename T, typename S>
+constexpr auto to_decimal(S const& s) noexcept ->
+  decltype(std::cbegin(s), std::cend(s), T());
 
 template <unsigned M, unsigned E>
 class dpp
@@ -511,6 +519,7 @@ public:
     *this = dpp(r, e);
   }
 
+
   struct nan{};
 
   constexpr dpp(nan&&) noexcept :
@@ -546,6 +555,35 @@ public:
   }
 
   //
+  template <typename U, std::size_t N,
+    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
+  >
+  constexpr dpp(U(&s)[N]) noexcept
+  {
+    *this = s;
+  }
+
+  constexpr dpp(std::string_view const& s) noexcept
+  {
+    *this = s;
+  }
+
+  //
+  template <typename U, std::size_t N,
+    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
+  >
+  constexpr auto& operator=(U(&s)[N]) noexcept
+  {
+    return *this = to_decimal<dpp>(s);
+  }
+
+  constexpr auto& operator=(std::string_view const& s) noexcept
+  {
+    return *this = to_decimal<dpp>(s);
+  }
+
+  //
+
   constexpr explicit operator bool() const noexcept
   {
     return isnan(*this) || v_.m;
