@@ -31,7 +31,8 @@ int main()
   //
   std::cout << "1000.0123"_d32 << std::endl;;
   std::cout << dpp::dec32(1000.0123f) << std::endl;;
-  std::cout << dpp::dec64(-3.14) << std::endl;;
+  std::cout << dpp::dec64(-3.14) << std::endl;
+  std::cout << dpp::to_float<float>(dpp::dec64(-3.14)) << std::endl;
 
   //
   std::cout << std::endl;
