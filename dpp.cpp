@@ -34,13 +34,18 @@ int main()
   std::cout << dpp::dec64(-3.14) << std::endl;;
 
   //
+  std::cout << std::endl;
   std::cout << sqrt("2"_d32) << std::endl;
   std::cout << sqrt("3"_d64) << std::endl;
   std::cout << sqrt("9"_d32) << std::endl;
 
   //
+  std::cout << std::endl;
   auto const a(dpp::to_decimal<dpp::dec64>("1.23"));
   auto const b(dpp::to_decimal<dpp::dec64>("45.6"));
+
+  std::cout << a << std::endl;
+  std::cout << b << std::endl;
 
   std::cout << a + b << std::endl;
   std::cout << a - b << std::endl;
@@ -49,7 +54,7 @@ int main()
   std::cout << b / a << std::endl;
 
   //
-  std::cout << dpp::ceil(a) << std::endl;
+  std::cout << dpp::ceil(b) << std::endl;
   std::cout << dpp::floor(b) << std::endl;
   std::cout << dpp::round(b) << std::endl;
 

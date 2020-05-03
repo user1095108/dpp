@@ -84,7 +84,7 @@ private:
   };
 
   template <typename T>
-  constexpr static auto decimal_places_v{decimal_places<T>::value};
+  constexpr static int decimal_places_v{decimal_places<T>::value};
 
   template <typename U>
   constexpr static auto bit_size() noexcept
@@ -467,7 +467,8 @@ public:
       {
         constexpr auto max(std::numeric_limits<std::intmax_t>::max());
 
-        if (int const d(f *= 10); r <= max / 10)
+        if (int const d(f *= 10);
+          (e >= std::numeric_limits<int>::min() + 1) && (r <= max / 10))
         {
           r *= 10;
 
@@ -491,7 +492,8 @@ public:
       {
         constexpr auto min(std::numeric_limits<std::intmax_t>::min());
 
-        if (int const d(f *= 10); r >= min / 10)
+        if (int const d(f *= 10);
+          (e >= std::numeric_limits<int>::min() + 1) && (r >= min / 10))
         {
           r *= 10;
 
@@ -758,7 +760,7 @@ public:
     {
       dpp tmp(*this);
 
-      constexpr auto e(decimal_places_v<doubled_t>);
+      constexpr auto e(dpp::dpp::decimal_places_v<doubled_t>);
 
       auto r(pow<10, doubled_t>(e) / o.v_.m);
 
@@ -932,7 +934,7 @@ constexpr auto round(dpp<M, E> const& x) noexcept
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
 {
-  if (auto const e(o.exponent()); !isnan(o) && (o.exponent() < 0))
+  if (auto const e(o.exponent()); !isnan(o) && (e < 0))
   {
     if (auto tmp(o); tmp.increase_exponent(-e))
     {
@@ -1074,26 +1076,18 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     for (; i != end; i = std::next(i))
     {
-      if (e >= std::numeric_limits<int>::min() + 1)
-      {
-        --e;
-      }
-      else
-      {
-        break;
-      }
-
       switch (*i)
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (r <= max / 10)
+          if ((e >= std::numeric_limits<int>::min() + 1) && (r <= max / 10))
           {
             r *= 10;
 
             if (auto const d(*i - '0'); r <= max - d)
             {
               r += d;
+              --e;
 
               continue;
             }
