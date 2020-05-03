@@ -1045,11 +1045,9 @@ constexpr T to_decimal(It i, It const end) noexcept
         case '5': case '6': case '7': case '8': case '9':
           if (r <= max / 10)
           {
-            r = 10 * r;
+            r *= 10;
 
-            auto const d(*i - '0');
-
-            if (r <= max - d)
+            if (auto const d(*i - '0'); r <= max - d)
             {
               r += d;
 
@@ -1091,11 +1089,9 @@ constexpr T to_decimal(It i, It const end) noexcept
         case '5': case '6': case '7': case '8': case '9':
           if (r <= max / 10)
           {
-            r = 10 * r;
+            r *= 10;
 
-            auto const d(*i - '0');
-
-            if (r <= max - d)
+            if (auto const d(*i - '0'); r <= max - d)
             {
               r += d;
 
