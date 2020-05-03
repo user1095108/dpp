@@ -4,6 +4,8 @@
 
 #include <cassert>
 
+#include <cmath>
+
 #include <cstdint>
 
 #include <iterator>
@@ -1149,6 +1151,12 @@ constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T())
 {
   return to_decimal<T>(std::cbegin(s), std::cend(s));
+}
+
+template <typename T, unsigned M, unsigned E>
+constexpr T to_float(dpp<M, E> const& p) noexcept
+{
+  return p.mantissa() * std::pow(double(10), p.exponent());
 }
 
 template <unsigned M, unsigned E>
