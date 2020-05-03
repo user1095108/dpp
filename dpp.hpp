@@ -1074,8 +1074,17 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     int e{};
 
-    for (; i != end; --e, i = std::next(i))
+    for (; i != end; i = std::next(i))
     {
+      if (e >= std::numeric_limits<int>::min() + 1)
+      {
+        --e;
+      }
+      else
+      {
+        break;
+      }
+
       switch (*i)
       {
         case '0': case '1': case '2': case '3': case '4':
