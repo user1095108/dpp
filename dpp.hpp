@@ -470,9 +470,7 @@ public:
         if (int const d(f *= 10);
           (e >= std::numeric_limits<int>::min() + 1) && (r <= max / 10))
         {
-          r *= 10;
-
-          if (r <= max - d)
+          if (r *= 10; r <= max - d)
           {
             r += d;
             f -= d;
@@ -495,9 +493,7 @@ public:
         if (int const d(f *= 10);
           (e >= std::numeric_limits<int>::min() + 1) && (r >= min / 10))
         {
-          r *= 10;
-
-          if (r >= min - d)
+          if (r *= 10; r >= min - d)
           {
             r += d;
             f -= d;
