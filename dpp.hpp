@@ -65,13 +65,13 @@ public:
 
 private:
   using doubled_t = std::conditional_t<
-    M + E <= 16,
+    std::is_same_v<value_type, std::int16_t>,
     std::int32_t,
     std::conditional_t<
-      M + E <= 32,
+      std::is_same_v<value_type, std::int32_t>,
       std::int64_t,
       std::conditional_t<
-        M + E <= 64,
+        std::is_same_v<value_type, std::int64_t>,
         __int128_t,
         void
       >
