@@ -82,11 +82,14 @@ private:
   struct decimal_places : std::conditional_t<
     std::is_same_v<T, __int128_t>,
     std::integral_constant<int, 38>,
-    std::conditional_t<std::is_same_v<T, std::int64_t>,
+    std::conditional_t<
+      std::is_same_v<T, std::int64_t>,
       std::integral_constant<int, 18>,
-      std::conditional_t<std::is_same_v<T, std::int32_t>,
+      std::conditional_t<
+        std::is_same_v<T, std::int32_t>,
         std::integral_constant<int, 9>,
-        std::conditional_t<std::is_same_v<T, std::int16_t>,
+        std::conditional_t<
+          std::is_same_v<T, std::int16_t>,
           std::integral_constant<int, 4>,
           void
         >
