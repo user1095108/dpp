@@ -27,6 +27,9 @@ template <unsigned M, unsigned E>
 class dpp;
 
 template <unsigned M, unsigned E>
+constexpr int sign(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
@@ -247,9 +250,9 @@ private:
       equalize(tmp2, tmp1);
     }
 
-    if (tmp1.sign() == tmp2.sign())
+    if (sign(tmp1) == sign(tmp2))
     {
-      if (1 == tmp1.sign())
+      if (1 == sign(tmp1))
       {
         constexpr auto max(pow<2>(M - 1) - 1);
 
@@ -261,7 +264,7 @@ private:
           }
         }
       }
-      else if (-1 == tmp1.sign())
+      else if (-1 == sign(tmp1))
       {
         constexpr auto min(-pow<2>(M - 1));
 
@@ -289,9 +292,9 @@ private:
       equalize(tmp2, tmp1);
     }
 
-    if (tmp1.sign() != tmp2.sign())
+    if (sign(tmp1) != sign(tmp2))
     {
-      if (1 == tmp1.sign())
+      if (1 == sign(tmp1))
       {
         constexpr auto max(pow<2>(M - 1) - 1);
 
@@ -303,7 +306,7 @@ private:
           }
         }
       }
-      else if (-1 == tmp1.sign())
+      else if (-1 == sign(tmp1))
       {
         constexpr auto min(-pow<2>(M - 1));
 
@@ -555,11 +558,6 @@ public:
   constexpr auto packed() const noexcept
   {
     return (v_.m << E) | v_.e;
-  }
-
-  constexpr auto sign() const noexcept
-  {
-    return (v_.m > 0) - (v_.m < 0);
   }
 
   //
@@ -928,22 +926,17 @@ public:
     return *this = *this / o;
   }
 
+  friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
+
   friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
 
-  friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
+  friend constexpr int sign<M, E>(dpp<M, E> const&) noexcept;
 
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
     dpp<M, E> const&) noexcept;
 
   friend constexpr dpp<M, E> trunc<M, E>(dpp<M, E> const& o) noexcept;
 };
-
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
-constexpr bool isnan(dpp<M, E> const& o) noexcept
-{
-  return -dpp<M, E>::template pow<2>(E - 1) == o.v_.e;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
@@ -954,6 +947,20 @@ constexpr auto abs(dpp<M, E> const& p) noexcept
   tmp.v_.m = std::abs(p.v_.m);
 
   return tmp;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr bool isnan(dpp<M, E> const& o) noexcept
+{
+  return -dpp<M, E>::template pow<2>(E - 1) == o.v_.e;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr int sign(dpp<M, E> const& o) noexcept
+{
+  return (o.v_.m > 0) - (o.v_.m < 0);
 }
 
 template <unsigned M, unsigned E>
