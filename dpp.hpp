@@ -27,16 +27,13 @@ template <unsigned M, unsigned E>
 class dpp;
 
 template <unsigned M, unsigned E>
-constexpr int sign(dpp<M, E> const&) noexcept;
+constexpr auto abs(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const&) noexcept;
-
-template <unsigned M, unsigned E>
-constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const&) noexcept;
+constexpr int sign(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const&) noexcept;
@@ -47,6 +44,9 @@ constexpr auto to_decimal(S const& s) noexcept ->
 
 template <typename T, unsigned M, unsigned E>
 constexpr T to_float(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
+constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
 class dpp
