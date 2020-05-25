@@ -51,14 +51,14 @@ int main()
 
   //
   std::cout << std::endl;
-  std::cout << std::setprecision(17) << euler(1., 0., 1., .000001,
-    [](auto const& y, auto const&) noexcept
-    {
-      return y;
-    }
-    ) << std::endl;
-
-  std::cout << euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64,
+  std::cout << std::setprecision(17) <<
+    euler(1., 0., 1., .000001,
+      [](auto const& y, auto const&) noexcept
+      {
+        return y;
+      }
+    ) << " " <<
+    euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64,
     [](auto const& y, auto const&) noexcept
     {
       return y;
@@ -67,9 +67,9 @@ int main()
 
   //
   std::cout << std::endl;
-  std::cout << sqrt("2"_d32) << std::endl;
-  std::cout << sqrt("3"_d64) << std::endl;
-  std::cout << sqrt("9"_d32) << std::endl;
+  std::cout << sqrt(2.f) << " " << sqrt("2"_d32) << std::endl;
+  std::cout << sqrt(3.) << " " << sqrt("3"_d64) << std::endl;
+  std::cout << sqrt(9.) << " " << sqrt("5"_d64) << std::endl;
 
   //
   std::cout << std::endl;
