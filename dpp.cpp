@@ -36,7 +36,7 @@ constexpr auto sqrt(T const S) noexcept
     e = en;
     en = xn - x;
   }
-  while (dpp::abs(en) < dpp::abs(e));
+  while (abs(en) < abs(e));
 
   return x;
 }
