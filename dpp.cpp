@@ -38,7 +38,7 @@ constexpr auto sqrt(T const S) noexcept
   }
   while (abs(en) < abs(e));
 
-  return x;
+  return xn;
 }
 
 int main()
@@ -69,7 +69,7 @@ int main()
   std::cout << std::endl;
   std::cout << sqrt(2.f) << " " << sqrt("2"_d32) << std::endl;
   std::cout << sqrt(3.) << " " << sqrt("3"_d64) << std::endl;
-  std::cout << sqrt(9.) << " " << sqrt("5"_d64) << std::endl;
+  std::cout << sqrt(9.f) << " " << sqrt("9"_d32) << std::endl;
 
   //
   std::cout << std::endl;
