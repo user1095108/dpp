@@ -1,8 +1,23 @@
 #include <iostream>
 
+#include <iomanip>
+
 #include "dpp.hpp"
 
 using namespace dpp::literals;
+
+template <typename T, typename F>
+constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
+{
+  while (t < t1)
+  {
+    t += h;
+
+    y += h * f(y, t);
+  }
+
+  return y;
+}
 
 template <typename T>
 constexpr auto sqrt(T const S) noexcept
@@ -33,6 +48,22 @@ int main()
   std::cout << dpp::dec32(1000.0123f) << std::endl;;
   std::cout << dpp::dec64(-3.14) << std::endl;
   std::cout << dpp::to_float<float>(dpp::dec64(-3.14)) << std::endl;
+
+  //
+  std::cout << std::endl;
+  std::cout << std::setprecision(17) << euler(1., 0., 1., .000001,
+    [](auto const& y, auto const&) noexcept
+    {
+      return y;
+    }
+    ) << std::endl;
+
+  std::cout << euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64,
+    [](auto const& y, auto const&) noexcept
+    {
+      return y;
+    }
+    ) << std::endl;
 
   //
   std::cout << std::endl;
