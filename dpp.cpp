@@ -11,9 +11,9 @@ constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
 {
   while (t < t1)
   {
-    t += h;
-
     y += h * f(y, t);
+
+    t += h;
   }
 
   return y;
