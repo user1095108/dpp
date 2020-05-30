@@ -884,7 +884,9 @@ public:
         tmp.v_.m = r;
       }
 
-      return tmp.normalize(), tmp;
+      tmp.normalize();
+
+      return tmp;
     }
   }
 
@@ -992,7 +994,9 @@ public:
         tmp.v_.m = r;
       }
 
-      return tmp.normalize(), tmp;
+      tmp.normalize();
+
+      return tmp;
     }
   }
 
