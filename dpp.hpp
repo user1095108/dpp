@@ -232,124 +232,6 @@ private:
 */
   }
 
-  static constexpr bool fix_floats(dpp& a, dpp& b) noexcept
-  {
-    // both floats need to be fixed to preserve the identical exponents
-    round_mantissa(a);
-    a.v_.m /= 10;
-
-    round_mantissa(b);
-    b.v_.m /= 10;
-
-    return a.increase_exponent() || b.increase_exponent();
-  }
-
-  static constexpr auto add_prep(dpp tmp1, dpp tmp2) noexcept
-  {
-    if (tmp1.v_.e > tmp2.v_.e)
-    {
-      equalize(tmp1, tmp2);
-    }
-    else if (tmp2.v_.e > tmp1.v_.e)
-    {
-      equalize(tmp2, tmp1);
-    }
-
-    if (auto const s(sign(tmp1)); s == sign(tmp2))
-    {
-      switch (s)
-      {
-        case -1:
-        {
-          constexpr auto min(-pow<2>(M - 1));
-
-          while (tmp1.v_.m < min - tmp2.v_.m)
-          {
-            if (fix_floats(tmp1, tmp2))
-            {
-              break;
-            }
-          }
-
-          break;
-        }
-
-        case 1:
-        {
-          constexpr auto max(pow<2>(M - 1) - 1);
-
-          while (tmp1.v_.m > max - tmp2.v_.m)
-          {
-            if (fix_floats(tmp1, tmp2))
-            {
-              break;
-            }
-          }
-
-          break;
-        }
-
-        default:
-          break;
-      }
-    }
-
-    return std::pair(tmp1, tmp2);
-  }
-
-  static constexpr auto sub_prep(dpp tmp1, dpp tmp2) noexcept
-  {
-    if (tmp1.v_.e > tmp2.v_.e)
-    {
-      equalize(tmp1, tmp2);
-    }
-    else if (tmp2.v_.e > tmp1.v_.e)
-    {
-      equalize(tmp2, tmp1);
-    }
-
-    if (auto const s(sign(tmp1)); s != sign(tmp2))
-    {
-      switch (s)
-      {
-        case -1:
-        {
-          constexpr auto min(-pow<2>(M - 1));
-
-          while (tmp1.v_.m < min + tmp2.v_.m)
-          {
-            if (fix_floats(tmp1, tmp2))
-            {
-              break;
-            }
-          }
-
-          break;
-        }
-
-        case 1:
-        {
-          constexpr auto max(pow<2>(M - 1) - 1);
-
-          while (tmp1.v_.m > max + tmp2.v_.m)
-          {
-            if (fix_floats(tmp1, tmp2))
-            {
-              break;
-            }
-          }
-
-          break;
-        }
-
-        default:
-          break;
-      }
-    }
-
-    return std::pair(tmp1, tmp2);
-  }
-
   constexpr bool decrease_exponent(int const e = 1) noexcept
   {
     if ((v_.e > -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
@@ -823,11 +705,56 @@ public:
     }
     else
     {
-      auto [tmp1, tmp2](add_prep(*this, o));
+      auto tmp1(*this), tmp2(o);
+
+      if (tmp1.v_.e > tmp2.v_.e)
+      {
+        equalize(tmp1, tmp2);
+      }
+      else if (tmp2.v_.e > tmp1.v_.e)
+      {
+        equalize(tmp2, tmp1);
+      }
 
       if (!isnan(tmp1) && !isnan(tmp2))
       {
-        tmp1.v_.m += tmp2.v_.m;
+        auto r(doubled_t(tmp1.v_.m) + tmp2.v_.m);
+
+        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+        constexpr auto rmax(-(rmin + 1));
+
+        // fit into target mantissa
+        while (r < -pow<2>(M - 1))
+        {
+          if (r >= rmin + 5)
+          {
+            r -= 5;
+          }
+
+          r /= 10;
+
+          if (tmp1.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
+
+        while (r > pow<2>(M - 1) - 1)
+        {
+          if (r <= rmax - 5)
+          {
+            r += 5;
+          }
+
+          r /= 10;
+
+          if (tmp1.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
+
+        tmp1.v_.m = r;
 
         tmp1.normalize();
       }
@@ -844,11 +771,56 @@ public:
     }
     else
     {
-      auto [tmp1, tmp2](sub_prep(*this, o));
+      auto tmp1(*this), tmp2(o);
+
+      if (tmp1.v_.e > tmp2.v_.e)
+      {
+        equalize(tmp1, tmp2);
+      }
+      else if (tmp2.v_.e > tmp1.v_.e)
+      {
+        equalize(tmp2, tmp1);
+      }
 
       if (!isnan(tmp1) && !isnan(tmp2))
       {
-        tmp1.v_.m -= tmp2.v_.m;
+        auto r(doubled_t(tmp1.v_.m) - tmp2.v_.m);
+
+        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+        constexpr auto rmax(-(rmin + 1));
+
+        // fit into target mantissa
+        while (r < -pow<2>(M - 1))
+        {
+          if (r >= rmin + 5)
+          {
+            r -= 5;
+          }
+
+          r /= 10;
+
+          if (tmp1.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
+
+        while (r > pow<2>(M - 1) - 1)
+        {
+          if (r <= rmax - 5)
+          {
+            r += 5;
+          }
+
+          r /= 10;
+
+          if (tmp1.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
+
+        tmp1.v_.m = r;
 
         tmp1.normalize();
       }
@@ -876,10 +848,13 @@ public:
       {
         auto r(doubled_t(tmp.v_.m) * o.v_.m);
 
+        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+        constexpr auto rmax(-(rmin + 1));
+
         // fit into target mantissa
         while (r < -pow<2>(M - 1))
         {
-          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+          if (r >= rmin + 5)
           {
             r -= 5;
           }
@@ -894,7 +869,7 @@ public:
 
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+          if (r <= rmax - 5)
           {
             r += 5;
           }
