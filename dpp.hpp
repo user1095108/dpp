@@ -102,9 +102,6 @@ private:
   {
   };
 
-  template <typename T>
-  constexpr static int decimal_places_v{decimal_places<T>::value};
-
   template <typename U>
   constexpr static auto bit_size() noexcept
   {
@@ -899,7 +896,7 @@ public:
     }
     else
     {
-      constexpr auto e(dpp::dpp::decimal_places_v<doubled_t>);
+      constexpr auto e(dpp::dpp::decimal_places<doubled_t>{});
 
       dpp tmp(*this);
 
