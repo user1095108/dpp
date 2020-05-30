@@ -22,11 +22,7 @@ constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
 template <typename T>
 constexpr auto sqrt(T const S) noexcept
 {
-  T x;
-  T xn(S);
-
-  T e;
-  T en(S);
+  T x, xn(S), e, en(S);
 
   do
   {
