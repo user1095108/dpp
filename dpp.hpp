@@ -935,14 +935,14 @@ public:
       {
         auto r(pow<10, doubled_t>(e) / o.v_.m);
 
-        constexpr auto min(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
-        constexpr auto max(-(min + 1));
+        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+        constexpr auto rmax(-(min + 1));
 
         if (r > 0)
         {
-          while (r > max / tmp.v_.m)
+          while (r > rmax / tmp.v_.m)
           {
-            if (r <= max - 5)
+            if (r <= rmax - 5)
             {
               r += 5;
             }
@@ -957,9 +957,9 @@ public:
         }
         else if (r < 0)
         {
-          while (r < min / tmp.v_.m)
+          while (r < rmin / tmp.v_.m)
           {
-            if (r >= min + 5)
+            if (r >= rmin + 5)
             {
               r -= 5;
             }
@@ -977,7 +977,7 @@ public:
 
         while (r > pow<2>(M - 1) - 1)
         {
-          if (r <= max - 5)
+          if (r <= rmax - 5)
           {
             r += 5;
           }
@@ -992,7 +992,7 @@ public:
 
         while (r < -pow<2>(M - 1))
         {
-          if (r >= min + 5)
+          if (r >= rmin + 5)
           {
             r -= 5;
           }
