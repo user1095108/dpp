@@ -165,7 +165,6 @@ private:
     //a.v_.m *= pow<10>(a.v_.e - b.v_.e);
     //a.v_.e = b.v_.e;
 
-
     switch ((a.v_.m > 0) - (a.v_.m < 0))
     {
       case -1:
@@ -184,7 +183,7 @@ private:
 
         break;
 
-      case  0:
+      case 0:
         a.v_.e = b.v_.e;
 
         break;
@@ -259,31 +258,42 @@ private:
       equalize(tmp2, tmp1);
     }
 
-    if (sign(tmp1) == sign(tmp2))
+    if (auto const s(sign(tmp1)); s == sign(tmp2))
     {
-      if (1 == sign(tmp1))
+      switch (s)
       {
-        constexpr auto max(pow<2>(M - 1) - 1);
-
-        while (tmp1.v_.m > max - tmp2.v_.m)
+        case -1:
         {
-          if (fix_floats(tmp1, tmp2))
-          {
-            break;
-          }
-        }
-      }
-      else if (-1 == sign(tmp1))
-      {
-        constexpr auto min(-pow<2>(M - 1));
+          constexpr auto min(-pow<2>(M - 1));
 
-        while (tmp1.v_.m < min - tmp2.v_.m)
-        {
-          if (fix_floats(tmp1, tmp2))
+          while (tmp1.v_.m < min - tmp2.v_.m)
           {
-            break;
+            if (fix_floats(tmp1, tmp2))
+            {
+              break;
+            }
           }
+
+          break;
         }
+
+        case 1:
+        {
+          constexpr auto max(pow<2>(M - 1) - 1);
+
+          while (tmp1.v_.m > max - tmp2.v_.m)
+          {
+            if (fix_floats(tmp1, tmp2))
+            {
+              break;
+            }
+          }
+
+          break;
+        }
+
+        default:
+          break;
       }
     }
 
@@ -301,31 +311,42 @@ private:
       equalize(tmp2, tmp1);
     }
 
-    if (sign(tmp1) != sign(tmp2))
+    if (auto const s(sign(tmp1)); s != sign(tmp2))
     {
-      if (1 == sign(tmp1))
+      switch (s)
       {
-        constexpr auto max(pow<2>(M - 1) - 1);
-
-        while (tmp1.v_.m > max + tmp2.v_.m)
+        case -1:
         {
-          if (fix_floats(tmp1, tmp2))
-          {
-            break;
-          }
-        }
-      }
-      else if (-1 == sign(tmp1))
-      {
-        constexpr auto min(-pow<2>(M - 1));
+          constexpr auto min(-pow<2>(M - 1));
 
-        while (tmp1.v_.m < min + tmp2.v_.m)
-        {
-          if (fix_floats(tmp1, tmp2))
+          while (tmp1.v_.m < min + tmp2.v_.m)
           {
-            break;
+            if (fix_floats(tmp1, tmp2))
+            {
+              break;
+            }
           }
+
+          break;
         }
+
+        case 1:
+        {
+          constexpr auto max(pow<2>(M - 1) - 1);
+
+          while (tmp1.v_.m > max + tmp2.v_.m)
+          {
+            if (fix_floats(tmp1, tmp2))
+            {
+              break;
+            }
+          }
+
+          break;
+        }
+
+        default:
+          break;
       }
     }
 
@@ -367,6 +388,7 @@ private:
   constexpr void normalize() noexcept
   {
     assert(!isnan(*this));
+
     if (v_.m)
     {
       for (; !((v_.m % 10) || increase_exponent()); v_.m /= 10);
@@ -891,6 +913,9 @@ public:
             }
 
             break;
+
+          default:
+            break;
         }
 
         tmp.v_.m = r;
@@ -960,6 +985,9 @@ public:
             }
 
             break;
+
+          default:
+            break;
         }
 
         r *= tmp.v_.m;
@@ -1000,6 +1028,9 @@ public:
               }
             }
 
+            break;
+
+          default:
             break;
         }
 
