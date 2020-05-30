@@ -227,7 +227,7 @@ private:
     }
   }
 
-  static constexpr bool fix_floats(dpp& a, dpp& b)
+  static constexpr bool fix_floats(dpp& a, dpp& b) noexcept
   {
     // both floats need to be fixed to preserve the identical exponents
     round_mantissa(a);
@@ -370,6 +370,9 @@ public:
   {
   }
 
+  constexpr dpp(dpp const&) = default;
+  constexpr dpp(dpp&&) = default;
+
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
@@ -478,16 +481,17 @@ public:
     std::intmax_t r(f);
     f -= r;
 
+    constexpr auto emin(std::numeric_limits<int>::min());
+
     int e{};
 
     if (r > 0)
     {
+      constexpr auto max(std::numeric_limits<std::intmax_t>::max());
+
       while (f)
       {
-        constexpr auto max(std::numeric_limits<std::intmax_t>::max());
-
-        if (int const d(f *= 10);
-          (e >= std::numeric_limits<int>::min() + 1) && (r <= max / 10))
+        if (int const d(f *= 10); (e >= emin + 1) && (r <= max / 10))
         {
           if (r *= 10; r <= max - d)
           {
@@ -505,12 +509,11 @@ public:
     }
     else if (r < 0)
     {
+      constexpr auto min(std::numeric_limits<std::intmax_t>::min());
+
       while (f)
       {
-        constexpr auto min(std::numeric_limits<std::intmax_t>::min());
-
-        if (int const d(f *= 10);
-          (e >= std::numeric_limits<int>::min() + 1) && (r >= min / 10))
+        if (int const d(f *= 10); (e >= emin + 1) && (r >= min / 10))
         {
           if (r *= 10; r >= min - d)
           {
@@ -529,7 +532,6 @@ public:
 
     *this = dpp(r, e);
   }
-
 
   struct nan{};
 
@@ -574,7 +576,16 @@ public:
     *this = s;
   }
 
+  template <unsigned N, unsigned F>
+  constexpr dpp(dpp<N, F> const& o) noexcept :
+    dpp(o.mantissa(), o.exponent())
+  {
+  }
+
   //
+  constexpr dpp& operator=(dpp const&) = default;
+  constexpr dpp& operator=(dpp&&) = default;
+
   template <typename U, std::size_t N,
     std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
   >
@@ -586,6 +597,12 @@ public:
   constexpr auto& operator=(std::string_view const& s) noexcept
   {
     return *this = to_decimal<dpp>(s);
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr dpp& operator=(dpp<N, F> const& o) noexcept
+  {
+    return *this = dpp(o.mantissa(), o.exponent());
   }
 
   //
@@ -685,6 +702,67 @@ public:
   }
 
   //
+  template <unsigned N, unsigned F>
+  constexpr auto operator<(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this < dpp(o);
+    }
+    else
+    {
+      return result_t(*this) < o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator<=(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this <= dpp(o);
+    }
+    else
+    {
+      return result_t(*this) <= o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator>(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this > dpp(o);
+    }
+    else
+    {
+      return result_t(*this) > o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator>=(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this >= dpp(o);
+    }
+    else
+    {
+      return result_t(*this) >= o;
+    }
+  }
+
+  //
   constexpr auto operator+() const noexcept
   {
     return *this;
@@ -693,6 +771,11 @@ public:
   constexpr auto operator-() const noexcept
   {
     auto tmp(*this);
+
+    if (tmp.v_.m == -pow<2>(M - 1))
+    {
+      return dpp{dpp::nan{}};
+    }
 
     tmp.v_.m = -tmp.v_.m;
 
@@ -902,6 +985,67 @@ public:
       tmp.normalize();
 
       return tmp;
+    }
+  }
+
+  //
+  template <unsigned N, unsigned F>
+  constexpr auto operator+(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this + dpp(o);
+    }
+    else
+    {
+      return result_t(*this) + o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator-(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this - dpp(o);
+    }
+    else
+    {
+      return result_t(*this) - o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator*(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this * dpp(o);
+    }
+    else
+    {
+      return result_t(*this) * o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator/(dpp<N, F> const& o) const noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this / dpp(o);
+    }
+    else
+    {
+      return result_t(*this) / o;
     }
   }
 
