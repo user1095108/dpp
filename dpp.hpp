@@ -798,7 +798,7 @@ public:
       constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
-      auto const sign([](auto const a) noexcept
+      constexpr auto sign([](auto const a) noexcept
         {
           return (a > 0) - (a < 0);
         }
