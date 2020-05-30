@@ -232,7 +232,7 @@ private:
     return false;
   }
 
-  constexpr bool decrease_exponent(int const e = 1) noexcept
+  constexpr bool decrease_exponent(int const e) noexcept
   {
     // watch the nan
     if ((v_.e > -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
@@ -249,7 +249,24 @@ private:
     }
   }
 
-  constexpr bool increase_exponent(int const e = 1) noexcept
+  constexpr bool increase_exponent() noexcept
+  {
+    // watch the nan
+    if (v_.e <= pow<2>(E - 1) - 1 - 1)
+    {
+      ++v_.e;
+
+      return false;
+    }
+    else
+    {
+      *this = dpp{nan{}};
+
+      return true;
+    }
+  }
+
+  constexpr bool increase_exponent(int const e) noexcept
   {
     // watch the nan
     if ((v_.e > -pow<2>(E - 1) - e) && (v_.e <= pow<2>(E - 1) - 1 - e))
