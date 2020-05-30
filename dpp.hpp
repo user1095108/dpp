@@ -473,6 +473,20 @@ public:
     normalize();
   }
 
+  template <unsigned N, unsigned F>
+  constexpr dpp(dpp<N, F> const& o) noexcept
+  {
+    if constexpr ((M >= N) && (E >= F))
+    {
+      v_.m = o.mantissa();
+      v_.e = o.exponent();
+    }
+    else
+    {
+      *this = dpp(o.mantissa(), o.exponent());
+    }
+  }
+
   template <typename U,
     std::enable_if_t<std::is_floating_point_v<U>, int> = 0
   >
@@ -576,21 +590,9 @@ public:
     *this = s;
   }
 
-  template <unsigned N, unsigned F>
-  constexpr dpp(dpp<N, F> const& o) noexcept :
-    dpp(o.mantissa(), o.exponent())
-  {
-  }
-
   //
   constexpr dpp& operator=(dpp const&) = default;
   constexpr dpp& operator=(dpp&&) = default;
-
-  template <unsigned N, unsigned F>
-  constexpr auto& operator=(dpp<N, F> const& o) noexcept
-  {
-    return *this = dpp(o.mantissa(), o.exponent());
-  }
 
   template <typename U, std::size_t N,
     std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
