@@ -521,13 +521,13 @@ public:
 
     if (r >= 0)
     {
-      constexpr auto max(std::numeric_limits<std::intmax_t>::max());
+      constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
 
       while (f)
       {
-        if (int const d(f *= 10); (e >= emin + 1) && (r <= max / 10))
+        if (int const d(f *= 10); (e >= emin + 1) && (r <= rmax / 10))
         {
-          if (r *= 10; r <= max - d)
+          if (r *= 10; r <= rmax - d)
           {
             r += d;
             f -= d;
@@ -543,13 +543,13 @@ public:
     }
     else if (r < 0)
     {
-      constexpr auto min(std::numeric_limits<std::intmax_t>::min());
+      constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
 
       while (f)
       {
-        if (int const d(f *= 10); (e >= emin + 1) && (r >= min / 10))
+        if (int const d(f *= 10); (e >= emin + 1) && (r >= rmin / 10))
         {
-          if (r *= 10; r >= min - d)
+          if (r *= 10; r >= rmin - d)
           {
             r += d;
             f -= d;
