@@ -772,14 +772,8 @@ public:
   {
     auto tmp(*this);
 
-    if (tmp.v_.m == -pow<2>(M - 1))
-    {
-      return dpp{dpp::nan{}};
-    }
-
-    tmp.v_.m = -tmp.v_.m;
-
-    return tmp;
+    return tmp.v_.m == -pow<2>(M - 1) ? dpp{dpp::nan{}} :
+      tmp.v_.m = -tmp.v_.m, tmp;
   }
 
   //
