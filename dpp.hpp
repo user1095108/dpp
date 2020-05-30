@@ -473,18 +473,18 @@ public:
     normalize();
   }
 
-  template <unsigned N, unsigned F>
-  constexpr dpp(dpp<N, F> const& o) noexcept
+  template <unsigned N, unsigned F,
+    std::enable_if_t<(M >= N) && (E >= F), int> = 0>
+  constexpr dpp(dpp<N, F> const& o) noexcept :
+    dpp(o.mantissa(), o.exponent(), direct{})
   {
-    if constexpr ((M >= N) && (E >= F))
-    {
-      v_.m = o.mantissa();
-      v_.e = o.exponent();
-    }
-    else
-    {
-      *this = dpp(o.mantissa(), o.exponent());
-    }
+  }
+
+  template <unsigned N, unsigned F,
+    std::enable_if_t<(M < N) || (E < F), int> = 0>
+  constexpr dpp(dpp<N, F> const& o) noexcept :
+    dpp(o.mantissa(), o.exponent())
+  {
   }
 
   template <typename U,
@@ -559,6 +559,13 @@ public:
   constexpr dpp(std::string_view const& s) noexcept
   {
     *this = s;
+  }
+
+  struct direct{};
+
+  constexpr dpp(value_type const m, value_type const e, direct&&) noexcept :
+    v_{m, e}
+  {
   }
 
   struct nan{};
