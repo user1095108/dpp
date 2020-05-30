@@ -844,39 +844,43 @@ public:
       auto r(doubled_t(tmp.v_.m) * o.v_.m);
 
       // fit into target mantissa
-      if (r > 0)
+      switch ((r > 0) - (r < 0))
       {
-        while (r > pow<2>(M - 1) - 1)
-        {
-          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+        case -1:
+          while (r < -pow<2>(M - 1))
           {
-            r += 5;
+            if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+            {
+              r -= 5;
+            }
+
+            r /= 10;
+
+            if (tmp.increase_exponent())
+            {
+              return dpp{nan{}};
+            }
           }
 
-          r /= 10;
+          break;
 
-          if (tmp.increase_exponent())
+        case 1:
+          while (r > pow<2>(M - 1) - 1)
           {
-            return dpp{nan{}};
-          }
-        }
-      }
-      else if (r < 0)
-      {
-        while (r < -pow<2>(M - 1))
-        {
-          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-          {
-            r -= 5;
+            if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+            {
+              r += 5;
+            }
+
+            r /= 10;
+
+            if (tmp.increase_exponent())
+            {
+              return dpp{nan{}};
+            }
           }
 
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
+          break;
       }
 
       tmp.v_.m = r;
@@ -895,89 +899,99 @@ public:
     }
     else
     {
-      dpp tmp(*this);
-
       constexpr auto e(dpp::dpp::decimal_places_v<doubled_t>);
 
-      auto r(pow<10, doubled_t>(e) / o.v_.m);
+      dpp tmp(*this);
 
-      if (r > 0)
       {
-        while (r > (pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1) /
-          tmp.v_.m)
+        auto r(pow<10, doubled_t>(e) / o.v_.m);
+
+        switch ((r > 0) - (r < 0))
         {
-          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-          {
-            r += 5;
-          }
+          case -1:
+            while (r < -pow<2, doubled_t>(bit_size<doubled_t>() - 1) /
+              tmp.v_.m)
+            {
+              if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+              {
+                r -= 5;
+              }
 
-          r /= 10;
+              r /= 10;
 
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
+              if (tmp.increase_exponent())
+              {
+                return dpp{nan{}};
+              }
+            }
+
+            break;
+
+          case 1:
+            while (r > (pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1) /
+              tmp.v_.m)
+            {
+              if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+              {
+                r += 5;
+              }
+
+              r /= 10;
+
+              if (tmp.increase_exponent())
+              {
+                return dpp{nan{}};
+              }
+            }
+
+            break;
         }
-      }
-      else if (r < 0)
-      {
-        while (r < -pow<2, doubled_t>(bit_size<doubled_t>() - 1) /
-          tmp.v_.m)
+
+        r *= tmp.v_.m;
+
+        switch ((r > 0) - (r < 0))
         {
-          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-          {
-            r -= 5;
-          }
+          case -1:
+            while (r < -pow<2>(M - 1))
+            {
+              if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+              {
+                r -= 5;
+              }
 
-          r /= 10;
+              r /= 10;
 
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
+              if (tmp.increase_exponent())
+              {
+                return dpp{nan{}};
+              }
+            }
+
+            break;
+
+          case 1:
+            while (r > pow<2>(M - 1) - 1)
+            {
+              if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+              {
+                r += 5;
+              }
+
+              r /= 10;
+
+              if (tmp.increase_exponent())
+              {
+                return dpp{nan{}};
+              }
+            }
+
+            break;
         }
+
+        tmp.v_.m = r;
       }
 
-      r *= tmp.v_.m;
-
-      if (r > 0)
-      {
-        while (r > pow<2>(M - 1) - 1)
-        {
-          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
-      }
-      else if (r < 0)
-      {
-        while (r < -pow<2>(M - 1))
-        {
-          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-          {
-            r -= 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
-      }
-
-      tmp.v_.m = r;
-
-      if (tmp.decrease_exponent(e + o.v_.e))
+      if (tmp.decrease_exponent(e) || tmp.decrease_exponent(o.v_.e))
       {
         return dpp{nan{}};
       }
@@ -1200,23 +1214,26 @@ constexpr std::optional<std::intmax_t> to_integral(
     {
       auto const c(dpp<M, E>::template pow<10, std::intmax_t>(e));
 
-      if (r > 0)
+      switch ((r > 0) - (r < 0))
       {
-        if (r <= std::numeric_limits<std::intmax_t>::max() / c)
-        {
-          return r * c;
-        }
-      }
-      else if (r < 0)
-      {
-        if (r >= std::numeric_limits<std::intmax_t>::min() / c)
-        {
-          return r * c;
-        }
-      }
-      else
-      {
-        return 0;
+        case -1:
+          if (r >= std::numeric_limits<std::intmax_t>::min() / c)
+          {
+            return r * c;
+          }
+
+          break;
+
+        case 0:
+          return 0;
+
+        case 1:
+          if (r <= std::numeric_limits<std::intmax_t>::max() / c)
+          {
+            return r * c;
+          }
+
+          break;
       }
     }
   }
