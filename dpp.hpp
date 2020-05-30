@@ -30,7 +30,7 @@ template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
-constexpr int sign(dpp<M, E> const&) noexcept;
+constexpr auto sign(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
 constexpr dpp<M, E> trunc(dpp<M, E> const&) noexcept;
@@ -107,8 +107,8 @@ private:
 
   struct
   {
-    value_type m:M;
     value_type e:E;
+    value_type m:M;
   } v_{};
 
   template <int B, typename T = value_type>
@@ -438,7 +438,7 @@ public:
     normalize();
   }
 
-  constexpr dpp(std::intmax_t m, int const e) noexcept
+  constexpr dpp(std::intmax_t m, value_type const e) noexcept
   {
     if ((e <= pow<2>(E - 1) - 1) && (e >= -pow<2>(E - 1)))
     {
@@ -515,9 +515,9 @@ public:
     std::intmax_t r(f);
     f -= r;
 
-    constexpr auto emin(std::numeric_limits<int>::min());
+    constexpr auto emin(std::numeric_limits<value_type>::min());
 
-    int e{};
+    value_type e{};
 
     if (r >= 0)
     {
@@ -525,7 +525,8 @@ public:
 
       while (f)
       {
-        if (int const d(f *= 10); (e >= emin + 1) && (r <= max / 10))
+        if (std::intmax_t const d(f *= 10);
+          (e >= emin + 1) && (r <= max / 10))
         {
           if (r *= 10; r <= max - d)
           {
@@ -547,7 +548,8 @@ public:
 
       while (f)
       {
-        if (int const d(f *= 10); (e >= emin + 1) && (r >= min / 10))
+        if (std::intmax_t const d(f *= 10);
+          (e >= emin + 1) && (r >= min / 10))
         {
           if (r *= 10; r >= min - d)
           {
@@ -584,21 +586,21 @@ public:
   struct direct{};
 
   constexpr dpp(value_type const m, value_type const e, direct&&) noexcept :
-    v_{m, e}
+    v_{.e = e, .m = m}
   {
   }
 
   struct nan{};
 
   constexpr dpp(nan&&) noexcept :
-    v_{{}, -pow<2>(E - 1)}
+    v_{.e = -pow<2>(E - 1), .m = {}}
   {
   }
 
   struct unpack{};
 
   constexpr dpp(value_type const v, unpack&&) noexcept :
-    v_{v >> E, v & (pow<2>(E) - 1)}
+    v_{.e = v >> M, .m = v & (pow<2>(M) - 1)}
   {
   }
 
@@ -1176,7 +1178,7 @@ public:
   //
   friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
 
-  friend constexpr int sign<M, E>(dpp<M, E> const&) noexcept;
+  friend constexpr auto sign<M, E>(dpp<M, E> const&) noexcept;
 
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
     dpp<M, E> const&) noexcept;
@@ -1200,7 +1202,7 @@ constexpr bool isnan(dpp<M, E> const& o) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr int sign(dpp<M, E> const& o) noexcept
+constexpr auto sign(dpp<M, E> const& o) noexcept
 {
   return (o.v_.m > 0) - (o.v_.m < 0);
 }
@@ -1279,28 +1281,29 @@ constexpr std::optional<std::intmax_t> to_integral(
     }
     else
     {
-      auto const c(dpp<M, E>::template pow<10, std::intmax_t>(e));
-
-      switch ((r > 0) - (r < 0))
+      if (auto const c(dpp<M, E>::template pow<10, std::intmax_t>(e)); c)
       {
-        case -1:
-          if (r >= std::numeric_limits<std::intmax_t>::min() / c)
-          {
-            return r * c;
-          }
+        switch ((r > 0) - (r < 0))
+        {
+          case -1:
+            if (r >= std::numeric_limits<std::intmax_t>::min() / c)
+            {
+              return r * c;
+            }
 
-          break;
+            break;
 
-        case 0:
-          return 0;
+          case 0:
+            return 0;
 
-        case 1:
-          if (r <= std::numeric_limits<std::intmax_t>::max() / c)
-          {
-            return r * c;
-          }
+          case 1:
+            if (r <= std::numeric_limits<std::intmax_t>::max() / c)
+            {
+              return r * c;
+            }
 
-          break;
+            break;
+        }
       }
     }
   }
@@ -1380,7 +1383,9 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    int e{};
+    typename T::value_type e{};
+
+    constexpr auto emin(std::numeric_limits<typename T::value_type>::min());
 
     for (; i != end; i = std::next(i))
     {
@@ -1388,7 +1393,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if ((e >= std::numeric_limits<int>::min() + 1) && (r <= max / 10))
+          if ((e >= emin + 1) && (r <= max / 10))
           {
             r *= 10;
 
