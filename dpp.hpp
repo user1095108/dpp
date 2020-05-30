@@ -508,7 +508,7 @@ public:
   }
 
   template <typename U,
-    std::enable_if_t<std::is_floating_point_v<U>, int> = 0
+    typename = std::enable_if_t<std::is_floating_point_v<U>>
   >
   constexpr dpp(U f) noexcept
   {
@@ -519,7 +519,7 @@ public:
 
     int e{};
 
-    if (r > 0)
+    if (r >= 0)
     {
       constexpr auto max(std::numeric_limits<std::intmax_t>::max());
 

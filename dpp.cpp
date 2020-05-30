@@ -31,7 +31,7 @@ constexpr auto sqrt(T const S) noexcept
   do
   {
     x = xn;
-    xn = (x + S/x) / T(2);
+    xn = (x + S/x) / 2;
 
     e = en;
     en = xn - x;
