@@ -76,8 +76,8 @@ int main()
 
   //
   std::cout << std::endl;
-  auto const a(dpp::to_decimal<dpp::dec64>("1.23"));
-  auto const b(dpp::to_decimal<dpp::dec64>("45.6"));
+  auto a(dpp::to_decimal<dpp::dec64>("1.23"));
+  auto b(dpp::to_decimal<dpp::dec64>("45.6"));
 
   std::cout << a << std::endl;
   std::cout << b << std::endl;
@@ -92,6 +92,9 @@ int main()
   std::cout << dpp::ceil(b) << std::endl;
   std::cout << dpp::floor(b) << std::endl;
   std::cout << dpp::round(b) << std::endl;
+
+  //
+  a = "1"_d32;
 
   return 0;
 }

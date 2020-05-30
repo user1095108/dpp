@@ -547,6 +547,20 @@ public:
     *this = dpp(r, e);
   }
 
+  //
+  template <typename U, std::size_t N,
+    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
+  >
+  constexpr dpp(U(&s)[N]) noexcept
+  {
+    *this = s;
+  }
+
+  constexpr dpp(std::string_view const& s) noexcept
+  {
+    *this = s;
+  }
+
   struct nan{};
 
   constexpr dpp(nan&&) noexcept :
@@ -574,20 +588,6 @@ public:
   constexpr auto packed() const noexcept
   {
     return (v_.m << E) | v_.e;
-  }
-
-  //
-  template <typename U, std::size_t N,
-    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
-  >
-  constexpr dpp(U(&s)[N]) noexcept
-  {
-    *this = s;
-  }
-
-  constexpr dpp(std::string_view const& s) noexcept
-  {
-    *this = s;
   }
 
   //
