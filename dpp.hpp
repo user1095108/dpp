@@ -936,7 +936,7 @@ public:
         auto r(pow<10, doubled_t>(e) / o.v_.m);
 
         constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
-        constexpr auto rmax(-(min + 1));
+        constexpr auto rmax(-(rmin + 1));
 
         if (r > 0)
         {
