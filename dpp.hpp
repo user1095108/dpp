@@ -586,6 +586,12 @@ public:
   constexpr dpp& operator=(dpp const&) = default;
   constexpr dpp& operator=(dpp&&) = default;
 
+  template <unsigned N, unsigned F>
+  constexpr auto& operator=(dpp<N, F> const& o) noexcept
+  {
+    return *this = dpp(o.mantissa(), o.exponent());
+  }
+
   template <typename U, std::size_t N,
     std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
   >
@@ -597,12 +603,6 @@ public:
   constexpr auto& operator=(std::string_view const& s) noexcept
   {
     return *this = to_decimal<dpp>(s);
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr dpp& operator=(dpp<N, F> const& o) noexcept
-  {
-    return *this = dpp(o.mantissa(), o.exponent());
   }
 
   //
@@ -642,6 +642,20 @@ public:
   constexpr auto operator!=(dpp const& o) const noexcept
   {
     return !operator==(o);
+  }
+
+  //
+  template <unsigned N, unsigned F>
+  constexpr auto operator==(dpp<N, F> const& o) const noexcept
+  {
+    return isnan(*this) || isnan(o) ? false :
+      (v_.e == o.v_.e) && (v_.m == o.v_.m);
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto operator!=(dpp<N, F> const& o) const noexcept
+  {
+    return !operator==<N, F>(o);
   }
 
   //
