@@ -22,15 +22,15 @@ constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
 template <typename T>
 constexpr auto sqrt(T const S) noexcept
 {
-  T xo, xn(S / T(2)), eo, en(S);
+  T xo, xn(S), eo, en(S);
 
   do
   {
     xo = xn;
-    xn = (xo + S/xo) / 2;
+    //xn = (xo + S/xo) / 2;
 
-    //auto const xs(xo * xo);
-    //xn = ((xs + T(3) * S) / (T(3) * xs + S)) * xo;
+    auto const xs(xo * xo);
+    xn = ((xs + T(3) * S) / (T(3) * xs + S)) * xo;
 
     eo = en;
     en = xn - xo;
