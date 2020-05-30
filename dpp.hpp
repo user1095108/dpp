@@ -831,60 +831,60 @@ public:
     }
     else
     {
-      dpp tmp(*this);
+      auto tmp(*this);
 
       if (tmp.increase_exponent(o.v_.e))
       {
         return dpp{nan{}};
       }
-
-      auto r(doubled_t(tmp.v_.m) * o.v_.m);
-
-      // fit into target mantissa
-      switch ((r > 0) - (r < 0))
+      else
       {
-        case -1:
-          while (r < -pow<2>(M - 1))
-          {
-            if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+        auto r(doubled_t(tmp.v_.m) * o.v_.m);
+
+        // fit into target mantissa
+        switch ((r > 0) - (r < 0))
+        {
+          case -1:
+            while (r < -pow<2>(M - 1))
             {
-              r -= 5;
+              if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+              {
+                r -= 5;
+              }
+
+              r /= 10;
+
+              if (tmp.increase_exponent())
+              {
+                return dpp{nan{}};
+              }
             }
 
-            r /= 10;
+            break;
 
-            if (tmp.increase_exponent())
+          case 1:
+            while (r > pow<2>(M - 1) - 1)
             {
-              return dpp{nan{}};
+              if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+              {
+                r += 5;
+              }
+
+              r /= 10;
+
+              if (tmp.increase_exponent())
+              {
+                return dpp{nan{}};
+              }
             }
-          }
 
-          break;
+            break;
+        }
 
-        case 1:
-          while (r > pow<2>(M - 1) - 1)
-          {
-            if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-            {
-              r += 5;
-            }
-
-            r /= 10;
-
-            if (tmp.increase_exponent())
-            {
-              return dpp{nan{}};
-            }
-          }
-
-          break;
+        tmp.v_.m = r;
       }
 
-      tmp.v_.m = r;
-
-      tmp.normalize();
-
-      return tmp;
+      return tmp.normalize(), tmp;
     }
   }
 
@@ -896,10 +896,14 @@ public:
     }
     else
     {
-      constexpr auto e(dpp::dpp::decimal_places<doubled_t>{});
-
       auto tmp(*this);
 
+      if (constexpr auto e(dpp::dpp::decimal_places<doubled_t>{});
+        tmp.decrease_exponent(e) || tmp.decrease_exponent(o.v_.e))
+      {
+        return dpp{nan{}};
+      }
+      else
       {
         auto r(pow<10, doubled_t>(e) / o.v_.m);
 
@@ -988,14 +992,7 @@ public:
         tmp.v_.m = r;
       }
 
-      if (tmp.decrease_exponent(e) || tmp.decrease_exponent(o.v_.e))
-      {
-        return dpp{nan{}};
-      }
-
-      tmp.normalize();
-
-      return tmp;
+      return tmp.normalize(), tmp;
     }
   }
 
