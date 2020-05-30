@@ -185,7 +185,7 @@ private:
 
         break;
 
-      case  1:
+      case 1:
         while ((a.v_.m <= (pow<2>(M - 1) - 1) / 10) &&
           (a.v_.e != b.v_.e))
         {
