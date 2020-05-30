@@ -219,6 +219,7 @@ private:
       }
     }
 
+
 /*
     if (!isnan(a) && (a.v_.e != b.v_.e))
     {
@@ -232,8 +233,84 @@ private:
 */
   }
 
+  static constexpr bool equalize(doubled_t& am, value_type& ae,
+    doubled_t& bm, value_type& be) noexcept
+  {
+    switch ((am > 0) - (am < 0))
+    {
+      case -1:
+        while ((am >= -pow<2>(M - 1) / 10) && (ae != be))
+        {
+          // watch the nan
+          if (ae <= -pow<2>(E - 1) + 1)
+          {
+            return true;
+          }
+          else
+          {
+            --ae;
+
+            am *= 10;
+          }
+        }
+
+        break;
+
+      case 0:
+        ae = be;
+
+        break;
+
+      case 1:
+        while ((am <= (pow<2>(M - 1) - 1) / 10) && (ae != be))
+        {
+          // watch the nan
+          if (ae <= -pow<2>(E - 1) + 1)
+          {
+            return true;
+          }
+          else
+          {
+            --ae;
+
+            am *= 10;
+          }
+        }
+
+        break;
+
+        default:;
+    }
+
+    while (ae != be)
+    {
+      if ((bm < 0) && (bm >= -pow<2>(M - 1) + 5))
+      {
+        bm -= 5;
+      }
+      else if ((bm > 0) && (bm <= pow<2>(M - 1) - 1 - 5))
+      {
+        bm += 5;
+      }
+
+      if (be > pow<2>(E - 1) - 1 - 1)
+      {
+        return true;
+      }
+      else
+      {
+        ++be;
+
+        bm /= 10;
+      }
+    }
+
+    return false;
+  }
+
   constexpr bool decrease_exponent(int const e = 1) noexcept
   {
+    // watch the nan
     if ((v_.e > -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
     {
       v_.e -= e;
@@ -250,6 +327,7 @@ private:
 
   constexpr bool increase_exponent(int const e = 1) noexcept
   {
+    // watch the nan
     if ((v_.e > -pow<2>(E - 1) - e) && (v_.e <= pow<2>(E - 1) - 1 - e))
     {
       v_.e += e;
@@ -322,7 +400,8 @@ public:
 
   constexpr dpp(std::intmax_t m, value_type const e) noexcept
   {
-    if ((e <= pow<2>(E - 1) - 1) && (e >= -pow<2>(E - 1)))
+    // watch the nan
+    if ((e <= pow<2>(E - 1) - 1) && (e > -pow<2>(E - 1)))
     {
       v_.e = e;
     }
@@ -688,6 +767,8 @@ public:
 
       tmp.v_.m /= 10;
 
+      tmp.normalize();
+
       tmp.increase_exponent();
     }
 
@@ -705,61 +786,162 @@ public:
     }
     else
     {
-      auto tmp1(*this), tmp2(o);
+      doubled_t m1(v_.m), m2(o.v_.m);
+      value_type e1(v_.e), e2(o.v_.e);
 
-      if (tmp1.v_.e > tmp2.v_.e)
+      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
+        ((e2 > e1) && equalize(m2, e2, m1, e1)))
       {
-        equalize(tmp1, tmp2);
-      }
-      else if (tmp2.v_.e > tmp1.v_.e)
-      {
-        equalize(tmp2, tmp1);
+        return dpp{nan{}};
       }
 
-      if (!isnan(tmp1) && !isnan(tmp2))
-      {
-        auto r(doubled_t(tmp1.v_.m) + tmp2.v_.m);
+      constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+      constexpr auto rmax(-(rmin + 1));
 
-        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
-        constexpr auto rmax(-(rmin + 1));
-
-        // fit into target mantissa
-        while (r < -pow<2>(M - 1))
+      auto const sign([](auto const a) noexcept
         {
-          if (r >= rmin + 5)
-          {
-            r -= 5;
-          }
+          return (a > 0) - (a < 0);
+        }
+      );
 
-          r /= 10;
+      if (auto const s1(sign(m1)); s1 == sign(m2))
+      {
+        switch (s1)
+        {
+          case -1:
+            while (m1 < rmin - m2)
+            {
+              if (m1 >= -pow<2>(M - 1) + 5)
+              {
+                m1 -= 5;
+              }
 
-          if (tmp1.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
+              m1 /= 10;
+
+              if (e1 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e1;
+              }
+
+              //
+              if (m2 >= -pow<2>(M - 1) + 5)
+              {
+                m2 -= 5;
+              }
+
+              m2 /= 10;
+
+              if (e2 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e2;
+              }
+            }
+
+            break;
+
+          case 1:
+            while (m1 > rmax - m2)
+            {
+              if (m1 <= pow<2>(M - 1) - 1 - 5)
+              {
+                m1 += 5;
+              }
+
+              m1 /= 10;
+
+              if (e1 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e1;
+              }
+
+              //
+              if (m2 <= pow<2>(M - 1) - 1 - 5)
+              {
+                m1 += 5;
+              }
+
+              m2 /= 10;
+
+              if (e2 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e2;
+              }
+            }
+
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      dpp tmp;
+
+      tmp.v_.e = e1;
+
+      // !
+      auto r(m1 + m2);
+
+      // fit into target mantissa
+      while (r < -pow<2>(M - 1))
+      {
+        if (r >= rmin + 5)
+        {
+          r -= 5;
         }
 
-        while (r > pow<2>(M - 1) - 1)
+        r /= 10;
+
+        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
         {
-          if (r <= rmax - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (tmp1.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
+          return dpp{nan{}};
         }
-
-        tmp1.v_.m = r;
-
-        tmp1.normalize();
+        else
+        {
+          ++tmp.v_.e;
+        }
       }
 
-      return tmp1;
+      while (r > pow<2>(M - 1) - 1)
+      {
+        if (r <= rmax - 5)
+        {
+          r += 5;
+        }
+
+        r /= 10;
+
+        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
+        {
+          return dpp{nan{}};
+        }
+        else
+        {
+          ++tmp.v_.e;
+        }
+      }
+
+      tmp.v_.m = r;
+
+      tmp.normalize();
+
+      return tmp;
     }
   }
 
@@ -771,61 +953,164 @@ public:
     }
     else
     {
-      auto tmp1(*this), tmp2(o);
+      doubled_t m1(v_.m), m2(o.v_.m);
+      value_type e1(v_.e), e2(o.v_.e);
 
-      if (tmp1.v_.e > tmp2.v_.e)
+      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
+        ((e2 > e1) && equalize(m2, e2, m1, e1)))
       {
-        equalize(tmp1, tmp2);
-      }
-      else if (tmp2.v_.e > tmp1.v_.e)
-      {
-        equalize(tmp2, tmp1);
+        return dpp{nan{}};
       }
 
-      if (!isnan(tmp1) && !isnan(tmp2))
-      {
-        auto r(doubled_t(tmp1.v_.m) - tmp2.v_.m);
+      constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+      constexpr auto rmax(-(rmin + 1));
 
-        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
-        constexpr auto rmax(-(rmin + 1));
-
-        // fit into target mantissa
-        while (r < -pow<2>(M - 1))
+      constexpr auto sign([](auto const a) noexcept
         {
-          if (r >= rmin + 5)
-          {
-            r -= 5;
-          }
+          return (a > 0) - (a < 0);
+        }
+      );
 
-          r /= 10;
+      if (auto const s1(sign(m1)); s1 != sign(m2))
+      {
+        switch (s1)
+        {
+          case -1:
+            // m2 is positive
+            while (m1 < rmin + m2)
+            {
+              if (m1 >= -pow<2>(M - 1) + 5)
+              {
+                m1 -= 5;
+              }
 
-          if (tmp1.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
+              m1 /= 10;
+
+              if (e1 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e1;
+              }
+
+              //
+              if (m2 >= -pow<2>(M - 1) + 5)
+              {
+                m2 -= 5;
+              }
+
+              m2 /= 10;
+
+              if (e2 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e2;
+              }
+            }
+
+            break;
+
+          case 1:
+            // m2 is negative
+            while (m1 > rmax + m2)
+            {
+              if (m1 <= pow<2>(M - 1) - 1 - 5)
+              {
+                m1 += 5;
+              }
+
+              m1 /= 10;
+
+              if (e1 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e1;
+              }
+
+              //
+              if (m2 <= pow<2>(M - 1) - 1 - 5)
+              {
+                m1 += 5;
+              }
+
+              m2 /= 10;
+
+              if (e2 > pow<2>(E - 1) - 1 - 1)
+              {
+                return dpp{nan{}};
+              }
+              else
+              {
+                ++e2;
+              }
+            }
+
+            break;
+
+          default:
+            break;
+        }
+      }
+
+      dpp tmp;
+
+      tmp.v_.e = e1;
+
+      // !
+      auto r(m1 - m2);
+
+      // fit into target mantissa
+      while (r < -pow<2>(M - 1))
+      {
+        if (r >= rmin + 5)
+        {
+          r -= 5;
         }
 
-        while (r > pow<2>(M - 1) - 1)
+        r /= 10;
+
+        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
         {
-          if (r <= rmax - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (tmp1.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
+          return dpp{nan{}};
         }
-
-        tmp1.v_.m = r;
-
-        tmp1.normalize();
+        else
+        {
+          ++tmp.v_.e;
+        }
       }
 
-      return tmp1;
+      while (r > pow<2>(M - 1) - 1)
+      {
+        if (r <= rmax - 5)
+        {
+          r += 5;
+        }
+
+        r /= 10;
+
+        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
+        {
+          return dpp{nan{}};
+        }
+        else
+        {
+          ++tmp.v_.e;
+        }
+      }
+
+      tmp.v_.m = r;
+
+      tmp.normalize();
+
+      return tmp;
     }
   }
 
@@ -1439,9 +1724,9 @@ std::string to_string(dpp<M, E> p)
     return {"nan", 3};
   }
 
-  if (p.mantissa())
+  if (auto const m(p.mantissa()); m)
   {
-    auto const tmp(std::to_string(p.mantissa()));
+    auto const tmp(std::to_string(m));
 
     r.append(1, '.').append(-p.exponent() - tmp.size(), '0').append(tmp);
   }
