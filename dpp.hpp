@@ -474,22 +474,21 @@ public:
   }
 
   template <unsigned N, unsigned F,
-    std::enable_if_t<(M >= N) && (E >= F), int> = 0>
-  constexpr dpp(dpp<N, F> const& o) noexcept :
-    dpp(o.mantissa(), o.exponent(), direct{})
-  {
-  }
-
-  template <unsigned N, unsigned F,
     std::enable_if_t<(M < N) || (E < F), int> = 0>
   constexpr dpp(dpp<N, F> const& o) noexcept :
     dpp(o.mantissa(), o.exponent())
   {
   }
 
+  template <unsigned N, unsigned F,
+    std::enable_if_t<(M >= N) && (E >= F), int> = 0>
+  constexpr dpp(dpp<N, F> const& o) noexcept :
+    dpp(o.mantissa(), o.exponent(), direct{})
+  {
+  }
+
   template <typename U,
-    std::enable_if_t<std::is_floating_point_v<U>, int> = 0
-  >
+    std::enable_if_t<std::is_floating_point_v<U>, int> = 0>
   constexpr dpp(U f) noexcept
   {
     std::intmax_t r(f);
@@ -549,8 +548,7 @@ public:
 
   //
   template <typename U, std::size_t N,
-    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
-  >
+    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0>
   constexpr dpp(U(&s)[N]) noexcept
   {
     *this = s;

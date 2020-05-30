@@ -93,8 +93,5 @@ int main()
   std::cout << dpp::floor(b) << std::endl;
   std::cout << dpp::round(b) << std::endl;
 
-  //
-  a = "1"_d32;
-
   return 0;
 }
