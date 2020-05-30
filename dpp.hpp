@@ -165,54 +165,65 @@ private:
     //a.v_.m *= pow<10>(a.v_.e - b.v_.e);
     //a.v_.e = b.v_.e;
 
-    if (a.v_.m > 0)
+
+    switch ((a.v_.m > 0) - (a.v_.m < 0))
     {
-      while ((a.v_.m <= (pow<2>(M - 1) - 1) / 10) &&
-        (a.v_.e != b.v_.e))
-      {
-        if (a.decrease_exponent())
+      case -1:
+        while ((a.v_.m >= -pow<2>(M - 1) / 10) &&
+          (a.v_.e != b.v_.e))
         {
-          break;
+          if (a.decrease_exponent())
+          {
+            break;
+          }
+          else
+          {
+            a.v_.m *= 10;
+          }
         }
-        else
+
+        break;
+
+      case  0:
+        a.v_.e = b.v_.e;
+
+        break;
+
+      case  1:
+        while ((a.v_.m <= (pow<2>(M - 1) - 1) / 10) &&
+          (a.v_.e != b.v_.e))
         {
-          a.v_.m *= 10;
+          if (a.decrease_exponent())
+          {
+            break;
+          }
+          else
+          {
+            a.v_.m *= 10;
+          }
         }
-      }
-    }
-    else if (a.v_.m < 0)
-    {
-      while ((a.v_.m >= -pow<2>(M - 1) / 10) &&
-        (a.v_.e != b.v_.e))
-      {
-        if (a.decrease_exponent())
-        {
-          break;
-        }
-        else
-        {
-          a.v_.m *= 10;
-        }
-      }
-    }
-    else
-    {
-      a.v_.e = b.v_.e;
+
+        break;
     }
 
-/*
     if (!isnan(a))
     {
       while (a.v_.e != b.v_.e)
       {
         round_mantissa(b);
 
-        b.v_.m /= 10;
-        b.increase_exponent();
+        if (b.increase_exponent())
+        {
+          break;
+        }
+        else
+        {
+          b.v_.m /= 10;
+        }
       }
     }
-*/
 
+/*
     if (!isnan(a) && (a.v_.e != b.v_.e))
     {
       round_mantissa(b);
@@ -222,6 +233,7 @@ private:
       b.v_.m /= pow<10>(d);
       b.increase_exponent(d);
     }
+*/
   }
 
   static constexpr bool fix_floats(dpp& a, dpp& b) noexcept
@@ -1080,6 +1092,67 @@ public:
   constexpr auto& operator/=(dpp const& o) noexcept
   {
     return *this = *this / o;
+  }
+
+  //
+  template <unsigned N, unsigned F>
+  constexpr auto& operator+=(dpp<N, F> const& o) noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this = *this + dpp(o);
+    }
+    else
+    {
+      return *this = result_t(*this) + o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto& operator-=(dpp<N, F> const& o) noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this = *this - dpp(o);
+    }
+    else
+    {
+      return *this = result_t(*this) - o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto& operator*=(dpp<N, F> const& o) noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this = *this * dpp(o);
+    }
+    else
+    {
+      return *this = result_t(*this) * o;
+    }
+  }
+
+  template <unsigned N, unsigned F>
+  constexpr auto& operator/=(dpp<N, F> const& o) noexcept
+  {
+    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+    if constexpr (std::is_same_v<dpp, result_t>)
+    {
+      return *this = *this / dpp(o);
+    }
+    else
+    {
+      return *this = result_t(*this) / o;
+    }
   }
 
   //
