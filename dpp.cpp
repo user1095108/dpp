@@ -43,9 +43,7 @@ constexpr auto sqrt(T const S) noexcept
 int main()
 {
   //
-  std::cout << ("10"_d32 / "3.1622778"_d32) << " " <<
-    ("3.1622778"_d32 + "10"_d32 / "3.1622778"_d32) << " " <<
-    ("3.1622778"_d32 + "10"_d32 / "3.1622778"_d32) / 2 << std::endl;
+  std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / 2 << std::endl;
 
   std::cout << "1000.0123"_d32 << std::endl;;
   std::cout << dpp::dec32(.0123f) + dpp::dec64(1000) << std::endl;;
