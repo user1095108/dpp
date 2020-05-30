@@ -160,13 +160,15 @@ private:
   static constexpr bool equalize(doubled_t& am, value_type& ae,
     doubled_t& bm, value_type& be) noexcept
   {
+    constexpr auto emin(-pow<2>(E - 1));
+
     switch ((am > 0) - (am < 0))
     {
       case -1:
         while ((am >= -pow<2>(M - 1) / 10) && (ae != be))
         {
           // watch the nan
-          if (ae <= -pow<2>(E - 1) + 1)
+          if (ae <= emin + 1)
           {
             return true;
           }
@@ -189,7 +191,7 @@ private:
         while ((am <= (pow<2>(M - 1) - 1) / 10) && (ae != be))
         {
           // watch the nan
-          if (ae <= -pow<2>(E - 1) + 1)
+          if (ae <= emin + 1)
           {
             return true;
           }
@@ -206,6 +208,8 @@ private:
         default:;
     }
 
+    constexpr auto emax(pow<2>(E - 1) - 1);
+
     while (ae != be)
     {
       if ((bm < 0) && (bm >= -pow<2>(M - 1) + 5))
@@ -217,7 +221,7 @@ private:
         bm += 5;
       }
 
-      if (be > pow<2>(E - 1) - 1 - 1)
+      if (be > emax - 1)
       {
         return true;
       }
