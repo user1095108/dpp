@@ -28,7 +28,9 @@ constexpr auto sqrt(T const S) noexcept
   {
     x = xn;
     //xn = (x + S/x) / 2;
-    xn = ((x * x + T(3) * S) / (T(3) * x * x + S)) * x;
+
+    auto const xs(x * x);
+    xn = ((xs + T(3) * S) / (T(3) * xs + S)) * x;
 
     e = en;
     en = xn - x;
