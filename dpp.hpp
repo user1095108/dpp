@@ -236,7 +236,7 @@ private:
     return false;
   }
 
-  constexpr bool decrease_exponent(int const e) noexcept
+  constexpr bool decrease_exponent(value_type const e) noexcept
   {
     // watch the nan
     if ((v_.e > -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
@@ -255,7 +255,6 @@ private:
 
   constexpr bool increase_exponent() noexcept
   {
-    // watch the nan
     if (v_.e <= pow<2>(E - 1) - 1 - 1)
     {
       ++v_.e;
