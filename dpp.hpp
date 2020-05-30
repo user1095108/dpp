@@ -422,7 +422,7 @@ public:
   constexpr dpp(std::intmax_t m, int const e) noexcept :
     v_{}
   {
-    if ((e <= pow<2>(E - 1) - 1) && (e > -pow<2>(E - 1)))
+    if ((e <= pow<2>(E - 1) - 1) && (e >= -pow<2>(E - 1)))
     {
       v_.e = e;
     }
@@ -474,21 +474,24 @@ public:
   }
 
   template <unsigned N, unsigned F,
-    std::enable_if_t<(M < N) || (E < F), int> = 0>
+    std::enable_if_t<(M < N) || (E < F), int> = 0
+  >
   constexpr dpp(dpp<N, F> const& o) noexcept :
     dpp(o.mantissa(), o.exponent())
   {
   }
 
   template <unsigned N, unsigned F,
-    std::enable_if_t<(M >= N) && (E >= F), int> = 0>
+    std::enable_if_t<(M >= N) && (E >= F), int> = 0
+  >
   constexpr dpp(dpp<N, F> const& o) noexcept :
     dpp(o.mantissa(), o.exponent(), direct{})
   {
   }
 
   template <typename U,
-    std::enable_if_t<std::is_floating_point_v<U>, int> = 0>
+    std::enable_if_t<std::is_floating_point_v<U>, int> = 0
+  >
   constexpr dpp(U f) noexcept
   {
     std::intmax_t r(f);
@@ -548,7 +551,8 @@ public:
 
   //
   template <typename U, std::size_t N,
-    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0>
+    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
+  >
   constexpr dpp(U(&s)[N]) noexcept
   {
     *this = s;
@@ -578,21 +582,6 @@ public:
   constexpr dpp(value_type const v, unpack&&) noexcept :
     v_{v >> E, v & (pow<2>(E) - 1)}
   {
-  }
-
-  constexpr auto exponent() const noexcept
-  {
-    return v_.e;
-  }
-
-  constexpr auto mantissa() const noexcept
-  {
-    return v_.m;
-  }
-
-  constexpr auto packed() const noexcept
-  {
-    return (v_.m << E) | v_.e;
   }
 
   //
@@ -1085,6 +1074,23 @@ public:
     return *this = *this / o;
   }
 
+  //
+  constexpr auto exponent() const noexcept
+  {
+    return v_.e;
+  }
+
+  constexpr auto mantissa() const noexcept
+  {
+    return v_.m;
+  }
+
+  constexpr auto packed() const noexcept
+  {
+    return (v_.m << E) | v_.e;
+  }
+
+  //
   friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
 
   friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
