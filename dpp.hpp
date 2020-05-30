@@ -114,8 +114,8 @@ private:
     value_type e:E;
   } v_{};
 
-  template <value_type B, typename T = value_type>
-  static constexpr auto pow(unsigned e) noexcept
+  template <int B, typename T = value_type>
+  static constexpr T pow(unsigned e) noexcept
   {
     if (e)
     {
@@ -143,7 +143,7 @@ private:
   }
 
   template <unsigned B, typename T = value_type>
-  static constexpr value_type log(T const n, unsigned const e = 0) noexcept
+  static constexpr T log(T const n, unsigned const e = 0) noexcept
   {
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
@@ -404,41 +404,35 @@ public:
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
-  constexpr dpp(U m) noexcept :
-    v_{}
+  constexpr dpp(U m) noexcept
   {
-    if (m > 0)
+    while (m > pow<2>(M - 1) - 1)
     {
-      while (m > pow<2>(M - 1) - 1)
+      if (m <= std::numeric_limits<value_type>::max() - 5)
       {
-        if (m <= std::numeric_limits<value_type>::max() - 5)
-        {
-          m += 5;
-        }
+        m += 5;
+      }
 
-        m /= 10;
+      m /= 10;
 
-        if (increase_exponent())
-        {
-          return;
-        }
+      if (increase_exponent())
+      {
+        return;
       }
     }
-    else if (m < 0)
+
+    while (m < -pow<2>(M - 1))
     {
-      while (m < -pow<2>(M - 1))
+      if (m >= std::numeric_limits<value_type>::min() + 5)
       {
-        if (m >= std::numeric_limits<value_type>::min() + 5)
-        {
-          m -= 5;
-        }
+        m -= 5;
+      }
 
-        m /= 10;
+      m /= 10;
 
-        if (increase_exponent())
-        {
-          return;
-        }
+      if (increase_exponent())
+      {
+        return;
       }
     }
 
@@ -876,46 +870,34 @@ public:
         auto r(doubled_t(tmp.v_.m) * o.v_.m);
 
         // fit into target mantissa
-        switch ((r > 0) - (r < 0))
+        while (r < -pow<2>(M - 1))
         {
-          case -1:
-            while (r < -pow<2>(M - 1))
-            {
-              if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-              {
-                r -= 5;
-              }
+          if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
+          {
+            r -= 5;
+          }
 
-              r /= 10;
+          r /= 10;
 
-              if (tmp.increase_exponent())
-              {
-                return dpp{nan{}};
-              }
-            }
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
 
-            break;
+        while (r > pow<2>(M - 1) - 1)
+        {
+          if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
+          {
+            r += 5;
+          }
 
-          case 1:
-            while (r > pow<2>(M - 1) - 1)
-            {
-              if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-              {
-                r += 5;
-              }
+          r /= 10;
 
-              r /= 10;
-
-              if (tmp.increase_exponent())
-              {
-                return dpp{nan{}};
-              }
-            }
-
-            break;
-
-          default:
-            break;
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
 
         tmp.v_.m = r;
@@ -946,92 +928,74 @@ public:
       {
         auto r(pow<10, doubled_t>(e) / o.v_.m);
 
-        switch ((r > 0) - (r < 0))
+        constexpr auto min(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+        constexpr auto max(-(min + 1));
+
+        if (r > 0)
         {
-          case -1:
-            while (r < -pow<2, doubled_t>(bit_size<doubled_t>() - 1) /
-              tmp.v_.m)
+          while (r > max / tmp.v_.m)
+          {
+            if (r <= max - 5)
             {
-              if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-              {
-                r -= 5;
-              }
-
-              r /= 10;
-
-              if (tmp.increase_exponent())
-              {
-                return dpp{nan{}};
-              }
+              r += 5;
             }
 
-            break;
+            r /= 10;
 
-          case 1:
-            while (r > (pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1) /
-              tmp.v_.m)
+            if (tmp.increase_exponent())
             {
-              if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-              {
-                r += 5;
-              }
-
-              r /= 10;
-
-              if (tmp.increase_exponent())
-              {
-                return dpp{nan{}};
-              }
+              return dpp{nan{}};
+            }
+          }
+        }
+        else if (r < 0)
+        {
+          while (r < min / tmp.v_.m)
+          {
+            if (r >= min + 5)
+            {
+              r -= 5;
             }
 
-            break;
+            r /= 10;
 
-          default:
-            break;
+            if (tmp.increase_exponent())
+            {
+              return dpp{nan{}};
+            }
+          }
         }
 
         r *= tmp.v_.m;
 
-        switch ((r > 0) - (r < 0))
+        while (r > pow<2>(M - 1) - 1)
         {
-          case -1:
-            while (r < -pow<2>(M - 1))
-            {
-              if (r >= -pow<2, doubled_t>(bit_size<doubled_t>() - 1) + 5)
-              {
-                r -= 5;
-              }
+          if (r <= max - 5)
+          {
+            r += 5;
+          }
 
-              r /= 10;
+          r /= 10;
 
-              if (tmp.increase_exponent())
-              {
-                return dpp{nan{}};
-              }
-            }
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
+        }
 
-            break;
+        while (r < -pow<2>(M - 1))
+        {
+          if (r >= min + 5)
+          {
+            r -= 5;
+          }
 
-          case 1:
-            while (r > pow<2>(M - 1) - 1)
-            {
-              if (r <= pow<2, doubled_t>(bit_size<doubled_t>() - 1) - 1 - 5)
-              {
-                r += 5;
-              }
+          r /= 10;
 
-              r /= 10;
-
-              if (tmp.increase_exponent())
-              {
-                return dpp{nan{}};
-              }
-            }
-
-            break;
-
-          default:
-            break;
+          if (tmp.increase_exponent())
+          {
+            return dpp{nan{}};
+          }
         }
 
         tmp.v_.m = r;
