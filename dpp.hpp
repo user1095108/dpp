@@ -115,7 +115,7 @@ private:
   {
     value_type m:M;
     value_type e:E;
-  } v_;
+  } v_{};
 
   template <value_type B, typename T = value_type>
   static constexpr auto pow(unsigned e) noexcept
@@ -365,10 +365,7 @@ private:
   }
 
 public:
-  constexpr dpp() noexcept :
-    v_{}
-  {
-  }
+  constexpr dpp() noexcept = default;
 
   constexpr dpp(dpp const&) = default;
   constexpr dpp(dpp&&) = default;
@@ -419,8 +416,7 @@ public:
     normalize();
   }
 
-  constexpr dpp(std::intmax_t m, int const e) noexcept :
-    v_{}
+  constexpr dpp(std::intmax_t m, int const e) noexcept
   {
     if ((e <= pow<2>(E - 1) - 1) && (e >= -pow<2>(E - 1)))
     {
