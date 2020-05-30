@@ -525,8 +525,7 @@ public:
 
       while (f)
       {
-        if (std::intmax_t const d(f *= 10);
-          (e >= emin + 1) && (r <= max / 10))
+        if (int const d(f *= 10); (e >= emin + 1) && (r <= max / 10))
         {
           if (r *= 10; r <= max - d)
           {
@@ -548,8 +547,7 @@ public:
 
       while (f)
       {
-        if (std::intmax_t const d(f *= 10);
-          (e >= emin + 1) && (r >= min / 10))
+        if (int const d(f *= 10); (e >= emin + 1) && (r >= min / 10))
         {
           if (r *= 10; r >= min - d)
           {
