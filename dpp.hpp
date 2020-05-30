@@ -27,9 +27,6 @@ template <unsigned M, unsigned E>
 class dpp;
 
 template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const&) noexcept;
-
-template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
@@ -803,8 +800,18 @@ public:
   {
     auto tmp(*this);
 
-    return tmp.v_.m == -pow<2>(M - 1) ? dpp{dpp::nan{}} :
-      tmp.v_.m = -tmp.v_.m, tmp;
+    if (tmp.v_.m == -pow<2>(M - 1))
+    {
+      round_mantissa(tmp);
+
+      tmp.v_.m /= 10;
+
+      tmp.increase_exponent();
+    }
+
+    tmp.v_.m = -tmp.v_.m;
+
+    return tmp;
   }
 
   //
@@ -1167,8 +1174,6 @@ public:
   }
 
   //
-  friend constexpr auto abs<M, E>(dpp<M, E> const&) noexcept;
-
   friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
 
   friend constexpr int sign<M, E>(dpp<M, E> const&) noexcept;
@@ -1183,11 +1188,7 @@ public:
 template <unsigned M, unsigned E>
 constexpr auto abs(dpp<M, E> const& p) noexcept
 {
-  auto tmp(p);
-
-  tmp.v_.m = std::abs(p.v_.m);
-
-  return tmp;
+  return p.mantissa() < 0 ? -p : p;
 }
 
 //////////////////////////////////////////////////////////////////////////////
