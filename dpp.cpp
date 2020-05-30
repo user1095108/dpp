@@ -74,6 +74,7 @@ int main()
   std::cout << std::sqrt(7.f) << " " << sqrt("7"_d32) << std::endl;
   std::cout << std::sqrt(7.) << " " << sqrt("7"_d64) << std::endl;
   std::cout << std::sqrt(9.f) << " " << sqrt("9"_d32) << std::endl;
+  std::cout << std::sqrt(77.f) << " " << sqrt("77"_d32) << std::endl;
   std::cout << std::sqrt(77.) << " " << sqrt("77"_d64) << std::endl;
 
   //
