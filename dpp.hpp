@@ -221,29 +221,26 @@ private:
     return false;
   }
 
-  constexpr bool increase_exponent() noexcept
-  {
-    if (constexpr auto emax(pow<2>(E - 1) - 1); v_.e <= emax - 1)
-    {
-      ++v_.e;
-
-      return false;
-    }
-    else
-    {
-      *this = dpp{nan{}};
-
-      return true;
-    }
-  }
-
   constexpr void normalize() noexcept
   {
     assert(!isnan(*this));
 
+    constexpr auto emax(pow<2>(E - 1) - 1);
+
     if (v_.m)
     {
-      for (; !((v_.m % 10) || increase_exponent()); v_.m /= 10);
+      while (!(v_.m % 10))
+      {
+        if (v_.e <= emax - 1)
+        {
+          ++v_.e;
+          v_.m /= 10;
+        }
+        else
+        {
+          *this = dpp{nan{}};
+        }
+      }
     }
   }
 
@@ -293,35 +290,41 @@ public:
 
     while (m < mmin)
     {
-      if (m >= umin + 5)
+      if (v_.e <= emax - 1)
       {
-        m -= 5;
-      }
+        if (m >= umin + 5)
+        {
+          m -= 5;
+        }
 
-      if (increase_exponent())
-      {
-        return;
+        ++v_.e;
+        m /= 10;
       }
       else
       {
-        m /= 10;
+        *this = dpp{dpp::nan{}};
+
+        return;
       }
     }
 
     while (m > mmax)
     {
-      if (m <= umax - 5)
+      if (v_.e <= emax - 1)
       {
-        m += 5;
-      }
+        if (m <= umax - 5)
+        {
+          m += 5;
+        }
 
-      if (increase_exponent())
-      {
-        return;
+        ++v_.e;
+        m /= 10;
       }
       else
       {
-        m /= 10;
+        *this = dpp{dpp::nan{}};
+
+        return;
       }
     }
 
