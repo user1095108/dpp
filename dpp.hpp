@@ -196,9 +196,9 @@ private:
 
     while (ae != be)
     {
-      // round the mantissa
       if (be <= emax - 1)
       {
+/*
         if ((bm < 0) && (bm >= rmin + 5))
         {
           bm -= 5;
@@ -207,6 +207,7 @@ private:
         {
           bm += 5;
         }
+*/
 
         // inc be, if possible
         ++be;
@@ -292,9 +293,9 @@ public:
     {
       if (v_.e <= emax - 1)
       {
-        if (m >= umin + 5)
+        if (m >= umin + 4)
         {
-          m -= 5;
+          m -= 4;
         }
 
         ++v_.e;
@@ -312,9 +313,9 @@ public:
     {
       if (v_.e <= emax - 1)
       {
-        if (m <= umax - 5)
+        if (m <= umax - 4)
         {
-          m += 5;
+          m += 4;
         }
 
         ++v_.e;
@@ -660,75 +661,7 @@ public:
         return dpp{nan{}};
       }
 
-      constexpr auto emin(pow<-2>(E - 1));
-      constexpr auto emax(-(emin + 1));
-
-      constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
-      constexpr auto rmax(-(rmin + 1));
-
-      if (auto const s1(sign(m1)); s1 == sign(m2))
-      {
-        switch (s1)
-        {
-          case -1:
-            while (m1 < rmin - m2)
-            {
-              if (e1 <= emax - 1)
-              {
-                if (m1 >= rmin + 5)
-                {
-                  m1 -= 5;
-                }
-
-                if (m2 >= rmin + 5)
-                {
-                  m2 -= 5;
-                }
-
-                ++e1;
-                m1 /= 10;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-            }
-
-            break;
-
-          case 1:
-            while (m1 > rmax - m2)
-            {
-              if (e1 <= emax - 1)
-              {
-                if (m1 <= rmax - 5)
-                {
-                  m1 += 5;
-                }
-
-                if (m2 <= rmax - 5)
-                {
-                  m2 += 5;
-                }
-
-                ++e1;
-                m1 /= 10;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-            }
-
-            break;
-
-          default:
-            break;
-        }
-      }
-
+      // there can be no overflow
       return dpp(m1 + m2, e1);
     }
   }
@@ -749,77 +682,7 @@ public:
         return dpp{nan{}};
       }
 
-      constexpr auto emin(pow<-2>(E - 1));
-      constexpr auto emax(-(emin + 1));
-
-      constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
-      constexpr auto rmax(-(rmin + 1));
-
-      if (auto const s1(sign(m1)); s1 != sign(m2))
-      {
-        switch (s1)
-        {
-          case -1:
-            // m1 is negative, m2 is positive
-            while (m1 < rmin + m2)
-            {
-              if (e1 <= emax - 1)
-              {
-                if (m1 >= rmin + 5)
-                {
-                  m1 -= 5;
-                }
-
-                if (m2 <= rmax - 5)
-                {
-                  m2 += 5;
-                }
-
-                ++e1;
-                m1 /= 10;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-            }
-
-            break;
-
-          case 1:
-            // m1 is positive, m2 is negative
-            while (m1 > rmax + m2)
-            {
-              if (e1 <= emax - 1)
-              {
-                if (m1 <= rmax - 5)
-                {
-                  m1 += 5;
-                }
-
-                if (m2 >= rmin + 5)
-                {
-                  m2 -= 5;
-                }
-
-                ++e1;
-                m1 /= 10;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-            }
-
-            break;
-
-          default:
-            break;
-        }
-      }
-
+      // there can be no overflow
       return dpp(m1 - m2, e1);
     }
   }
@@ -862,10 +725,12 @@ public:
         {
           if (e <= emax - 1)
           {
+/*
             if (r <= rmax - 5)
             {
               r += 5;
             }
+*/
 
             ++e;
             r /= 10;
@@ -882,10 +747,12 @@ public:
         {
           if (e <= emax - 1)
           {
+/*
             if (r >= rmin + 5)
             {
               r -= 5;
             }
+*/
 
             ++e;
             r /= 10;
