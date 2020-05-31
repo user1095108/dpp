@@ -157,8 +157,8 @@ private:
     }
   }
 
-  static constexpr bool equalize(doubled_t& am, value_type& ae,
-    doubled_t& bm, value_type& be) noexcept
+  static constexpr bool equalize(value_type& am, value_type& ae,
+    value_type& bm, value_type& be) noexcept
   {
     constexpr auto emin(-pow<2>(E - 1));
 
@@ -730,7 +730,7 @@ public:
     }
     else
     {
-      doubled_t m1(v_.m), m2(o.v_.m);
+      value_type m1(v_.m), m2(o.v_.m);
       value_type e1(v_.e), e2(o.v_.e);
 
       if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
@@ -739,7 +739,7 @@ public:
         return dpp{nan{}};
       }
 
-      constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+      constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
       constexpr auto sign([](auto const a) noexcept
@@ -897,7 +897,7 @@ public:
     }
     else
     {
-      doubled_t m1(v_.m), m2(o.v_.m);
+      value_type m1(v_.m), m2(o.v_.m);
       value_type e1(v_.e), e2(o.v_.e);
 
       if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
@@ -906,7 +906,7 @@ public:
         return dpp{nan{}};
       }
 
-      constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+      constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
       constexpr auto sign([](auto const a) noexcept
