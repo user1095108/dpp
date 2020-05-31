@@ -640,7 +640,7 @@ public:
 
   constexpr auto operator-() const noexcept
   {
-    return isnan(*this) ? *this : dpp(-mantissa(), exponent());
+    return dpp(-mantissa(), exponent());
   }
 
   //
