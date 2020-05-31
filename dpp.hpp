@@ -640,6 +640,7 @@ public:
 
   constexpr auto operator-() const noexcept
   {
+    // we need to do it like this as negating the mantissa can overflow 
     return dpp(-mantissa(), exponent());
   }
 
