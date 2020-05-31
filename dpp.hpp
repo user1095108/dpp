@@ -1129,10 +1129,7 @@ constexpr auto trunc(dpp<M, E> const& o) noexcept
   {
     auto m(o.mantissa());
 
-    while (m && e++)
-    {
-      m /= 10;
-    }
+    for (; m && e++; m /= 10);
 
     return dpp<M, E>(m, 0);
   }
