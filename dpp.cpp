@@ -26,18 +26,29 @@ constexpr auto sqrt(T const S) noexcept
 
   do
   {
-    xo = xn;
     //xn = (xo + S/xo) / 2;
-
-    auto const xs(xn * xn);
-    xn = ((xs + T(3) * S) / (T(3) * xs + S)) * xn;
-
+    xo = xn;
     eo = en;
+
+    auto const xs(xo * xo);
+    xn = ((xs + T(3) * S) / (T(3) * xs + S)) * xo;
     en = xn - xo;
   }
   while (dpp::abs(en) < dpp::abs(eo));
 
-  return xn;
+  en = S - (xn * xn);
+
+  do
+  {
+    xo = xn;
+    eo = en;
+
+    xn = T(xn.mantissa() - 1, xn.exponent());
+    en = S - (xn * xn);
+  }
+  while (dpp::abs(en) < dpp::abs(eo));
+
+  return xo;
 }
 
 int main()
