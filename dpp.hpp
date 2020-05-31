@@ -292,12 +292,12 @@ public:
     constexpr auto mmin(pow<-2>(M - 1));
     constexpr auto mmax(-(mmin + 1));
 
-    constexpr auto vmin(std::numeric_limits<U>::min());
-    constexpr auto vmax(std::numeric_limits<U>::max());
+    constexpr auto umin(pow<-2, U>(bit_size<U>() - 1));
+    constexpr auto umax(-(umin + 1));
 
     while (m < mmin)
     {
-      if (m >= vmin + 5)
+      if (m >= umin + 5)
       {
         m -= 5;
       }
@@ -314,7 +314,7 @@ public:
 
     while (m > mmax)
     {
-      if (m <= vmax - 5)
+      if (m <= umax - 5)
       {
         m += 5;
       }
