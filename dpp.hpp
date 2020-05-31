@@ -1180,26 +1180,23 @@ constexpr std::optional<std::intmax_t> to_integral(
     {
       if (auto const c(dpp<M, E>::template pow<10, std::intmax_t>(e)); c)
       {
-        switch (dpp<M, E>::template sign(r))
+        if (r > 0)
         {
-          case -1:
-            if (r >= std::numeric_limits<std::intmax_t>::min() / c)
-            {
-              return r * c;
-            }
-
-            break;
-
-          case 0:
-            return 0;
-
-          case 1:
-            if (r <= std::numeric_limits<std::intmax_t>::max() / c)
-            {
-              return r * c;
-            }
-
-            break;
+          if (r <= std::numeric_limits<std::intmax_t>::max() / c)
+          {
+            return r * c;
+          }
+        }
+        else if (r < 0)
+        {
+          if (r >= std::numeric_limits<std::intmax_t>::min() / c)
+          {
+            return r * c;
+          }
+        }
+        else
+        {
+          return 0;
         }
       }
     }
