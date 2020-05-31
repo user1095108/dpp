@@ -1125,10 +1125,21 @@ constexpr auto round(dpp<M, E> const& o) noexcept
 template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const& o) noexcept
 {
-  auto const e(o.exponent());
+  if (auto e(o.exponent()); !isnan(o) && (e < 0))
+  {
+    auto m(o.mantissa());
 
-  return !isnan(o) && (e < 0) ?
-    dpp<M, E>(o.mantissa() / dpp<M, E>::template pow<10>(-e), 0) : o;
+    while (m && e++)
+    {
+      m /= 10;
+    }
+
+    return dpp<M, E>(m, 0);
+  }
+  else
+  {
+    return o;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
