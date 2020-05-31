@@ -30,9 +30,6 @@ template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
-constexpr auto sign(dpp<M, E> const&) noexcept;
-
-template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const&) noexcept;
 
 template <typename T, typename S>
@@ -244,6 +241,12 @@ private:
     {
       for (; !((v_.m % 10) || increase_exponent()); v_.m /= 10);
     }
+  }
+
+  template <typename U>
+  static constexpr auto sign(U const a) noexcept
+  {
+    return (a > 0) - (a < 0);
   }
 
 public:
@@ -681,12 +684,6 @@ public:
       constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
-      constexpr auto sign([](auto const a) noexcept
-        {
-          return (a > 0) - (a < 0);
-        }
-      );
-
       if (auto const s1(sign(m1)); s1 == sign(m2))
       {
         switch (s1)
@@ -796,12 +793,6 @@ public:
 
       constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
       constexpr auto rmax(-(rmin + 1));
-
-      constexpr auto sign([](auto const a) noexcept
-        {
-          return (a > 0) - (a < 0);
-        }
-      );
 
       if (auto const s1(sign(m1)); s1 != sign(m2))
       {
@@ -913,13 +904,13 @@ public:
     }
     else
     {
-      value_type e(-dpp::dpp::decimal_places<doubled_t>{});
-
       constexpr auto emin(pow<-2>(E - 1));
       constexpr auto emax(-(emin + 1));
 
       constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
       constexpr auto rmax(-(rmin + 1));
+
+      value_type e(-dpp::dpp::decimal_places<doubled_t>{});
 
       auto r(pow<10, doubled_t>(-e) / o.v_.m);
 
@@ -1129,9 +1120,12 @@ public:
   }
 
   //
-  friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
+  friend constexpr auto sign(dpp<M, E> const& o) noexcept
+  {
+    return dpp<M, E>::template sign(o.v_.m);
+  }
 
-  friend constexpr auto sign<M, E>(dpp<M, E> const&) noexcept;
+  friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
 
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
     dpp<M, E> const&) noexcept;
@@ -1151,13 +1145,6 @@ template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const& o) noexcept
 {
   return -dpp<M, E>::template pow<2>(E - 1) == o.v_.e;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
-constexpr auto sign(dpp<M, E> const& o) noexcept
-{
-  return (o.v_.m > 0) - (o.v_.m < 0);
 }
 
 template <unsigned M, unsigned E>
