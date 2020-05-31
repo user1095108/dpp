@@ -237,6 +237,8 @@ private:
   {
     assert(!isnan(*this));
 
+    constexpr auto emax(pow<2>(E - 1) - 1);
+
     if (v_.m)
     {
       for (; !((v_.m % 10) || increase_exponent()); v_.m /= 10);
