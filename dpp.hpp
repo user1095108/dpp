@@ -1336,7 +1336,6 @@ constexpr T to_decimal(It i, It const end) noexcept
                 continue;
               }
             }
-
           }
 
           break;
