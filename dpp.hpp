@@ -162,10 +162,13 @@ private:
   {
     constexpr auto emin(-pow<2>(E - 1));
 
+    constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
+    constexpr auto rmax(-(rmin + 1));
+
     switch ((am > 0) - (am < 0))
     {
       case -1:
-        while ((am >= -pow<2>(M - 1) / 10) && (ae != be))
+        while ((am >= rmin / 10) && (ae != be))
         {
           // watch the nan
           if (ae <= emin + 1)
@@ -188,7 +191,7 @@ private:
         break;
 
       case 1:
-        while ((am <= (pow<2>(M - 1) - 1) / 10) && (ae != be))
+        while ((am <= rmax / 10) && (ae != be))
         {
           // watch the nan
           if (ae <= emin + 1)
@@ -212,11 +215,11 @@ private:
 
     while (ae != be)
     {
-      if ((bm < 0) && (bm >= -pow<2>(M - 1) + 5))
+      if ((bm < 0) && (bm >= rmin + 5))
       {
         bm -= 5;
       }
-      else if ((bm > 0) && (bm <= pow<2>(M - 1) - 1 - 5))
+      else if ((bm > 0) && (bm <= rmax - 5))
       {
         bm += 5;
       }
@@ -739,6 +742,9 @@ public:
         return dpp{nan{}};
       }
 
+      constexpr auto emin(pow<-2>(E - 1));
+      constexpr auto emax(-(emin + 1));
+
       constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
@@ -755,37 +761,37 @@ public:
           case -1:
             while (m1 < rmin - m2)
             {
-              if (m1 >= -pow<2>(M - 1) + 5)
+              if (m1 >= rmin + 5)
               {
                 m1 -= 5;
               }
 
               m1 /= 10;
 
-              if (e1 > pow<2>(E - 1) - 1 - 1)
-              {
-                return dpp{nan{}};
-              }
-              else
+              if (e1 <= emax - 1)
               {
                 ++e1;
               }
+              else
+              {
+                return dpp{nan{}};
+              }
 
               //
-              if (m2 >= -pow<2>(M - 1) + 5)
+              if (m2 >= rmin + 5)
               {
                 m2 -= 5;
               }
 
               m2 /= 10;
 
-              if (e2 > pow<2>(E - 1) - 1 - 1)
+              if (e2 <= emax - 1)
               {
-                return dpp{nan{}};
+                ++e2;
               }
               else
               {
-                ++e2;
+                return dpp{nan{}};
               }
             }
 
@@ -794,37 +800,37 @@ public:
           case 1:
             while (m1 > rmax - m2)
             {
-              if (m1 <= pow<2>(M - 1) - 1 - 5)
+              if (m1 <= rmax - 5)
               {
                 m1 += 5;
               }
 
               m1 /= 10;
 
-              if (e1 > pow<2>(E - 1) - 1 - 1)
-              {
-                return dpp{nan{}};
-              }
-              else
+              if (e1 <= emax - 1)
               {
                 ++e1;
               }
+              else
+              {
+                return dpp{nan{}};
+              }
 
               //
-              if (m2 <= pow<2>(M - 1) - 1 - 5)
+              if (m2 <= rmax - 5)
               {
-                m1 += 5;
+                m2 += 5;
               }
 
               m2 /= 10;
 
-              if (e2 > pow<2>(E - 1) - 1 - 1)
+              if (e2 <= emax - 1)
               {
-                return dpp{nan{}};
+                ++e2;
               }
               else
               {
-                ++e2;
+                return dpp{nan{}};
               }
             }
 
@@ -852,13 +858,13 @@ public:
 
         r /= 10;
 
-        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
+        if (tmp.v_.e <= emax - 1)
         {
-          return dpp{nan{}};
+          ++tmp.v_.e;
         }
         else
         {
-          ++tmp.v_.e;
+          return dpp{nan{}};
         }
       }
 
@@ -871,13 +877,13 @@ public:
 
         r /= 10;
 
-        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
+        if (tmp.v_.e <= emax - 1)
         {
-          return dpp{nan{}};
+          ++tmp.v_.e;
         }
         else
         {
-          ++tmp.v_.e;
+          return dpp{nan{}};
         }
       }
 
@@ -906,6 +912,9 @@ public:
         return dpp{nan{}};
       }
 
+      constexpr auto emin(pow<-2>(E - 1));
+      constexpr auto emax(-(emin + 1));
+
       constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
@@ -920,80 +929,80 @@ public:
         switch (s1)
         {
           case -1:
-            // m2 is positive
+            // m1 is negative, m2 is positive
             while (m1 < rmin + m2)
             {
-              if (m1 >= -pow<2>(M - 1) + 5)
+              if (m1 >= rmin + 5)
               {
                 m1 -= 5;
               }
 
               m1 /= 10;
 
-              if (e1 > pow<2>(E - 1) - 1 - 1)
-              {
-                return dpp{nan{}};
-              }
-              else
+              if (e1 <= emax - 1)
               {
                 ++e1;
               }
+              else
+              {
+                return dpp{nan{}};
+              }
 
               //
-              if (m2 >= -pow<2>(M - 1) + 5)
+              if (m2 <= rmax - 5)
               {
-                m2 -= 5;
+                m2 += 5;
               }
 
               m2 /= 10;
 
-              if (e2 > pow<2>(E - 1) - 1 - 1)
+              if (e2 <= emax - 1)
               {
-                return dpp{nan{}};
+                ++e2;
               }
               else
               {
-                ++e2;
+                return dpp{nan{}};
               }
             }
 
             break;
 
           case 1:
-            // m2 is negative
+            // m1 is positive, m2 is negative
             while (m1 > rmax + m2)
             {
-              if (m1 <= pow<2>(M - 1) - 1 - 5)
+              if (m1 <= rmax - 5)
               {
                 m1 += 5;
               }
 
               m1 /= 10;
 
-              if (e1 > pow<2>(E - 1) - 1 - 1)
-              {
-                return dpp{nan{}};
-              }
-              else
+              if (e1 <= emax - 1)
               {
                 ++e1;
               }
+              else
+              {
+                return dpp{nan{}};
+              }
 
               //
-              if (m2 <= pow<2>(M - 1) - 1 - 5)
+              if (m2 >= rmin + 5)
               {
-                m1 += 5;
+                m2 -= 5;
               }
 
               m2 /= 10;
 
-              if (e2 > pow<2>(E - 1) - 1 - 1)
+              if (e2 <= emax - 1)
               {
-                return dpp{nan{}};
+                ++e2;
               }
               else
               {
-                ++e2;
+                return dpp{nan{}};
               }
             }
 
@@ -1021,13 +1030,13 @@ public:
 
         r /= 10;
 
-        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
+        if (tmp.v_.e <= emax - 1)
         {
-          return dpp{nan{}};
+          ++tmp.v_.e;
         }
         else
         {
-          ++tmp.v_.e;
+          return dpp{nan{}};
         }
       }
 
@@ -1040,13 +1049,13 @@ public:
 
         r /= 10;
 
-        if (tmp.v_.e > pow<2>(E - 1) - 1 - 1)
+        if (tmp.v_.e <= emax - 1)
         {
-          return dpp{nan{}};
+          ++tmp.v_.e;
         }
         else
         {
-          ++tmp.v_.e;
+          return dpp{nan{}};
         }
       }
 
