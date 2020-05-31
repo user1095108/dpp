@@ -1228,13 +1228,11 @@ std::string to_string(dpp<M, E> p)
     r.append(1, '-');
   }
 
-  if (auto const o(to_integral(p)); o.has_value())
+  if (auto const t(trunc(p)); !isnan(t))
   {
-    auto const v(o.value());
+    r = std::to_string(t.mantissa()).append(t.exponent(), '0');
 
-    r.append(std::to_string(v));
-
-    p -= v;
+    p -= t;
   }
   else
   {
