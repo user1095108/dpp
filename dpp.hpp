@@ -1241,7 +1241,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     typename T::value_type r{};
 
-    constexpr auto max(std::numeric_limits<std::intmax_t>::max());
+    constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
 
     for (; i != end; i = std::next(i))
     {
@@ -1253,11 +1253,11 @@ constexpr T to_decimal(It i, It const end) noexcept
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (r <= max / 10)
+          if (r <= rmax / 10)
           {
             r *= 10;
 
-            if (auto const d(*i - '0'); r <= max - d)
+            if (auto const d(*i - '0'); r <= rmax - d)
             {
               r += d;
 
@@ -1290,11 +1290,11 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if ((e > emin + 1) && (r <= max / 10))
+          if ((e > emin + 1) && (r <= rmax / 10))
           {
             r *= 10;
 
-            if (auto const d(*i - '0'); r <= max - d)
+            if (auto const d(*i - '0'); r <= rmax - d)
             {
               r += d;
               --e;
@@ -1315,8 +1315,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    auto const tmp(T(r, e));
-    return positive ? tmp : -tmp;
+    return {positive ? r : -r, e};
   }
 }
 
