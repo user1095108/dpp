@@ -640,22 +640,26 @@ public:
   {
     auto tmp(*this);
 
-    if (tmp.v_.m == -pow<2>(M - 1))
+    do
     {
-      // we can't round the mantissa
-      if (tmp.increase_exponent())
+      if (tmp.v_.m == -pow<2>(M - 1))
       {
-        return tmp;
-      }
-      else
-      {
-        tmp.v_.m /= 10;
+        // we can't round the mantissa
+        if (tmp.increase_exponent())
+        {
+          break;
+        }
+        else
+        {
+          tmp.v_.m /= 10;
 
-        tmp.normalize();
+          tmp.normalize();
+        }
       }
+
+      tmp.v_.m = -tmp.v_.m;
     }
-
-    tmp.v_.m = -tmp.v_.m;
+    while (false);
 
     return tmp;
   }
@@ -1148,33 +1152,33 @@ constexpr bool isnan(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto ceil(dpp<M, E> const& x) noexcept
+constexpr auto ceil(dpp<M, E> const& o) noexcept
 {
-  auto const t(trunc(x));
+  auto const t(trunc(o));
 
-  return t + (t < x);
+  return t + (t < o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto floor(dpp<M, E> const& x) noexcept
+constexpr auto floor(dpp<M, E> const& o) noexcept
 {
-  auto const t(trunc(x));
+  auto const t(trunc(o));
 
-  return t - (t > x);
+  return t - (t > o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto round(dpp<M, E> const& x) noexcept
+constexpr auto round(dpp<M, E> const& o) noexcept
 {
-  if (x.exponent() < 0)
+  if (!isnan(o) && (o.exponent() < 0))
   {
     constexpr dpp<M, E> c(5, -1);
 
-    return trunc(x.mantissa() > 0 ? x + c : x - c);
+    return trunc(o.mantissa() > 0 ? o + c : o - c);
   }
   else
   {
-    return x;
+    return o;
   }
 }
 
