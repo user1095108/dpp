@@ -278,7 +278,7 @@ public:
     constexpr auto emax(-(emin + 1));
 
     // watch the nan
-    if ((e <= emax) && (e > emin))
+    if ((e > emin) && (e <= emax))
     {
       v_.e = e;
     }
