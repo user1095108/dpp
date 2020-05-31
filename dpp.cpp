@@ -22,7 +22,7 @@ constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
 template <typename T>
 constexpr auto sqrt(T const S) noexcept
 {
-  T xo, xn(S / 2), eo, en(S);
+  T xo, xn(S), eo, en(S);
 
   do
   {
@@ -33,7 +33,7 @@ constexpr auto sqrt(T const S) noexcept
     xn = ((xs + T(3) * S) / (T(3) * xs + S)) * xo;
 //  xn = (xo + S/xo) / 2;
 
-    en = xn - xo;
+    en = xo - xn;
   }
   while (dpp::abs(en) < dpp::abs(eo));
 
