@@ -716,15 +716,8 @@ public:
                 m2 -= 5;
               }
 
-              if (e2 <= emax - 1)
-              {
-                //++e2;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
+              // e1 == e2
+              m2 /= 10;
             }
 
             break;
@@ -753,15 +746,8 @@ public:
                 m2 += 5;
               }
 
-              if (e2 <= emax - 1)
-              {
-                //++e2;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
+              // e1 == e2
+              m2 /= 10;
             }
 
             break;
@@ -827,15 +813,8 @@ public:
                 m2 += 5;
               }
 
-              if (e2 <= emax - 1)
-              {
-                //++e2;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
+              // e1 == e2
+              m2 /= 10;
             }
 
             break;
@@ -865,15 +844,8 @@ public:
                 m2 -= 5;
               }
 
-              if (e2 <= emax - 1)
-              {
-                //++e2;
-                m2 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
+              // e1 == e2
+              m2 /= 10;
             }
 
             break;
