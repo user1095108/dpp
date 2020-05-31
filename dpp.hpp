@@ -1242,6 +1242,7 @@ constexpr T to_decimal(It i, It const end) noexcept
     typename T::value_type r{};
 
     constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
+    constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
 
     for (; i != end; i = std::next(i))
     {
@@ -1253,15 +1254,32 @@ constexpr T to_decimal(It i, It const end) noexcept
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (r <= rmax / 10)
+          if (positive)
           {
-            r *= 10;
-
-            if (auto const d(*i - '0'); r <= rmax - d)
+            if (r <= rmax / 10)
             {
-              r += d;
+              r *= 10;
 
-              continue;
+              if (auto const d(*i - '0'); r <= rmax - d)
+              {
+                r += d;
+
+                continue;
+              }
+            }
+          }
+          else
+          {
+            if (r >= rmin / 10)
+            {
+              r *= 10;
+
+              if (auto const d(*i - '0'); r >= rmin + d)
+              {
+                r -= d;
+
+                continue;
+              }
             }
           }
 
@@ -1269,8 +1287,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 
         case '\0':
         {
-          auto const tmp(T(r, 0));
-          return positive ? tmp : -tmp;
+          return {r, 0};
         }
 
         default:
@@ -1290,17 +1307,36 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if ((e > emin + 1) && (r <= rmax / 10))
+          if (positive)
           {
-            r *= 10;
-
-            if (auto const d(*i - '0'); r <= rmax - d)
+            if ((e > emin + 1) && (r <= rmax / 10))
             {
-              r += d;
-              --e;
+              r *= 10;
 
-              continue;
+              if (auto const d(*i - '0'); r <= rmax - d)
+              {
+                r += d;
+                --e;
+
+                continue;
+              }
             }
+          }
+          else
+          {
+            if ((e > emin + 1) && (r >= rmin / 10))
+            {
+              r *= 10;
+
+              if (auto const d(*i - '0'); r >= rmin + d)
+              {
+                r -= d;
+                --e;
+
+                continue;
+              }
+            }
+
           }
 
           break;
@@ -1315,7 +1351,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    return {positive ? r : -r, e};
+    return {r, e};
   }
 }
 
