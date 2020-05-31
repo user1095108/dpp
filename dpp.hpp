@@ -223,9 +223,7 @@ private:
 
   constexpr bool increase_exponent() noexcept
   {
-    constexpr auto emax(pow<2>(E - 1) - 1);
-
-    if (v_.e <= emax - 1)
+    if (constexpr auto emax(pow<2>(E - 1) - 1); v_.e <= emax - 1)
     {
       ++v_.e;
 
