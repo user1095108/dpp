@@ -197,18 +197,18 @@ private:
     while (ae != be)
     {
       // round the mantissa
-      if ((bm < 0) && (bm >= rmin + 5))
-      {
-        bm -= 5;
-      }
-      else if ((bm > 0) && (bm <= rmax - 5))
-      {
-        bm += 5;
-      }
-
-      // inc be, if possible
       if (be <= emax - 1)
       {
+        if ((bm < 0) && (bm >= rmin + 5))
+        {
+          bm -= 5;
+        }
+        else if ((bm > 0) && (bm <= rmax - 5))
+        {
+          bm += 5;
+        }
+
+        // inc be, if possible
         ++be;
         bm /= 10;
       }
@@ -670,18 +670,18 @@ public:
           case -1:
             while (m1 < rmin - m2)
             {
-              if (m1 >= rmin + 5)
-              {
-                m1 -= 5;
-              }
-
-              if (m2 >= rmin + 5)
-              {
-                m2 -= 5;
-              }
-
               if (e1 <= emax - 1)
               {
+                if (m1 >= rmin + 5)
+                {
+                  m1 -= 5;
+                }
+
+                if (m2 >= rmin + 5)
+                {
+                  m2 -= 5;
+                }
+
                 ++e1;
                 m1 /= 10;
                 m2 /= 10;
@@ -697,18 +697,18 @@ public:
           case 1:
             while (m1 > rmax - m2)
             {
-              if (m1 <= rmax - 5)
-              {
-                m1 += 5;
-              }
-
-              if (m2 <= rmax - 5)
-              {
-                m2 += 5;
-              }
-
               if (e1 <= emax - 1)
               {
+                if (m1 <= rmax - 5)
+                {
+                  m1 += 5;
+                }
+
+                if (m2 <= rmax - 5)
+                {
+                  m2 += 5;
+                }
+
                 ++e1;
                 m1 /= 10;
                 m2 /= 10;
@@ -760,18 +760,18 @@ public:
             // m1 is negative, m2 is positive
             while (m1 < rmin + m2)
             {
-              if (m1 >= rmin + 5)
-              {
-                m1 -= 5;
-              }
-
-              if (m2 <= rmax - 5)
-              {
-                m2 += 5;
-              }
-
               if (e1 <= emax - 1)
               {
+                if (m1 >= rmin + 5)
+                {
+                  m1 -= 5;
+                }
+
+                if (m2 <= rmax - 5)
+                {
+                  m2 += 5;
+                }
+
                 ++e1;
                 m1 /= 10;
                 m2 /= 10;
@@ -788,18 +788,18 @@ public:
             // m1 is positive, m2 is negative
             while (m1 > rmax + m2)
             {
-              if (m1 <= rmax - 5)
-              {
-                m1 += 5;
-              }
-
-              if (m2 >= rmin + 5)
-              {
-                m2 -= 5;
-              }
-
               if (e1 <= emax - 1)
               {
+                if (m1 <= rmax - 5)
+                {
+                  m1 += 5;
+                }
+
+                if (m2 >= rmin + 5)
+                {
+                  m2 -= 5;
+                }
+
                 ++e1;
                 m1 /= 10;
                 m2 /= 10;
@@ -857,13 +857,13 @@ public:
       {
         while (r > rmax / v_.m)
         {
-          if (r <= rmax - 5)
-          {
-            r += 5;
-          }
-
           if (e <= emax - 1)
           {
+            if (r <= rmax - 5)
+            {
+              r += 5;
+            }
+
             ++e;
             r /= 10;
           }
@@ -877,13 +877,13 @@ public:
       {
         while (r < rmin / v_.m)
         {
-          if (r >= rmin + 5)
-          {
-            r -= 5;
-          }
-
           if (e <= emax - 1)
           {
+            if (r >= rmin + 5)
+            {
+              r -= 5;
+            }
+
             ++e;
             r /= 10;
           }
