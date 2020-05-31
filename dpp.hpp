@@ -1228,15 +1228,12 @@ std::string to_string(dpp<M, E> p)
     r.append(1, '-');
   }
 
-  if (auto const t(trunc(p)); !isnan(t))
   {
-    r = std::to_string(t.mantissa()).append(t.exponent(), '0');
+    auto const t(trunc(p));
+
+    r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
 
     p -= t;
-  }
-  else
-  {
-    return {"nan", 3};
   }
 
   if (auto const m(p.mantissa()); m)
