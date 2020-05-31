@@ -1365,9 +1365,14 @@ std::string to_string(dpp<M, E> p)
 
   if (auto const m(p.mantissa()); m)
   {
-    auto const tmp(std::to_string(m));
-
-    r.append(1, '.').append(-p.exponent() - tmp.size(), '0').append(tmp);
+    if (auto const tmp(std::to_string(m)); -p.exponent() >= tmp.size())
+    {
+      r.append(1, '.').append(-p.exponent() - tmp.size(), '0').append(tmp);
+    }
+    else
+    {
+      return {"nan", 3};
+    }
   }
 
   return r;
