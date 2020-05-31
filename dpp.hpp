@@ -662,7 +662,7 @@ public:
       }
 
       // there can be no overflow
-      return dpp(m1 + m2, e1);
+      return dpp(doubled_t(m1) + m2, e1);
     }
   }
 
@@ -683,7 +683,7 @@ public:
       }
 
       // there can be no overflow
-      return dpp(m1 - m2, e1);
+      return dpp(doubled_t(m1) - m2, e1);
     }
   }
 
