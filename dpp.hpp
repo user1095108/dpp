@@ -700,24 +700,21 @@ public:
                 m1 -= 5;
               }
 
-              if (e1 <= emax - 1)
-              {
-                ++e1;
-                m1 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-
-              //
               if (m2 >= rmin + 5)
               {
                 m2 -= 5;
               }
 
-              // e1 == e2
-              m2 /= 10;
+              if (e1 <= emax - 1)
+              {
+                ++e1;
+                m1 /= 10;
+                m2 /= 10;
+              }
+              else
+              {
+                return dpp{nan{}};
+              }
             }
 
             break;
@@ -730,24 +727,21 @@ public:
                 m1 += 5;
               }
 
-              if (e1 <= emax - 1)
-              {
-                ++e1;
-                m1 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-
-              //
               if (m2 <= rmax - 5)
               {
                 m2 += 5;
               }
 
-              // e1 == e2
-              m2 /= 10;
+              if (e1 <= emax - 1)
+              {
+                ++e1;
+                m1 /= 10;
+                m2 /= 10;
+              }
+              else
+              {
+                return dpp{nan{}};
+              }
             }
 
             break;
@@ -797,24 +791,21 @@ public:
                 m1 -= 5;
               }
 
-              if (e1 <= emax - 1)
-              {
-                ++e1;
-                m1 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-
-              //
               if (m2 <= rmax - 5)
               {
                 m2 += 5;
               }
 
-              // e1 == e2
-              m2 /= 10;
+              if (e1 <= emax - 1)
+              {
+                ++e1;
+                m1 /= 10;
+                m2 /= 10;
+              }
+              else
+              {
+                return dpp{nan{}};
+              }
             }
 
             break;
@@ -828,24 +819,21 @@ public:
                 m1 += 5;
               }
 
-              if (e1 <= emax - 1)
-              {
-                ++e1;
-                m1 /= 10;
-              }
-              else
-              {
-                return dpp{nan{}};
-              }
-
-              //
               if (m2 >= rmin + 5)
               {
                 m2 -= 5;
               }
 
-              // e1 == e2
-              m2 /= 10;
+              if (e1 <= emax - 1)
+              {
+                ++e1;
+                m1 /= 10;
+                m2 /= 10;
+              }
+              else
+              {
+                return dpp{nan{}};
+              }
             }
 
             break;
