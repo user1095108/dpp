@@ -640,33 +640,7 @@ public:
 
   constexpr auto operator-() const noexcept
   {
-    if (isnan(*this))
-    {
-      return *this;
-    }
-    else
-    {
-      auto tmp(*this);
-
-      if (-pow<2>(M - 1) == tmp.v_.m)
-      {
-        // we can't round the mantissa
-        if (tmp.increase_exponent())
-        {
-          return tmp;
-        }
-        else
-        {
-          tmp.v_.m /= 10;
-
-          tmp.normalize();
-        }
-      }
-
-      tmp.v_.m = -tmp.v_.m;
-
-      return tmp;
-    }
+    return isnan(*this) ? *this : dpp(-mantissa(), exponent());
   }
 
   //
