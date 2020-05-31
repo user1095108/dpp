@@ -1080,13 +1080,7 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    return (v_.m << E) | v_.e;
-  }
-
-  //
-  friend constexpr auto sign(dpp<M, E> const& o) noexcept
-  {
-    return dpp<M, E>::template sign(o.v_.m);
+    return (v_.e << M) | v_.m;
   }
 
   friend constexpr bool isnan<M, E>(dpp<M, E> const&) noexcept;
@@ -1109,6 +1103,15 @@ template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const& o) noexcept
 {
   return -dpp<M, E>::template pow<2>(E - 1) == o.v_.e;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E>
+constexpr auto sign(dpp<M, E> const& o) noexcept
+{
+  auto const m(o.mantissa());
+
+  return (m > 0) - (m < 0);
 }
 
 template <unsigned M, unsigned E>
