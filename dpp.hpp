@@ -640,16 +640,20 @@ public:
 
   constexpr auto operator-() const noexcept
   {
-    auto tmp(*this);
-
-    do
+    if (isnan(*this))
     {
-      if (tmp.v_.m == -pow<2>(M - 1))
+      return *this;
+    }
+    else
+    {
+      auto tmp(*this);
+
+      if (-pow<2>(M - 1) == tmp.v_.m)
       {
         // we can't round the mantissa
         if (tmp.increase_exponent())
         {
-          break;
+          return tmp;
         }
         else
         {
@@ -660,10 +664,9 @@ public:
       }
 
       tmp.v_.m = -tmp.v_.m;
-    }
-    while (false);
 
-    return tmp;
+      return tmp;
+    }
   }
 
   //
