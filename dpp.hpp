@@ -33,7 +33,7 @@ template <unsigned M, unsigned E>
 constexpr auto sign(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
-constexpr dpp<M, E> trunc(dpp<M, E> const&) noexcept;
+constexpr auto trunc(dpp<M, E> const&) noexcept;
 
 template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
@@ -145,76 +145,55 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
-  static constexpr auto round_mantissa(dpp& tmp) noexcept
-  {
-    if ((tmp.v_.m > 0) && (tmp.v_.m <= pow<2>(M - 1) - 1 - 5))
-    {
-      tmp.v_.m += 5;
-    }
-    else if ((tmp.v_.m < 0) && (tmp.v_.m >= -pow<2>(M - 1) + 5))
-    {
-      tmp.v_.m -= 5;
-    }
-  }
-
   static constexpr bool equalize(value_type& am, value_type& ae,
     value_type& bm, value_type& be) noexcept
   {
-    constexpr auto emin(-pow<2>(E - 1));
+    constexpr auto emin(pow<-2>(E - 1));
+    constexpr auto emax(-(emin + 1));
 
     constexpr auto rmin(pow<-2, value_type>(bit_size<value_type>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
-    switch ((am > 0) - (am < 0))
+    if (am > 0)
     {
-      case -1:
-        while ((am >= rmin / 10) && (ae != be))
+      while ((ae != be) && (am <= rmax / 10))
+      {
+        // watch the nan
+        if (ae > emin + 1)
         {
-          // watch the nan
-          if (ae <= emin + 1)
-          {
-            return true;
-          }
-          else
-          {
-            --ae;
-
-            am *= 10;
-          }
+          --ae;
+          am *= 10;
         }
-
-        break;
-
-      case 0:
-        ae = be;
-
-        break;
-
-      case 1:
-        while ((am <= rmax / 10) && (ae != be))
+        else
         {
-          // watch the nan
-          if (ae <= emin + 1)
-          {
-            return true;
-          }
-          else
-          {
-            --ae;
-
-            am *= 10;
-          }
+          return true;
         }
-
-        break;
-
-        default:;
+      }
     }
-
-    constexpr auto emax(pow<2>(E - 1) - 1);
+    else if (am < 0)
+    {
+      while ((ae != be) && (am >= rmin / 10))
+      {
+        // watch the nan
+        if (ae > emin + 1)
+        {
+          --ae;
+          am *= 10;
+        }
+        else
+        {
+          return true;
+        }
+      }
+    }
+    else
+    {
+      ae = be;
+    }
 
     while (ae != be)
     {
+      // round the mantissa
       if ((bm < 0) && (bm >= rmin + 5))
       {
         bm -= 5;
@@ -224,60 +203,28 @@ private:
         bm += 5;
       }
 
-      if (be > emax - 1)
+      // inc be, if possible
+      if (be <= emax - 1)
       {
-        return true;
+        ++be;
+        bm /= 10;
       }
       else
       {
-        ++be;
-
-        bm /= 10;
+        return true;
       }
     }
 
     return false;
   }
 
-  constexpr bool decrease_exponent(value_type const e) noexcept
-  {
-    // watch the nan
-    if ((v_.e > -pow<2>(E - 1) + e) && (v_.e <= pow<2>(E - 1) - 1 + e))
-    {
-      v_.e -= e;
-
-      return false;
-    }
-    else
-    {
-      *this = dpp{nan{}};
-
-      return true;
-    }
-  }
-
   constexpr bool increase_exponent() noexcept
   {
-    if (v_.e <= pow<2>(E - 1) - 1 - 1)
+    constexpr auto emax(pow<2>(E - 1) - 1);
+
+    if (v_.e <= emax - 1)
     {
       ++v_.e;
-
-      return false;
-    }
-    else
-    {
-      *this = dpp{nan{}};
-
-      return true;
-    }
-  }
-
-  constexpr bool increase_exponent(int const e) noexcept
-  {
-    // watch the nan
-    if ((v_.e > -pow<2>(E - 1) - e) && (v_.e <= pow<2>(E - 1) - 1 - e))
-    {
-      v_.e += e;
 
       return false;
     }
@@ -308,47 +255,25 @@ public:
   template <typename U,
     std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
   >
-  constexpr dpp(U m) noexcept
+  constexpr dpp(U const m) noexcept :
+    dpp(m, 0)
   {
-    while (m > pow<2>(M - 1) - 1)
-    {
-      if (m <= std::numeric_limits<value_type>::max() - 5)
-      {
-        m += 5;
-      }
-
-      m /= 10;
-
-      if (increase_exponent())
-      {
-        return;
-      }
-    }
-
-    while (m < -pow<2>(M - 1))
-    {
-      if (m >= std::numeric_limits<value_type>::min() + 5)
-      {
-        m -= 5;
-      }
-
-      m /= 10;
-
-      if (increase_exponent())
-      {
-        return;
-      }
-    }
-
-    v_.m = m;
-
-    normalize();
   }
 
-  constexpr dpp(std::intmax_t m, value_type const e) noexcept
+  template <typename U,
+    std::enable_if_t<
+      std::is_integral_v<U> ||
+      std::is_same_v<U, __int128>,
+      int
+    > = 0
+  >
+  constexpr dpp(U m, value_type const e) noexcept
   {
+    constexpr auto emin(pow<-2>(E - 1));
+    constexpr auto emax(-(emin + 1));
+
     // watch the nan
-    if ((e <= pow<2>(E - 1) - 1) && (e > -pow<2>(E - 1)))
+    if ((e <= emax) && (e > emin))
     {
       v_.e = e;
     }
@@ -359,38 +284,43 @@ public:
       return;
     }
 
-    if (m > 0)
+    constexpr auto mmin(pow<-2>(M - 1));
+    constexpr auto mmax(-(mmin + 1));
+
+    constexpr auto vmin(std::numeric_limits<U>::min());
+    constexpr auto vmax(std::numeric_limits<U>::max());
+
+    while (m < mmin)
     {
-      while (m > pow<2>(M - 1) - 1)
+      if (m >= vmin + 5)
       {
-        if (m <= std::numeric_limits<value_type>::max() - 5)
-        {
-          m += 5;
-        }
+        m -= 5;
+      }
 
+      if (increase_exponent())
+      {
+        return;
+      }
+      else
+      {
         m /= 10;
-
-        if (increase_exponent())
-        {
-          return;
-        }
       }
     }
-    else if (m < 0)
+
+    while (m > mmax)
     {
-      while (m < -pow<2>(M - 1))
+      if (m <= vmax - 5)
       {
-        if (m >= std::numeric_limits<value_type>::min() + 5)
-        {
-          m -= 5;
-        }
+        m += 5;
+      }
 
+      if (increase_exponent())
+      {
+        return;
+      }
+      else
+      {
         m /= 10;
-
-        if (increase_exponent())
-        {
-          return;
-        }
       }
     }
 
@@ -423,17 +353,18 @@ public:
     std::intmax_t r(f);
     f -= r;
 
+    value_type e{};
+
     constexpr auto emin(std::numeric_limits<value_type>::min());
 
-    value_type e{};
+    constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
+    constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
 
     if (r >= 0)
     {
-      constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
-
       while (f)
       {
-        if (int const d(f *= 10); (e >= emin + 1) && (r <= rmax / 10))
+        if (int const d(f *= 10); (e > emin + 1) && (r <= rmax / 10))
         {
           if (r *= 10; r <= rmax - d)
           {
@@ -451,11 +382,9 @@ public:
     }
     else if (r < 0)
     {
-      constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
-
       while (f)
       {
-        if (int const d(f *= 10); (e >= emin + 1) && (r >= rmin / 10))
+        if (int const d(f *= 10); (e > emin + 1) && (r >= rmin / 10))
         {
           if (r *= 10; r >= rmin - d)
           {
@@ -710,13 +639,17 @@ public:
 
     if (tmp.v_.m == -pow<2>(M - 1))
     {
-      round_mantissa(tmp);
+      // we can't round the mantissa
+      if (tmp.increase_exponent())
+      {
+        return tmp;
+      }
+      else
+      {
+        tmp.v_.m /= 10;
 
-      tmp.v_.m /= 10;
-
-      tmp.normalize();
-
-      tmp.increase_exponent();
+        tmp.normalize();
+      }
     }
 
     tmp.v_.m = -tmp.v_.m;
@@ -766,11 +699,10 @@ public:
                 m1 -= 5;
               }
 
-              m1 /= 10;
-
               if (e1 <= emax - 1)
               {
                 ++e1;
+                m1 /= 10;
               }
               else
               {
@@ -783,11 +715,10 @@ public:
                 m2 -= 5;
               }
 
-              m2 /= 10;
-
               if (e2 <= emax - 1)
               {
-                ++e2;
+                //++e2;
+                m2 /= 10;
               }
               else
               {
@@ -805,11 +736,10 @@ public:
                 m1 += 5;
               }
 
-              m1 /= 10;
-
               if (e1 <= emax - 1)
               {
                 ++e1;
+                m1 /= 10;
               }
               else
               {
@@ -822,11 +752,10 @@ public:
                 m2 += 5;
               }
 
-              m2 /= 10;
-
               if (e2 <= emax - 1)
               {
-                ++e2;
+                //++e2;
+                m2 /= 10;
               }
               else
               {
@@ -841,57 +770,7 @@ public:
         }
       }
 
-      dpp tmp;
-
-      tmp.v_.e = e1;
-
-      // !
-      auto r(m1 + m2);
-
-      // fit into target mantissa
-      while (r < -pow<2>(M - 1))
-      {
-        if (r >= rmin + 5)
-        {
-          r -= 5;
-        }
-
-        r /= 10;
-
-        if (tmp.v_.e <= emax - 1)
-        {
-          ++tmp.v_.e;
-        }
-        else
-        {
-          return dpp{nan{}};
-        }
-      }
-
-      while (r > pow<2>(M - 1) - 1)
-      {
-        if (r <= rmax - 5)
-        {
-          r += 5;
-        }
-
-        r /= 10;
-
-        if (tmp.v_.e <= emax - 1)
-        {
-          ++tmp.v_.e;
-        }
-        else
-        {
-          return dpp{nan{}};
-        }
-      }
-
-      tmp.v_.m = r;
-
-      tmp.normalize();
-
-      return tmp;
+      return dpp(m1 + m2, e1);
     }
   }
 
@@ -937,11 +816,10 @@ public:
                 m1 -= 5;
               }
 
-              m1 /= 10;
-
               if (e1 <= emax - 1)
               {
                 ++e1;
+                m1 /= 10;
               }
               else
               {
@@ -954,11 +832,10 @@ public:
                 m2 += 5;
               }
 
-              m2 /= 10;
-
               if (e2 <= emax - 1)
               {
-                ++e2;
+                //++e2;
+                m2 /= 10;
               }
               else
               {
@@ -977,11 +854,10 @@ public:
                 m1 += 5;
               }
 
-              m1 /= 10;
-
               if (e1 <= emax - 1)
               {
                 ++e1;
+                m1 /= 10;
               }
               else
               {
@@ -994,11 +870,10 @@ public:
                 m2 -= 5;
               }
 
-              m2 /= 10;
-
               if (e2 <= emax - 1)
               {
-                ++e2;
+                //++e2;
+                m2 /= 10;
               }
               else
               {
@@ -1013,57 +888,7 @@ public:
         }
       }
 
-      dpp tmp;
-
-      tmp.v_.e = e1;
-
-      // !
-      auto r(m1 - m2);
-
-      // fit into target mantissa
-      while (r < -pow<2>(M - 1))
-      {
-        if (r >= rmin + 5)
-        {
-          r -= 5;
-        }
-
-        r /= 10;
-
-        if (tmp.v_.e <= emax - 1)
-        {
-          ++tmp.v_.e;
-        }
-        else
-        {
-          return dpp{nan{}};
-        }
-      }
-
-      while (r > pow<2>(M - 1) - 1)
-      {
-        if (r <= rmax - 5)
-        {
-          r += 5;
-        }
-
-        r /= 10;
-
-        if (tmp.v_.e <= emax - 1)
-        {
-          ++tmp.v_.e;
-        }
-        else
-        {
-          return dpp{nan{}};
-        }
-      }
-
-      tmp.v_.m = r;
-
-      tmp.normalize();
-
-      return tmp;
+      return dpp(m1 - m2, e1);
     }
   }
 
@@ -1076,56 +901,7 @@ public:
     }
     else
     {
-      auto tmp(*this);
-
-      if (tmp.increase_exponent(o.v_.e))
-      {
-        return dpp{nan{}};
-      }
-      else
-      {
-        auto r(doubled_t(tmp.v_.m) * o.v_.m);
-
-        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
-        constexpr auto rmax(-(rmin + 1));
-
-        // fit into target mantissa
-        while (r < -pow<2>(M - 1))
-        {
-          if (r >= rmin + 5)
-          {
-            r -= 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
-
-        while (r > pow<2>(M - 1) - 1)
-        {
-          if (r <= rmax - 5)
-          {
-            r += 5;
-          }
-
-          r /= 10;
-
-          if (tmp.increase_exponent())
-          {
-            return dpp{nan{}};
-          }
-        }
-
-        tmp.v_.m = r;
-      }
-
-      tmp.normalize();
-
-      return tmp;
+      return dpp(doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e);
     }
   }
 
@@ -1137,93 +913,59 @@ public:
     }
     else
     {
-      auto tmp(*this);
+      value_type e(-dpp::dpp::decimal_places<doubled_t>{});
 
-      if (constexpr auto e(dpp::dpp::decimal_places<doubled_t>{});
-        tmp.decrease_exponent(e) || tmp.decrease_exponent(o.v_.e))
+      constexpr auto emin(pow<-2>(E - 1));
+      constexpr auto emax(-(emin + 1));
+
+      constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+      constexpr auto rmax(-(rmin + 1));
+
+      auto r(pow<10, doubled_t>(-e) / o.v_.m);
+
+      // fit r * v_.m into doubled_t
+      if (r > 0)
       {
-        return dpp{nan{}};
-      }
-      else
-      {
-        auto r(pow<10, doubled_t>(e) / o.v_.m);
-
-        constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
-        constexpr auto rmax(-(rmin + 1));
-
-        if (r > 0)
-        {
-          while (r > rmax / tmp.v_.m)
-          {
-            if (r <= rmax - 5)
-            {
-              r += 5;
-            }
-
-            r /= 10;
-
-            if (tmp.increase_exponent())
-            {
-              return dpp{nan{}};
-            }
-          }
-        }
-        else if (r < 0)
-        {
-          while (r < rmin / tmp.v_.m)
-          {
-            if (r >= rmin + 5)
-            {
-              r -= 5;
-            }
-
-            r /= 10;
-
-            if (tmp.increase_exponent())
-            {
-              return dpp{nan{}};
-            }
-          }
-        }
-
-        r *= tmp.v_.m;
-
-        while (r > pow<2>(M - 1) - 1)
+        while (r > rmax / v_.m)
         {
           if (r <= rmax - 5)
           {
             r += 5;
           }
 
-          r /= 10;
-
-          if (tmp.increase_exponent())
+          if (e <= emax - 1)
           {
-            return dpp{nan{}};
+            ++e;
+            r /= 10;
+          }
+          else
+          {
+            return dpp{dpp::nan{}};
           }
         }
-
-        while (r < -pow<2>(M - 1))
+      }
+      else if (r < 0)
+      {
+        while (r < rmin / v_.m)
         {
           if (r >= rmin + 5)
           {
             r -= 5;
           }
 
-          r /= 10;
-
-          if (tmp.increase_exponent())
+          if (e <= emax - 1)
           {
-            return dpp{nan{}};
+            ++e;
+            r /= 10;
+          }
+          else
+          {
+            return dpp{dpp::nan{}};
           }
         }
-
-        tmp.v_.m = r;
       }
 
-      tmp.normalize();
-
-      return tmp;
+      return dpp(r * v_.m, exponent() + e - o.exponent());
     }
   }
 
@@ -1394,7 +1136,7 @@ public:
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
     dpp<M, E> const&) noexcept;
 
-  friend constexpr dpp<M, E> trunc<M, E>(dpp<M, E> const& o) noexcept;
+  friend constexpr auto trunc<M, E>(dpp<M, E> const& o) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1450,27 +1192,12 @@ constexpr auto round(dpp<M, E> const& x) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr dpp<M, E> trunc(dpp<M, E> const& o) noexcept
+constexpr auto trunc(dpp<M, E> const& o) noexcept
 {
-  if (auto const e(o.exponent()); !isnan(o) && (e < 0))
-  {
-    if (auto tmp(o); tmp.increase_exponent(-e))
-    {
-      return dpp<M, E>{typename dpp<M, E>::nan{}};
-    }
-    else
-    {
-      tmp.v_.m /= dpp<M, E>::template pow<10>(-e);
+  auto const e(o.exponent());
 
-      tmp.normalize();
-
-      return tmp;
-    }
-  }
-  else
-  {
-    return o;
-  }
+  return !isnan(o) && (e < 0) ?
+    dpp<M, E>(o.mantissa() / dpp<M, E>::template pow<10>(-e), 0) : o;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1604,7 +1331,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if ((e >= emin + 1) && (r <= max / 10))
+          if ((e > emin + 1) && (r <= max / 10))
           {
             r *= 10;
 
