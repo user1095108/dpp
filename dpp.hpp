@@ -1242,37 +1242,39 @@ std::string to_string(dpp<M, E> p)
   {
     return {"nan", 3};
   }
-
-  std::string r;
-
-  if (p < 0)
+  else
   {
-    p = -p;
+    std::string r;
 
-    r.append(1, '-');
-  }
-
-  {
-    auto const t(trunc(p));
-
-    r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
-
-    p -= t;
-  }
-
-  if (auto const m(p.mantissa()); m)
-  {
-    if (auto const tmp(std::to_string(m)); -p.exponent() >= tmp.size())
+    if (p < 0)
     {
-      r.append(1, '.').append(-p.exponent() - tmp.size(), '0').append(tmp);
-    }
-    else
-    {
-      return {"nan", 3};
-    }
-  }
+      p = -p;
 
-  return r;
+      r.append(1, '-');
+    }
+
+    {
+      auto const t(trunc(p));
+
+      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
+
+      p -= t;
+    }
+
+    if (auto const m(p.mantissa()); m)
+    {
+      if (auto const tmp(std::to_string(m)); -p.exponent() >= tmp.size())
+      {
+        r.append(1, '.').append(-p.exponent() - tmp.size(), '0').append(tmp);
+      }
+      else
+      {
+        return {"nan", 3};
+      }
+    }
+
+    return r;
+  }
 }
 
 template <unsigned M, unsigned E>
