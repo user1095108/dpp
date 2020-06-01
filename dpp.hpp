@@ -1244,9 +1244,11 @@ std::string to_string(dpp<M, E> p)
 
     if (auto const m(p.mantissa()); m)
     {
-      if (auto const tmp(std::to_string(m)); -p.exponent() >= tmp.size())
+      auto const e(-p.exponent());
+
+      if (auto const tmp(std::to_string(m)); e >= tmp.size())
       {
-        r.append(1, '.').append(-p.exponent() - tmp.size(), '0').append(tmp);
+        r.append(1, '.').append(e - tmp.size(), '0').append(tmp);
       }
       else
       {
