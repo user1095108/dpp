@@ -29,9 +29,6 @@ class dpp;
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
-template <unsigned M, unsigned E>
-constexpr auto trunc(dpp<M, E> const&) noexcept;
-
 template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
@@ -941,8 +938,6 @@ public:
 
   friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
     dpp<M, E> const&) noexcept;
-
-  friend constexpr auto trunc<M, E>(dpp<M, E> const& o) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
