@@ -266,6 +266,8 @@ private:
         else
         {
           *this = dpp{nan{}};
+
+          break;
         }
       }
     }
