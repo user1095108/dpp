@@ -515,18 +515,6 @@ public:
   }
 
   //
-  constexpr auto operator==(dpp const& o) const noexcept
-  {
-    return isnan(*this) || isnan(o) ? false :
-      (v_.e == o.v_.e) && (v_.m == o.v_.m);
-  }
-
-  constexpr auto operator!=(dpp const& o) const noexcept
-  {
-    return !operator==(o);
-  }
-
-  //
   template <unsigned N, unsigned F>
   constexpr auto operator==(dpp<N, F> const& o) const noexcept
   {
