@@ -154,7 +154,7 @@ private:
     constexpr auto emin(pow<-2>(E - 1));
     constexpr auto emax(-(emin + 1));
 
-    constexpr auto rmin(pow<-2>(bit_size<value_type>() - 1));
+    constexpr auto rmin(pow<-2>(M - 1));
     constexpr auto rmax(-(rmin + 1));
 
     if (am > 0)
@@ -662,7 +662,7 @@ public:
       }
 
       // there can be no overflow
-      return dpp(doubled_t(m1) + m2, e1);
+      return dpp(m1 + m2, e1);
     }
   }
 
@@ -683,7 +683,7 @@ public:
       }
 
       // there can be no overflow
-      return dpp(doubled_t(m1) - m2, e1);
+      return dpp(m1 - m2, e1);
     }
   }
 
