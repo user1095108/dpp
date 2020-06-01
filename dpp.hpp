@@ -768,7 +768,7 @@ public:
           }
           else
           {
-            return dpp{dpp::nan{}};
+            return dpp{nan{}};
           }
         }
       }
@@ -789,9 +789,13 @@ public:
           }
           else
           {
-            return dpp{dpp::nan{}};
+            return dpp{nan{}};
           }
         }
+      }
+      else
+      {
+        return dpp();
       }
 
       return dpp(r * v_.m, exponent() + e - o.exponent());
