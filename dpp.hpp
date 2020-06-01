@@ -332,7 +332,7 @@ public:
       }
       else
       {
-        *this = dpp{dpp::nan{}};
+        *this = dpp{nan{}};
 
         return;
       }
@@ -353,7 +353,7 @@ public:
       }
       else
       {
-        *this = dpp{dpp::nan{}};
+        *this = dpp{nan{}};
 
         return;
       }
