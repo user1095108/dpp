@@ -745,14 +745,13 @@ public:
         {
           if (e <= emax - 1)
           {
+            ++e;
 /*
             if (r <= rmax - 5)
             {
               r += 5;
             }
 */
-
-            ++e;
             r /= 10;
           }
           else
