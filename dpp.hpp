@@ -739,42 +739,47 @@ public:
 
       auto r(pow<10, doubled_t>(-e) / o.v_.m);
 
-      // fit r * v_.m into doubled_t
-      while (r > rmax / v_.m)
+      // fit r * v_.m into doubled_t, avoid one divide
+      if (r > 0)
       {
-        if (e <= emax - 1)
+        while (r > rmax / v_.m)
         {
-          ++e;
-/*
-          if (r <= rmax - 5)
+          if (e <= emax - 1)
           {
-            r += 5;
-          }
+            ++e;
+/*
+            if (r <= rmax - 5)
+            {
+              r += 5;
+            }
 */
-          r /= 10;
-        }
-        else
-        {
-          return dpp{dpp::nan{}};
+            r /= 10;
+          }
+          else
+          {
+            return dpp{dpp::nan{}};
+          }
         }
       }
-
-      while (r < rmin / v_.m)
+      else if (r < 0)
       {
-        if (e <= emax - 1)
+        while (r < rmin / v_.m)
         {
-          ++e;
-/*
-          if (r >= rmin + 5)
+          if (e <= emax - 1)
           {
-            r -= 5;
-          }
+            ++e;
+/*
+            if (r >= rmin + 5)
+            {
+              r -= 5;
+            }
 */
-          r /= 10;
-        }
-        else
-        {
-          return dpp{dpp::nan{}};
+            r /= 10;
+          }
+          else
+          {
+            return dpp{dpp::nan{}};
+          }
         }
       }
 
