@@ -193,6 +193,8 @@ private:
     else
     {
       ae = be;
+
+      return false;
     }
 
     if (ae != be)
@@ -241,7 +243,7 @@ private:
       }
       else
       {
-        ae = be;
+        be = ae;
       }
     }
 
