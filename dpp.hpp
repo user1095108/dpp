@@ -195,51 +195,54 @@ private:
       ae = be;
     }
 
-    if (bm > 0)
+    if (ae != be)
     {
-      while (ae != be)
+      if (bm > 0)
       {
-        if (be <= emax - 1)
+        while (ae != be)
         {
-          ++be;
-
-          if (bm <= rmax - 4)
+          if (be <= emax - 1)
           {
-            bm += 4;
-          }
+            ++be;
 
-          bm /= 10;
-        }
-        else
-        {
-          return true;
+            if (bm <= rmax - 4)
+            {
+              bm += 4;
+            }
+
+            bm /= 10;
+          }
+          else
+          {
+            return true;
+          }
         }
       }
-    }
-    else if (bm < 0)
-    {
-      while (ae != be)
+      else if (bm < 0)
       {
-        if (be <= emax - 1)
+        while (ae != be)
         {
-          ++be;
-
-          if (bm >= rmin + 4)
+          if (be <= emax - 1)
           {
-            bm -= 4;
-          }
+            ++be;
 
-          bm /= 10;
-        }
-        else
-        {
-          return true;
+            if (bm >= rmin + 4)
+            {
+              bm -= 4;
+            }
+
+            bm /= 10;
+          }
+          else
+          {
+            return true;
+          }
         }
       }
-    }
-    else
-    {
-      ae = be;
+      else
+      {
+        ae = be;
+      }
     }
 
     return false;
