@@ -237,6 +237,10 @@ private:
         }
       }
     }
+    else
+    {
+      ae = be;
+    }
 
     return false;
   }
