@@ -196,20 +196,18 @@ private:
 
     while (ae != be)
     {
+      // inc be, if possible
       if (be <= emax - 1)
       {
-/*
-        if ((bm < 0) && (bm >= rmin + 5))
+        if ((bm < 0) && (bm >= rmin + 4))
         {
-          bm -= 5;
+          bm -= 4;
         }
-        else if ((bm > 0) && (bm <= rmax - 5))
+        else if ((bm > 0) && (bm <= rmax - 4))
         {
-          bm += 5;
+          bm += 4;
         }
-*/
 
-        // inc be, if possible
         ++be;
         bm /= 10;
       }
