@@ -151,10 +151,11 @@ private:
   static constexpr bool equalize(value_type& am, value_type& ae,
     value_type& bm, value_type& be) noexcept
   {
-    constexpr auto emin(pow<-2>(E - 1));
+    constexpr auto emin(-pow<2>(E - 1));
     constexpr auto emax(-(emin + 1));
 
-    constexpr auto rmin(pow<-2>(M - 1));
+    // reserve one bit in case of overflow
+    constexpr auto rmin(-pow<2>(bit_size<value_type>() - 2));
     constexpr auto rmax(-(rmin + 1));
 
     if (am > 0)
@@ -286,7 +287,7 @@ public:
   >
   constexpr dpp(U m, value_type const e) noexcept
   {
-    constexpr auto emin(pow<-2>(E - 1));
+    constexpr auto emin(-pow<2>(E - 1));
     constexpr auto emax(-(emin + 1));
 
     // watch the nan
@@ -301,10 +302,10 @@ public:
       return;
     }
 
-    constexpr auto mmin(pow<-2>(M - 1));
+    constexpr auto mmin(-pow<2>(M - 1));
     constexpr auto mmax(-(mmin + 1));
 
-    constexpr auto umin(pow<-2, U>(bit_size<U>() - 1));
+    constexpr auto umin(U(1) << (bit_size<U>() - 1));
     constexpr auto umax(-(umin + 1));
 
     while (m < mmin)
@@ -728,10 +729,10 @@ public:
     }
     else
     {
-      constexpr auto emin(pow<-2>(E - 1));
+      constexpr auto emin(-pow<2>(E - 1));
       constexpr auto emax(-(emin + 1));
 
-      constexpr auto rmin(pow<-2, doubled_t>(bit_size<doubled_t>() - 1));
+      constexpr auto rmin(doubled_t(1) << (bit_size<doubled_t>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
       value_type e(-dpp::dpp::decimal_places<doubled_t>{});
