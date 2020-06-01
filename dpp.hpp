@@ -142,12 +142,6 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
-  template <typename U>
-  static constexpr auto sign(U const a) noexcept
-  {
-    return (a > 0) - (a < 0);
-  }
-
   static constexpr bool equalize(value_type& am, value_type& ae,
     value_type& bm, value_type& be) noexcept
   {
