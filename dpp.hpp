@@ -720,7 +720,7 @@ public:
     {
       return dpp{nan{}};
     }
-    else
+    else if (v_.m)
     {
       constexpr auto emin(-pow<2>(E - 1));
       constexpr auto emax(-(emin + 1));
@@ -733,11 +733,7 @@ public:
       auto r(pow<10, doubled_t>(-e) / o.v_.m);
 
       // fit r * v_.m into doubled_t, avoid one divide
-      if (!v_.m)
-      {
-        return dpp{};
-      }
-      else if (r > 0)
+      if (r > 0)
       {
         while (r > rmax / v_.m)
         {
@@ -781,6 +777,10 @@ public:
       }
 
       return dpp(v_.m * r, exponent() + e - o.exponent());
+    }
+    else
+    {
+      return dpp{};
     }
   }
 
