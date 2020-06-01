@@ -787,12 +787,8 @@ public:
           }
         }
       }
-      else
-      {
-        return dpp();
-      }
 
-      return dpp(r * v_.m, exponent() + e - o.exponent());
+      return dpp(v_.m * r, exponent() + e - o.exponent());
     }
   }
 
