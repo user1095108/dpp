@@ -194,26 +194,46 @@ private:
       ae = be;
     }
 
-    while (ae != be)
+    if (bm > 0)
     {
-      // inc be, if possible
-      if (be <= emax - 1)
+      while (ae != be)
       {
-        if ((bm < 0) && (bm >= rmin + 4))
+        if (be <= emax - 1)
         {
-          bm -= 4;
-        }
-        else if ((bm > 0) && (bm <= rmax - 4))
-        {
-          bm += 4;
-        }
+          ++be;
 
-        ++be;
-        bm /= 10;
+          if (bm <= rmax - 4)
+          {
+            bm += 4;
+          }
+
+          bm /= 10;
+        }
+        else
+        {
+          return true;
+        }
       }
-      else
+    }
+    else if (bm < 0)
+    {
+      while (ae != be)
       {
-        return true;
+        if (be <= emax - 1)
+        {
+          ++be;
+
+          if (bm >= rmin + 4)
+          {
+            bm -= 4;
+          }
+
+          bm /= 10;
+        }
+        else
+        {
+          return true;
+        }
       }
     }
 
@@ -291,12 +311,13 @@ public:
     {
       if (v_.e <= emax - 1)
       {
+        ++v_.e;
+
         if (m >= umin + 4)
         {
           m -= 4;
         }
 
-        ++v_.e;
         m /= 10;
       }
       else
@@ -311,12 +332,13 @@ public:
     {
       if (v_.e <= emax - 1)
       {
+        ++v_.e;
+
         if (m <= umax - 4)
         {
           m += 4;
         }
 
-        ++v_.e;
         m /= 10;
       }
       else
