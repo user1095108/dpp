@@ -91,10 +91,10 @@ int main()
       }
     ) << " " <<
     euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64,
-    [](auto const& y, auto const&) noexcept
-    {
-      return y;
-    }
+      [](auto const& y, auto const&) noexcept
+      {
+        return y;
+      }
     ) << std::endl;
 
   //
