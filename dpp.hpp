@@ -1246,7 +1246,7 @@ std::string to_string(dpp<M, E> p)
 
     auto const e(p.exponent());
 
-    if (auto const m(p.mantissa()); m && (e < 0))
+    if (auto const m(p.mantissa()); (e < 0) && m)
     {
       auto const tmp(std::to_string(m));
 
