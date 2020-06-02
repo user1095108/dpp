@@ -77,9 +77,9 @@ int main()
   std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / 2 << std::endl;
 
   std::cout << -"1000.0123"_d32 << std::endl;;
-  std::cout << dpp::dec32(.0123f) + dpp::dec64(1000) << std::endl;;
-  std::cout << dpp::dec64(-3.14) << std::endl;
-  std::cout << -float(dpp::dec32(-3.14)) << std::endl;
+  std::cout << dpp::d32(.0123f) + dpp::d64(1000) << std::endl;;
+  std::cout << dpp::d64(-3.14) << std::endl;
+  std::cout << -float(dpp::d32(-3.14)) << std::endl;
 
   //
   std::cout << std::endl;
@@ -114,8 +114,8 @@ int main()
 
   //
   std::cout << std::endl;
-  auto a(dpp::to_decimal<dpp::dec64>("1.23"));
-  auto b(dpp::to_decimal<dpp::dec64>("45.6"));
+  auto a(dpp::to_decimal<dpp::d64>("1.23"));
+  auto b(dpp::to_decimal<dpp::d64>("45.6"));
 
   std::cout << a << std::endl;
   std::cout << b << std::endl;

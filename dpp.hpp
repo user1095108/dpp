@@ -1005,8 +1005,8 @@ constexpr auto trunc(dpp<M, E> const& o) noexcept
 }
 
 //////////////////////////////////////////////////////////////////////////////
-using dec64 = dpp<56, 8>;
-using dec32 = dpp<26, 6>;
+using d64 = dpp<56, 8>;
+using d32 = dpp<26, 6>;
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
@@ -1220,13 +1220,6 @@ std::string to_string(dpp<M, E> p)
   {
     std::string r;
 
-    if (p < 0)
-    {
-      p = -p;
-
-      r.append(1, '-');
-    }
-
     {
       auto const t(trunc(p));
 
@@ -1237,7 +1230,7 @@ std::string to_string(dpp<M, E> p)
 
     auto const e(-p.exponent());
 
-    if (auto const m(p.mantissa()); (e > 0) && m)
+    if (auto const m(std::abs(p.mantissa())); (e > 0) && m)
     {
       auto const tmp(std::to_string(m));
 
@@ -1268,13 +1261,13 @@ namespace literals
 constexpr auto operator "" _d32(char const* const s,
   std::size_t const N) noexcept
 {
-  return to_decimal<dec32>(std::string_view(s, N));
+  return to_decimal<d32>(std::string_view(s, N));
 }
 
 constexpr auto operator "" _d64(char const* const s,
   std::size_t const N) noexcept
 {
-  return to_decimal<dec64>(std::string_view(s, N));
+  return to_decimal<d64>(std::string_view(s, N));
 }
 
 }
