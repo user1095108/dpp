@@ -1244,15 +1244,15 @@ std::string to_string(dpp<M, E> p)
       p -= t;
     }
 
-    auto const e(p.exponent());
+    auto const e(-p.exponent());
 
-    if (auto const m(p.mantissa()); (e < 0) && m)
+    if (auto const m(p.mantissa()); (e > 0) && m)
     {
       auto const tmp(std::to_string(m));
 
-      if (auto const s(tmp.size()); std::size_t(-e) >= s)
+      if (auto const s(tmp.size()); std::size_t(e) >= s)
       {
-        r.append(1, '.').append(-e - s, '0').append(tmp);
+        r.append(1, '.').append(e - s, '0').append(tmp);
       }
       else
       {
