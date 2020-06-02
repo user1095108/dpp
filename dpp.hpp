@@ -703,7 +703,7 @@ public:
   //
   constexpr auto operator*(dpp const& o) const noexcept
   {
-    return isnan(*this) || isnan(o) ?  dpp{nan{}} :
+    return isnan(*this) || isnan(o) ? dpp{nan{}} :
       dpp(doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e);
   }
 
