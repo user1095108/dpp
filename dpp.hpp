@@ -645,8 +645,10 @@ public:
 
   constexpr auto operator-() const noexcept
   {
+    auto const m(v_.m);
+
     // we need to do it like this, as negating the mantissa can overflow
-    return dpp(-mantissa(), exponent());
+    return -pow<2>(M - 1) == m ? dpp(-m, v_.e) : dpp(-m, v_.e, direct{});
   }
 
   //
