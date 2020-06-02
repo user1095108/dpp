@@ -139,8 +139,8 @@ private:
     return pow<B>(e) < n ? log<B>(n, e + 1) : e;
   }
 
-  static constexpr bool equalize(value_type& am, value_type& ae,
-    value_type& bm, value_type& be) noexcept
+  static constexpr bool equalize(value_type& am, int& ae,
+    value_type& bm, int& be) noexcept
   {
     constexpr auto emin(-pow<2>(E - 1));
     constexpr auto emax(-(emin + 1));
@@ -287,7 +287,7 @@ public:
       int
     > = 0
   >
-  constexpr dpp(U m, value_type const e) noexcept
+  constexpr dpp(U m, int const e) noexcept
   {
     constexpr auto emin(-pow<2>(E - 1));
     constexpr auto emax(-(emin + 1));
@@ -664,7 +664,8 @@ public:
     }
     else
     {
-      value_type m1(v_.m), m2(o.v_.m), e1(v_.e), e2(o.v_.e);
+      value_type m1(v_.m), m2(o.v_.m);
+      int e1(v_.e), e2(o.v_.e);
 
       if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
         ((e2 > e1) && equalize(m2, e2, m1, e1)))
@@ -685,7 +686,8 @@ public:
     }
     else
     {
-      value_type m1(v_.m), m2(o.v_.m), e1(v_.e), e2(o.v_.e);
+      value_type m1(v_.m), m2(o.v_.m);
+      int e1(v_.e), e2(o.v_.e);
 
       if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
         ((e2 > e1) && equalize(m2, e2, m1, e1)))
@@ -1146,7 +1148,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    typename T::value_type e{};
+    int e{};
 
     constexpr auto emin(std::numeric_limits<typename T::value_type>::min());
 
