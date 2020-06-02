@@ -373,7 +373,7 @@ public:
 
     int e{};
 
-    constexpr auto emin(std::numeric_limits<int>::min());
+    constexpr auto emin(-pow<2>(E - 1));
 
     constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
     constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
