@@ -1228,11 +1228,11 @@ std::string to_string(dpp<M, E> p)
       p -= t;
     }
 
-    auto const m(std::abs(p.mantissa()));
+    auto const m(p.mantissa());
 
     if (auto const e(-p.exponent()); (e > 0) && m)
     {
-      auto const tmp(std::to_string(m));
+      auto const tmp(std::to_string(std::abs(m)));
 
       if (auto const s(tmp.size()); std::size_t(e) >= s)
       {
