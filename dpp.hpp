@@ -177,7 +177,7 @@ private:
     }
     else
     {
-      ae = be;
+      //ae = be;
 
       return false;
     }
@@ -228,7 +228,7 @@ private:
       }
       else
       {
-        be = ae;
+        //be = ae;
       }
     }
 
