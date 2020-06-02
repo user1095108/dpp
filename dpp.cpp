@@ -79,7 +79,7 @@ int main()
   std::cout << -"1000.0123"_d32 << std::endl;;
   std::cout << dpp::dec32(.0123f) + dpp::dec64(1000) << std::endl;;
   std::cout << dpp::dec64(-3.14) << std::endl;
-  std::cout << float(dpp::dec32(-3.14)) << std::endl;
+  std::cout << -float(dpp::dec32(3.14)) << std::endl;
 
   //
   std::cout << std::endl;
