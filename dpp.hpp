@@ -133,12 +133,6 @@ private:
     }
   }
 
-  template <unsigned B, typename T = value_type>
-  static constexpr T log(T const n, unsigned const e = 0) noexcept
-  {
-    return pow<B>(e) < n ? log<B>(n, e + 1) : e;
-  }
-
   static constexpr bool equalize(value_type& am, int& ae,
     value_type& bm, int& be) noexcept
   {
