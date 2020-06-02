@@ -2,8 +2,6 @@
 # define DPP_HPP
 # pragma once
 
-#include <cassert>
-
 #include <cmath>
 
 #include <cstdint>
@@ -237,8 +235,6 @@ private:
 
   constexpr void normalize() noexcept
   {
-    assert(!isnan(*this));
-
     constexpr auto emax(pow<2>(E - 1) - 1);
 
     if (v_.m)
@@ -265,8 +261,6 @@ public:
 
   constexpr dpp(dpp const&) = default;
   constexpr dpp(dpp&&) = default;
-
-  static_assert(-pow<2>(E - 1) >= std::numeric_limits<int>::min());
 
   template <typename U,
     std::enable_if_t<
@@ -488,7 +482,6 @@ public:
 
   constexpr explicit operator std::intmax_t() const noexcept
   {
-    assert(!isnan(*this));
     return v_.e < 0 ? v_.m / pow<10>(-v_.e) : v_.m * pow<10>(v_.e);
   }
 
