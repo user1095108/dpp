@@ -266,13 +266,7 @@ public:
   constexpr dpp(dpp const&) = default;
   constexpr dpp(dpp&&) = default;
 
-  template <typename U,
-    std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
-  >
-  constexpr dpp(U const m) noexcept :
-    dpp(m, 0)
-  {
-  }
+  static_assert(-pow<2>(E - 1) >= std::numeric_limits<int>::min());
 
   template <typename U,
     std::enable_if_t<
@@ -351,6 +345,14 @@ public:
     normalize();
   }
 
+  template <typename U,
+    std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
+  >
+  constexpr dpp(U const m) noexcept :
+    dpp(m, 0)
+  {
+  }
+
   template <unsigned N, unsigned F,
     std::enable_if_t<(M < N) || (E < F), int> = 0
   >
@@ -375,9 +377,9 @@ public:
     std::intmax_t r(f);
     f -= r;
 
-    value_type e{};
+    int e{};
 
-    constexpr auto emin(std::numeric_limits<value_type>::min());
+    constexpr auto emin(std::numeric_limits<int>::min());
 
     constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
     constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
@@ -442,7 +444,7 @@ public:
 
   struct direct{};
 
-  constexpr dpp(value_type const m, value_type const e, direct&&) noexcept :
+  constexpr dpp(value_type const m, int const e, direct&&) noexcept :
     v_{.e = e, .m = m}
   {
   }
