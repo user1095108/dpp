@@ -371,84 +371,91 @@ public:
   >
   constexpr dpp(U f) noexcept
   {
-    int e{};
-    f = std::frexp(f, &e);
-
-    constexpr auto emin(-pow<2>(E - 1));
-
-    constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
-    constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
-
-    std::intmax_t r{};
-    int ef{};
-
-    // convert fractional part
-    if (f > 0)
+    if (std::isnan(f) || std::isinf(f))
     {
-      while (f)
+      *this = dpp{nan{}};
+    }
+    else
+    {
+      int e{};
+      f = std::frexp(f, &e);
+
+      constexpr auto emin(-pow<2>(E - 1));
+
+      constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
+      constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
+
+      std::intmax_t r{};
+      int ef{};
+
+      // convert fractional part
+      if (f > 0)
       {
-        if (int const d(f *= 10); (ef > emin + 1) && (r <= rmax / 10))
+        while (f)
         {
-          if (r *= 10; r <= rmax - d)
+          if (int const d(f *= 10); (ef > emin + 1) && (r <= rmax / 10))
           {
-            r += d;
-            f -= d;
+            if (r *= 10; r <= rmax - d)
+            {
+              r += d;
+              f -= d;
 
-            --ef;
+              --ef;
 
-            continue;
+              continue;
+            }
+          }
+
+          break;
+        }
+      }
+      else if (f < 0)
+      {
+        while (f)
+        {
+          if (int const d(f *= 10); (ef > emin + 1) && (r >= rmin / 10))
+          {
+            if (r *= 10; r >= rmin - d)
+            {
+              r += d;
+              f -= d;
+
+              --ef;
+
+              continue;
+            }
+          }
+
+          break;
+        }
+      }
+
+      // now multiply the fractional part with 2^e
+      dpp tmp(r, ef);
+
+      if (!isnan(tmp))
+      {
+        if (e > 0)
+        {
+          while (e--)
+          {
+            tmp *= 2;
           }
         }
-
-        break;
-      }
-    }
-    else if (f < 0)
-    {
-      while (f)
-      {
-        if (int const d(f *= 10); (ef > emin + 1) && (r >= rmin / 10))
+        else if (e < 0)
         {
-          if (r *= 10; r >= rmin - d)
+          constexpr dpp half(5, -1);
+
+          while (e++)
           {
-            r += d;
-            f -= d;
-
-            --ef;
-
-            continue;
+            tmp *= half;
           }
         }
-
-        break;
       }
+
+      // tmp is normalized
+      *this = tmp;
     }
-
-    // now multiply the fractional part with 2^e
-    dpp tmp(r, ef);
-
-    if (!isnan(tmp))
-    {
-      if (e > 0)
-      {
-        while (e--)
-        {
-          tmp *= 2;
-        }
-      }
-      else if (e < 0)
-      {
-        constexpr dpp half(5, -1);
-
-        while (e++)
-        {
-          tmp *= half;
-        }
-      }
-    }
-
-    // tmp is normalized
-    *this = tmp;
   }
 
   //
