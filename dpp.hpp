@@ -436,26 +436,28 @@ public:
         return;
       }
 
-      // now multiply the fractional part with 2^e
       dpp tmp(r, ef);
 
+      // now multiply the fractional part with 2^e
       if (!isnan(tmp))
       {
         if (e > 0)
         {
-          while (e--)
+          do
           {
             tmp *= 2;
           }
+          while (--e);
         }
         else if (e < 0)
         {
           constexpr dpp half(5, -1);
 
-          while (e++)
+          do
           {
             tmp *= half;
           }
+          while (++e);
         }
       }
 
