@@ -25,6 +25,9 @@ template <unsigned M, unsigned E>
 class dpp;
 
 template <unsigned M, unsigned E>
+constexpr auto frac(dpp<M, E> const&) noexcept;
+
+template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <typename T, typename S>
@@ -368,28 +371,29 @@ public:
   >
   constexpr dpp(U f) noexcept
   {
-    std::intmax_t r(f);
-    f -= r;
+    int e{};
+    f = std::frexp(f, &e);
 
     constexpr auto emin(-pow<2>(E - 1));
 
     constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
     constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
 
-    int e{};
+    std::intmax_t r{};
+    int ef{};
 
-    if (r >= 0)
+    if (f >= 0)
     {
       while (f)
       {
-        if (int const d(f *= 10); (e > emin + 1) && (r <= rmax / 10))
+        if (int const d(f *= 10); (ef > emin + 1) && (r <= rmax / 10))
         {
           if (r *= 10; r <= rmax - d)
           {
             r += d;
             f -= d;
 
-            --e;
+            --ef;
 
             continue;
           }
@@ -398,18 +402,18 @@ public:
         break;
       }
     }
-    else if (r < 0)
+    else if (f < 0)
     {
       while (f)
       {
-        if (int const d(f *= 10); (e > emin + 1) && (r >= rmin / 10))
+        if (int const d(f *= 10); (ef > emin + 1) && (r >= rmin / 10))
         {
           if (r *= 10; r >= rmin - d)
           {
             r += d;
             f -= d;
 
-            --e;
+            --ef;
 
             continue;
           }
@@ -419,7 +423,25 @@ public:
       }
     }
 
-    *this = dpp(r, e);
+    dpp tmp(r, ef);
+
+    if (e > 0)
+    {
+      while (e--)
+      {
+        tmp *= 2;
+      }
+    }
+    else if (e < 0)
+    {
+      while (e++)
+      {
+        tmp /= 2;
+      }
+    }
+
+    // tmp is normalized
+    *this = tmp;
   }
 
   //
@@ -985,6 +1007,12 @@ constexpr auto round(dpp<M, E> const& o) noexcept
   {
     return o;
   }
+}
+
+template <unsigned M, unsigned E>
+constexpr auto frac(dpp<M, E> const& o) noexcept
+{
+  return o - trunc(o);
 }
 
 template <unsigned M, unsigned E>
