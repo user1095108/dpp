@@ -424,7 +424,7 @@ public:
       }
     }
 
-    // now multiply with 2^e
+    // now multiply the fractional part with 2^e
     dpp tmp(r, ef);
 
     if (!isnan(tmp))
