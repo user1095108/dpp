@@ -431,6 +431,10 @@ public:
         }
         while (f);
       }
+      else
+      {
+        return;
+      }
 
       // now multiply the fractional part with 2^e
       dpp tmp(r, ef);
