@@ -369,7 +369,7 @@ public:
   template <typename U,
     typename = std::enable_if_t<std::is_floating_point_v<U>>
   >
-  constexpr dpp(U f) noexcept
+  constexpr dpp(U const f) noexcept
   {
     if (std::isnan(f) || std::isinf(f))
     {
@@ -377,92 +377,22 @@ public:
     }
     else
     {
-      int e{};
-      f = std::frexp(f, &e);
+      int e;
+      U g(std::frexp(f, &e));
 
-      constexpr auto emin(-pow<2>(E - 1));
+      g *= std::pow(U(5), -e);
 
-      constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
-      constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
-
-      std::intmax_t r{};
-      int ef{};
-
-      // extract fractional digits
-      if (f > 0)
+      while (g != std::trunc(g))
       {
-        do
-        {
-          if (int const d(f *= 10); (ef > emin + 1) && (r <= rmax / 10))
-          {
-            if (r *= 10; r <= rmax - d)
-            {
-              r += d;
-              f -= d;
+        g *= 10;
 
-              --ef;
-
-              continue;
-            }
-          }
-
-          break;
-        }
-        while (f);
-      }
-      else if (f < 0)
-      {
-        do
-        {
-          if (int const d(f *= 10); (ef > emin + 1) && (r >= rmin / 10))
-          {
-            if (r *= 10; r >= rmin - d)
-            {
-              r += d;
-              f -= d;
-
-              --ef;
-
-              continue;
-            }
-          }
-
-          break;
-        }
-        while (f);
-      }
-      else
-      {
-        return;
+        --e;
       }
 
-      dpp tmp(r, ef);
-
-      // now multiply the fractional part with 2^e
-      if (!isnan(tmp))
-      {
-        if (e > 0)
-        {
-          do
-          {
-            tmp *= 2;
-          }
-          while (--e);
-        }
-        else if (e < 0)
-        {
-          constexpr dpp half(5, -1);
-
-          do
-          {
-            tmp *= half;
-          }
-          while (++e);
-        }
-      }
-
-      // tmp is normalized
-      *this = tmp;
+      *this = (g <= std::numeric_limits<std::intmax_t>::max()) &&
+        (g >= std::numeric_limits<std::intmax_t>::min()) ?
+          dpp(std::intmax_t(g), e) :
+          dpp{nan{}};
     }
   }
 
