@@ -388,7 +388,7 @@ public:
       std::intmax_t r{};
       int ef{};
 
-      // convert fractional part
+      // extract fractional digits
       if (f > 0)
       {
         do
