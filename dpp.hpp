@@ -382,7 +382,7 @@ public:
 
       f *= std::pow(U(5), -e);
 
-      if (std::isnan(f) || std::isinf(f))
+      if (std::isinf(f))
       {
         *this = dpp{nan{}};
       }
@@ -395,8 +395,7 @@ public:
         --e;
       }
 
-      *this = std::isnan(f) || std::isinf(f) ? dpp{nan{}} :
-        dpp(std::intmax_t(f), e);
+      *this = std::isinf(f) ? dpp{nan{}} : dpp(std::intmax_t(f), e);
     }
   }
 
