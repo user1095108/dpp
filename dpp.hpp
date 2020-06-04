@@ -391,7 +391,7 @@ public:
       // convert fractional part
       if (f > 0)
       {
-        while (f)
+        do
         {
           if (int const d(f *= 10); (ef > emin + 1) && (r <= rmax / 10))
           {
@@ -408,10 +408,11 @@ public:
 
           break;
         }
+        while (f);
       }
       else if (f < 0)
       {
-        while (f)
+        do
         {
           if (int const d(f *= 10); (ef > emin + 1) && (r >= rmin / 10))
           {
@@ -428,6 +429,7 @@ public:
 
           break;
         }
+        while (f);
       }
 
       // now multiply the fractional part with 2^e
