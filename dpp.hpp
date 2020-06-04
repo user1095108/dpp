@@ -382,6 +382,7 @@ public:
     std::intmax_t r{};
     int ef{};
 
+    // convert fractional part
     if (f > 0)
     {
       while (f)
@@ -423,6 +424,7 @@ public:
       }
     }
 
+    // now multiply with 2^e
     dpp tmp(r, ef);
 
     if (e > 0)
@@ -434,9 +436,11 @@ public:
     }
     else if (e < 0)
     {
+      constexpr dpp half(5, -1);
+
       while (e++)
       {
-        tmp /= 2;
+        tmp *= half;
       }
     }
 
