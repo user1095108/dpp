@@ -387,14 +387,12 @@ public:
         *this = dpp{nan{}};
       }
       else
+      while ((f != std::trunc(f)) &&
+        (f <= std::numeric_limits<std::intmax_t>::max() / 10) &&
+        (f >= std::numeric_limits<std::intmax_t>::min() / 10))
       {
-        while ((f != std::trunc(f)) &&
-          (f <= std::numeric_limits<std::intmax_t>::max() / 10) &&
-          (f >= std::numeric_limits<std::intmax_t>::min() / 10))
-        {
-          f *= 10;
-          --e;
-        }
+        f *= 10;
+        --e;
       }
 
       *this = std::isnan(f) || std::isinf(f) ? dpp{nan{}} :
