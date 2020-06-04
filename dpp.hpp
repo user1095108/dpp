@@ -369,7 +369,7 @@ public:
   template <typename U,
     typename = std::enable_if_t<std::is_floating_point_v<U>>
   >
-  constexpr dpp(U const f) noexcept
+  constexpr dpp(U f) noexcept
   {
     if (std::isnan(f) || std::isinf(f))
     {
@@ -378,20 +378,20 @@ public:
     else
     {
       int e;
-      U g(std::frexp(f, &e));
+      f = std::frexp(f, &e);
 
-      g *= std::pow(U(5), -e);
+      f *= std::pow(U(5), -e);
 
-      while (g != std::trunc(g))
+      while (f != std::trunc(f))
       {
-        g *= 10;
+        f *= 10;
 
         --e;
       }
 
-      *this = (g <= std::numeric_limits<std::intmax_t>::max()) &&
-        (g >= std::numeric_limits<std::intmax_t>::min()) ?
-          dpp(std::intmax_t(g), e) :
+      *this = (f <= std::numeric_limits<std::intmax_t>::max()) &&
+        (f >= std::numeric_limits<std::intmax_t>::min()) ?
+          dpp(std::intmax_t(f), e) :
           dpp{nan{}};
     }
   }
