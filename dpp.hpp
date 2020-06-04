@@ -427,20 +427,23 @@ public:
     // now multiply with 2^e
     dpp tmp(r, ef);
 
-    if (e > 0)
+    if (!isnan(tmp))
     {
-      while (e--)
+      if (e > 0)
       {
-        tmp *= 2;
+        while (e--)
+        {
+          tmp *= 2;
+        }
       }
-    }
-    else if (e < 0)
-    {
-      constexpr dpp half(5, -1);
-
-      while (e++)
+      else if (e < 0)
       {
-        tmp *= half;
+        constexpr dpp half(5, -1);
+
+        while (e++)
+        {
+          tmp *= half;
+        }
       }
     }
 
