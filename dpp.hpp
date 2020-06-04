@@ -382,17 +382,23 @@ public:
 
       f *= std::pow(U(5), -e);
 
-      while (f != std::trunc(f))
+      if (std::isnan(f) || std::isinf(f))
       {
-        f *= 10;
-
-        --e;
+        *this = dpp{nan{}};
+      }
+      else
+      {
+        while ((f != std::trunc(f)) &&
+          (f <= std::numeric_limits<std::intmax_t>::max() / 10) &&
+          (f >= std::numeric_limits<std::intmax_t>::min() / 10))
+        {
+          f *= 10;
+          --e;
+        }
       }
 
-      *this = (f <= std::numeric_limits<std::intmax_t>::max()) &&
-        (f >= std::numeric_limits<std::intmax_t>::min()) ?
-          dpp(std::intmax_t(f), e) :
-          dpp{nan{}};
+      *this = std::isnan(f) || std::isinf(f) ? dpp{nan{}} :
+        dpp(std::intmax_t(f), e);
     }
   }
 
