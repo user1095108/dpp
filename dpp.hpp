@@ -193,9 +193,9 @@ private:
           {
             ++be;
 
-            if (bm <= rmax - 4)
+            if (bm <= rmax - 5)
             {
-              bm += 4;
+              bm += 5;
             }
 
             bm /= 10;
@@ -214,9 +214,9 @@ private:
           {
             ++be;
 
-            if (bm >= rmin + 4)
+            if (bm >= rmin + 5)
             {
-              bm -= 4;
+              bm -= 5;
             }
 
             bm /= 10;
@@ -301,9 +301,9 @@ public:
       {
         ++v_.e;
 
-        if (m >= umin + 4)
+        if (m >= umin + 5)
         {
-          m -= 4;
+          m -= 5;
         }
 
         m /= 10;
@@ -322,9 +322,9 @@ public:
       {
         ++v_.e;
 
-        if (m <= umax - 4)
+        if (m <= umax - 5)
         {
-          m += 4;
+          m += 5;
         }
 
         m /= 10;
@@ -377,16 +377,8 @@ public:
     }
     else
     {
-      int e;
-      f = std::frexp(f, &e);
+      int e{};
 
-      f *= std::pow(U(5), -e);
-
-      if (std::isinf(f))
-      {
-        *this = dpp{nan{}};
-      }
-      else
       while ((f != std::trunc(f)) &&
         (f <= std::numeric_limits<std::intmax_t>::max() / 10) &&
         (f >= std::numeric_limits<std::intmax_t>::min() / 10))
