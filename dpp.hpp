@@ -377,11 +377,14 @@ public:
     }
     else
     {
+      constexpr auto emin(-pow<2>(E - 1));
+
       int e{};
 
       while ((f != std::trunc(f)) &&
         (f <= std::numeric_limits<std::intmax_t>::max() / 10) &&
-        (f >= std::numeric_limits<std::intmax_t>::min() / 10))
+        (f >= std::numeric_limits<std::intmax_t>::min() / 10) &&
+        (e > emin + 1))
       {
         f *= 10;
         --e;
