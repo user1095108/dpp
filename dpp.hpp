@@ -496,9 +496,16 @@ public:
     }
     else
     {
-      auto const tmp(*this - o);
+      value_type m1(v_.m), m2(o.v_.m);
+      int e1(v_.e), e2(o.v_.e);
 
-      return isnan(tmp) ? false : tmp.v_.m < 0;
+      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
+        ((e2 > e1) && equalize(m2, e2, m1, e1)))
+      {
+        return false;
+      }
+
+      return m1 < m2;
     }
   }
 
@@ -510,9 +517,16 @@ public:
     }
     else
     {
-      auto const tmp(*this - o);
+      value_type m1(v_.m), m2(o.v_.m);
+      int e1(v_.e), e2(o.v_.e);
 
-      return isnan(tmp) ? false : tmp.v_.m <= 0;
+      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
+        ((e2 > e1) && equalize(m2, e2, m1, e1)))
+      {
+        return false;
+      }
+
+      return m1 <= m2;
     }
   }
 
@@ -524,9 +538,16 @@ public:
     }
     else
     {
-      auto const tmp(*this - o);
+      value_type m1(v_.m), m2(o.v_.m);
+      int e1(v_.e), e2(o.v_.e);
 
-      return isnan(tmp) ? false : tmp.v_.m > 0;
+      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
+        ((e2 > e1) && equalize(m2, e2, m1, e1)))
+      {
+        return false;
+      }
+
+      return m1 > m2;
     }
   }
 
@@ -538,9 +559,16 @@ public:
     }
     else
     {
-      auto const tmp(*this - o);
+      value_type m1(v_.m), m2(o.v_.m);
+      int e1(v_.e), e2(o.v_.e);
 
-      return isnan(tmp) ? false : tmp.v_.m >= 0;
+      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
+        ((e2 > e1) && equalize(m2, e2, m1, e1)))
+      {
+        return false;
+      }
+
+      return m1 >= m2;
     }
   }
 
@@ -935,7 +963,7 @@ constexpr auto ceil(dpp<M, E> const& o) noexcept
 {
   auto const t(trunc(o));
 
-  return t + (t < o);
+  return t + int(t < o);
 }
 
 template <unsigned M, unsigned E>
@@ -943,7 +971,7 @@ constexpr auto floor(dpp<M, E> const& o) noexcept
 {
   auto const t(trunc(o));
 
-  return t - (t > o);
+  return t - int(t > o);
 }
 
 template <unsigned M, unsigned E>
