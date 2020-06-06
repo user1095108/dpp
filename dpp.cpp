@@ -14,6 +14,7 @@ constexpr auto abs(T const n) noexcept
   return n < 0 ? -n : n;
 }
 
+#ifndef __arm__
 template <typename D>
 std::string print_decimal(D d)
 {
@@ -31,6 +32,11 @@ std::string print_decimal(D d)
   {
     d /= 10;
     ++e;
+  }
+
+  if (!e || (d == D{}))
+  {
+    r.append(1, '0');
   }
 
   while (d != D{})
@@ -52,6 +58,7 @@ std::string print_decimal(D d)
 
   return r;
 }
+#endif // __arm__
 
 template <typename T, typename F>
 constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
@@ -97,10 +104,12 @@ void comp_euler64() noexcept
 
   std::cout << 
     euler(1., 0., 1., .000001, f) << " " <<
+#ifndef __arm__
     print_decimal(euler(std::decimal::decimal64(1),
       std::decimal::decimal64(0),
       std::decimal::decimal64(1),
       std::decimal::decimal64(.000001), f)) << " " <<
+#endif // __arm__
     euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64, f) << std::endl;
 }
 
@@ -108,7 +117,9 @@ void comp_sqrt32(unsigned const s) noexcept
 {
   std::cout << std::sqrt(float(s)) << " " <<
     ssqrt(float(s)) << " " <<
+#ifndef __arm__
     print_decimal(ssqrt(std::decimal::decimal32(s))) << " " <<
+#endif // __arm__
     ssqrt(dpp::d32(s)) << std::endl;
 }
 
@@ -116,7 +127,9 @@ void comp_sqrt64(unsigned const s) noexcept
 {
   std::cout << std::sqrt(double(s)) << " " <<
     ssqrt(double(s)) << " " <<
+#ifndef __arm__
     print_decimal(ssqrt(std::decimal::decimal64(s))) << " " <<
+#endif // __arm__
     ssqrt(dpp::d64(s)) << std::endl;
 }
 
