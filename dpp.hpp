@@ -684,7 +684,8 @@ public:
 
       int e(-dpp::dpp::decimal_places<doubled_t>{});
 
-      auto r(pow<10, doubled_t>(-e) / o.v_.m);
+      auto r(pow<10, doubled_t>(dpp::dpp::decimal_places<doubled_t>{}) /
+        o.v_.m);
 
       // fit r * v_.m into doubled_t, avoid one divide
       if (r > 0)
