@@ -25,9 +25,6 @@ template <unsigned M, unsigned E>
 class dpp;
 
 template <unsigned M, unsigned E>
-constexpr auto frac(dpp<M, E> const&) noexcept;
-
-template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const&) noexcept;
 
 template <typename T, typename S>
@@ -39,6 +36,168 @@ constexpr T to_float(dpp<M, E> const&) noexcept;
 
 template <unsigned M, unsigned E>
 constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const&) noexcept;
+
+namespace
+{
+
+template <typename T>
+struct decimal_places : std::conditional_t<
+  std::is_same_v<T, __int128_t>,
+  std::integral_constant<int, 38>,
+  std::conditional_t<
+    std::is_same_v<T, std::int64_t>,
+    std::integral_constant<int, 18>,
+    std::conditional_t<
+      std::is_same_v<T, std::int32_t>,
+      std::integral_constant<int, 9>,
+      std::conditional_t<
+        std::is_same_v<T, std::int16_t>,
+        std::integral_constant<int, 4>,
+        void
+      >
+    >
+  >
+>
+{
+};
+
+template <typename U>
+static constexpr auto bit_size() noexcept
+{
+  return 8 * sizeof(U);
+}
+
+template <int B, typename T>
+static constexpr T pow(unsigned e) noexcept
+{
+  if (e)
+  {
+    T x(B);
+    T y(1);
+
+    while (1 != e)
+    {
+      if (e % 2)
+      {
+        //--e;
+        y *= x;
+      }
+
+      x *= x;
+      e /= 2;
+    }
+
+    return x * y;
+  }
+  else
+  {
+    return T(1);
+  }
+}
+
+template <unsigned E, typename T>
+static constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
+{
+  constexpr auto emin(-pow<2, T>(E - 1));
+  constexpr auto emax(-(emin + 1));
+
+  // reserve one bit in case of overflow
+  constexpr auto rmin(-pow<2, T>(bit_size<T>() - 2));
+  constexpr auto rmax(-(rmin + 1));
+
+  if (am > 0)
+  {
+    while ((ae != be) && (am <= rmax / 10))
+    {
+      // watch the nan
+      if (ae > emin + 1)
+      {
+        --ae;
+        am *= 10;
+      }
+      else
+      {
+        return true;
+      }
+    }
+  }
+  else if (am < 0)
+  {
+    while ((ae != be) && (am >= rmin / 10))
+    {
+      // watch the nan
+      if (ae > emin + 1)
+      {
+        --ae;
+        am *= 10;
+      }
+      else
+      {
+        return true;
+      }
+    }
+  }
+  else
+  {
+    ae = be;
+
+    return false;
+  }
+
+  if (ae != be)
+  {
+    if (bm > 0)
+    {
+      while (ae != be)
+      {
+        if (be <= emax - 1)
+        {
+          ++be;
+
+          if (bm <= rmax - 5)
+          {
+            bm += 5;
+          }
+
+          bm /= 10;
+        }
+        else
+        {
+          return true;
+        }
+      }
+    }
+    else if (bm < 0)
+    {
+      while (ae != be)
+      {
+        if (be <= emax - 1)
+        {
+          ++be;
+
+          if (bm >= rmin + 5)
+          {
+            bm -= 5;
+          }
+
+          bm /= 10;
+        }
+        else
+        {
+          return true;
+        }
+      }
+    }
+    else
+    {
+      //be = ae;
+    }
+  }
+
+  return false;
+}
+
+}
 
 template <unsigned M, unsigned E>
 class dpp
@@ -58,7 +217,6 @@ public:
     >
   >;
 
-private:
   using doubled_t = std::conditional_t<
     std::is_same_v<value_type, std::int16_t>,
     std::int32_t,
@@ -73,172 +231,16 @@ private:
     >
   >;
 
-  template <typename T>
-  struct decimal_places : std::conditional_t<
-    std::is_same_v<T, __int128_t>,
-    std::integral_constant<int, 38>,
-    std::conditional_t<
-      std::is_same_v<T, std::int64_t>,
-      std::integral_constant<int, 18>,
-      std::conditional_t<
-        std::is_same_v<T, std::int32_t>,
-        std::integral_constant<int, 9>,
-        std::conditional_t<
-          std::is_same_v<T, std::int16_t>,
-          std::integral_constant<int, 4>,
-          void
-        >
-      >
-    >
-  >
-  {
-  };
-
-  template <typename U>
-  constexpr static auto bit_size() noexcept
-  {
-    return 8 * sizeof(U);
-  }
-
+private:
   struct
   {
     value_type m:M;
     value_type e:E;
   } v_{};
 
-  template <int B, typename T = value_type>
-  static constexpr T pow(unsigned e) noexcept
-  {
-    if (e)
-    {
-      T x(B);
-      T y(1);
-
-      while (1 != e)
-      {
-        if (e % 2)
-        {
-          //--e;
-          y *= x;
-        }
-
-        x *= x;
-        e /= 2;
-      }
-
-      return x * y;
-    }
-    else
-    {
-      return T(1);
-    }
-  }
-
-  static constexpr bool equalize(value_type& am, int& ae,
-    value_type& bm, int& be) noexcept
-  {
-    constexpr auto emin(-pow<2>(E - 1));
-    constexpr auto emax(-(emin + 1));
-
-    // reserve one bit in case of overflow
-    constexpr auto rmin(-pow<2>(bit_size<value_type>() - 2));
-    constexpr auto rmax(-(rmin + 1));
-
-    if (am > 0)
-    {
-      while ((ae != be) && (am <= rmax / 10))
-      {
-        // watch the nan
-        if (ae > emin + 1)
-        {
-          --ae;
-          am *= 10;
-        }
-        else
-        {
-          return true;
-        }
-      }
-    }
-    else if (am < 0)
-    {
-      while ((ae != be) && (am >= rmin / 10))
-      {
-        // watch the nan
-        if (ae > emin + 1)
-        {
-          --ae;
-          am *= 10;
-        }
-        else
-        {
-          return true;
-        }
-      }
-    }
-    else
-    {
-      ae = be;
-
-      return false;
-    }
-
-    if (ae != be)
-    {
-      if (bm > 0)
-      {
-        while (ae != be)
-        {
-          if (be <= emax - 1)
-          {
-            ++be;
-
-            if (bm <= rmax - 5)
-            {
-              bm += 5;
-            }
-
-            bm /= 10;
-          }
-          else
-          {
-            return true;
-          }
-        }
-      }
-      else if (bm < 0)
-      {
-        while (ae != be)
-        {
-          if (be <= emax - 1)
-          {
-            ++be;
-
-            if (bm >= rmin + 5)
-            {
-              bm -= 5;
-            }
-
-            bm /= 10;
-          }
-          else
-          {
-            return true;
-          }
-        }
-      }
-      else
-      {
-        //be = ae;
-      }
-    }
-
-    return false;
-  }
-
   constexpr void normalize() noexcept
   {
-    constexpr auto emax(pow<2>(E - 1) - 1);
+    constexpr auto emax(pow<2, value_type>(E - 1) - 1);
 
     if (v_.m)
     {
@@ -281,7 +283,7 @@ public:
     }
     else
     {
-      constexpr auto emin(-pow<2>(E - 1));
+      constexpr auto emin(-pow<2, value_type>(E - 1));
       constexpr auto emax(-(emin + 1));
 
       // watch the nan
@@ -296,7 +298,7 @@ public:
         return;
       }
 
-      constexpr auto mmin(-pow<2>(M - 1));
+      constexpr auto mmin(-pow<2, value_type>(M - 1));
       constexpr auto mmax(-(mmin + 1));
 
       constexpr auto umin(U(1) << (bit_size<U>() - 1));
@@ -389,7 +391,8 @@ public:
     {
       int e{};
 
-      for (constexpr auto emin(-pow<2>(E - 1)); (f != std::trunc(f) &&
+      for (constexpr auto emin(-pow<2, value_type>(E - 1));
+        (f != std::trunc(f) &&
         (f <= U(std::numeric_limits<std::intmax_t>::max() / 10)) &&
         (f >= U(std::numeric_limits<std::intmax_t>::min() / 10)) &&
         (e > emin + 1));)
@@ -426,14 +429,14 @@ public:
   struct nan{};
 
   constexpr dpp(nan&&) noexcept :
-    v_{.m = {}, .e = -pow<2>(E - 1)}
+    v_{.m = {}, .e = -pow<2, value_type>(E - 1)}
   {
   }
 
   struct unpack{};
 
   constexpr dpp(value_type const v, unpack&&) noexcept :
-    v_{.m = v & (pow<2>(M) - 1), .e = v >> M}
+    v_{.m = v & (pow<2, value_type>(M) - 1), .e = v >> M}
   {
   }
 
@@ -481,166 +484,6 @@ public:
   }
 
   //
-  template <unsigned N, unsigned F>
-  constexpr auto operator==(dpp<N, F> const& o) const noexcept
-  {
-    return isnan(*this) || isnan(o) ? false :
-      (v_.e == o.v_.e) && (v_.m == o.v_.m);
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator!=(dpp<N, F> const& o) const noexcept
-  {
-    return !operator==<N, F>(o);
-  }
-
-  //
-  constexpr auto operator<(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o))
-    {
-      return false;
-    }
-    else
-    {
-      value_type m1(v_.m), m2(o.v_.m);
-      int e1(v_.e), e2(o.v_.e);
-
-      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
-        ((e2 > e1) && equalize(m2, e2, m1, e1)))
-      {
-        return false;
-      }
-
-      return m1 < m2;
-    }
-  }
-
-  constexpr auto operator<=(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o))
-    {
-      return false;
-    }
-    else
-    {
-      value_type m1(v_.m), m2(o.v_.m);
-      int e1(v_.e), e2(o.v_.e);
-
-      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
-        ((e2 > e1) && equalize(m2, e2, m1, e1)))
-      {
-        return false;
-      }
-
-      return m1 <= m2;
-    }
-  }
-
-  constexpr auto operator>(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o))
-    {
-      return false;
-    }
-    else
-    {
-      value_type m1(v_.m), m2(o.v_.m);
-      int e1(v_.e), e2(o.v_.e);
-
-      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
-        ((e2 > e1) && equalize(m2, e2, m1, e1)))
-      {
-        return false;
-      }
-
-      return m1 > m2;
-    }
-  }
-
-  constexpr auto operator>=(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o))
-    {
-      return false;
-    }
-    else
-    {
-      value_type m1(v_.m), m2(o.v_.m);
-      int e1(v_.e), e2(o.v_.e);
-
-      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
-        ((e2 > e1) && equalize(m2, e2, m1, e1)))
-      {
-        return false;
-      }
-
-      return m1 >= m2;
-    }
-  }
-
-  //
-  template <unsigned N, unsigned F>
-  constexpr auto operator<(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this < dpp(o);
-    }
-    else
-    {
-      return result_t(*this) < o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator<=(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this <= dpp(o);
-    }
-    else
-    {
-      return result_t(*this) <= o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator>(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this > dpp(o);
-    }
-    else
-    {
-      return result_t(*this) > o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator>=(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this >= dpp(o);
-    }
-    else
-    {
-      return result_t(*this) >= o;
-    }
-  }
-
-  //
   constexpr auto operator+() const noexcept
   {
     return *this;
@@ -651,191 +494,8 @@ public:
     auto const m(v_.m);
 
     // we need to do it like this, as negating the mantissa can overflow
-    return -pow<2>(M - 1) == m ? dpp(-m, v_.e) : dpp(-m, v_.e, direct{});
-  }
-
-  //
-  constexpr auto operator+(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o))
-    {
-      return dpp{nan{}};
-    }
-    else
-    {
-      value_type m1(v_.m), m2(o.v_.m);
-      int e1(v_.e), e2(o.v_.e);
-
-      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
-        ((e2 > e1) && equalize(m2, e2, m1, e1)))
-      {
-        return dpp{nan{}};
-      }
-
-      // there can be no overflow
-      return dpp(m1 + m2, e1);
-    }
-  }
-
-  constexpr auto operator-(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o))
-    {
-      return dpp{nan{}};
-    }
-    else
-    {
-      value_type m1(v_.m), m2(o.v_.m);
-      int e1(v_.e), e2(o.v_.e);
-
-      if (((e1 > e2) && equalize(m1, e1, m2, e2)) || 
-        ((e2 > e1) && equalize(m2, e2, m1, e1)))
-      {
-        return dpp{nan{}};
-      }
-
-      // there can be no overflow
-      return dpp(m1 - m2, e1);
-    }
-  }
-
-  //
-  constexpr auto operator*(dpp const& o) const noexcept
-  {
-    return isnan(*this) || isnan(o) ? dpp{nan{}} :
-      dpp(doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e);
-  }
-
-  constexpr auto operator/(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o) || !o.v_.m)
-    {
-      return dpp{nan{}};
-    }
-    else if (v_.m)
-    {
-      constexpr auto emin(-pow<2>(E - 1));
-      constexpr auto emax(-(emin + 1));
-
-      constexpr auto rmin(doubled_t(1) << (bit_size<doubled_t>() - 1));
-      constexpr auto rmax(-(rmin + 1));
-
-      int e(-dpp::dpp::decimal_places<doubled_t>{});
-
-      auto r(pow<10, doubled_t>(dpp::dpp::decimal_places<doubled_t>{}) /
-        o.v_.m);
-
-      // fit r * v_.m into doubled_t, avoid one divide
-      if (r > 0)
-      {
-        while (r > rmax / v_.m)
-        {
-          if (e <= emax - 1)
-          {
-            ++e;
-/*
-            if (r <= rmax - 5)
-            {
-              r += 5;
-            }
-*/
-            r /= 10;
-          }
-          else
-          {
-            return dpp{nan{}};
-          }
-        }
-      }
-      else if (r < 0)
-      {
-        while (r < rmin / v_.m)
-        {
-          if (e <= emax - 1)
-          {
-            ++e;
-/*
-            if (r >= rmin + 5)
-            {
-              r -= 5;
-            }
-*/
-            r /= 10;
-          }
-          else
-          {
-            return dpp{nan{}};
-          }
-        }
-      }
-
-      return dpp(v_.m * r, exponent() + e - o.exponent());
-    }
-    else
-    {
-      return dpp{};
-    }
-  }
-
-  //
-  template <unsigned N, unsigned F>
-  constexpr auto operator+(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this + dpp(o);
-    }
-    else
-    {
-      return result_t(*this) + o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator-(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this - dpp(o);
-    }
-    else
-    {
-      return result_t(*this) - o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator*(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this * dpp(o);
-    }
-    else
-    {
-      return result_t(*this) * o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto operator/(dpp<N, F> const& o) const noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this / dpp(o);
-    }
-    else
-    {
-      return result_t(*this) / o;
-    }
+    return -pow<2, value_type>(M - 1) == m ? dpp(-m, v_.e) :
+      dpp(-m, v_.e, direct{});
   }
 
   //
@@ -943,6 +603,256 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator==(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  return isnan(a) || isnan(b) ? false :
+    (a.exponent() == b.exponent()) && (a.mantissa() == b.mantissa());
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator!=(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  return !operator==(a, b);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator<(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return false;
+  }
+  else
+  {
+    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
+    int e1(a.exponent()), e2(b.exponent());
+
+    if (((e1 > e2) && equalize<(M > N ? E : F)>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<(M > N ? E : F)>(m2, e2, m1, e1)))
+    {
+      return false;
+    }
+
+    return m1 < m2;
+  }
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator>(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return false;
+  }
+  else
+  {
+    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
+    int e1(a.exponent()), e2(b.exponent());
+
+    if (((e1 > e2) && equalize<(M > N ? E : F)>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<(M > N ? E : F)>(m2, e2, m1, e1)))
+    {
+      return false;
+    }
+
+    return m1 > m2;
+  }
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator<=(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return false;
+  }
+  else
+  {
+    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
+    int e1(a.exponent()), e2(b.exponent());
+
+    if (((e1 > e2) && equalize<(M > N ? E : F)>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<(M > N ? E : F)>(m2, e2, m1, e1)))
+    {
+      return false;
+    }
+
+    return m1 <= m2;
+  }
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator>=(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return false;
+  }
+  else
+  {
+    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
+    int e1(a.exponent()), e2(b.exponent());
+
+    if (((e1 > e2) && equalize<(M > N ? E : F)>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<(M > N ? E : F)>(m2, e2, m1, e1)))
+    {
+      return false;
+    }
+
+    return m1 >= m2;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator+(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return return_t{typename return_t::nan{}};
+  }
+  else
+  {
+    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
+    int e1(a.exponent()), e2(b.exponent());
+
+    if (((e1 > e2) && equalize<(M > N ? E : F)>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<(M > N ? E : F)>(m2, e2, m1, e1)))
+    {
+      return return_t{typename return_t::nan{}};
+    }
+
+    // there can be no overflow
+    return return_t(m1 + m2, e1);
+  }
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator-(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return return_t{typename return_t::nan{}};
+  }
+  else
+  {
+    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
+    int e1(a.exponent()), e2(b.exponent());
+
+    if (((e1 > e2) && equalize<(M > N ? E : F)>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<(M > N ? E : F)>(m2, e2, m1, e1)))
+    {
+      return return_t{typename return_t::nan{}};
+    }
+
+    // there can be no overflow
+    return return_t(m1 - m2, e1);
+  }
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator*(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  return isnan(a) || isnan(b) ? return_t{typename return_t::nan{}} :
+    return_t(typename return_t::doubled_t(a.mantissa()) * b.mantissa(),
+      a.exponent() + b.exponent());
+}
+
+template <unsigned M, unsigned E, unsigned N, unsigned F>
+constexpr auto operator/(dpp<M, E> const a, dpp<N, F> const b) noexcept
+{
+  using return_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
+
+  if (isnan(a) || isnan(b) || !b.mantissa())
+  {
+    return return_t{typename return_t::nan{}};
+  }
+  else if (a.mantissa())
+  {
+    constexpr auto emin(
+      -pow<2, typename return_t::value_type>((M > N ? E : F) - 1));
+    constexpr auto emax(-(emin + 1));
+
+    constexpr auto rmin(typename return_t::doubled_t(1) <<
+      (bit_size<typename return_t::doubled_t>() - 1));
+    constexpr auto rmax(-(rmin + 1));
+
+    int e(-decimal_places<typename return_t::doubled_t>{});
+
+    auto r(pow<10, typename return_t::doubled_t>(
+      decimal_places<typename return_t::doubled_t>{}) / b.mantissa());
+
+    auto const am(a.mantissa());
+
+    // fit r * v_.m into doubled_t, avoid one divide
+    if (r > 0)
+    {
+      while (r > rmax / am)
+      {
+        if (e <= emax - 1)
+        {
+          ++e;
+/*
+          if (r <= rmax - 5)
+          {
+            r += 5;
+          }
+*/
+          r /= 10;
+        }
+        else
+        {
+          return return_t{typename return_t::nan{}};
+        }
+      }
+    }
+    else if (r < 0)
+    {
+      while (r < rmin / am)
+      {
+        if (e <= emax - 1)
+        {
+          ++e;
+/*
+          if (r >= rmin + 5)
+          {
+            r -= 5;
+          }
+*/
+          r /= 10;
+        }
+        else
+        {
+          return return_t{typename return_t::nan{}};
+        }
+      }
+    }
+
+    return return_t(r * am, a.exponent() + e - b.exponent());
+  }
+  else
+  {
+    return return_t{};
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
 constexpr auto abs(dpp<M, E> const& p) noexcept
 {
@@ -953,12 +863,12 @@ constexpr auto abs(dpp<M, E> const& p) noexcept
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const& o) noexcept
 {
-  return -dpp<M, E>::template pow<2>(E - 1) == o.v_.e;
+  return -pow<2, typename dpp<M, E>::value_type>(E - 1) == o.v_.e;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr auto sign(dpp<M, E> const& o) noexcept
+constexpr auto sign(dpp<M, E> const o) noexcept
 {
   auto const m(o.mantissa());
 
@@ -966,23 +876,23 @@ constexpr auto sign(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto ceil(dpp<M, E> const& o) noexcept
+constexpr auto ceil(dpp<M, E> const o) noexcept
 {
   auto const t(trunc(o));
 
-  return t + (t < o);
+  return t + dpp<M, E>(t < o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto floor(dpp<M, E> const& o) noexcept
+constexpr auto floor(dpp<M, E> const o) noexcept
 {
   auto const t(trunc(o));
 
-  return t - (t > o);
+  return t - dpp<M, E>(t > o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto round(dpp<M, E> const& o) noexcept
+constexpr auto round(dpp<M, E> const o) noexcept
 {
   if (!isnan(o) && (o.exponent() < 0))
   {
@@ -997,13 +907,13 @@ constexpr auto round(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto frac(dpp<M, E> const& o) noexcept
+constexpr auto frac(dpp<M, E> const o) noexcept
 {
   return o - trunc(o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto trunc(dpp<M, E> const& o) noexcept
+constexpr auto trunc(dpp<M, E> const o) noexcept
 {
   if (auto e(o.exponent()); !isnan(o) && (e < 0))
   {
