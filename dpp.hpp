@@ -682,7 +682,7 @@ public:
       constexpr auto rmin(doubled_t(1) << (bit_size<doubled_t>() - 1));
       constexpr auto rmax(-(rmin + 1));
 
-      value_type e(-dpp::dpp::decimal_places<doubled_t>{});
+      int e(-dpp::dpp::decimal_places<doubled_t>{});
 
       auto r(pow<10, doubled_t>(-e) / o.v_.m);
 
