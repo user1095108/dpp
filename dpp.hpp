@@ -276,7 +276,8 @@ public:
   {
     if constexpr (std::is_same_v<U, bool>)
     {
-      v_ = {.m = m, .e = e};
+      v_.m = m;
+      (void)e;
     }
     else
     {
