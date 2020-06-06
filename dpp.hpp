@@ -1230,11 +1230,16 @@ std::string to_string(dpp<M, E> p)
     std::string r;
 
     {
-      auto const t(trunc(p));
+      if (auto const t(trunc(p)); t)
+      {
+        r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
 
-      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
-
-      p -= t;
+        p -= t;
+      }
+      else
+      {
+        r.append(1, '0');
+      }
     }
 
     auto const m(p.mantissa());
