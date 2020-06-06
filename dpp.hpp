@@ -102,8 +102,8 @@ private:
 
   struct
   {
-    value_type e:E;
     value_type m:M;
+    value_type e:E;
   } v_{};
 
   template <int B, typename T = value_type>
@@ -276,7 +276,7 @@ public:
   {
     if constexpr (std::is_same_v<U, bool>)
     {
-      v_ = {.e = e, .m = m};
+      v_ = {.m = m, .e = e};
     }
     else
     {
@@ -418,21 +418,21 @@ public:
   struct direct{};
 
   constexpr dpp(value_type const m, int const e, direct&&) noexcept :
-    v_{.e = e, .m = m}
+    v_{.m = m, .e = e}
   {
   }
 
   struct nan{};
 
   constexpr dpp(nan&&) noexcept :
-    v_{.e = -pow<2>(E - 1), .m = {}}
+    v_{.m = {}, .e = -pow<2>(E - 1)}
   {
   }
 
   struct unpack{};
 
   constexpr dpp(value_type const v, unpack&&) noexcept :
-    v_{.e = v >> M, .m = v & (pow<2>(M) - 1)}
+    v_{.m = v & (pow<2>(M) - 1), .e = v >> M}
   {
   }
 
