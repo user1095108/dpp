@@ -119,7 +119,7 @@ void comp_sqrt32(unsigned const s) noexcept
 {
   std::cout << std::sqrt(float(s)) << " " <<
     ssqrt(float(s)) << " " <<
-#if !defined(__arm__) && !defined(__clang__)
+#if !defined(__ARM_ARCH) && !defined(__clang__)
     print_decimal(ssqrt(std::decimal::decimal32(s))) << " " <<
 #endif // __arm__
     ssqrt(dpp::d32(s)) << std::endl;
