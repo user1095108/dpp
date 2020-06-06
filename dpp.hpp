@@ -294,32 +294,31 @@ public:
 
     constexpr auto umin(U(1) << (bit_size<U>() - 1));
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
-      -(umin + 1) : ~U{});
+      -(umin + 1) : U(-1));
 
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
+    while (m < mmin)
     {
-      while (m < mmin)
+      if (v_.e <= emax - 1)
       {
-        if (v_.e <= emax - 1)
+        ++v_.e;
+
+        if (m >= umin + 5)
         {
-          ++v_.e;
-
-          if (m >= umin + 5)
-          {
-            m -= 5;
-          }
-
-          m /= 10;
+          m -= 5;
         }
-        else
-        {
-          *this = dpp{nan{}};
 
-          return;
-        }
+        m /= 10;
+      }
+      else
+      {
+        *this = dpp{nan{}};
+
+        return;
       }
     }
 
+    if constexpr (!std::is_same_v<U, bool>)
     while (m > mmax)
     {
       if (v_.e <= emax - 1)
@@ -964,7 +963,7 @@ constexpr auto ceil(dpp<M, E> const& o) noexcept
 {
   auto const t(trunc(o));
 
-  return t + int(t < o);
+  return t + (t < o);
 }
 
 template <unsigned M, unsigned E>
@@ -972,7 +971,7 @@ constexpr auto floor(dpp<M, E> const& o) noexcept
 {
   auto const t(trunc(o));
 
-  return t - int(t > o);
+  return t - (t > o);
 }
 
 template <unsigned M, unsigned E>
