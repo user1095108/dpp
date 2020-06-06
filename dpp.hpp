@@ -295,24 +295,27 @@ public:
     constexpr auto umin(U(1) << (bit_size<U>() - 1));
     constexpr auto umax(-(umin + 1));
 
-    while (m < mmin)
+    if constexpr (std::is_signed_v<U>)
     {
-      if (v_.e <= emax - 1)
+      while (m < mmin)
       {
-        ++v_.e;
-
-        if (m >= umin + 5)
+        if (v_.e <= emax - 1)
         {
-          m -= 5;
+          ++v_.e;
+
+          if (m >= umin + 5)
+          {
+            m -= 5;
+          }
+
+          m /= 10;
         }
+        else
+        {
+          *this = dpp{nan{}};
 
-        m /= 10;
-      }
-      else
-      {
-        *this = dpp{nan{}};
-
-        return;
+          return;
+        }
       }
     }
 

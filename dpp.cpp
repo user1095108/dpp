@@ -1,3 +1,5 @@
+#include <decimal/decimal>
+
 #include <iostream>
 
 #include <iomanip>
@@ -5,6 +7,51 @@
 #include "dpp.hpp"
 
 using namespace dpp::literals;
+
+template <typename T>
+constexpr auto abs(T const n) noexcept
+{
+  return n < 0 ? -n : n;
+}
+
+template <typename D>
+std::string print_decimal(D d)
+{
+  std::string r;
+
+  if (d < D{})
+  {
+    d = abs(d);
+    r.append(1, '-');
+  }
+
+  int e{};
+
+  while (d > D{1})
+  {
+    d /= 10;
+    ++e;
+  }
+
+  while (d != D{})
+  {
+    if (!e)
+    {
+      r.append(1, '.');
+    }
+
+    d *= 10;
+
+    long long di(d);
+    d -= di;
+
+    r.append(1, di + '0');
+
+    --e;
+  }
+
+  return r;
+}
 
 template <typename T, typename F>
 constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
@@ -20,7 +67,7 @@ constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
 }
 
 template <typename T>
-constexpr auto sqrt(T const S) noexcept
+constexpr auto ssqrt(T const S) noexcept
 {
   T xo, xn(S), eo, en(S);
 
@@ -35,44 +82,48 @@ constexpr auto sqrt(T const S) noexcept
 
     en = xo - xn;
   }
-  while (dpp::abs(en) < dpp::abs(eo));
+  while (abs(en) < abs(eo));
 
-/*
-  xn = xo;
-  en = S - xo * xo;
+  return (xo + xn) / T(2);
+}
 
-  if (dpp::sign(en))
-  {
-    do
+void comp_euler64() noexcept
+{
+  auto const f([](auto const& y, auto const&) noexcept
     {
-      xo = xn;
-      eo = en;
-
-      xn = T(xo.mantissa() - 1, xo.exponent());
-      en = S - xn * xn;
+      return y;
     }
-    while (dpp::abs(en) <= dpp::abs(eo));
+  );
 
-    xn = xo;
-    en = eo;
+  std::cout << 
+    euler(1., 0., 1., .000001, f) << " " <<
+    print_decimal(euler(std::decimal::decimal64(1),
+      std::decimal::decimal64(0),
+      std::decimal::decimal64(1),
+      std::decimal::decimal64(.000001), f)) << " " <<
+    euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64, f) << std::endl;
+}
 
-    do
-    {
-      xo = xn;
-      eo = en;
+void comp_sqrt32(unsigned const s) noexcept
+{
+  std::cout << std::sqrt(float(s)) << " " <<
+    ssqrt(float(s)) << " " <<
+    print_decimal(ssqrt(std::decimal::decimal32(s))) << " " <<
+    ssqrt(dpp::d32(s)) << std::endl;
+}
 
-      xn = T(xo.mantissa() + 1, xo.exponent());
-      en = S - xn * xn;
-    }
-    while (dpp::abs(en) < dpp::abs(eo));
-  }
-*/
-
-  return xn;
+void comp_sqrt64(unsigned const s) noexcept
+{
+  std::cout << std::sqrt(double(s)) << " " <<
+    ssqrt(double(s)) << " " <<
+    print_decimal(ssqrt(std::decimal::decimal64(s))) << " " <<
+    ssqrt(dpp::d64(s)) << std::endl;
 }
 
 int main()
 {
+  std::cout << std::setprecision(17);
+
   //
   std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / 2 << std::endl;
 
@@ -83,34 +134,20 @@ int main()
 
   //
   std::cout << std::endl;
-  std::cout << std::setprecision(17) <<
-    euler(1., 0., 1., .000001,
-      [](auto const& y, auto const&) noexcept
-      {
-        return y;
-      }
-    ) << " " <<
-    euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64,
-      [](auto const& y, auto const&) noexcept
-      {
-        return y;
-      }
-    ) << std::endl;
+  comp_euler64();
 
   //
   std::cout << std::endl;
-  std::cout << std::sqrt(2.f) << " " << sqrt("2"_d32) << std::endl;
-  std::cout << std::sqrt(2.) << " " << sqrt("2"_d64) << std::endl;
-  std::cout << std::sqrt(3.f) << " " << sqrt("3"_d32) << std::endl;
-  std::cout << std::sqrt(3.) << " " << sqrt("3"_d64) << std::endl;
-  std::cout << std::sqrt(5.) << " " << sqrt("5"_d64) << std::endl;
-  std::cout << std::sqrt(7.f) << " " << sqrt("7"_d32) << std::endl;
-  std::cout << std::sqrt(7.) << " " << sqrt("7"_d64) << std::endl;
-  std::cout << std::sqrt(9.f) << " " << sqrt("9"_d32) << std::endl;
-  std::cout << std::sqrt(10.f) << " " << sqrt("10"_d32) << std::endl;
-  std::cout << std::sqrt(10.) << " " << sqrt("10"_d64) << std::endl;
-  std::cout << std::sqrt(77.f) << " " << sqrt("77"_d32) << std::endl;
-  std::cout << std::sqrt(77.) << " " << sqrt("77"_d64) << std::endl;
+  comp_sqrt32(2);
+  comp_sqrt64(2);
+  comp_sqrt64(3);
+  comp_sqrt32(5);
+  comp_sqrt64(5);
+  comp_sqrt64(7);
+  comp_sqrt32(9);
+  comp_sqrt64(9);
+  comp_sqrt64(10);
+  comp_sqrt64(77);
 
   //
   std::cout << std::endl;
