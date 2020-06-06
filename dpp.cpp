@@ -172,12 +172,12 @@ void comp_trapezoidal64() noexcept
 
   auto const f3([](auto const t) noexcept { return decltype(t)(1) / t; });
 
-  std::cout << trapezoidal(1., 5., 1000, f3) << " " <<
+  std::cout << trapezoidal(1., 5., 10000, f3) << " " <<
 #if !defined(__ARM_ARCH) && !defined(__clang__)
     to_string(trapezoidal(std::decimal::decimal64(1),
-      std::decimal::decimal64(5), 1000, f3)) << " " <<
+      std::decimal::decimal64(5), 10000, f3)) << " " <<
 #endif
-    trapezoidal(dpp::d64(1), dpp::d64(5), 1000, f3) << std::endl;
+    trapezoidal(dpp::d64(1), dpp::d64(5), 10000, f3) << std::endl;
 }
 
 int main()
