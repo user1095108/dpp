@@ -499,85 +499,28 @@ public:
   }
 
   //
-  constexpr auto& operator+=(dpp const& o) noexcept
+  template <unsigned N, unsigned F>
+  constexpr auto& operator+=(dpp<N, F> const o) noexcept
   {
     return *this = *this + o;
   }
 
-  constexpr auto& operator-=(dpp const& o) noexcept
+  template <unsigned N, unsigned F>
+  constexpr auto& operator-=(dpp<N, F> const o) noexcept
   {
     return *this = *this - o;
   }
 
-  constexpr auto& operator*=(dpp const& o) noexcept
+  template <unsigned N, unsigned F>
+  constexpr auto& operator*=(dpp<N, F> const o) noexcept
   {
     return *this = *this * o;
   }
 
-  constexpr auto& operator/=(dpp const& o) noexcept
+  template <unsigned N, unsigned F>
+  constexpr auto& operator/=(dpp<N, F> const o) noexcept
   {
     return *this = *this / o;
-  }
-
-  //
-  template <unsigned N, unsigned F>
-  constexpr auto& operator+=(dpp<N, F> const& o) noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this = *this + dpp(o);
-    }
-    else
-    {
-      return *this = result_t(*this) + o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto& operator-=(dpp<N, F> const& o) noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this = *this - dpp(o);
-    }
-    else
-    {
-      return *this = result_t(*this) - o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto& operator*=(dpp<N, F> const& o) noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this = *this * dpp(o);
-    }
-    else
-    {
-      return *this = result_t(*this) * o;
-    }
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr auto& operator/=(dpp<N, F> const& o) noexcept
-  {
-    using result_t = dpp<(M > N ? M : N), (M > N ? E : F)>;
-
-    if constexpr (std::is_same_v<dpp, result_t>)
-    {
-      return *this = *this / dpp(o);
-    }
-    else
-    {
-      return *this = result_t(*this) / o;
-    }
   }
 
   //
