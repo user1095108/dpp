@@ -59,7 +59,7 @@ std::string to_string(D d)
 #endif
 
 template <typename T, typename F>
-constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
+constexpr auto euler(T y, T t,  T const t1, T const h, F const f) noexcept
 {
   while (t < t1)
   {
@@ -69,6 +69,24 @@ constexpr auto euler(T y, T t,  T const& t1, T const& h, F const f) noexcept
   }
 
   return y;
+}
+
+template <typename T, typename F>
+constexpr auto trapezoidal(T t,  T const t1, unsigned const N, F const f) noexcept
+{
+  T const dt((t1 - t) / T(N));
+
+  T y(f(t) + f(t1));
+
+  t += dt;
+
+  while (t < t1)
+  {
+    y += T(2) * f(t);
+    t += dt;
+  }
+
+  return dt * y / T(2);
 }
 
 template <typename T>
@@ -131,12 +149,33 @@ void comp_sqrt64(unsigned const s) noexcept
     ssqrt(dpp::d64(s)) << std::endl;
 }
 
+void comp_trapezoidal64() noexcept
+{
+  auto const f1([](auto const t) noexcept { return t * t; });
+
+  std::cout << trapezoidal(0., 1., 1000, f1) << " " <<
+#if !defined(__ARM_ARCH) && !defined(__clang__)
+    to_string(trapezoidal(std::decimal::decimal64(0),
+      std::decimal::decimal64(1), 1000, f1)) << " " <<
+#endif
+    trapezoidal(dpp::d64(0), dpp::d64(1), 1000, f1) << std::endl;
+
+  auto const f2([](auto const t) noexcept { return t*t*t; });
+
+  std::cout << trapezoidal(-1., 1., 1000, f2) << " " <<
+#if !defined(__ARM_ARCH) && !defined(__clang__)
+    to_string(trapezoidal(std::decimal::decimal64(-1),
+      std::decimal::decimal64(1), 1000, f2)) << " " <<
+#endif
+    trapezoidal(dpp::d64(-1), dpp::d64(1), 1000, f2) << std::endl;
+}
+
 int main()
 {
   std::cout << std::setprecision(17);
 
   //
-  std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / 2 << std::endl;
+  std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / dpp::d32(2) << std::endl;
 
   std::cout << -"1000.0123"_d32 << std::endl;
   std::cout << dpp::d32(.0123f) + dpp::d64(1000) << std::endl;
@@ -159,6 +198,10 @@ int main()
   comp_sqrt64(9);
   comp_sqrt64(10);
   comp_sqrt64(77);
+
+  //
+  std::cout << std::endl;
+  comp_trapezoidal64();
 
   //
   std::cout << std::endl;
