@@ -1,4 +1,4 @@
-#if !defined(__arm__) && !defined(__clang__)
+#if !defined(__ARM_ARCH) && !defined(__clang__)
 #include <decimal/decimal>
 #endif
 
@@ -16,7 +16,7 @@ constexpr auto abs(T const n) noexcept
   return n < 0 ? -n : n;
 }
 
-#if !defined(__arm__) && !defined(__clang__)
+#if !defined(__ARM_ARCH) && !defined(__clang__)
 template <typename D>
 std::string print_decimal(D d)
 {
@@ -106,7 +106,7 @@ void comp_euler64() noexcept
 
   std::cout << 
     euler(1., 0., 1., .000001, f) << " " <<
-#if !defined(__arm__) && !defined(__clang__)
+#if !defined(__ARM_ARCH) && !defined(__clang__)
     print_decimal(euler(std::decimal::decimal64(1),
       std::decimal::decimal64(0),
       std::decimal::decimal64(1),
@@ -129,7 +129,7 @@ void comp_sqrt64(unsigned const s) noexcept
 {
   std::cout << std::sqrt(double(s)) << " " <<
     ssqrt(double(s)) << " " <<
-#if !defined(__arm__) && !defined(__clang__)
+#if !defined(__ARM_ARCH) && !defined(__clang__)
     print_decimal(ssqrt(std::decimal::decimal64(s))) << " " <<
 #endif // __arm__
     ssqrt(dpp::d64(s)) << std::endl;
