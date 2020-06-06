@@ -77,7 +77,6 @@ constexpr auto trapezoidal(T t,  T const t1, unsigned const N, F const f) noexce
   T const dt((t1 - t) / T(N));
 
   T y(f(t) + f(t1));
-
   t += dt;
 
   while (t < t1)
