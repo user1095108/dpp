@@ -274,23 +274,23 @@ public:
   >
   constexpr dpp(U m, int const e) noexcept
   {
-    constexpr auto emin(-pow<2>(E - 1));
-    constexpr auto emax(-(emin + 1));
-
-    // watch the nan
-    if ((e > emin) && (e <= emax))
-    {
-      v_.e = e;
-    }
-    else
-    {
-      *this = dpp{nan{}};
-
-      return;
-    }
-
     if constexpr (!std::is_same_v<U, bool>)
     {
+      constexpr auto emin(-pow<2>(E - 1));
+      constexpr auto emax(-(emin + 1));
+
+      // watch the nan
+      if ((e > emin) && (e <= emax))
+      {
+        v_.e = e;
+      }
+      else
+      {
+        *this = dpp{nan{}};
+
+        return;
+      }
+
       constexpr auto mmin(-pow<2>(M - 1));
       constexpr auto mmax(-(mmin + 1));
 
