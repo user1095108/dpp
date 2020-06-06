@@ -274,7 +274,11 @@ public:
   >
   constexpr dpp(U m, int const e) noexcept
   {
-    if constexpr (!std::is_same_v<U, bool>)
+    if constexpr (std::is_same_v<U, bool>)
+    {
+      v_.m = m;
+    }
+    else
     {
       constexpr auto emin(-pow<2>(E - 1));
       constexpr auto emax(-(emin + 1));
@@ -340,11 +344,11 @@ public:
           return;
         }
       }
+
+      v_.m = m;
+
+      normalize();
     }
-
-    v_.m = m;
-
-    normalize();
   }
 
   template <typename U,
