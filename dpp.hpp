@@ -296,7 +296,7 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U(0));
 
-    if constexpr (std::is_signed_v<U>)
+    if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
     {
       while (m < mmin)
       {
