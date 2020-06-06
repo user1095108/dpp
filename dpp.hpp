@@ -343,7 +343,7 @@ public:
   }
 
   template <typename U,
-    std::enable_if_t<std::is_integral_v<std::decay_t<U>>, int> = 0
+    std::enable_if_t<std::is_integral_v<U>, int> = 0
   >
   constexpr dpp(U const m) noexcept :
     dpp(m, 0)
