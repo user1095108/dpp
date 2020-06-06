@@ -79,13 +79,15 @@ constexpr auto trapezoidal(T t,  T const t1, unsigned const N, F const f) noexce
   T y(f(t) + f(t1));
   t += dt;
 
+  T s{};
+
   while (t < t1)
   {
-    y += T(2) * f(t);
+    s += f(t);
     t += dt;
   }
 
-  return dt * y / T(2);
+  return dt * (y / T(2) + s);
 }
 
 template <typename T>
