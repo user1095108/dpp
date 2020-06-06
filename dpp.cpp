@@ -30,7 +30,7 @@ std::string print_decimal(D d)
 
   int e{};
 
-  while (d > D{1})
+  while (d >= D{1})
   {
     d /= 10;
     ++e;
@@ -43,19 +43,15 @@ std::string print_decimal(D d)
 
   while (d != D{})
   {
-    if (!e)
+    if (!e--)
     {
       r.append(1, '.');
     }
 
-    d *= 10;
-
-    long long di(d);
+    long long di(d *= 10);
     d -= di;
 
     r.append(1, di + '0');
-
-    --e;
   }
 
   return r;
