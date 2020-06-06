@@ -293,7 +293,8 @@ public:
     constexpr auto mmax(-(mmin + 1));
 
     constexpr auto umin(U(1) << (bit_size<U>() - 1));
-    constexpr auto umax(-(umin + 1));
+    constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
+      -(umin + 1) : ~U(0));
 
     if constexpr (std::is_signed_v<U>)
     {
