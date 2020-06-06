@@ -289,54 +289,56 @@ public:
       return;
     }
 
-    constexpr auto mmin(-pow<2>(M - 1));
-    constexpr auto mmax(-(mmin + 1));
-
-    constexpr auto umin(U(1) << (bit_size<U>() - 1));
-    constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
-      -(umin + 1) : U(-1));
-
-    if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
-    while (m < mmin)
-    {
-      if (v_.e <= emax - 1)
-      {
-        ++v_.e;
-
-        if (m >= umin + 5)
-        {
-          m -= 5;
-        }
-
-        m /= 10;
-      }
-      else
-      {
-        *this = dpp{nan{}};
-
-        return;
-      }
-    }
-
     if constexpr (!std::is_same_v<U, bool>)
-    while (m > mmax)
     {
-      if (v_.e <= emax - 1)
-      {
-        ++v_.e;
+      constexpr auto mmin(-pow<2>(M - 1));
+      constexpr auto mmax(-(mmin + 1));
 
-        if (m <= umax - 5)
+      constexpr auto umin(U(1) << (bit_size<U>() - 1));
+      constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
+        -(umin + 1) : ~U{});
+
+      if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
+      while (m < mmin)
+      {
+        if (v_.e <= emax - 1)
         {
-          m += 5;
+          ++v_.e;
+
+          if (m >= umin + 5)
+          {
+            m -= 5;
+          }
+
+          m /= 10;
         }
+        else
+        {
+          *this = dpp{nan{}};
 
-        m /= 10;
+          return;
+        }
       }
-      else
-      {
-        *this = dpp{nan{}};
 
-        return;
+      while (m > mmax)
+      {
+        if (v_.e <= emax - 1)
+        {
+          ++v_.e;
+
+          if (m <= umax - 5)
+          {
+            m += 5;
+          }
+
+          m /= 10;
+        }
+        else
+        {
+          *this = dpp{nan{}};
+
+          return;
+        }
       }
     }
 
