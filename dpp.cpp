@@ -176,7 +176,6 @@ void comp_trapezoidal64() noexcept
       std::decimal::decimal64(5), 1000, f3)) << " " <<
 #endif
     trapezoidal(dpp::d64(1), dpp::d64(5), 1000, f3) << std::endl;
-
 }
 
 int main()
