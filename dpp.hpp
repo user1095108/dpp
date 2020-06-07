@@ -200,10 +200,12 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
         }
       }
     }
+/*
     else
     {
-      //be = ae;
+      be = ae;
     }
+*/
   }
 
   return false;
