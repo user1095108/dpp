@@ -750,7 +750,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
     // fit r * a.v_.m into value_type, avoid one divide
-    if (r > 0)
+    if (((r > 0) && (a.v_.m > 0)) || ((r < 0) && (a.v_.m < 0)))
     {
       while (r > rmax / a.v_.m)
       {
@@ -764,7 +764,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
         ++e;
       }
     }
-    else if (r < 0)
+    else if (((r < 0) && (a.v_.m > 0)) || ((r > 0) && (a.v_.m < 0)))
     {
       while (r < rmin / a.v_.m)
       {
