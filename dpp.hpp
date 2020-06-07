@@ -754,7 +754,6 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     {
       while (r > rmax / a.v_.m)
       {
-        ++e;
 /*
         if (r <= rmax - 5)
         {
@@ -762,13 +761,13 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
         }
 */
         r /= 10;
+        ++e;
       }
     }
     else if (r < 0)
     {
       while (r < rmin / a.v_.m)
       {
-        ++e;
 /*
         if (r >= rmin + 5)
         {
@@ -776,6 +775,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
         }
 */
         r /= 10;
+        ++e;
       }
     }
 
