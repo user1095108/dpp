@@ -107,7 +107,7 @@ constexpr T pow(unsigned e) noexcept
 template <unsigned E, typename T>
 constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
-  constexpr auto emin(-pow<2, T>(E - 1));
+  constexpr auto emin(-pow<2, int>(E - 1));
   constexpr auto emax(-(emin + 1));
 
   // reserve one bit in case of overflow
@@ -251,7 +251,7 @@ private:
 
   constexpr void normalize() noexcept
   {
-    constexpr auto emax(pow<2, value_type>(E - 1) - 1);
+    constexpr auto emax(pow<2, int>(E - 1) - 1);
 
     if (v_.m)
     {
@@ -294,7 +294,7 @@ public:
     }
     else
     {
-      constexpr auto emin(-pow<2, value_type>(E - 1));
+      constexpr auto emin(-pow<2, int>(E - 1));
       constexpr auto emax(-(emin + 1));
 
       // watch the nan
@@ -402,7 +402,7 @@ public:
     {
       int e{};
 
-      for (constexpr auto emin(-pow<2, value_type>(E - 1));
+      for (constexpr auto emin(-pow<2, int>(E - 1));
         (f != std::trunc(f) &&
         (f <= U(std::numeric_limits<std::intmax_t>::max() / 10)) &&
         (f >= U(std::numeric_limits<std::intmax_t>::min() / 10)) &&
@@ -440,7 +440,7 @@ public:
   struct nan{};
 
   constexpr dpp(nan&&) noexcept :
-    v_{.m = {}, .e = -pow<2, value_type>(E - 1)}
+    v_{.m = {}, .e = -pow<2, int>(E - 1)}
   {
   }
 
@@ -760,7 +760,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     constexpr auto E(A > C ? B : D);
 
-    constexpr auto emin(-pow<2, typename return_t::value_type>(E - 1));
+    constexpr auto emin(-pow<2, int>(E - 1));
     constexpr auto emax(-(emin + 1));
 
     constexpr auto rmin(typename return_t::doubled_t(1) <<
@@ -835,7 +835,7 @@ constexpr auto abs(dpp<M, E> const p) noexcept
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const o) noexcept
 {
-  return -pow<2, typename dpp<M, E>::value_type>(E - 1) == o.exponent();
+  return -pow<2, int>(E - 1) == o.exponent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
