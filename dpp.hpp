@@ -776,7 +776,16 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     }
     else if ((r > 0) && (a.v_.m < 0))
     {
-      while (-r < rmin / -a.v_.m)
+      if (-1 == a.v_.m)
+      {
+        while (-r < rmin)
+        {
+          r /= 10;
+          ++e;
+        }
+      }
+      else
+      while (r > rmin / a.v_.m)
       {
         r /= 10;
         ++e;
