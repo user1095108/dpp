@@ -185,7 +185,8 @@ int main()
   std::cout << std::setprecision(17);
 
   //
-  std::cout << double(2) / 3 << " " << "2"_d32 / "3"_d64 << std::endl;
+  std::cout << "-2"_d32 / "-3"_d64 << " " << "-2"_d32 / "3"_d64 << " " <<
+    "2"_d64 / "-3"_d64 << std::endl;
   std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / dpp::d32(2) << std::endl;
 
   std::cout << -"1000.0123"_d32 << std::endl;
