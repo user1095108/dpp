@@ -778,7 +778,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     int e(-decimal_places<typename return_t::doubled_t>{});
 
     auto r(pow<10, typename return_t::doubled_t>(
-      decimal_places<typename return_t::doubled_t>{}) / b.mantissa());
+      decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
     // fit r * v_.m into doubled_t, avoid one divide
     if (r > 0)
