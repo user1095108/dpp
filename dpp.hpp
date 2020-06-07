@@ -260,6 +260,10 @@ private:
         }
       }
     }
+    else
+    {
+      v_.e = 0;
+    }
   }
 
 public:
