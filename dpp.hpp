@@ -44,7 +44,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
 
 template <typename T, unsigned M, unsigned E>
-constexpr T to_float(dpp<M, E> const&) noexcept;
+constexpr T to_float(dpp<M, E>) noexcept;
 
 namespace
 {
@@ -214,6 +214,12 @@ template <unsigned M, unsigned E>
 class dpp
 {
 public:
+  enum : unsigned
+  {
+    exponent_bits = E,
+    mantissa_bits = M
+  };
+
   using value_type = std::conditional_t<
     M + E <= 16,
     std::int16_t,
@@ -1038,7 +1044,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     int e{};
 
-    constexpr auto emin(std::numeric_limits<typename T::value_type>::min());
+    constexpr auto emin(-pow<2, int>(T::exponent_bits - 1));
 
     for (; i != end; i = std::next(i))
     {
@@ -1101,7 +1107,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
 }
 
 template <typename T, unsigned M, unsigned E>
-constexpr T to_float(dpp<M, E> const& p) noexcept
+constexpr T to_float(dpp<M, E> const p) noexcept
 {
   return isnan(p) ? NAN : p.mantissa() * std::pow(T(10), p.exponent());
 }
