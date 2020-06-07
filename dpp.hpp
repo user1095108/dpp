@@ -740,6 +740,12 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (a.v_.m)
   {
+    constexpr auto myabs([](auto const a) noexcept
+      {
+        return a < 0 ? -a : a;
+      }
+    );
+
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
@@ -752,28 +758,16 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     // fit r * a.v_.m into value_type, avoid one divide
     if (((r > 0) && (a.v_.m > 0)) || ((r < 0) && (a.v_.m < 0)))
     {
-      while (r > rmax / a.v_.m)
+      while (myabs(r) > rmax / myabs(a.v_.m))
       {
-/*
-        if (r <= rmax - 5)
-        {
-          r += 5;
-        }
-*/
         r /= 10;
         ++e;
       }
     }
-    else if (((r < 0) && (a.v_.m > 0)) || ((r > 0) && (a.v_.m < 0)))
+    else
     {
-      while (r < rmin / a.v_.m)
+      while (myabs(r) < rmin / myabs(a.v_.m))
       {
-/*
-        if (r >= rmin + 5)
-        {
-          r -= 5;
-        }
-*/
         r /= 10;
         ++e;
       }
@@ -1080,20 +1074,20 @@ std::string to_string(dpp<M, E> p)
   {
     std::string r;
 
+    auto m(p.mantissa());
+
+    if (auto const t(trunc(p)); t)
     {
-      if (auto const t(trunc(p)); t)
-      {
-        r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
+      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
 
-        p -= t;
-      }
-      else
-      {
-        r.append(1, '0');
-      }
+      p -= t;
+
+      m = p.mantissa();
     }
-
-    auto const m(p.mantissa());
+    else
+    {
+      m < 0 ? r.append("-0") : r.append(1, '0');
+    }
 
     if (auto const e(-p.exponent()); (e > 0) && m)
     {
