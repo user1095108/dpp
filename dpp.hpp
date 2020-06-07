@@ -835,7 +835,7 @@ constexpr auto abs(dpp<M, E> const p) noexcept
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const o) noexcept
 {
-  return -pow<2, int>(E - 1) == o.exponent();
+  return -pow<2, typename dpp<M, E>::value_type>(E - 1) == o.exponent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
