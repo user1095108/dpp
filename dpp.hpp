@@ -583,13 +583,11 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    constexpr auto E(A > C ? B : D);
-
     typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
     int e1(a.exponent()), e2(b.exponent());
 
-    if (((e1 > e2) && equalize<E>(m1, e1, m2, e2)) || 
-      ((e2 > e1) && equalize<E>(m2, e2, m1, e1)))
+    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
       return false;
     }
@@ -609,13 +607,11 @@ constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    constexpr auto E(A > C ? B : D);
-
     typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
     int e1(a.exponent()), e2(b.exponent());
 
-    if (((e1 > e2) && equalize<E>(m1, e1, m2, e2)) || 
-      ((e2 > e1) && equalize<E>(m2, e2, m1, e1)))
+    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
       return false;
     }
@@ -635,13 +631,11 @@ constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    constexpr auto E(A > C ? B : D);
-
     typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
     int e1(a.exponent()), e2(b.exponent());
 
-    if (((e1 > e2) && equalize<E>(m1, e1, m2, e2)) || 
-      ((e2 > e1) && equalize<E>(m2, e2, m1, e1)))
+    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
       return false;
     }
@@ -661,13 +655,11 @@ constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    constexpr auto E(A > C ? B : D);
-
     typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
     int e1(a.exponent()), e2(b.exponent());
 
-    if (((e1 > e2) && equalize<E>(m1, e1, m2, e2)) || 
-      ((e2 > e1) && equalize<E>(m2, e2, m1, e1)))
+    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
       return false;
     }
@@ -688,13 +680,11 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    constexpr auto E(A > C ? B : D);
-
     typename return_t::value_type m1(a.v_.m), m2(b.v_.m);
     int e1(a.v_.e), e2(b.v_.e);
 
-    if (((e1 > e2) && equalize<E>(m1, e1, m2, e2)) || 
-      ((e2 > e1) && equalize<E>(m2, e2, m1, e1)))
+    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
       return return_t{typename return_t::nan{}};
     }
@@ -715,13 +705,11 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    constexpr auto E(A > C ? B : D);
-
     typename return_t::value_type m1(a.v_.m), m2(b.v_.m);
     int e1(a.v_.e), e2(b.v_.e);
 
-    if (((e1 > e2) && equalize<E>(m1, e1, m2, e2)) || 
-      ((e2 > e1) && equalize<E>(m2, e2, m1, e1)))
+    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) || 
+      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
       return return_t{typename return_t::nan{}};
     }
