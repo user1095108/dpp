@@ -116,34 +116,18 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 
   if (am > 0)
   {
-    while ((ae != be) && (am <= rmax / 10))
+    while ((ae != be) && (am <= rmax / 10) && (ae > emin + 1))
     {
-      // watch the nan
-      if (ae > emin + 1)
-      {
-        --ae;
-        am *= 10;
-      }
-      else
-      {
-        return true;
-      }
+      --ae;
+      am *= 10;
     }
   }
   else if (am < 0)
   {
-    while ((ae != be) && (am >= rmin / 10))
+    while ((ae != be) && (am >= rmin / 10) && (ae > emin + 1))
     {
-      // watch the nan
-      if (ae > emin + 1)
-      {
-        --ae;
-        am *= 10;
-      }
-      else
-      {
-        return true;
-      }
+      --ae;
+      am *= 10;
     }
   }
   else
@@ -764,11 +748,6 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (a.v_.m)
   {
-    constexpr auto E(A > C ? B : D);
-
-    constexpr auto emin(-pow<2, int>(E - 1));
-    constexpr auto emax(-(emin + 1));
-
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
@@ -783,42 +762,28 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     {
       while (r > rmax / a.v_.m)
       {
-        if (e <= emax - 1)
-        {
-          ++e;
+        ++e;
 /*
-          if (r <= rmax - 5)
-          {
-            r += 5;
-          }
-*/
-          r /= 10;
-        }
-        else
+        if (r <= rmax - 5)
         {
-          return return_t{typename return_t::nan{}};
+          r += 5;
         }
+*/
+        r /= 10;
       }
     }
     else if (r < 0)
     {
       while (r < rmin / a.v_.m)
       {
-        if (e <= emax - 1)
-        {
-          ++e;
+        ++e;
 /*
-          if (r >= rmin + 5)
-          {
-            r -= 5;
-          }
-*/
-          r /= 10;
-        }
-        else
+        if (r >= rmin + 5)
         {
-          return return_t{typename return_t::nan{}};
+          r -= 5;
         }
+*/
+        r /= 10;
       }
     }
 
