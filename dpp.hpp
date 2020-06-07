@@ -755,7 +755,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 
     int e(-decimal_places<typename return_t::doubled_t>{});
 
-    // fit r * am into value_type, avoid one divide
+    // fit r * am into value_type, avoid one divide, don't allow sign changes
     if (r > 0)
     {
       while (r > rmax / am)
