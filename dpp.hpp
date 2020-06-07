@@ -764,7 +764,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
         ++e;
       }
     }
-    else if (r < 0)
+    else
     {
       while (r < rmin / am)
       {
