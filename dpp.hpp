@@ -738,7 +738,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     return return_t{typename return_t::nan{}};
   }
-  else if (a.v_.m)
+  else if (auto am(a.v_.m); am)
   {
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (bit_size<typename return_t::doubled_t>() - 1));
@@ -749,50 +749,31 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     auto r(pow<10, typename return_t::doubled_t>(
       decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
-    // fit r * a.v_.m into value_type, avoid one divide
-    if ((r > 0) && (a.v_.m > 0))
+    if (am < 0)
     {
-      while (r > rmax / a.v_.m)
+      am = -am;
+      r = -r;
+    }
+
+    // fit r * am into value_type, avoid one divide
+    if (r > 0)
+    {
+      while (r > rmax / am)
       {
         r /= 10;
         ++e;
       }
     }
-    else if ((r < 0) && (a.v_.m < 0))
+    else if (r < 0)
     {
-      while (r < rmax / a.v_.m)
-      {
-        r /= 10;
-        ++e;
-      }
-    }
-    else if ((r < 0) && (a.v_.m > 0))
-    {
-      while (r < rmin / a.v_.m)
-      {
-        r /= 10;
-        ++e;
-      }
-    }
-    else if ((r > 0) && (a.v_.m < 0))
-    {
-      if (-1 == a.v_.m)
-      {
-        while (-r < rmin)
-        {
-          r /= 10;
-          ++e;
-        }
-      }
-      else
-      while (r > rmin / a.v_.m)
+      while (r < rmin / am)
       {
         r /= 10;
         ++e;
       }
     }
 
-    return return_t(r * a.v_.m, a.v_.e + e - b.v_.e);
+    return return_t(r * am, a.v_.e + e - b.v_.e);
   }
   else
   {
