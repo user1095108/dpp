@@ -740,12 +740,6 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (a.v_.m)
   {
-    constexpr auto myabs([](auto const a) noexcept
-      {
-        return a < 0 ? -a : a;
-      }
-    );
-
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
@@ -756,17 +750,33 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
     // fit r * a.v_.m into value_type, avoid one divide
-    if (((r > 0) && (a.v_.m > 0)) || ((r < 0) && (a.v_.m < 0)))
+    if ((r > 0) && (a.v_.m > 0))
     {
-      while (myabs(r) > rmax / myabs(a.v_.m))
+      while (r > rmax / a.v_.m)
       {
         r /= 10;
         ++e;
       }
     }
-    else
+    else if ((r < 0) && (a.v_.m < 0))
     {
-      while (myabs(r) < rmin / myabs(a.v_.m))
+      while (r < rmax / a.v_.m)
+      {
+        r /= 10;
+        ++e;
+      }
+    }
+    else if ((r < 0) && (a.v_.m > 0))
+    {
+      while (r < rmin / a.v_.m)
+      {
+        r /= 10;
+        ++e;
+      }
+    }
+    else if ((r > 0) && (a.v_.m < 0))
+    {
+      while (-r < rmin / -a.v_.m)
       {
         r /= 10;
         ++e;
