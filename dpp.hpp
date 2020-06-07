@@ -46,9 +46,6 @@ constexpr auto to_decimal(S const& s) noexcept ->
 template <typename T, unsigned M, unsigned E>
 constexpr T to_float(dpp<M, E> const&) noexcept;
 
-template <unsigned M, unsigned E>
-constexpr std::optional<std::intmax_t> to_integral(dpp<M, E>) noexcept;
-
 namespace
 {
 
@@ -564,11 +561,6 @@ public:
 
   template <unsigned A, unsigned B, unsigned C, unsigned D>
   friend constexpr auto operator/(dpp<A, B>, dpp<C, D>) noexcept;
-
-  friend constexpr bool isnan<M, E>(dpp<M, E>) noexcept;
-
-  friend constexpr std::optional<std::intmax_t> to_integral<M, E>(
-    dpp<M, E>) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -780,7 +772,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     auto r(pow<10, typename return_t::doubled_t>(
       decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
-    // fit r * v_.m into doubled_t, avoid one divide
+    // fit r * a.v_.m into value_type, avoid one divide
     if (r > 0)
     {
       while (r > rmax / a.v_.m)
@@ -843,7 +835,7 @@ constexpr auto abs(dpp<M, E> const p) noexcept
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const o) noexcept
 {
-  return -pow<2, typename dpp<M, E>::value_type>(E - 1) == o.v_.e;
+  return -pow<2, int>(E - 1) == o.exponent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -924,11 +916,11 @@ constexpr std::optional<std::intmax_t> to_integral(
 
     if (auto const e(p.exponent()); e < 0)
     {
-      return r / dpp<M, E>::template pow<10, std::intmax_t>(-e);
+      return r / pow<10, std::intmax_t>(-e);
     }
     else
     {
-      if (auto const c(dpp<M, E>::template pow<10, std::intmax_t>(e)); c)
+      if (auto const c(pow<10, std::intmax_t>(e)); c)
       {
         if (r > 0)
         {
