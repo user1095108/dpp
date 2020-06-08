@@ -864,8 +864,7 @@ using d32 = dpp<26, 6>;
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr std::optional<std::intmax_t> to_integral(
-  dpp<M, E> const p) noexcept
+constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const p) noexcept
 {
   if (!isnan(p))
   {
@@ -1086,7 +1085,7 @@ std::string to_string(dpp<M, E> p)
     }
     else
     {
-      m < 0 ? r.append("-0") : r.append(1, '0');
+      m < 0 ? r.append("-0", 2) : r.append(1, '0');
     }
 
     if (auto const e(-p.exponent()); (e > 0) && m)
