@@ -402,8 +402,8 @@ public:
         (f >= U(std::numeric_limits<std::intmax_t>::min() / 10)) &&
         (e > emin + 1));)
       {
-        f *= 10;
         --e;
+        f *= 10;
       }
 
       *this = std::isinf(f) ? dpp{nan{}} : dpp(std::intmax_t(f), e);
