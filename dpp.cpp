@@ -191,7 +191,7 @@ int main()
 
   std::cout << -"1000.0123"_d32 << std::endl;
   std::cout << dpp::d32(.0123f) + dpp::d64(1000) << std::endl;
-  std::cout << dpp::d64(-M_PI) << std::endl;
+  std::cout << dpp::d64(-M_PI) << " " << dpp::d32(1e20f) << std::endl;
   std::cout << dpp::d32(M_PI) << " " << -float(dpp::d32(-M_PI)) << std::endl;
 
   //
