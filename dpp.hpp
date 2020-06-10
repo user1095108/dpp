@@ -390,36 +390,28 @@ public:
   {
     if (!std::isnan(f) && !std::isinf(f))
     {
-      int e;
-      f = std::frexp(f, &e);
+      int e{};
 
-      while (f != std::trunc(f))
+      while (std::trunc(f) != f)
       {
-        f *= 2;
+        f *= 10;
         --e;
+      }
+
+      auto q(f / 10);
+
+      while (std::trunc(q) == q)
+      {
+        f = q;
+        q /= 10;
+
+        ++e;
       }
 
       if ((f <= U(std::numeric_limits<std::intmax_t>::max())) &&
         (f >= U(std::numeric_limits<std::intmax_t>::min())))
       {
-        auto tmp(dpp{std::intmax_t(f), 0});
-
-        if (e > 0)
-        {
-          while (e--)
-          {
-            tmp *= dpp(2);
-          }
-        }
-        else
-        {
-          while (e++)
-          {
-            tmp /= dpp(2);
-          }
-        }
-
-        *this = tmp;
+        *this = dpp{std::intmax_t(f), e};
 
         return;
       }
