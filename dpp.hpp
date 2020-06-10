@@ -386,28 +386,46 @@ public:
   template <typename U,
     typename = std::enable_if_t<std::is_floating_point_v<U>>
   >
-  constexpr dpp(U f) noexcept
+  dpp(U f) noexcept
   {
-    if (std::isnan(f) || std::isinf(f))
+    if (!std::isnan(f) && !std::isinf(f))
     {
-      *this = dpp{nan{}};
-    }
-    else
-    {
-      int e{};
+      int e;
+      f = std::frexp(f, &e);
 
-      for (constexpr auto emin(-pow<2, int>(E - 1));
-        (f != std::trunc(f) &&
-        (f <= U(std::numeric_limits<std::intmax_t>::max() / 10)) &&
-        (f >= U(std::numeric_limits<std::intmax_t>::min() / 10)) &&
-        (e > emin + 1));)
+      while (f != std::trunc(f))
       {
+        f *= 2;
         --e;
-        f *= 10;
       }
 
-      *this = std::isinf(f) ? dpp{nan{}} : dpp(std::intmax_t(f), e);
+      if ((f <= U(std::numeric_limits<std::intmax_t>::max() / 10)) &&
+        (f >= U(std::numeric_limits<std::intmax_t>::min() / 10)))
+      {
+        auto tmp(dpp{std::intmax_t(f), 0});
+
+        if (e > 0)
+        {
+          while (e-- && !isnan(tmp))
+          {
+            tmp *= dpp(2);
+          }
+        }
+        else
+        {
+          while (e++ && !isnan(tmp))
+          {
+            tmp /= dpp(2);
+          }
+        }
+
+        *this = tmp;
+
+        return;
+      }
     }
+
+    *this = dpp{nan{}};
   }
 
   //
