@@ -399,8 +399,8 @@ public:
         --e;
       }
 
-      if ((f <= U(std::numeric_limits<std::intmax_t>::max() / 10)) &&
-        (f >= U(std::numeric_limits<std::intmax_t>::min() / 10)))
+      if ((f <= U(std::numeric_limits<std::intmax_t>::max())) &&
+        (f >= U(std::numeric_limits<std::intmax_t>::min())))
       {
         auto tmp(dpp{std::intmax_t(f), 0});
 
