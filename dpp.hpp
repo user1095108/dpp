@@ -406,14 +406,14 @@ public:
 
         if (e > 0)
         {
-          while (e-- && !isnan(tmp))
+          while (e--)
           {
             tmp *= dpp(2);
           }
         }
         else
         {
-          while (e++ && !isnan(tmp))
+          while (e++)
           {
             tmp /= dpp(2);
           }
