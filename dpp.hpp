@@ -398,13 +398,9 @@ public:
         --e;
       }
 
-      auto q(f / 10);
-
-      while (std::trunc(q) == q)
+      for (auto q(f / 10); std::trunc(q) == q; q /= 10)
       {
         f = q;
-        q /= 10;
-
         ++e;
       }
 
