@@ -386,7 +386,7 @@ public:
   template <typename U,
     typename = std::enable_if_t<std::is_floating_point_v<U>>
   >
-  dpp(U f) noexcept
+  dpp(U const f) noexcept
   {
     if (std::isnan(f) || std::isinf(f))
     {
@@ -394,21 +394,23 @@ public:
     }
     else
     {
+      long double n(f);
+
       int e{};
 
-      while (std::trunc(f) != f)
+      while (std::trunc(n) != n)
       {
-        f *= 10;
+        n *= 10;
         --e;
       }
 
       // slash f, if necessary
       for (constexpr long double max{std::numeric_limits<std::intmax_t>::max()},
         min{std::numeric_limits<std::intmax_t>::min()};
-        (f > max) || (f < min);
-        f /= 10, ++e);
+        (n > max) || (n < min);
+        n /= 10, ++e);
 
-      *this = dpp{std::intmax_t(f), e};
+      *this = dpp{std::intmax_t(n), e};
     }
   }
 
