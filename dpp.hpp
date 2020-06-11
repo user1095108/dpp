@@ -388,7 +388,11 @@ public:
   >
   dpp(U f) noexcept
   {
-    if (!std::isnan(f) && !std::isinf(f))
+    if (std::isnan(f) || std::isinf(f))
+    {
+      *this = dpp{nan{}};
+    }
+    else
     {
       int e{};
 
@@ -419,10 +423,6 @@ public:
       }
 
       *this = dpp{std::intmax_t(f), e};
-    }
-    else
-    {
-      *this = dpp{nan{}};
     }
   }
 
