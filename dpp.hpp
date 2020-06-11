@@ -398,8 +398,8 @@ public:
         --e;
       }
 
-      constexpr U max(std::numeric_limits<std::intmax_t>::max());
-      constexpr U min(std::numeric_limits<std::intmax_t>::min());
+      constexpr auto max{U(std::numeric_limits<std::intmax_t>::max())};
+      constexpr auto min{U(std::numeric_limits<std::intmax_t>::min())};
 
       // slash f as much as possible, but not too much
       for (auto q(f / 10);
