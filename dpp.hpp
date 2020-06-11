@@ -398,7 +398,12 @@ public:
         --e;
       }
 
-      for (auto q(f / 10); std::trunc(q) == q; q /= 10)
+      // slash f as much as possible, but not too much
+      for (auto q(f / 10);
+        ((f > U(std::numeric_limits<std::intmax_t>::max())) ||
+        (f < U(std::numeric_limits<std::intmax_t>::min()))) &&
+        std::trunc(q) == q;
+        q /= 10)
       {
         f = q;
         ++e;
