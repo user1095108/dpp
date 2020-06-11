@@ -417,7 +417,7 @@ public:
         ++e;
       }
 
-      *this = dpp{std::intmax_t(std::round(f)), e};
+      *this = dpp{std::intmax_t(f), e};
     }
     else
     {
