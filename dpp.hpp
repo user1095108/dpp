@@ -398,10 +398,12 @@ public:
         --e;
       }
 
+      constexpr U max(std::numeric_limits<std::intmax_t>::max());
+      constexpr U min(std::numeric_limits<std::intmax_t>::min());
+
       // slash f as much as possible, but not too much
       for (auto q(f / 10);
-        ((f > U(std::numeric_limits<std::intmax_t>::max())) ||
-        (f < U(std::numeric_limits<std::intmax_t>::min()))) &&
+        ((f > max) || (f < min)) &&
         std::trunc(q) == q;
         q /= 10)
       {
@@ -410,8 +412,7 @@ public:
       }
 
       // slash f even more, if necessary
-      while ((f > U(std::numeric_limits<std::intmax_t>::max())) ||
-        (f < U(std::numeric_limits<std::intmax_t>::min())))
+      while ((f > max) || (f < min))
       {
         f /= 10;
         ++e;
