@@ -405,17 +405,7 @@ public:
       constexpr long double max{std::numeric_limits<std::intmax_t>::max()};
       constexpr long double min{std::numeric_limits<std::intmax_t>::min()};
 
-      // slash f as much as possible, but not too much
-      for (auto q(f / 10);
-        ((f > max) || (f < min)) &&
-        std::trunc(q) == q;
-        q /= 10)
-      {
-        f = q;
-        ++e;
-      }
-
-      // slash f even more, if necessary
+      // slash f, if necessary
       while ((f > max) || (f < min))
       {
         f /= 10;
