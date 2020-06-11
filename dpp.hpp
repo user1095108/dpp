@@ -402,15 +402,11 @@ public:
         --e;
       }
 
-      constexpr long double max{std::numeric_limits<std::intmax_t>::max()};
-      constexpr long double min{std::numeric_limits<std::intmax_t>::min()};
-
       // slash f, if necessary
-      while ((f > max) || (f < min))
-      {
-        f /= 10;
-        ++e;
-      }
+      for (constexpr long double max{std::numeric_limits<std::intmax_t>::max()},
+        min{std::numeric_limits<std::intmax_t>::min()};
+        (f > max) || (f < min);
+        f /= 10, ++e);
 
       *this = dpp{std::intmax_t(f), e};
     }
