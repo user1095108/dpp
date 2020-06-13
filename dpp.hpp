@@ -388,11 +388,7 @@ public:
   >
   dpp(U f) noexcept
   {
-    if (std::isnan(f) || std::isinf(f))
-    {
-      *this = dpp{nan{}};
-    }
-    else
+    if (std::isfinite(f))
     {
       int e{};
 
@@ -405,6 +401,10 @@ public:
         (f > max) || (f < min); f /= 10, ++e);
 
       *this = dpp{std::intmax_t(f), e};
+    }
+    else
+    {
+      *this = dpp{nan{}};
     }
   }
 
