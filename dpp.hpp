@@ -715,7 +715,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       r = -r;
     }
 
-    int e(-decimal_places<typename return_t::doubled_t>{});
+    int e(a.v_.e - decimal_places<typename return_t::doubled_t>{} - b.v_.e);
 
     // fit r * am into doubled_t, avoid one divide, don't allow sign changes
     if (r > 0)
@@ -735,7 +735,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       }
     }
 
-    return return_t(r * am, a.v_.e + e - b.v_.e);
+    return return_t(r * am, e);
   }
   else
   {
