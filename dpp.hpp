@@ -848,7 +848,7 @@ constexpr auto trunc(dpp<M, E> const o) noexcept
 
     for (; m && e++; m /= 10);
 
-    return dpp<M, E>(m, 0);
+    return dpp<M, E>(m, 0, typename dpp<M, E>::direct{});
   }
   else
   {
