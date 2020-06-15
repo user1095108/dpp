@@ -727,11 +727,13 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       }
     }
     else
+    {
       while (r < rmin / am)
       {
         r /= 10;
         ++e;
       }
+    }
 
     return return_t(r * am, a.v_.e + e - b.v_.e);
   }
