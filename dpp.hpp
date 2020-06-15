@@ -717,7 +717,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 
     int e(-decimal_places<typename return_t::doubled_t>{});
 
-    // fit r * am into value_type, avoid one divide, don't allow sign changes
+    // fit r * am into doubled_t, avoid one divide, don't allow sign changes
     if (r > 0)
     {
       while (r > rmax / am)
@@ -727,13 +727,11 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       }
     }
     else
-    {
       while (r < rmin / am)
       {
         r /= 10;
         ++e;
       }
-    }
 
     return return_t(r * am, a.v_.e + e - b.v_.e);
   }
