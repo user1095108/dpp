@@ -21,7 +21,7 @@
 namespace dpp
 {
 
-template <unsigned M, unsigned E>
+template <unsigned, unsigned>
 class dpp;
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
