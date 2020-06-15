@@ -621,49 +621,13 @@ constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
-
-  if (isnan(a) || isnan(b))
-  {
-    return false;
-  }
-  else
-  {
-    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
-    int e1(a.exponent()), e2(b.exponent());
-
-    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
-      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
-    {
-      return false;
-    }
-
-    return m1 <= m2;
-  }
+  return !(a > b);
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
-
-  if (isnan(a) || isnan(b))
-  {
-    return false;
-  }
-  else
-  {
-    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
-    int e1(a.exponent()), e2(b.exponent());
-
-    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
-      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
-    {
-      return false;
-    }
-
-    return m1 >= m2;
-  }
+  return !(a < b);
 }
 
 //////////////////////////////////////////////////////////////////////////////
