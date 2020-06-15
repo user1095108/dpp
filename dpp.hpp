@@ -1035,11 +1035,10 @@ std::string to_string(dpp<M, E> p)
 
     if (auto const t(trunc(p)); t)
     {
-      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
-
       p -= t;
-
       m = p.mantissa();
+
+      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
     }
     else
     {
