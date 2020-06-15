@@ -487,7 +487,7 @@ public:
   }
 
   //
-  constexpr auto operator+() const noexcept
+  constexpr auto& operator+() const noexcept
   {
     return *this;
   }
