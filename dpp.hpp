@@ -81,8 +81,7 @@ constexpr T pow(unsigned e) noexcept
 {
   if (e)
   {
-    T x(B);
-    T y(1);
+    T x(B), y(1);
 
     while (1 != e)
     {
