@@ -847,16 +847,12 @@ constexpr std::optional<std::intmax_t> to_integral(dpp<M, E> const p) noexcept
             return r * c;
           }
         }
-        else if (r < 0)
+        else
         {
           if (r >= std::numeric_limits<std::intmax_t>::min() / c)
           {
             return r * c;
           }
-        }
-        else
-        {
-          return 0;
         }
       }
     }
