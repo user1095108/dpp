@@ -706,6 +706,8 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
+    int e(a.v_.e - decimal_places<typename return_t::doubled_t>{} - b.v_.e);
+
     auto r(pow<10, typename return_t::doubled_t>(
       decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
@@ -714,8 +716,6 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       am = -am;
       r = -r;
     }
-
-    int e(a.v_.e - decimal_places<typename return_t::doubled_t>{} - b.v_.e);
 
     // fit r * am into doubled_t, avoid one divide, don't allow sign changes
     if (r > 0)
