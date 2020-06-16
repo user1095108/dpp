@@ -395,7 +395,8 @@ public:
       for (; std::trunc(f) != f; f *= 10, --e);
 
       // slash f, if necessary
-      for (constexpr long double max(std::numeric_limits<std::intmax_t>::max()),
+      for (constexpr long double
+        max(std::numeric_limits<std::intmax_t>::max()),
         min(std::numeric_limits<std::intmax_t>::min());
         (f > max) || (f < min); f /= 10, ++e);
 
