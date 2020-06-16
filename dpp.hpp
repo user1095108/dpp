@@ -747,7 +747,7 @@ constexpr bool isnan(dpp<M, E> const& o) noexcept
 template <unsigned M, unsigned E>
 constexpr auto sign(dpp<M, E> const& o) noexcept
 {
-  auto const m(o.mantissa());
+  constexpr auto m(o.mantissa());
 
   return (m > 0) - (m < 0);
 }
