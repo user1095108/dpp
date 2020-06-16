@@ -242,13 +242,11 @@ private:
 
   constexpr void normalize() noexcept
   {
-    constexpr auto emax(pow<2, int>(E - 1) - 1);
-
     if (v_.m)
     {
       while (!(v_.m % 10))
       {
-        if (v_.e <= emax - 1)
+        if (constexpr auto emax(pow<2, int>(E - 1) - 1); v_.e <= emax - 1)
         {
           ++v_.e;
           v_.m /= 10;
