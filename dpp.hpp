@@ -607,7 +607,7 @@ constexpr auto operator>(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<=(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 {
-  return !(a > b);
+  return !(b < a);
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
