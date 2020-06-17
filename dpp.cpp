@@ -64,7 +64,6 @@ constexpr auto euler(T y, T t,  T const t1, T const h, F const f) noexcept
   while (t < t1)
   {
     y += h * f(y, t);
-
     t += h;
   }
 
@@ -102,7 +101,7 @@ constexpr auto ssqrt(T const S) noexcept
 
     auto const xs(xo * xo);
     xn = ((xs + T(3) * S) / (T(3) * xs + S)) * xo;
-//  xn = (xo + S/xo) / 2;
+//  xn = (xo + S/xo) / T(2);
 
     en = xo - xn;
   }
