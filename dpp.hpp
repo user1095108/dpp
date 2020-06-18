@@ -219,6 +219,7 @@ public:
     >
   >;
 
+private:
   using doubled_t = std::conditional_t<
     std::is_same_v<value_type, std::int16_t>,
     std::int32_t,
@@ -233,7 +234,6 @@ public:
     >
   >;
 
-private:
   struct
   {
     value_type m:M;
