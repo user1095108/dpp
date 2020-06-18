@@ -537,7 +537,7 @@ public:
     return v_.m;
   }
 
-  constexpr auto packed() const noexcept
+  constexpr value_type packed() const noexcept
   {
     return (v_.e << M) | v_.m;
   }
