@@ -199,11 +199,11 @@ template <unsigned M, unsigned E>
 class dpp
 {
 public:
-  enum : unsigned
-  {
-    exponent_bits = E,
-    mantissa_bits = M
-  };
+  enum : unsigned { exponent_bits = E, mantissa_bits = M };
+
+  using direct = struct {};
+  using nan = struct {};
+  using unpack = struct {};
 
   using value_type = std::conditional_t<
     M + E <= 16,
@@ -266,10 +266,6 @@ private:
   }
 
 public:
-  using direct = struct {};
-  using nan = struct {};
-  using unpack = struct {};
-
   constexpr dpp() noexcept = default;
 
   constexpr dpp(dpp const&) = default;
