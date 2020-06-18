@@ -731,13 +731,6 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const& p) noexcept
-{
-  return p.mantissa() < 0 ? -p : p;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const& o) noexcept
 {
   return -pow<2, int>(E - 1) == o.exponent();
@@ -745,11 +738,20 @@ constexpr bool isnan(dpp<M, E> const& o) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr auto sign(dpp<M, E> const& o) noexcept
+constexpr auto trunc(dpp<M, E> const& o) noexcept
 {
-  constexpr auto m(o.mantissa());
+  if (auto e(o.exponent()); !isnan(o) && (e < 0))
+  {
+    auto m(o.mantissa());
 
-  return (m > 0) - (m < 0);
+    for (; m && e++; m /= 10);
+
+    return dpp<M, E>(m, 0, typename dpp<M, E>::direct{});
+  }
+  else
+  {
+    return o;
+  }
 }
 
 template <unsigned M, unsigned E>
@@ -784,26 +786,23 @@ constexpr auto round(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
+constexpr auto abs(dpp<M, E> const& p) noexcept
+{
+  return p.mantissa() < 0 ? -p : p;
+}
+
+template <unsigned M, unsigned E>
 constexpr auto frac(dpp<M, E> const& o) noexcept
 {
   return o - trunc(o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto trunc(dpp<M, E> const& o) noexcept
+constexpr auto sign(dpp<M, E> const& o) noexcept
 {
-  if (auto e(o.exponent()); !isnan(o) && (e < 0))
-  {
-    auto m(o.mantissa());
+  constexpr auto m(o.mantissa());
 
-    for (; m && e++; m /= 10);
-
-    return dpp<M, E>(m, 0, typename dpp<M, E>::direct{});
-  }
-  else
-  {
-    return o;
-  }
+  return (m > 0) - (m < 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
