@@ -1056,7 +1056,7 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
   return os << to_string(p);
 }
 
-template <typename T> struct hash;
+template <typename> struct hash;
 
 template <unsigned M, unsigned E>
 struct hash<dpp<M, E>>
