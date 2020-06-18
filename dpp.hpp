@@ -266,6 +266,10 @@ private:
   }
 
 public:
+  using direct = struct {};
+  using nan = struct {};
+  using unpack = struct {};
+
   constexpr dpp() noexcept = default;
 
   constexpr dpp(dpp const&) = default;
@@ -422,21 +426,15 @@ public:
     *this = s;
   }
 
-  struct direct{};
-
   constexpr dpp(value_type const m, int const e, direct&&) noexcept :
     v_{.m = m, .e = e}
   {
   }
 
-  struct nan{};
-
   constexpr dpp(nan&&) noexcept :
     v_{.m = {}, .e = -pow<2, int>(E - 1)}
   {
   }
-
-  struct unpack{};
 
   constexpr dpp(value_type const v, unpack&&) noexcept :
     v_{.m = v & (pow<2, value_type>(M) - 1), .e = v >> M}
