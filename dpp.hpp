@@ -26,6 +26,10 @@ namespace dpp
 template <unsigned, unsigned>
 class dpp;
 
+using d64 = dpp<56, 8>;
+using d32 = dpp<26, 6>;
+using d16 = dpp<11, 5>;
+
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const&, dpp<C, D> const&) noexcept;
 
@@ -800,11 +804,6 @@ constexpr auto sign(dpp<M, E> const& o) noexcept
 }
 
 //////////////////////////////////////////////////////////////////////////////
-using d64 = dpp<56, 8>;
-using d32 = dpp<26, 6>;
-using d16 = dpp<11, 5>;
-
-//////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
 constexpr std::optional<std::intmax_t> to_integral(
   dpp<M, E> const& p) noexcept
@@ -1065,16 +1064,22 @@ struct hash<dpp<M, E>>
 namespace literals
 {
 
+constexpr auto operator "" _d64(char const* const s,
+  std::size_t const N) noexcept
+{
+  return to_decimal<d64>(std::string_view(s, N));
+}
+
 constexpr auto operator "" _d32(char const* const s,
   std::size_t const N) noexcept
 {
   return to_decimal<d32>(std::string_view(s, N));
 }
 
-constexpr auto operator "" _d64(char const* const s,
+constexpr auto operator "" _d16(char const* const s,
   std::size_t const N) noexcept
 {
-  return to_decimal<d64>(std::string_view(s, N));
+  return to_decimal<d16>(std::string_view(s, N));
 }
 
 }
