@@ -270,7 +270,7 @@ private:
   }
 
 public:
-  constexpr dpp() noexcept = default;
+  constexpr dpp() = default;
 
   constexpr dpp(dpp const&) = default;
   constexpr dpp(dpp&&) = default;
@@ -537,7 +537,7 @@ public:
 
   constexpr value_type packed() const noexcept
   {
-    return (v_.e << M) | v_.m;
+    return v_.e << M | (v_.m & (pow<2, value_type>(M) - 1));
   }
 
   template <unsigned A, unsigned B, unsigned C, unsigned D>
