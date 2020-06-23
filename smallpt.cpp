@@ -36,6 +36,12 @@ constexpr T abs(T const v) noexcept
 }
 
 template <typename T>
+inline T pow(T const a, T const x) noexcept
+{
+  return pow(double(a), double(x));
+}
+
+template <typename T>
 constexpr T sqrt(T const v) noexcept
 {
   return sqrt(double(v));
@@ -91,7 +97,7 @@ Sphere spheres[] = {//Scene: radius, position, emission, color, material
   Sphere(600, Vec(50,681.6-.27,81.6),Vec(12,12,12),  Vec(), DIFF) //Lite
 };
 inline D clamp(D x){ return x<D(0) ? 0 : x>D(1) ? 1 : x; }
-inline int toInt(D x){ return int(pow(double(clamp(x)),1/2.2)*255+.5); }
+inline int toInt(D x){ return std::intmax_t(pow(clamp(x),D(1/2.2))*D(255)+D(.5)); }
 inline bool intersect(const Ray &r, D &t, int &id){
   D n=sizeof(spheres)/sizeof(Sphere), d, inf=t=1e20;
   for(int i=std::intmax_t(n);i--;) if((d=spheres[i].intersect(r))&&d<t){t=d;id=i;}
