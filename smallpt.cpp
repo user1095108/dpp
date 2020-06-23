@@ -42,19 +42,36 @@ inline T pow(T const a, T const x) noexcept
 }
 
 template <typename T>
-constexpr T sqrt(T const v) noexcept
+inline T sqrt(T const v) noexcept
 {
-  return sqrt(double(v));
+  T xo, xn(v), eo, en(v);
+
+  do
+  {
+    xo = xn;
+    eo = en;
+
+//  auto const xs(xo * xo);
+//  xn = ((xs + T(3) * v) / (T(3) * xs + v)) * xo;
+    xn = T(5, -1) * (xo + v/xo);
+
+    en = xo - xn;
+  }
+  while (abs(en) < abs(eo));
+
+  return T(5, -1) * (xo + xn);
+
+//return sqrt(double(v));
 }
 
 template <typename T>
-constexpr T cos(T const v) noexcept
+inline T cos(T const v) noexcept
 {
   return cos(double(v));
 }
 
 template <typename T>
-constexpr T sin(T const v) noexcept
+inline T sin(T const v) noexcept
 {
   return sin(double(v));
 }
