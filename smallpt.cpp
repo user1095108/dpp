@@ -42,7 +42,7 @@ inline T pow(T const a, T const x) noexcept
 }
 
 template <typename T>
-inline T sqrt(T const v) noexcept
+constexpr T sqrt(T const v) noexcept
 {
   T xo, xn(v), eo, en(v);
 
