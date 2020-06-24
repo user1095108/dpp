@@ -113,7 +113,7 @@ Sphere spheres[] = {//Scene: radius, position, emission, color, material
   Sphere(16.5,Vec(73,16.5,78),       Vec(),Vec(1,1,1)*.999, REFR),//Glas
   Sphere(600, Vec(50,681.6-.27,81.6),Vec(12,12,12),  Vec(), DIFF) //Lite
 };
-inline D clamp(D x){ return x<D(0) ? 0 : x>D(1) ? 1 : x; }
+inline D clamp(D x){ return x<0 ? 0 : x>1 ? 1 : x; }
 inline int toInt(D x){ return std::intmax_t(pow(clamp(x),D(1/2.2))*D(255)+D(.5)); }
 inline bool intersect(const Ray &r, D &t, int &id){
   D n=sizeof(spheres)/sizeof(Sphere), d, inf=t=1e20;
@@ -125,18 +125,18 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi){
   int id=0;                               // id of intersected object
   if (!intersect(r, t, id)) return Vec(); // if miss, return black
   const Sphere &obj = spheres[id];        // the hit object
-  Vec x=r.o+r.d*t, n=(x-obj.p).norm(), nl=n.dot(r.d)<D(0)?n:n*-1, f=obj.c;
+  Vec x=r.o+r.d*t, n=(x-obj.p).norm(), nl=n.dot(r.d)<0?n:n*-1, f=obj.c;
   D p = f.x>f.y && f.x>f.z ? f.x : f.y>f.z ? f.y : f.z; // max refl
   if (++depth>5) if (D(erand48(Xi))<p) f=f*(D(1)/p); else return obj.e; //R.R.
   if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
     D r1=2*M_PI*erand48(Xi), r2=erand48(Xi), r2s=sqrt(r2);
-    Vec w=nl, u=((abs(w.x)>D(.1)?Vec(0,1):Vec(1))%w).norm(), v=w%u;
+    Vec w=nl, u=((abs(w.x)>.1?Vec(0,1):Vec(1))%w).norm(), v=w%u;
     Vec d = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(D(1)-r2)).norm();
     return obj.e + f.mult(radiance(Ray(x,d),depth,Xi));
   } else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
     return obj.e + f.mult(radiance(Ray(x,r.d-n*2*n.dot(r.d)),depth,Xi));
   Ray reflRay(x, r.d-n*2*n.dot(r.d));     // Ideal dielectric REFRACTION
-  bool into = n.dot(nl)>D(0);             // Ray from outside going in?
+  bool into = n.dot(nl)>0;             // Ray from outside going in?
   D nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=r.d.dot(nl), cos2t;
   if ((cos2t=D(1)-nnt*nnt*(D(1)-ddn*ddn))<D(0)) // Total internal reflection
     return obj.e + f.mult(radiance(reflRay,depth,Xi));
