@@ -29,22 +29,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using D = dpp::d64;
 
-template <typename T>
-constexpr T abs(T const v) noexcept
-{
-  return v < 0 ? -v : v;
-}
-
-template <typename T>
-inline T pow(T const a, T const x) noexcept
+inline D pow(D const a, D const x) noexcept
 {
   return pow(double(a), double(x));
 }
 
-template <typename T>
-constexpr T sqrt(T const v) noexcept
+constexpr D sqrt(D const v) noexcept
 {
-  T xo, xn(v), eo, en(v);
+  D xo, xn(v), eo, en(v);
 
   do
   {
@@ -53,25 +45,23 @@ constexpr T sqrt(T const v) noexcept
 
 //  auto const xs(xo * xo);
 //  xn = ((xs + T(3) * v) / (T(3) * xs + v)) * xo;
-    xn = T(5, -1) * (xo + v/xo);
+    xn = D(5, -1) * (xo + v/xo);
 
     en = xo - xn;
   }
   while (abs(en) < abs(eo));
 
-  return T(5, -1) * (xo + xn);
+  return D(5, -1) * (xo + xn);
 
 //return sqrt(double(v));
 }
 
-template <typename T>
-inline T cos(T const v) noexcept
+inline D cos(D const v) noexcept
 {
   return cos(double(v));
 }
 
-template <typename T>
-inline T sin(T const v) noexcept
+inline D sin(D const v) noexcept
 {
   return sin(double(v));
 }
@@ -98,7 +88,7 @@ struct Sphere {
   D intersect(const Ray &r) const { // returns distance, 0 if nohit
     Vec op = p-r.o; // Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
     D t, eps=1e-4, b=op.dot(r.d), det=b*b-op.dot(op)+rad*rad;
-    if (det<D(0)) return 0; else det=sqrt(det);
+    if (det<0) return 0; else det=sqrt(det);
     return (t=b-det)>eps ? t : ((t=b+det)>eps ? t : 0);
   }
 };
@@ -114,7 +104,7 @@ Sphere spheres[] = {//Scene: radius, position, emission, color, material
   Sphere(600, Vec(50,681.6-.27,81.6),Vec(12,12,12),  Vec(), DIFF) //Lite
 };
 inline D clamp(D x){ return x<0 ? 0 : x>1 ? 1 : x; }
-inline int toInt(D x){ return std::intmax_t(pow(clamp(x),D(1/2.2))*D(255)+D(.5)); }
+inline int toInt(D x){ return std::intmax_t(pow(clamp(x),1/2.2)*D(255)+D(.5)); }
 inline bool intersect(const Ray &r, D &t, int &id){
   D n=sizeof(spheres)/sizeof(Sphere), d, inf=t=1e20;
   for(int i=std::intmax_t(n);i--;) if((d=spheres[i].intersect(r))&&d<t){t=d;id=i;}
@@ -127,7 +117,7 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi){
   const Sphere &obj = spheres[id];        // the hit object
   Vec x=r.o+r.d*t, n=(x-obj.p).norm(), nl=n.dot(r.d)<0?n:n*-1, f=obj.c;
   D p = f.x>f.y && f.x>f.z ? f.x : f.y>f.z ? f.y : f.z; // max refl
-  if (++depth>5) if (D(erand48(Xi))<p) f=f*(D(1)/p); else return obj.e; //R.R.
+  if (++depth>5) if (erand48(Xi)<p) f=f*(D(1)/p); else return obj.e; //R.R.
   if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
     D r1=2*M_PI*erand48(Xi), r2=erand48(Xi), r2s=sqrt(r2);
     Vec w=nl, u=((abs(w.x)>.1?Vec(0,1):Vec(1))%w).norm(), v=w%u;
@@ -138,12 +128,12 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi){
   Ray reflRay(x, r.d-n*2*n.dot(r.d));     // Ideal dielectric REFRACTION
   bool into = n.dot(nl)>0;             // Ray from outside going in?
   D nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=r.d.dot(nl), cos2t;
-  if ((cos2t=D(1)-nnt*nnt*(D(1)-ddn*ddn))<D(0)) // Total internal reflection
+  if ((cos2t=D(1)-nnt*nnt*(D(1)-ddn*ddn))<0) // Total internal reflection
     return obj.e + f.mult(radiance(reflRay,depth,Xi));
   Vec tdir = (r.d*nnt - n*((into?D(1):D(-1))*(ddn*nnt+sqrt(cos2t)))).norm();
   D a=nt-nc, b=nt+nc, R0=a*a/(b*b), c = D(1)-(into?-ddn:tdir.dot(n));
   D Re=R0+(D(1)-R0)*c*c*c*c*c,Tr=D(1)-Re,P=D(.25)+D(.5)*Re,RP=Re/P,TP=Tr/(D(1)-P);
-  return obj.e + f.mult(depth>2 ? (D(erand48(Xi))<P ? // Russian roulette
+  return obj.e + f.mult(depth>2 ? (erand48(Xi)<P ? // Russian roulette
     radiance(reflRay,depth,Xi)*RP:radiance(Ray(x,tdir),depth,Xi)*TP) :
     radiance(reflRay,depth,Xi)*Re+radiance(Ray(x,tdir),depth,Xi)*Tr);
 }
@@ -158,11 +148,11 @@ int main(int argc, char *argv[]){
       for (int sy=0, i=(h-y-1)*w+x; sy<2; sy++)     // 2x2 subpixel rows
         for (int sx=0; sx<2; sx++, r=Vec()){        // 2x2 subpixel cols
           for (int s=0; s<samps; s++){
-            D r1=2*erand48(Xi), dx=r1<D(1) ? sqrt(r1)-D(1): D(1)-sqrt(D(2)-r1);
-            D r2=2*erand48(Xi), dy=r2<D(1) ? sqrt(r2)-D(1): D(1)-sqrt(D(2)-r2);
+            D r1=2*erand48(Xi), dx=r1<1 ? sqrt(r1)-D(1): D(1)-sqrt(D(2)-r1);
+            D r2=2*erand48(Xi), dy=r2<1 ? sqrt(r2)-D(1): D(1)-sqrt(D(2)-r2);
             Vec d = cx*( ( (D(sx)+D(.5) + dx)/D(2) + D(x))/D(w) - D(.5)) +
                     cy*( ( (D(sy)+D(.5) + dy)/D(2) + D(y))/D(h) - D(.5)) + cam.d;
-            r = r + radiance(Ray(cam.o+d*140,d.norm()),0,Xi)*(D(1.)/D(samps));
+            r = r + radiance(Ray(cam.o+d*140,d.norm()),0,Xi)*(D(1)/D(samps));
           } // Camera rays are pushed ^^^^^ forward to start in interior
           c[i] = c[i] + Vec(clamp(r.x),clamp(r.y),clamp(r.z))*.25;
         }
