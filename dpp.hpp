@@ -30,6 +30,10 @@ using d64 = dpp<56, 8>;
 using d32 = dpp<26, 6>;
 using d16 = dpp<11, 5>;
 
+using direct = struct {};
+using nan = struct {};
+using unpack = struct {};
+
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const&, dpp<C, D> const&) noexcept;
 
@@ -204,10 +208,6 @@ class dpp
 {
 public:
   enum : unsigned { exponent_bits = E, mantissa_bits = M };
-
-  using direct = struct {};
-  using nan = struct {};
-  using unpack = struct {};
 
   using value_type = std::conditional_t<
     M + E <= 16,
@@ -624,7 +624,7 @@ constexpr auto operator+(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
   if (isnan(a) || isnan(b))
   {
-    return return_t{typename return_t::nan{}};
+    return return_t{nan{}};
   }
   else
   {
@@ -634,7 +634,7 @@ constexpr auto operator+(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
       ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
-      return return_t{typename return_t::nan{}};
+      return return_t{nan{}};
     }
 
     // there can be no overflow
@@ -649,7 +649,7 @@ constexpr auto operator-(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
   if (isnan(a) || isnan(b))
   {
-    return return_t{typename return_t::nan{}};
+    return return_t{nan{}};
   }
   else
   {
@@ -659,7 +659,7 @@ constexpr auto operator-(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
       ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
     {
-      return return_t{typename return_t::nan{}};
+      return return_t{nan{}};
     }
 
     // there can be no overflow
@@ -673,7 +673,7 @@ constexpr auto operator*(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
   return isnan(a) || isnan(b) ?
-    return_t{typename return_t::nan{}} :
+    return_t{nan{}} :
     return_t(typename return_t::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
 }
 
@@ -684,7 +684,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
   if (isnan(a) || isnan(b) || !b.v_.m)
   {
-    return return_t{typename return_t::nan{}};
+    return return_t{nan{}};
   }
   else if (auto am(a.v_.m); am)
   {
@@ -746,7 +746,7 @@ constexpr auto trunc(dpp<M, E> const& o) noexcept
 
     for (; m && e++; m /= 10);
 
-    return dpp<M, E>(m, 0, typename dpp<M, E>::direct{});
+    return dpp<M, E>(m, 0, direct{});
   }
   else
   {
@@ -848,7 +848,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 {
   if (i == end)
   {
-    return {typename T::nan{}};
+    return {nan{}};
   }
   else
   {
@@ -871,7 +871,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         break;
 
       default:
-        return {typename T::nan{}};
+        return {nan{}};
     }
 
     typename T::value_type r{};
@@ -926,7 +926,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         }
 
         default:
-          return {typename T::nan{}};
+          return {nan{}};
       }
 
       break;
@@ -979,7 +979,7 @@ constexpr T to_decimal(It i, It const end) noexcept
           break;
 
         default:
-          return {typename T::nan{}};
+          return {nan{}};
       }
 
       break;
