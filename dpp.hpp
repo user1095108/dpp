@@ -94,7 +94,7 @@ constexpr T pow(unsigned e) noexcept
 
 constexpr unsigned log10(double const x, unsigned e = 0u) noexcept
 {
-  return pow<10, double>(e) > x ? e - 1 : log10(x, e + 1);
+  return pow<10, double>(e) > x ? e : log10(x, e + 1);
 }
 
 template <unsigned E, typename T>
@@ -750,7 +750,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
-    constexpr auto dp(log10(double(rmax)));
+    constexpr auto dp(log10(double(rmax)) - 1);
 
     int e(a.v_.e - dp - b.v_.e);
 
