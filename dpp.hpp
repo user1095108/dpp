@@ -753,11 +753,13 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     constexpr auto dp(log10(rmax) - 1);
     int e(a.v_.e - dp - b.v_.e);
 
-    // min(abs(r)) > min(abs(am)), hence reduce r, not am
-    // negating both am and r does not change the quotient
+    // 1 * 10^dp
     constexpr auto k(pow<10, typename return_t::doubled_t>(dp));
+
+    // negating both am and r does not change the quotient
     auto r(am < 0 ? am = -am, -(k / b.v_.m) : k / b.v_.m);
 
+    // min(abs(r)) > min(abs(am)), hence reduce r, not am
     // fit r * am into doubled_t, avoid one divide, there are no sign changes
     if (r > 0)
     {
