@@ -59,34 +59,13 @@ constexpr T to_float(dpp<M, E> const&) noexcept;
 namespace
 {
 
-template <typename T>
-struct decimal_places : std::conditional_t<
-  std::is_same_v<T, __int128_t>,
-  std::integral_constant<int, 38>,
-  std::conditional_t<
-    std::is_same_v<T, std::int64_t>,
-    std::integral_constant<int, 18>,
-    std::conditional_t<
-      std::is_same_v<T, std::int32_t>,
-      std::integral_constant<int, 9>,
-      std::conditional_t<
-        std::is_same_v<T, std::int16_t>,
-        std::integral_constant<int, 4>,
-        void
-      >
-    >
-  >
->
-{
-};
-
 template <typename U>
 constexpr auto bit_size() noexcept
 {
   return 8 * sizeof(U);
 }
 
-template <int B, typename T>
+template <unsigned B, typename T>
 constexpr T pow(unsigned e) noexcept
 {
   if (e)
@@ -111,6 +90,11 @@ constexpr T pow(unsigned e) noexcept
   {
     return T(1);
   }
+}
+
+constexpr unsigned log10(double const x, unsigned e = 0u) noexcept
+{
+  return pow<10, double>(e) > x ? e - 1 : log10(x, e + 1);
 }
 
 template <unsigned E, typename T>
@@ -766,11 +750,12 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
-    int e(a.v_.e - decimal_places<typename return_t::doubled_t>{} - b.v_.e);
+    constexpr auto dp(log10(double(rmax)));
+
+    int e(a.v_.e - dp - b.v_.e);
 
     // min(abs(r)) > min(abs(am)), hence reduce r, not am
-    auto r(pow<10, typename return_t::doubled_t>(
-      decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
+    auto r(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
 
     if (am < 0)
     {
