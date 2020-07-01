@@ -768,6 +768,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
     int e(a.v_.e - decimal_places<typename return_t::doubled_t>{} - b.v_.e);
 
+    // min(abs(r)) > min(abs(am)), hence reduce r, not am
     auto r(pow<10, typename return_t::doubled_t>(
       decimal_places<typename return_t::doubled_t>{}) / b.v_.m);
 
