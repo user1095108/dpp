@@ -830,16 +830,11 @@ constexpr auto floor(dpp<M, E> const& o) noexcept
 template <unsigned M, unsigned E>
 constexpr auto round(dpp<M, E> const& o) noexcept
 {
-  if (!isnan(o) && (o.exponent() < 0))
-  {
-    constexpr dpp<M, E> c(5, -1);
+  constexpr dpp<M, E> c(5, -1);
 
-    return trunc(o.mantissa() > 0 ? o + c : o - c);
-  }
-  else
-  {
-    return o;
-  }
+  return !isnan(o) && (o.exponent() < 0) ?
+    trunc(o.mantissa() >= 0 ? o + c : o - c) :
+    o;
 }
 
 template <unsigned M, unsigned E>
