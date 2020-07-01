@@ -756,11 +756,11 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
-  if (isnan(a) || isnan(b) || !b.v_.m)
+  if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
   {
     return return_t{nan{}};
   }
-  else if (auto am(a.v_.m); am)
+  else if (auto am(a.v_.m); am) // guard against division by 0
   {
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (bit_size<typename return_t::doubled_t>() - 1));
@@ -773,11 +773,12 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
     if (am < 0)
     {
+      // negating both am and r does not change the quotient
       am = -am;
       r = -r;
     }
 
-    // fit r * am into doubled_t, avoid one divide, don't allow sign changes
+    // fit r * am into doubled_t, avoid one divide, there are no sign changes
     if (r > 0)
     {
       while (r > rmax / am)
