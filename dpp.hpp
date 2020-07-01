@@ -585,16 +585,16 @@ constexpr auto operator<(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
   }
   else
   {
-    typename return_t::value_type m1(a.mantissa()), m2(b.mantissa());
-    int e1(a.exponent()), e2(b.exponent());
+    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    int ea(a.exponent()), eb(b.exponent());
 
-    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
-      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
+    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
     {
       return false;
     }
 
-    return m1 < m2;
+    return ma < mb;
   }
 }
 
@@ -702,17 +702,17 @@ constexpr auto operator+(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
   }
   else
   {
-    typename return_t::value_type m1(a.v_.m), m2(b.v_.m);
-    int e1(a.v_.e), e2(b.v_.e);
+    typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
+    int ea(a.v_.e), eb(b.v_.e);
 
-    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
-      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
+    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
     {
       return return_t{nan{}};
     }
 
     // there can be no overflow
-    return return_t(m1 + m2, e1);
+    return return_t(ma + mb, ea);
   }
 }
 
@@ -727,17 +727,17 @@ constexpr auto operator-(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
   }
   else
   {
-    typename return_t::value_type m1(a.v_.m), m2(b.v_.m);
-    int e1(a.v_.e), e2(b.v_.e);
+    typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
+    int ea(a.v_.e), eb(b.v_.e);
 
-    if (((e1 > e2) && equalize<return_t::exponent_bits>(m1, e1, m2, e2)) ||
-      ((e2 > e1) && equalize<return_t::exponent_bits>(m2, e2, m1, e1)))
+    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
     {
       return return_t{nan{}};
     }
 
     // there can be no overflow
-    return return_t(m1 - m2, e1);
+    return return_t(ma - mb, ea);
   }
 }
 
