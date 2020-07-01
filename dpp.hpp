@@ -618,74 +618,74 @@ constexpr auto operator>=(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator==(dpp<A, B> const& a, T const& b) noexcept
+constexpr auto operator==(dpp<A, B> const& a, T const b) noexcept
 {
   return a == dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator!=(dpp<A, B> const& a, T const& b) noexcept
+constexpr auto operator!=(dpp<A, B> const& a, T const b) noexcept
 {
   return a != dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<(dpp<A, B> const& a, T const& b) noexcept
+constexpr auto operator<(dpp<A, B> const& a, T const b) noexcept
 {
   return a < dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>(dpp<A, B> const& a, T const& b) noexcept
+constexpr auto operator>(dpp<A, B> const& a, T const b) noexcept
 {
   return a > dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<=(dpp<A, B> const& a, T const& b) noexcept
+constexpr auto operator<=(dpp<A, B> const& a, T const b) noexcept
 {
   return a <= dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>=(dpp<A, B> const& a, T const& b) noexcept
+constexpr auto operator>=(dpp<A, B> const& a, T const b) noexcept
 {
   return a >= dpp<A, B>(b);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator==(T const& a, dpp<A, B> const& b) noexcept
+constexpr auto operator==(T const a, dpp<A, B> const& b) noexcept
 {
   return dpp<A, B>(a) == b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator!=(T const& a, dpp<A, B> const& b) noexcept
+constexpr auto operator!=(T const a, dpp<A, B> const& b) noexcept
 {
   return dpp<A, B>(a) != b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<(T const& a, dpp<A, B> const& b) noexcept
+constexpr auto operator<(T const a, dpp<A, B> const& b) noexcept
 {
   return dpp<A, B>(a) < b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>(T const& a, dpp<A, B> const& b) noexcept
+constexpr auto operator>(T const a, dpp<A, B> const& b) noexcept
 {
   return dpp<A, B>(a) > b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<=(T const& a, dpp<A, B> const& b) noexcept
+constexpr auto operator<=(T const a, dpp<A, B> const& b) noexcept
 {
   return dpp<A, B>(a) <= b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>=(T const& a, dpp<A, B> const& b) noexcept
+constexpr auto operator>=(T const a, dpp<A, B> const& b) noexcept
 {
   return dpp<A, B>(a) >= b;
 }
