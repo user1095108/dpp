@@ -730,8 +730,7 @@ constexpr auto operator*(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
-  return isnan(a) || isnan(b) ?
-    return_t{nan{}} :
+  return isnan(a) || isnan(b) ? return_t{nan{}} :
     return_t(typename return_t::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
 }
 
