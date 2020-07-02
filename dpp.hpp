@@ -194,6 +194,7 @@ public:
   enum : unsigned { exponent_bits = E, mantissa_bits = M };
 
   enum : int { emin = -pow<2, int>(E - 1), emax = -(emin + 1) };
+
   using value_type = std::conditional_t<
     M + E <= 16,
     std::int16_t,
@@ -414,7 +415,7 @@ public:
   }
 
   constexpr dpp(nan&&) noexcept :
-    v_{.m = {}, .e = -pow<2, int>(E - 1)}
+    v_{.m = {}, .e = emin}
   {
   }
 
