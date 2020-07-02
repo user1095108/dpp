@@ -871,7 +871,7 @@ constexpr std::optional<std::intmax_t> to_integral(
   {
     auto m(p.mantissa());
 
-    if (auto e(p.exponent()); e < 0)
+    if (auto e(p.exponent()); e <= 0)
     {
       for (; m && e++; m /= 10);
 
