@@ -751,13 +751,14 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     constexpr auto rmax(-(rmin + 1));
 
     constexpr auto dp(log10(rmax) - 1);
+
     int e(a.v_.e - dp - b.v_.e);
 
-    // k = 1 * 10^dp, we want an approximation to a.v_.m * (k / b.v_.m)
-    constexpr auto k(pow<10, typename return_t::doubled_t>(dp));
+    // we want an approximation to a.v_.m * (10^dp / b.v_.m)
+    auto const tmp(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
 
     // negating both am and r does not change the quotient
-    auto r(am < 0 ? am = -am, -(k / b.v_.m) : k / b.v_.m);
+    auto r(am < 0 ? am = -am, -tmp : tmp);
 
     // min(abs(r)) > min(abs(am)), hence reduce r, not am
     // fit r * am into doubled_t, avoid one divide, there are no sign changes
