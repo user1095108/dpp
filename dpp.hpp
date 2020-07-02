@@ -893,7 +893,7 @@ constexpr std::optional<std::intmax_t> to_integral(
           }
         }
       }
-      else
+      else if (m < 0)
       {
         for (; e--;)
         {
