@@ -477,11 +477,12 @@ public:
 
   constexpr auto operator-() const noexcept
   {
+    constexpr auto mmin(-pow<2, value_type>(M - 1));
+
     auto const m(v_.m);
 
     // we need to do it like this, as negating the mantissa can overflow
-    return -pow<2, value_type>(M - 1) == m ? dpp(-m, v_.e) :
-      dpp(-m, v_.e, direct{});
+    return mmin == m ? dpp(-m, v_.e) : dpp(-m, v_.e, direct{});
   }
 
   //
