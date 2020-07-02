@@ -465,9 +465,7 @@ public:
   >
   constexpr explicit operator T() const noexcept
   {
-    return v_.e < 0 ?
-      v_.m / pow<10, std::intmax_t>(-v_.e) :
-      v_.m * pow<10, T>(v_.e);
+    return v_.e < 0 ? v_.m / pow<10, T>(-v_.e) : v_.m * pow<10, T>(v_.e);
   }
 
   //
