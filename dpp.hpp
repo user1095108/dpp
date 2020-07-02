@@ -858,9 +858,8 @@ constexpr auto sign(dpp<M, E> const& o) noexcept
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
-constexpr std::optional<std::intmax_t> to_integral(
-  dpp<M, E> const& p) noexcept
+template <typename T = std::intmax_t, unsigned M, unsigned E>
+constexpr std::optional<T> to_integral(dpp<M, E> const& p) noexcept
 {
   if (isnan(p))
   {
@@ -882,7 +881,7 @@ constexpr std::optional<std::intmax_t> to_integral(
       {
         for (; e--;)
         {
-          if (m <= std::numeric_limits<std::intmax_t>::max() / 10)
+          if (m <= std::numeric_limits<T>::max() / 10)
           {
             m *= 10;
           }
@@ -896,7 +895,7 @@ constexpr std::optional<std::intmax_t> to_integral(
       {
         for (; e--;)
         {
-          if (m >= std::numeric_limits<std::intmax_t>::min() / 10)
+          if (m >= std::numeric_limits<T>::min() / 10)
           {
             m *= 10;
           }
