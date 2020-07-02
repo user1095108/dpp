@@ -869,21 +869,23 @@ constexpr std::optional<std::intmax_t> to_integral(
   }
   else
   {
-    auto r(p.mantissa());
+    auto m(p.mantissa());
 
-    if (auto const e(p.exponent()); e < 0)
+    if (auto e(p.exponent()); e < 0)
     {
-      return r / pow<10, std::intmax_t>(-e);
+      for (; m && e++; m /= 10);
+
+      return m;
     }
     else
     {
-      if (r > 0)
+      if (m > 0)
       {
         for (; e--;)
         {
-          if (r <= std::numeric_limits<std::intmax_t>::max() / 10)
+          if (m <= std::numeric_limits<std::intmax_t>::max() / 10)
           {
-            r *= 10;
+            m *= 10;
           }
           else
           {
@@ -895,9 +897,9 @@ constexpr std::optional<std::intmax_t> to_integral(
       {
         for (; e--;)
         {
-          if (r >= std::numeric_limits<std::intmax_t>::min() / 10)
+          if (m >= std::numeric_limits<std::intmax_t>::min() / 10)
           {
-            r *= 10;
+            m *= 10;
           }
           else
           {
@@ -906,7 +908,7 @@ constexpr std::optional<std::intmax_t> to_integral(
         }
       }
 
-      return r;
+      return m;
     }
   }
 }
