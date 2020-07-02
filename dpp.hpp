@@ -863,9 +863,13 @@ template <unsigned M, unsigned E>
 constexpr std::optional<std::intmax_t> to_integral(
   dpp<M, E> const& p) noexcept
 {
-  if (!isnan(p))
+  if (isnan(p))
   {
-    auto const r(p.mantissa());
+    return {};
+  }
+  else
+  {
+    auto r(p.mantissa());
 
     if (auto const e(p.exponent()); e < 0)
     {
@@ -873,27 +877,38 @@ constexpr std::optional<std::intmax_t> to_integral(
     }
     else
     {
-      if (auto const c(pow<10, std::intmax_t>(e)); c)
+      if (r > 0)
       {
-        if (r > 0)
+        for (; e--;)
         {
-          if (r <= std::numeric_limits<std::intmax_t>::max() / c)
+          if (r <= std::numeric_limits<std::intmax_t>::max() / 10)
           {
-            return r * c;
+            r *= 10;
           }
-        }
-        else
-        {
-          if (r >= std::numeric_limits<std::intmax_t>::min() / c)
+          else
           {
-            return r * c;
+            return {};
           }
         }
       }
+      else
+      {
+        for (; e--;)
+        {
+          if (r >= std::numeric_limits<std::intmax_t>::min() / 10)
+          {
+            r *= 10;
+          }
+          else
+          {
+            return {};
+          }
+        }
+      }
+
+      return r;
     }
   }
-
-  return {};
 }
 
 template <typename T, typename It>
