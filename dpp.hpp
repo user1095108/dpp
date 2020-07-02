@@ -193,6 +193,8 @@ class dpp
 public:
   enum : unsigned { exponent_bits = E, mantissa_bits = M };
 
+  enum : int { nan_constant = -pow<2, int>(E - 1) };
+
   using value_type = std::conditional_t<
     M + E <= 16,
     std::int16_t,
@@ -792,7 +794,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const& o) noexcept
 {
-  return -pow<2, int>(E - 1) == o.exponent();
+  return dpp<M, E>::nan_constant == o.exponent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
