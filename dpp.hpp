@@ -749,7 +749,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
-    // dp is the exponent, that will generate the maximum power of 10,
+    // dp is the exponent, that will generate the maximal power of 10,
     // that fits into doubled_t
     constexpr auto dp(log10(rmax) - 1);
 
