@@ -193,8 +193,7 @@ class dpp
 public:
   enum : unsigned { exponent_bits = E, mantissa_bits = M };
 
-  enum : int { nan_constant = -pow<2, int>(E - 1) };
-
+  enum : int { emin = -pow<2, int>(E - 1), emax = -(emin + 1) };
   using value_type = std::conditional_t<
     M + E <= 16,
     std::int16_t,
@@ -277,9 +276,6 @@ public:
     }
     else
     {
-      constexpr auto emin(-pow<2, int>(E - 1));
-      constexpr auto emax(-(emin + 1));
-
       // watch the nan
       if ((e > emin) && (e <= emax))
       {
@@ -794,7 +790,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const& o) noexcept
 {
-  return dpp<M, E>::nan_constant == o.exponent();
+  return dpp<M, E>::emin == o.exponent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -990,8 +986,6 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     int e{};
 
-    constexpr auto emin(-pow<2, int>(T::exponent_bits - 1));
-
     for (; i != end; i = std::next(i))
     {
       switch (*i)
@@ -1000,7 +994,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         case '5': case '6': case '7': case '8': case '9':
           if (positive)
           {
-            if ((e > emin + 1) && (r <= rmax / 10))
+            if ((e > T::emin + 1) && (r <= rmax / 10))
             {
               r *= 10;
 
@@ -1015,7 +1009,7 @@ constexpr T to_decimal(It i, It const end) noexcept
           }
           else
           {
-            if ((e > emin + 1) && (r >= rmin / 10))
+            if ((e > T::emin + 1) && (r >= rmin / 10))
             {
               r *= 10;
 
