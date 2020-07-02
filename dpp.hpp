@@ -749,7 +749,8 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
-    // dp is an exponent, that will generate the maximum 10^dp in doubled_t
+    // dp is an exponent, that will generate the maximum power of 10,
+    // that fits into doubled_t
     constexpr auto dp(log10(rmax) - 1);
 
     int e(a.v_.e - dp - b.v_.e);
@@ -760,7 +761,6 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     // negating both am and r does not change the quotient
     auto r(am < 0 ? am = -am, -q : q);
 
-    // min(abs(r)) > min(abs(am)), hence reduce r, not am
     // fit r * am into doubled_t, avoid one divide, there are no sign changes
     if (r > 0)
     {
