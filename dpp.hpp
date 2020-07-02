@@ -447,26 +447,27 @@ public:
     return isnan(*this) || v_.m;
   }
 
-  constexpr explicit operator std::intmax_t() const noexcept
+  template <typename T,
+    std::enable_if_t<std::is_floating_point_v<T>, int> = 0
+  >
+  constexpr explicit operator T() const noexcept
+  {
+    return to_float<T>(*this);
+  }
+
+  // this function is unsafe, take a look at to_integral() for safety
+  template <typename T,
+     std::enable_if_t<
+      !std::is_same_v<T, bool> &&
+      std::is_integral_v<T>,
+      int
+    > = 0
+  >
+  constexpr explicit operator T() const noexcept
   {
     return v_.e < 0 ?
-      v_.m / pow<10, value_type>(-v_.e) :
+      v_.m / pow<10, std::intmax_t>(-v_.e) :
       v_.m * pow<10, std::intmax_t>(v_.e);
-  }
-
-  constexpr explicit operator float() const noexcept
-  {
-    return to_float<float>(*this);
-  }
-
-  constexpr explicit operator double() const noexcept
-  {
-    return to_float<double>(*this);
-  }
-
-  constexpr explicit operator long double() const noexcept
-  {
-    return to_float<long double>(*this);
   }
 
   //
