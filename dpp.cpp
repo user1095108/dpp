@@ -190,7 +190,7 @@ int main()
     "2"_d64 / "-3"_d64 << " " << "2"_d32 / "3"_d32 << std::endl;
   std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / dpp::d32(2) << std::endl;
 
-  std::cout << -"1000.0123"_d32 << " " << to_integral(-"1234000"_d32).value() << std::endl;
+  std::cout << -"1000.0123"_d32 << std::endl;
   std::cout << dpp::d32(.0123f) + dpp::d64(1000) << std::endl;
   std::cout << dpp::d64((long double)(-M_PI)) << " " << dpp::d32(1.23456e20f) << std::endl;
   std::cout << dpp::d32(M_PI) << " " << -float(dpp::d32(-M_PI)) << std::endl;
