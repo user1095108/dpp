@@ -465,9 +465,9 @@ public:
   >
   constexpr explicit operator T() const noexcept
   {
-    int e(v_.e);
+    auto m(v_.m);
 
-    if (auto m(v_.m); e < 0)
+    if (int e(v_.e); e < 0)
     {
       for (; m && e++; m /= 10);
 
