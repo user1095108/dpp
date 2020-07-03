@@ -465,17 +465,17 @@ public:
   >
   constexpr explicit operator T() const noexcept
   {
-    auto m(v_.m);
-
     if (int e(v_.e); e < 0)
     {
+      auto m(v_.m);
+
       for (; m && e++; m /= 10);
 
       return m;
     }
     else
     {
-      return m * pow<10, T>(e);
+      return v_.m * pow<10, T>(e);
     }
   }
 
