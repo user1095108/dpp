@@ -28,42 +28,26 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "dpp.hpp"
 
 using D = dpp::d64;
+using F = double;
 
 inline D pow(D const a, D const x) noexcept
 {
-  return pow(double(a), double(x));
+  return pow(F(a), F(x));
 }
 
-constexpr D sqrt(D const v) noexcept
+inline D sqrt(D const v) noexcept
 {
-  D xo, xn(v), eo, en(v);
-
-  do
-  {
-    xo = xn;
-    eo = en;
-
-//  auto const xs(xo * xo);
-//  xn = ((xs + T(3) * v) / (T(3) * xs + v)) * xo;
-    xn = D(5, -1) * (xo + v/xo);
-
-    en = xo - xn;
-  }
-  while (abs(en) < abs(eo));
-
-  return D(5, -1) * (xo + xn);
-
-//return sqrt(double(v));
+  return sqrt(F(v));
 }
 
 inline D cos(D const v) noexcept
 {
-  return cos(double(v));
+  return cos(F(v));
 }
 
 inline D sin(D const v) noexcept
 {
-  return sin(double(v));
+  return sin(F(v));
 }
 
 struct Vec {        // Usage: time ./smallpt 5000 && xv image.ppm
