@@ -92,7 +92,7 @@ constexpr T pow(unsigned e) noexcept
   }
 }
 
-constexpr unsigned log10(__uint128_t const x, unsigned e = 0u) noexcept
+constexpr int log10(__uint128_t const x, unsigned e = 0u) noexcept
 {
   return pow<10, __uint128_t>(e) > x ? e : log10(x, e + 1);
 }
@@ -458,7 +458,7 @@ public:
   // this function is unsafe, take a look at to_integral() for safety
   template <typename T,
      std::enable_if_t<
-      !std::is_same_v<T, bool> &&
+      !std::is_same_v<std::remove_cv_t<T>, bool> &&
       std::is_integral_v<T>,
       int
     > = 0
@@ -580,7 +580,7 @@ constexpr auto operator<(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
   else
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
-    int ea(a.exponent()), eb(b.exponent());
+    auto ea(a.exponent()), eb(b.exponent());
 
     if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
       ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
@@ -759,20 +759,24 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
       (bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
-    // dp is the exponent, that will generate the maximal power of 10,
+    // dp is the exponent, that generates the maximal power of 10,
     // that fits into doubled_t
     constexpr auto dp(log10(rmax) - 1);
 
-    int e(a.v_.e - dp - b.v_.e);
+    int e(a.v_.e - b.v_.e - dp);
 
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto const q(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
+    auto r(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
 
     // negating both am and r does not change the quotient
-    auto r(am < 0 ? am = -am, -q : q);
+    if (am < 0)
+    {
+      am = -am;
+      r = -r;
+    }
 
     // fit r * am into doubled_t, avoid one divide, there are no sign changes
-    if (r > 0)
+    if (r >= 0)
     {
       while (r > rmax / am)
       {
