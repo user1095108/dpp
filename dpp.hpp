@@ -766,14 +766,10 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     int e(a.v_.e - b.v_.e - dp);
 
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto r(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
+    auto const q(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
 
     // negating both am and r does not change the quotient
-    if (am < 0)
-    {
-      am = -am;
-      r = -r;
-    }
+    auto r(am < 0 ? am = -am, -q : q);
 
     // fit r * am into doubled_t, avoid one divide, there are no sign changes
     if (r > 0)
