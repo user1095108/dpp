@@ -776,7 +776,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
     }
 
     // fit r * am into doubled_t, avoid one divide, there are no sign changes
-    if (r >= 0)
+    if (r > 0)
     {
       while (r > rmax / am)
       {
@@ -784,7 +784,7 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
         ++e;
       }
     }
-    else
+    else if (r < 0)
     {
       while (r < rmin / am)
       {
