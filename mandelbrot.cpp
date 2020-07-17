@@ -40,8 +40,8 @@ int main ()
   D y_start("-1.0");
   D y_fin("1.0");
 
-  D dx((x_fin - x_start)/D(w - 1));
-  D dy((y_fin - y_start)/D(h - 1));
+  auto const dx((x_fin - x_start)/D(w - 1));
+  auto const dy((y_fin - y_start)/D(h - 1));
 
   std::string char_ = "o";
 
