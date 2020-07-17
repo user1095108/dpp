@@ -35,10 +35,8 @@ int main ()
   auto const w(WEXITSTATUS(std::system("exit `tput cols`")));
   auto const h(WEXITSTATUS(std::system("exit `tput lines`")) - 1);
 
-  D x_start(-2);
-  D x_fin(1);
-  D y_start(-1);
-  D y_fin(1);
+  D x_start(-2), y_start(-1);
+  D x_fin(1), y_fin(1);
 
   auto const dx((x_fin - x_start)/D(w - 1));
   auto const dy((y_fin - y_start)/D(h - 1));
