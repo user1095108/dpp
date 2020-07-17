@@ -30,8 +30,8 @@ int mandelbrot(D const r, D const i) noexcept
 
 int main ()
 {
-  int const w(WEXITSTATUS(std::system("exit `tput cols`")));
-  int const h(WEXITSTATUS(std::system("exit `tput lines`")) - 1);
+  auto const w(WEXITSTATUS(std::system("exit `tput cols`")));
+  auto const h(WEXITSTATUS(std::system("exit `tput lines`")) - 1);
 
   D x_start("-2.0");
   D x_fin("1.0");
