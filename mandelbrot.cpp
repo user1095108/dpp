@@ -8,7 +8,7 @@
 //using D = float;
 using D = dpp::d32;
 
-int mandelbrot(D const r, D const i) noexcept
+int mndlbrot(D const r, D const i) noexcept
 {
   constexpr int limit = 100;
 
@@ -63,12 +63,10 @@ int main ()
   {
     for (int j{}; j != w; ++j)
     {
-      D x = x_start + D(j)*dx; // current real value
-      D y = y_fin - D(i)*dy; // current imaginary value
+      auto x(x_start + D(j)*dx); // current real value
+      auto y(y_fin - D(i)*dy); // current imaginary value
 
-      int const value = mandelbrot(x,y);
-
-      if (value == 100) {std::cout << " ";}
+      if (auto const value(mndlbrot(x, y)); value == 100) {std::cout << " ";}
       else if (value > 90) {std::cout << red << char_;}
       else if (value > 70) {std::cout << l_red << char_;}
       else if (value > 50) {std::cout << orange << char_;}
