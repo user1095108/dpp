@@ -59,13 +59,14 @@ int main ()
   std::string gray = "\033[22;37m";
   std::string white = "\033[01;37m";
 
+  D y(y_fin);
+
   for (int i{}; i != h; ++i)
   {
+    D x(x_start);
+
     for (int j{}; j != w; ++j)
     {
-      auto x(x_start + D(j)*dx); // current real value
-      auto y(y_fin - D(i)*dy); // current imaginary value
-
       if (auto const value(mndlbrot(x, y)); value == 100) {std::cout << " ";}
       else if (value > 90) {std::cout << red << char_;}
       else if (value > 70) {std::cout << l_red << char_;}
@@ -81,7 +82,11 @@ int main ()
       else {std::cout << l_magenta << char_;}
 
       std::cout << "\033[0m";
+
+      x += dx;
     }
+
+    y -= dy;
   }
 
   return 0;
