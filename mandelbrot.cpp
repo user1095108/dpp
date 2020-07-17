@@ -16,13 +16,15 @@ int mndlbrot(D const r, D const i) noexcept
 
   for (int j{}; j != limit; ++j)
   {
-    D const zr2(zr * zr);
-    D const zi2(zi * zi);
-
-    if (zr2 + zi2 > 4.0) return j;
-
-    zr = zr2 - zi2 + r;
-    zi = D(2) * zr * zi + i;
+    if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 > 4)
+    {
+      return j;
+    }
+    else
+    {
+      zr = zr2 - zi2 + r;
+      zi = D(2) * zr * zi + i;
+    }
   }
 
   return limit;
