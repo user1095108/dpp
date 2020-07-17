@@ -12,7 +12,7 @@ int mndlbrot(D const r, D const i) noexcept
 {
   constexpr int limit = 100;
 
-  D zr(r), zi(i);
+  auto zr(r), zi(i);
 
   for (int j{}; j != limit; ++j)
   {
@@ -35,10 +35,10 @@ int main ()
   auto const w(WEXITSTATUS(std::system("exit `tput cols`")));
   auto const h(WEXITSTATUS(std::system("exit `tput lines`")) - 1);
 
-  D x_start("-2.0");
-  D x_fin("1.0");
-  D y_start("-1.0");
-  D y_fin("1.0");
+  D x_start(-2);
+  D x_fin(1);
+  D y_start(-1);
+  D y_fin(1);
 
   auto const dx((x_fin - x_start)/D(w - 1));
   auto const dy((y_fin - y_start)/D(h - 1));
