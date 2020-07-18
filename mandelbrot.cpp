@@ -48,7 +48,7 @@ int mndlbrot(D const r, D const i) noexcept
   return limit;
 }
 
-int main ()
+int main()
 {
   auto const w(WEXITSTATUS(std::system("exit `tput cols`")));
   auto const h(WEXITSTATUS(std::system("exit `tput lines`")) - 1);
