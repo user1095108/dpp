@@ -80,10 +80,10 @@ int main()
       else if (value > 2) {std::cout << blue << char_;}
       else if (value > 1) {std::cout << magenta << char_;}
       else {std::cout << l_magenta << char_;}
-
-      std::cout << "\033[0m";
     }
   }
+
+  std::cout << "\033[0m";
 
   return 0;
 }
