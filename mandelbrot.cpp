@@ -5,6 +5,24 @@
 
 #include "dpp.hpp"
 
+constexpr char char_[] = "o";
+
+constexpr char black[] = "\033[22;30m";
+constexpr char red[] = "\033[22;31m";
+constexpr char l_red[] = "\033[01;31m";
+constexpr char green[] = "\033[22;32m";
+constexpr char l_green[] = "\033[01;32m";
+constexpr char orange[] = "\033[22;33m";
+constexpr char yellow[] = "\033[01;33m";
+constexpr char blue[] = "\033[22;34m";
+constexpr char l_blue[] = "\033[01;34m";
+constexpr char magenta[] = "\033[22;35m";
+constexpr char l_magenta[] = "\033[01;35m";
+constexpr char cyan[] = "\033[22;36m";
+constexpr char l_cyan[] = "\033[01;36m";
+constexpr char gray[] = "\033[22;37m";
+constexpr char white[] = "\033[01;37m";
+
 //using D = float;
 using D = dpp::d32;
 
@@ -40,24 +58,6 @@ int main ()
 
   auto const dx((x_fin - x_start)/D(w - 1));
   auto const dy((y_fin - y_start)/D(h - 1));
-
-  std::string char_ = "o";
-
-  std::string black = "\033[22;30m";
-  std::string red = "\033[22;31m";
-  std::string l_red = "\033[01;31m";
-  std::string green = "\033[22;32m";
-  std::string l_green = "\033[01;32m";
-  std::string orange = "\033[22;33m";
-  std::string yellow = "\033[01;33m";
-  std::string blue = "\033[22;34m";
-  std::string l_blue = "\033[01;34m";
-  std::string magenta = "\033[22;35m";
-  std::string l_magenta = "\033[01;35m";
-  std::string cyan = "\033[22;36m";
-  std::string l_cyan = "\033[01;36m";
-  std::string gray = "\033[22;37m";
-  std::string white = "\033[01;37m";
 
   D y(y_fin);
 
