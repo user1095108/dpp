@@ -5,23 +5,23 @@
 
 #include "dpp.hpp"
 
-constexpr char char_[] = "o";
+constexpr char const char_[]("o");
 
-constexpr char black[] = "\033[22;30m";
-constexpr char red[] = "\033[22;31m";
-constexpr char l_red[] = "\033[01;31m";
-constexpr char green[] = "\033[22;32m";
-constexpr char l_green[] = "\033[01;32m";
-constexpr char orange[] = "\033[22;33m";
-constexpr char yellow[] = "\033[01;33m";
-constexpr char blue[] = "\033[22;34m";
-constexpr char l_blue[] = "\033[01;34m";
-constexpr char magenta[] = "\033[22;35m";
-constexpr char l_magenta[] = "\033[01;35m";
-constexpr char cyan[] = "\033[22;36m";
-constexpr char l_cyan[] = "\033[01;36m";
-constexpr char gray[] = "\033[22;37m";
-constexpr char white[] = "\033[01;37m";
+constexpr char const black[]("\033[22;30m");
+constexpr char const red[]("\033[22;31m");
+constexpr char const l_red[]("\033[01;31m");
+constexpr char const green[]("\033[22;32m");
+constexpr char const l_green[]("\033[01;32m");
+constexpr char const orange[]("\033[22;33m");
+constexpr char const yellow[]("\033[01;33m");
+constexpr char const blue[]("\033[22;34m");
+constexpr char const l_blue[]("\033[01;34m");
+constexpr char const magenta[]("\033[22;35m");
+constexpr char const l_magenta[]("\033[01;35m");
+constexpr char const cyan[]("\033[22;36m");
+constexpr char const l_cyan[]("\033[01;36m");
+constexpr char const gray[]("\033[22;37m");
+constexpr char const white[]("\033[01;37m");
 
 //using D = float;
 using D = dpp::d32;
