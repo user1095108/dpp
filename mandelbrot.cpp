@@ -26,9 +26,9 @@ constexpr auto white("\033[01;37m");
 //using D = float;
 using D = dpp::d32;
 
-int mndlbrot(D const r, D const i) noexcept
+auto mb(D const r, D const i) noexcept
 {
-  constexpr int limit = 100;
+  constexpr auto limit = 100;
 
   auto zr(r), zi(i);
 
@@ -67,7 +67,7 @@ int main()
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      if (auto const value(mndlbrot(x, y)); value == 100) {std::cout << " ";}
+      if (auto const value(mb(x, y)); value == 100) {std::cout << " ";}
       else if (value > 90) {std::cout << red << char_;}
       else if (value > 70) {std::cout << l_red << char_;}
       else if (value > 50) {std::cout << orange << char_;}
