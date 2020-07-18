@@ -53,17 +53,17 @@ int main ()
   auto const w(WEXITSTATUS(std::system("exit `tput cols`")));
   auto const h(WEXITSTATUS(std::system("exit `tput lines`")) - 1);
 
-  D const x0(-2), y0(-1);
-  D const x1(1), y1(1);
+  D const x0(-2), y0(1);
+  D const x1(1), y1(-1);
 
-  auto const dx((x1 - x0)/D(w - 1));
-  auto const dy((y1 - y0)/D(h - 1));
+  auto const dx((x1 - x0) / D(w));
+  auto const dy((y1 - y0) / D(h));
 
-  auto y(y1);
+  auto y(y0 + dy / D(2));
 
-  for (int i{}; i != h; ++i, y -= dy)
+  for (int i{}; i != h; ++i, y += dy)
   {
-    auto x(x0);
+    auto x(x0 + dx / D(2));
 
     for (int j{}; j != w; ++j, x += dx)
     {
