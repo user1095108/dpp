@@ -26,7 +26,7 @@ constexpr auto white("\033[01;37m");
 //using D = float;
 using D = dpp::d32;
 
-constexpr auto mb(D const r, D const i) noexcept
+constexpr int mb(D const r, D const i) noexcept
 {
   constexpr auto limit = 100;
 
