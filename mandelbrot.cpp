@@ -59,13 +59,13 @@ int main ()
   auto const dx((x1 - x0)/D(w - 1));
   auto const dy((y1 - y0)/D(h - 1));
 
-  D y(y1);
+  auto y(y1);
 
-  for (int i{}; i != h; ++i)
+  for (int i{}; i != h; ++i, y -= dy)
   {
-    D x(x0);
+    auto x(x0);
 
-    for (int j{}; j != w; ++j)
+    for (int j{}; j != w; ++j, x += dx)
     {
       if (auto const value(mndlbrot(x, y)); value == 100) {std::cout << " ";}
       else if (value > 90) {std::cout << red << char_;}
@@ -82,11 +82,7 @@ int main ()
       else {std::cout << l_magenta << char_;}
 
       std::cout << "\033[0m";
-
-      x += dx;
     }
-
-    y -= dy;
   }
 
   return 0;
