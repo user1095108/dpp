@@ -33,7 +33,7 @@ constexpr int mandelbrot(D const r, D const i) noexcept
   return limit;
 }
 
-int main()
+int main() noexcept
 {
   int w, h;
 
