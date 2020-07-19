@@ -24,8 +24,8 @@ constexpr int mandelbrot(D const r, D const i) noexcept
     }
     else
     {
-      zr = zr2 - zi2 + r;
       zi = D(2) * zr * zi + i;
+      zr = zr2 - zi2 + r;
     }
   }
 
