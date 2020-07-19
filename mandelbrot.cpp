@@ -42,25 +42,21 @@ int main()
   auto const dx((x1 - x0) / D(w));
   auto const dy((y1 - y0) / D(h));
 
-  auto y(y0 + D(5, -1) * dy);
+  auto y(y0 + D(.5) * dy);
 
   for (int i{}; i != h; ++i, y += dy)
   {
-    auto x(x0 + D(5, -1) * dx);
+    auto x(x0 + D(.5) * dx);
 
     for (int j{}; j != w; ++j, x += dx)
     {
       auto const t(D(mandelbrot(x, y))/D(limit));
       auto const olt(D(1) - t);
 
-      int const c[]{
-        int(D(9)*D(255)*(olt*t*t*t)),
-        int(D(15)*D(255)*(olt*olt*t*t)),
-        int(D(85, -1)*D(255)*(olt*olt*olt*t))
-      };
-
       std::cout << "\033[48;2;" <<
-        c[0] << ";" << c[1] << ";" << c[2] << "m" <<
+        int(D(9)*D(255)*(olt*t*t*t)) << ";" <<
+        int(D(15)*D(255)*(olt*olt*t*t)) << ";" <<
+        int(D(8.5)*D(255)*(olt*olt*olt*t)) << "m" <<
         " ";
     }
   }
