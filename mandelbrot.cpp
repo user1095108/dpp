@@ -44,8 +44,8 @@ int main()
     h = ws.ws_row - 1;
   }
 
-  D const x0(-2), y0(1.2);
-  D const x1(1), y1(-1.2);
+  D const x0(-2), y0(1.15);
+  D const x1(1), y1(-1.15);
 
   auto const dx((x1 - x0) / D(w));
   auto const dy((y1 - y0) / D(h));
