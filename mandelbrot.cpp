@@ -1,4 +1,5 @@
 // https://github.com/dario-marvin/Mandelbrot
+// https://solarianprogrammer.com/2013/02/28/mandelbrot-set-cpp-11/
 #include <cstdlib>
 
 #include <iostream>
@@ -49,28 +50,21 @@ int main()
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      if (auto const n(mandelbrot(x, y)); limit == n)
-      {
-        std::cout << " ";
-      }
-      else
-      {
-        auto const t(D(n)/D(limit));
-        auto const t2(t * t);
+      auto const t(D(mandelbrot(x, y))/D(limit));
+      auto const t2(t * t);
 
-        auto const olt(D(1) - t);
-        auto const olt2(olt * olt);
+      auto const olt(D(1) - t);
+      auto const olt2(olt * olt);
 
-        int const c[]{
-          int(D(9)*olt*t2*t*D(255)),
-          int(D(15)*olt2*t2*D(255)),
-          int(D("8.5")*olt2*olt*t*D(255))
-        };
+      int const c[]{
+        int(D(9)*D(255)*(olt*t2*t)),
+        int(D(15)*D(255)*(olt2*t2)),
+        int(D("8.5")*D(255)*(olt2*olt*t))
+      };
 
-        std::cout << "\033[38;2;" <<
-          c[0] << ";" << c[1] << ";" << c[2] << "m" <<
-          "o";
-      }
+      std::cout << "\033[48;2;" <<
+        c[0] << ";" << c[1] << ";" << c[2] << "m" <<
+        " ";
     }
   }
 
