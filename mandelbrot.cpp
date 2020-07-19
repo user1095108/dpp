@@ -42,11 +42,11 @@ int main()
   auto const dx((x1 - x0) / D(w));
   auto const dy((y1 - y0) / D(h));
 
-  auto y(y0 + dy * D(5, -1));
+  auto y(y0 + D(5, -1) * dy);
 
   for (int i{}; i != h; ++i, y += dy)
   {
-    auto x(x0 + dx * D(5, -1));
+    auto x(x0 + D(5, -1) * dx);
 
     for (int j{}; j != w; ++j, x += dx)
     {
