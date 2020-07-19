@@ -13,9 +13,10 @@ using D = dpp::d32;
 
 constexpr auto limit = 100;
 
-constexpr int mandelbrot(D const r, D const i) noexcept
+constexpr int mandelbrot(D const cr, D const ci) noexcept
 {
-  auto zr(r), zi(i);
+  // we start at z = 0
+  D zr{}, zi{};
 
   for (int j{}; j != limit; ++j)
   {
@@ -25,8 +26,8 @@ constexpr int mandelbrot(D const r, D const i) noexcept
     }
     else
     {
-      zi = D(2) * zr * zi + i;
-      zr = zr2 - zi2 + r;
+      zi = D(2) * zr * zi + ci;
+      zr = zr2 - zi2 + cr;
     }
   }
 
