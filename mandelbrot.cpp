@@ -34,22 +34,29 @@ constexpr int mandelbrot(D const r, D const i) noexcept
 
 int main()
 {
-  struct winsize ws;
-  ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+  int w, h;
+
+  {
+    struct winsize ws;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+
+    w = ws.ws_col;
+    h = ws.ws_row - 1;
+  }
 
   D const x0(-2), y0(1);
   D const x1(1), y1(-1);
 
-  auto const dx((x1 - x0) / D(ws.ws_col));
-  auto const dy((y1 - y0) / D(ws.ws_row));
+  auto const dx((x1 - x0) / D(w));
+  auto const dy((y1 - y0) / D(h));
 
   auto y(y0 + D(.5) * dy);
 
-  for (int i{}; i != ws.ws_row; ++i, y += dy)
+  for (int i{}; i != h; ++i, y += dy)
   {
     auto x(x0 + D(.5) * dx);
 
-    for (int j{}; j != ws.ws_col; ++j, x += dx)
+    for (int j{}; j != w; ++j, x += dx)
     {
       auto const t(D(mandelbrot(x, y))/D(limit));
       auto const olt(D(1) - t);
