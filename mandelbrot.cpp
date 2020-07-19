@@ -51,15 +51,12 @@ int main()
     for (int j{}; j != w; ++j, x += dx)
     {
       auto const t(D(mandelbrot(x, y))/D(limit));
-      auto const t2(t * t);
-
       auto const olt(D(1) - t);
-      auto const olt2(olt * olt);
 
       int const c[]{
-        int(D(9)*D(255)*(olt*t2*t)),
-        int(D(15)*D(255)*(olt2*t2)),
-        int(D("8.5")*D(255)*(olt2*olt*t))
+        int(D(9)*D(255)*(olt*t*t*t)),
+        int(D(15)*D(255)*(olt*olt*t*t)),
+        int(D(85, -1)*D(255)*(olt*olt*olt*t))
       };
 
       std::cout << "\033[48;2;" <<
