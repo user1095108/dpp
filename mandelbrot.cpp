@@ -15,7 +15,7 @@ constexpr auto limit = 100;
 
 constexpr int mandelbrot(D const cr, D const ci) noexcept
 {
-  D zr{cr}, zi{ci};
+  auto zr(cr), zi(ci);
 
   for (int j{1}; j != limit; ++j)
   {
