@@ -277,21 +277,20 @@ public:
     }
     else
     {
-      // watch the nan
       if (e > emax)
       {
         *this = dpp{nan{}};
 
         return;
       }
-      else if (e <= emin)
+      else
       {
-        do
+        // watch the nan
+        while ((e <= emin) && m)
         {
           ++e;
           m /= 10;
         }
-        while (m && (e <= emin));
       }
 
       constexpr auto mmin(-pow<2, value_type>(M - 1));
