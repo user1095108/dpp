@@ -7,7 +7,7 @@
 
 #include "dpp.hpp"
 
-//using D = float;
+//using D = long double;
 using D = dpp::d32;
 
 constexpr auto limit = 100;
@@ -44,8 +44,8 @@ int main()
     h = ws.ws_row - 1;
   }
 
-  D const x0(-2), y0(1);
-  D const x1(1), y1(-1);
+  D const x0(-2), y0(1.2);
+  D const x1(1), y1(-1.2);
 
   auto const dx((x1 - x0) / D(w));
   auto const dy((y1 - y0) / D(h));
