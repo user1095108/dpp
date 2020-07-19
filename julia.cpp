@@ -31,7 +31,7 @@ constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
   return limit;
 }
 
-int main(int const argc, char* argv[]) noexcept
+int main() noexcept
 {
   int w, h;
 
