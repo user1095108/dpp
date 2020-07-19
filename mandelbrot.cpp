@@ -8,6 +8,7 @@
 #include "dpp.hpp"
 
 //using D = long double;
+//using D = float;
 using D = dpp::d32;
 
 constexpr auto limit = 100;
