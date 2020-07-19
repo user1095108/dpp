@@ -8,7 +8,7 @@
 #include "dpp.hpp"
 
 //using D = float;
-using D = dpp::d64;
+using D = dpp::d32;
 
 constexpr auto limit = 100;
 
