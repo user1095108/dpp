@@ -268,7 +268,7 @@ public:
       int
     > = 0
   >
-  constexpr dpp(U m, int const e) noexcept
+  constexpr dpp(U m, int e) noexcept
   {
     if constexpr (std::is_same_v<U, bool>)
     {
@@ -288,7 +288,7 @@ public:
 
         return;
       }
-      else
+      else // e <= emin
       {
         while (m && (e <= emin - 1))
         {
