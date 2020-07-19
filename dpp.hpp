@@ -344,8 +344,8 @@ public:
         }
       }
 
-      v_.e = e;
       v_.m = m;
+      v_.e = e;
 
       normalize();
     }
