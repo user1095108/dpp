@@ -278,23 +278,20 @@ public:
     else
     {
       // watch the nan
-      if ((e > emin) && (e <= emax))
-      {
-        v_.e = e;
-      }
-      else if (e > emax)
+      if (e > emax)
       {
         *this = dpp{nan{}};
 
         return;
       }
-      else // e <= emin
+      else if (e <= emin)
       {
-        while (m && (e <= emin - 1))
+        do
         {
           ++e;
           m /= 10;
         }
+        while (m && (e <= emin));
       }
 
       constexpr auto mmin(-pow<2, value_type>(M - 1));
@@ -307,9 +304,9 @@ public:
       if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
       while (m < mmin)
       {
-        if (v_.e <= emax - 1)
+        if (e <= emax - 1)
         {
-          ++v_.e;
+          ++e;
 
           if (m >= umin + 5)
           {
@@ -328,9 +325,9 @@ public:
 
       while (m > mmax)
       {
-        if (v_.e <= emax - 1)
+        if (e <= emax - 1)
         {
-          ++v_.e;
+          ++e;
 
           if (m <= umax - 5)
           {
@@ -347,6 +344,7 @@ public:
         }
       }
 
+      v_.e = e;
       v_.m = m;
 
       normalize();
