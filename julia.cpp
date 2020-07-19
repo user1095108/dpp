@@ -15,11 +15,13 @@ constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
 {
   auto zr(r), zi(i);
 
-  for (int j{}; j != limit; ++j)
+  int j{};
+
+  for (; j != limit; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 > 4)
     {
-      return j;
+      break;
     }
     else
     {
@@ -28,7 +30,7 @@ constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
     }
   }
 
-  return limit;
+  return j;
 }
 
 int main() noexcept
