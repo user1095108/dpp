@@ -59,6 +59,9 @@ int main()
     {
       //auto const t(D(julia(x, y, D(-.7), D(0.27015)))/D(limit));
       //auto const t(D(julia(x, y, D(.285), D(.01)))/D(limit));
+      //auto const t(D(julia(x, y, D(-.74543), D(.11301)))/D(limit));
+      //auto const t(D(julia(x, y, D(-.11), D(.6557)))/D(limit));
+      //auto const t(D(julia(x, y, D(.45), (.1428)))/D(limit));
       auto const t(D(julia(x, y, D(-.835), D(-.2321)))/D(limit));
       auto const olt(D(1) - t);
 
