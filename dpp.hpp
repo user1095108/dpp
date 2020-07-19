@@ -282,11 +282,19 @@ public:
       {
         v_.e = e;
       }
-      else
+      else if (e > emax)
       {
         *this = dpp{nan{}};
 
         return;
+      }
+      else
+      {
+        while (m && (e <= emin - 1))
+        {
+          ++e;
+          m /= 10;
+        }
       }
 
       constexpr auto mmin(-pow<2, value_type>(M - 1));
