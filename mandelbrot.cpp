@@ -21,14 +21,14 @@ constexpr int mandelbrot(D const cr, D const ci) noexcept
 
   for (; j != limit; ++j)
   {
-    if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 > 4)
-    {
-      break;
-    }
-    else
+    if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
       zi = D(2) * zr * zi + ci;
       zr = zr2 - zi2 + cr;
+    }
+    else
+    {
+      break;
     }
   }
 
