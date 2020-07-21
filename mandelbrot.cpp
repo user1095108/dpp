@@ -11,7 +11,7 @@
 //using D = float;
 using D = dpp::d32;
 
-constexpr auto limit = 100;
+constexpr auto max_iter = 100;
 
 constexpr int mandelbrot(D const cr, D const ci) noexcept
 {
@@ -19,7 +19,7 @@ constexpr int mandelbrot(D const cr, D const ci) noexcept
 
   int j{1};
 
-  for (; j != limit; ++j)
+  for (; j != max_iter; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -61,7 +61,7 @@ int main() noexcept
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      auto const t(D(mandelbrot(x, y))/D(limit));
+      auto const t(D(mandelbrot(x, y))/D(max_iter));
       auto const olt(D(1) - t);
 
       std::cout << "\033[48;2;" <<
