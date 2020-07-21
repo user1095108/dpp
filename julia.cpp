@@ -9,7 +9,7 @@
 //using D = float;
 using D = dpp::d32;
 
-constexpr auto limit = 100;
+constexpr auto max_iter = 100;
 
 constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
 {
@@ -17,7 +17,7 @@ constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
 
   int j{};
 
-  for (; j != limit; ++j)
+  for (; j != max_iter; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -59,12 +59,12 @@ int main() noexcept
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      //auto const t(D(julia(x, y, D(-.7), D(0.27015)))/D(limit));
-      //auto const t(D(julia(x, y, D(.285), D(.01)))/D(limit));
-      //auto const t(D(julia(x, y, D(-.74543), D(.11301)))/D(limit));
-      //auto const t(D(julia(x, y, D(-.11), D(.6557)))/D(limit));
-      //auto const t(D(julia(x, y, D(.45), (.1428)))/D(limit));
-      auto const t(D(julia(x, y, D(-.835), D(-.2321)))/D(limit));
+      //auto const t(D(julia(x, y, D(-.7), D(0.27015)))/D(max_iter));
+      //auto const t(D(julia(x, y, D(.285), D(.01)))/D(max_iter));
+      //auto const t(D(julia(x, y, D(-.74543), D(.11301)))/D(max_iter));
+      //auto const t(D(julia(x, y, D(-.11), D(.6557)))/D(max_iter));
+      //auto const t(D(julia(x, y, D(.45), (.1428)))/D(max_iter));
+      auto const t(D(julia(x, y, D(-.835), D(-.2321)))/D(max_iter));
       auto const olt(D(1) - t);
 
       std::cout << "\033[48;2;" <<
