@@ -45,6 +45,43 @@ int main() noexcept
     h = ws.ws_row - 1;
   }
 
+  D a, b;
+
+  if (2 == argc)
+  {
+    switch (std::atoi(argv[2]))
+    {
+      default:
+      case 6:
+        a= D(-.835); b = D(-.2321);
+        break;
+
+      case 1:
+        a = D(-.7); b = D(.27015);
+        break;
+
+      case 2:
+        a = D(.285); b = D(.01);
+        break;
+
+      case 3:
+        a = D(-.74543); b = D(.11301);
+        break;
+
+      case 4:
+        a = D(-.11); b = D(.6557);
+        break;
+
+      case 5:
+        a = D(.45); b = D(.1428);
+        break;
+    }
+  }
+  else
+  {
+    a= D(-.835); b = D(-.2321);
+  }
+
   D const x0(-1.6), y0(1.15);
   D const x1(1.6), y1(-1.15);
 
@@ -59,12 +96,7 @@ int main() noexcept
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      //auto const t(D(julia(x, y, D(-.7), D(0.27015)))/D(max_iter));
-      //auto const t(D(julia(x, y, D(.285), D(.01)))/D(max_iter));
-      //auto const t(D(julia(x, y, D(-.74543), D(.11301)))/D(max_iter));
-      //auto const t(D(julia(x, y, D(-.11), D(.6557)))/D(max_iter));
-      //auto const t(D(julia(x, y, D(.45), (.1428)))/D(max_iter));
-      auto const t(D(julia(x, y, D(-.835), D(-.2321)))/D(max_iter));
+      auto const t(D(julia(x, y, a, b)) / D(max_iter));
       auto const olt(D(1) - t);
 
       std::cout << "\033[48;2;" <<
