@@ -33,7 +33,7 @@ constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
   return j;
 }
 
-int main(int const argc, char const* const argv[]) noexcept
+int main(int const argc, char* argv[]) noexcept
 {
   int w, h;
 
