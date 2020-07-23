@@ -53,7 +53,7 @@ int main(int const argc, char* argv[]) noexcept
     {
       default:
       case 6:
-        a= D(-.835); b = D(-.2321);
+        a = D(-.835); b = D(-.2321);
         break;
 
       case 1:
@@ -79,7 +79,7 @@ int main(int const argc, char* argv[]) noexcept
   }
   else
   {
-    a= D(-.835); b = D(-.2321);
+    a = D(-.835); b = D(-.2321);
   }
 
   D const x0(-1.6), y0(1.15);
