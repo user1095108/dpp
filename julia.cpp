@@ -33,7 +33,7 @@ constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
   return j;
 }
 
-int main() noexcept
+int main(int const argc, char const* const argv[]) noexcept
 {
   int w, h;
 
@@ -49,7 +49,7 @@ int main() noexcept
 
   if (2 == argc)
   {
-    switch (std::atoi(argv[2]))
+    switch (std::atoi(argv[1]))
     {
       default:
       case 6:
