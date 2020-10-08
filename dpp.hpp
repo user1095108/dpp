@@ -1167,7 +1167,7 @@ struct hash<dpp::dpp<M, E>>
 {
   constexpr auto operator()(dpp::dpp<M, E> const& v) const noexcept
   {
-    return std::hash<typename dpp::dpp<M, E>::value_type>()(v.packed());
+    return std::hash<decltype(v.packed())>()(v.packed());
   }
 };
 
