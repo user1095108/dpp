@@ -1133,17 +1133,6 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
   return os << to_string(p);
 }
 
-template <typename> struct hash;
-
-template <unsigned M, unsigned E>
-struct hash<dpp<M, E>>
-{
-  constexpr auto operator()(dpp<M, E> const& v) const noexcept
-  {
-    return std::hash<typename dpp<M, E>::value_type>()(v.packed());
-  }
-};
-
 //////////////////////////////////////////////////////////////////////////////
 namespace literals
 {
@@ -1167,6 +1156,20 @@ constexpr auto operator "" _d16(char const* const s,
 }
 
 }
+
+}
+
+namespace std
+{
+
+template <unsigned M, unsigned E>
+struct hash<dpp::dpp<M, E>>
+{
+  constexpr auto operator()(dpp::dpp<M, E> const& v) const noexcept
+  {
+    return std::hash<typename dpp::dpp<M, E>::value_type>()(v.packed());
+  }
+};
 
 }
 
