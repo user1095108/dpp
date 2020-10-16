@@ -455,7 +455,7 @@ public:
   template <typename T,
     std::enable_if_t<std::is_floating_point_v<T>, int> = 0
   >
-  constexpr explicit operator T() const noexcept
+  constexpr operator T() const noexcept
   {
     return to_float<T>(*this);
   }
