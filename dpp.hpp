@@ -470,7 +470,7 @@ public:
   >
   constexpr explicit operator T() const noexcept
   {
-    if (int e(v_.e); e < 0)
+    if (auto e(v_.e); e < 0)
     {
       auto m(v_.m);
 
