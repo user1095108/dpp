@@ -816,7 +816,7 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
   }
   else
   {
-    return o;
+    return a;
   }
 }
 
