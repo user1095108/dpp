@@ -209,6 +209,8 @@ public:
     >
   >;
 
+  enum : value_type { mmin = -pow<2, value_type>(M - 1), mmax = -(mmin + 1) };
+
 private:
   using doubled_t = std::conditional_t<
     std::is_same_v<value_type, std::int16_t>,
@@ -292,9 +294,6 @@ public:
           m /= 10;
         }
       }
-
-      constexpr auto mmin(-pow<2, value_type>(M - 1));
-      constexpr auto mmax(-(mmin + 1));
 
       constexpr auto umin(U(1) << (bit_size<U>() - 1));
       constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
@@ -492,8 +491,6 @@ public:
 
   constexpr auto operator-() const noexcept
   {
-    constexpr auto mmin(-pow<2, value_type>(M - 1));
-
     auto const m(v_.m);
 
     // we need to do it like this, as negating the mantissa can overflow
