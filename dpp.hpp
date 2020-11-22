@@ -1158,9 +1158,9 @@ namespace std
 template <unsigned M, unsigned E>
 struct hash<dpp::dpp<M, E>>
 {
-  constexpr auto operator()(dpp::dpp<M, E> const v) const noexcept
+  constexpr auto operator()(dpp::dpp<M, E> const a) const noexcept
   {
-    return std::hash<decltype(v.packed())>()(v.packed());
+    return std::hash<decltype(a.packed())>()(a.packed());
   }
 };
 
