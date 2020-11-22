@@ -35,26 +35,26 @@ using nan = struct {};
 using unpack = struct {};
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator+(dpp<A, B> const&, dpp<C, D> const&) noexcept;
+constexpr auto operator+(dpp<A, B>, dpp<C, D>) noexcept;
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator-(dpp<A, B> const&, dpp<C, D> const&) noexcept;
+constexpr auto operator-(dpp<A, B>, dpp<C, D>) noexcept;
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator*(dpp<A, B> const&, dpp<C, D> const&) noexcept;
+constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator/(dpp<A, B> const&, dpp<C, D> const&) noexcept;
+constexpr auto operator/(dpp<A, B>, dpp<C, D>) noexcept;
 
 template <unsigned M, unsigned E>
-constexpr bool isnan(dpp<M, E> const&) noexcept;
+constexpr bool isnan(dpp<M, E>) noexcept;
 
 template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
 
 template <typename T, unsigned M, unsigned E>
-constexpr T to_float(dpp<M, E> const&) noexcept;
+constexpr T to_float(dpp<M, E>) noexcept;
 
 namespace
 {
@@ -361,7 +361,7 @@ public:
   template <unsigned N, unsigned F,
     std::enable_if_t<(M < N) || (E < F), int> = 0
   >
-  constexpr dpp(dpp<N, F> const& o) noexcept :
+  constexpr dpp(dpp<N, F> const o) noexcept :
     dpp(o.mantissa(), o.exponent())
   {
   }
@@ -369,7 +369,7 @@ public:
   template <unsigned N, unsigned F,
     std::enable_if_t<(M >= N) && (E >= F), int> = 0
   >
-  constexpr dpp(dpp<N, F> const& o) noexcept :
+  constexpr dpp(dpp<N, F> const o) noexcept :
     dpp(o.mantissa(), o.exponent(), direct{})
   {
   }
@@ -502,25 +502,25 @@ public:
 
   //
   template <unsigned N, unsigned F>
-  constexpr auto& operator+=(dpp<N, F> const& o) noexcept
+  constexpr auto& operator+=(dpp<N, F> const o) noexcept
   {
     return *this = *this + o;
   }
 
   template <unsigned N, unsigned F>
-  constexpr auto& operator-=(dpp<N, F> const& o) noexcept
+  constexpr auto& operator-=(dpp<N, F> const o) noexcept
   {
     return *this = *this - o;
   }
 
   template <unsigned N, unsigned F>
-  constexpr auto& operator*=(dpp<N, F> const& o) noexcept
+  constexpr auto& operator*=(dpp<N, F> const o) noexcept
   {
     return *this = *this * o;
   }
 
   template <unsigned N, unsigned F>
-  constexpr auto& operator/=(dpp<N, F> const& o) noexcept
+  constexpr auto& operator/=(dpp<N, F> const o) noexcept
   {
     return *this = *this / o;
   }
@@ -542,25 +542,21 @@ public:
   }
 
   template <unsigned A, unsigned B, unsigned C, unsigned D>
-  friend constexpr auto operator+(dpp<A, B> const&,
-    dpp<C, D> const&) noexcept;
+  friend constexpr auto operator+(dpp<A, B>, dpp<C, D>) noexcept;
 
   template <unsigned A, unsigned B, unsigned C, unsigned D>
-  friend constexpr auto operator-(dpp<A, B> const&,
-    dpp<C, D> const&) noexcept;
+  friend constexpr auto operator-(dpp<A, B>, dpp<C, D>) noexcept;
 
   template <unsigned A, unsigned B, unsigned C, unsigned D>
-  friend constexpr auto operator*(dpp<A, B> const&,
-    dpp<C, D> const&) noexcept;
+  friend constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
 
   template <unsigned A, unsigned B, unsigned C, unsigned D>
-  friend constexpr auto operator/(dpp<A, B> const&,
-    dpp<C, D> const&) noexcept;
+  friend constexpr auto operator/(dpp<A, B>, dpp<C, D>) noexcept;
 };
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator==(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return isnan(a) || isnan(b) ? false :
     (a.exponent() == b.exponent()) && (a.mantissa() == b.mantissa());
@@ -574,7 +570,7 @@ constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
@@ -598,100 +594,100 @@ constexpr auto operator<(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return b < a;
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return !(b < a);
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>=(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return !(a < b);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator==(dpp<A, B> const& a, T const b) noexcept
+constexpr auto operator==(dpp<A, B> const a, T const b) noexcept
 {
   return a == dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator!=(dpp<A, B> const& a, T const b) noexcept
+constexpr auto operator!=(dpp<A, B> const a, T const b) noexcept
 {
   return a != dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<(dpp<A, B> const& a, T const b) noexcept
+constexpr auto operator<(dpp<A, B> const a, T const b) noexcept
 {
   return a < dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>(dpp<A, B> const& a, T const b) noexcept
+constexpr auto operator>(dpp<A, B> const a, T const b) noexcept
 {
   return a > dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<=(dpp<A, B> const& a, T const b) noexcept
+constexpr auto operator<=(dpp<A, B> const a, T const b) noexcept
 {
   return a <= dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>=(dpp<A, B> const& a, T const b) noexcept
+constexpr auto operator>=(dpp<A, B> const a, T const b) noexcept
 {
   return a >= dpp<A, B>(b);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator==(T const a, dpp<A, B> const& b) noexcept
+constexpr auto operator==(T const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) == b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator!=(T const a, dpp<A, B> const& b) noexcept
+constexpr auto operator!=(T const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) != b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<(T const a, dpp<A, B> const& b) noexcept
+constexpr auto operator<(T const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) < b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>(T const a, dpp<A, B> const& b) noexcept
+constexpr auto operator>(T const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) > b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator<=(T const a, dpp<A, B> const& b) noexcept
+constexpr auto operator<=(T const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) <= b;
 }
 
 template <unsigned A, unsigned B, typename T>
-constexpr auto operator>=(T const a, dpp<A, B> const& b) noexcept
+constexpr auto operator>=(T const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) >= b;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator+(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
@@ -716,7 +712,7 @@ constexpr auto operator+(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator-(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
@@ -741,7 +737,7 @@ constexpr auto operator-(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator*(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator*(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
@@ -750,7 +746,7 @@ constexpr auto operator*(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
+constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
 
@@ -804,14 +800,14 @@ constexpr auto operator/(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr bool isnan(dpp<M, E> const& o) noexcept
+constexpr bool isnan(dpp<M, E> const o) noexcept
 {
   return dpp<M, E>::emin == o.exponent();
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr auto trunc(dpp<M, E> const& o) noexcept
+constexpr auto trunc(dpp<M, E> const o) noexcept
 {
   if (auto e(o.exponent()); !isnan(o) && (e < 0))
   {
@@ -828,7 +824,7 @@ constexpr auto trunc(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto ceil(dpp<M, E> const& o) noexcept
+constexpr auto ceil(dpp<M, E> const o) noexcept
 {
   auto const t(trunc(o));
 
@@ -836,7 +832,7 @@ constexpr auto ceil(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto floor(dpp<M, E> const& o) noexcept
+constexpr auto floor(dpp<M, E> const o) noexcept
 {
   auto const t(trunc(o));
 
@@ -844,7 +840,7 @@ constexpr auto floor(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto round(dpp<M, E> const& o) noexcept
+constexpr auto round(dpp<M, E> const o) noexcept
 {
   constexpr dpp<M, E> c(5, -1);
 
@@ -854,19 +850,19 @@ constexpr auto round(dpp<M, E> const& o) noexcept
 }
 
 template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const& p) noexcept
+constexpr auto abs(dpp<M, E> const p) noexcept
 {
   return p.mantissa() < 0 ? -p : p;
 }
 
 template <unsigned M, unsigned E>
-constexpr auto frac(dpp<M, E> const& o) noexcept
+constexpr auto frac(dpp<M, E> const o) noexcept
 {
   return o - trunc(o);
 }
 
 template <unsigned M, unsigned E>
-constexpr auto sign(dpp<M, E> const& o) noexcept
+constexpr auto sign(dpp<M, E> const o) noexcept
 {
   constexpr auto m(o.mantissa());
 
@@ -875,7 +871,7 @@ constexpr auto sign(dpp<M, E> const& o) noexcept
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename T = std::intmax_t, unsigned M, unsigned E>
-constexpr std::optional<T> to_integral(dpp<M, E> const& p) noexcept
+constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
 {
   if (isnan(p))
   {
@@ -1079,9 +1075,9 @@ constexpr auto to_decimal(S const& s) noexcept ->
 }
 
 template <typename T, unsigned M, unsigned E>
-constexpr T to_float(dpp<M, E> const& p) noexcept
+constexpr T to_float(dpp<M, E> const a) noexcept
 {
-  return isnan(p) ? NAN : p.mantissa() * std::pow(T(10), p.exponent());
+  return isnan(a) ? NAN : a.mantissa() * std::pow(T(10), a.exponent());
 }
 
 template <unsigned M, unsigned E>
@@ -1128,7 +1124,7 @@ std::string to_string(dpp<M, E> p)
 }
 
 template <unsigned M, unsigned E>
-inline auto& operator<<(std::ostream& os, dpp<M, E> const& p)
+inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
 {
   return os << to_string(p);
 }
@@ -1165,7 +1161,7 @@ namespace std
 template <unsigned M, unsigned E>
 struct hash<dpp::dpp<M, E>>
 {
-  constexpr auto operator()(dpp::dpp<M, E> const& v) const noexcept
+  constexpr auto operator()(dpp::dpp<M, E> const v) const noexcept
   {
     return std::hash<decltype(v.packed())>()(v.packed());
   }
