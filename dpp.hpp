@@ -470,7 +470,7 @@ public:
   >
   constexpr explicit operator T() const noexcept
   {
-    if (auto e(v_.e); e < 0)
+    if (int e(v_.e); e < 0)
     {
       auto m(v_.m);
 
@@ -531,12 +531,12 @@ public:
     return v_.e;
   }
 
-  constexpr value_type mantissa() const noexcept
+  constexpr auto mantissa() const noexcept
   {
     return v_.m;
   }
 
-  constexpr value_type packed() const noexcept
+  constexpr auto packed() const noexcept
   {
     return v_.e << M | (v_.m & (pow<2, value_type>(M) - 1));
   }
