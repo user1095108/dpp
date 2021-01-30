@@ -11,10 +11,8 @@ using D = dpp::d32;
 
 constexpr auto max_iter = 100;
 
-constexpr int julia(D const r, D const i, D const cr, D const ci) noexcept
+constexpr int julia(D zr, D zi, D const cr, D const ci) noexcept
 {
-  auto zr(r), zi(i);
-
   int j{};
 
   for (; j != max_iter; ++j)
