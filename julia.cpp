@@ -82,17 +82,18 @@ int main(int const argc, char* argv[]) noexcept
     a = D(-.835); b = D(-.2321);
   }
 
-  D const x0(-1.6), y0(1.15);
+  D x0(-1.6), y(1.15);
   D const x1(1.6), y1(-1.15);
 
   auto const dx((x1 - x0) / D(w));
-  auto const dy((y1 - y0) / D(h));
+  auto const dy((y1 - y) / D(h));
 
-  auto y(y0 + D(.5) * dy);
+  x0 += D(.5) * dx;
+  y += D(.5) * dy;
 
   for (int i{}; i != h; ++i, y += dy)
   {
-    auto x(x0 + D(.5) * dx);
+    auto x(x0);
 
     for (int j{}; j != w; ++j, x += dx)
     {
