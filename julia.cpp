@@ -1,6 +1,8 @@
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
 
+#include <cstdlib>
+
 #include <iostream>
 
 #include "dpp.hpp"
