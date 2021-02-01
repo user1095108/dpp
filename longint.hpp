@@ -76,11 +76,7 @@ constexpr auto operator~() const noexcept
   auto const negate([&]<std::size_t ...I>(
     std::index_sequence<I...>) noexcept
     {
-      auto v(v_);
-
-      ((v[I] = ~v[I]), ...);
-
-      return v;
+      return decltype(v_){T(~v_[I])...};
     }
   );
 
@@ -131,7 +127,7 @@ constexpr auto operator+(longint<T, M> const& a,
         (
           tmp = (I < M ? a[I] : T{}) + (I < N ? b[I] : T{}) + carry,
           r[I] = tmp,
-          carry = (tmp < a[I]) || (tmp < b[I]) // || (tmp < carry)
+          carry = (tmp < a[I]) || (tmp < b[I]) || (tmp < carry)
         ),
         ...
       );
