@@ -66,9 +66,9 @@ int main() noexcept
       auto const olt(D(1) - t);
 
       std::cout << "\033[48;2;" <<
-        int(D(9)*D(255)*(olt*t*t*t)) << ';' <<
-        int(D(15)*D(255)*(olt*olt*t*t)) << ';' <<
-        int(D(8.5)*D(255)*(olt*olt*olt*t)) << "m ";
+        int(D(9 * 255) * (olt*t*t*t)) << ';' <<
+        int(D(15 * 255) * (olt*olt*t*t)) << ';' <<
+        int(D(8.5 * 255) * (olt*olt*olt*t)) << "m ";
     }
   }
 
