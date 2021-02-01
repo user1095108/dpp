@@ -73,18 +73,18 @@ constexpr auto& operator[](std::size_t const i) const noexcept
 //
 constexpr auto operator~() const noexcept
 {
-  auto v(v_);
-
   auto const negate([&]<std::size_t ...I>(
     std::index_sequence<I...>) noexcept
     {
+      auto v(v_);
+
       ((v[I] = ~v[I]), ...);
+
+      return v;
     }
   );
 
-  negate(std::make_index_sequence<N>());
-
-  return longint(v);
+  return longint(negate(std::make_index_sequence<N>()));
 }
 
 //
@@ -195,6 +195,15 @@ constexpr auto operator>=(longint<T, M> const& a,
 {
   return !(a < b);
 }
+
+#if __cplusplus > 201703L
+template <typename T, std::size_t M, std::size_t N>
+constexpr auto operator<=>(longint<T, M> const& a,
+  longint<T, N> const& b) noexcept
+{
+  return (a > b) - (a < b);
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, std::size_t N>
