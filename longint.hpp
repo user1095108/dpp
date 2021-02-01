@@ -70,6 +70,7 @@ constexpr auto& operator[](std::size_t const i) const noexcept
   return v_[i];
 }
 
+//
 constexpr auto operator~() const noexcept
 {
   auto v(v_);
@@ -86,6 +87,7 @@ constexpr auto operator~() const noexcept
   return longint(v);
 }
 
+//
 constexpr auto operator-() const noexcept
 {
   return ~(*this) + longint(1);
@@ -94,6 +96,7 @@ constexpr auto operator-() const noexcept
 template <typename U, std::size_t O, std::size_t P>
 friend constexpr bool operator==(longint<U, O> const&,
   longint<U, P> const&) noexcept;
+
 };
 
 //misc////////////////////////////////////////////////////////////////////////
