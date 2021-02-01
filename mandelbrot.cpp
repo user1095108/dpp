@@ -62,7 +62,7 @@ int main() noexcept
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      auto const t(D(mandelbrot(x, y))/D(max_iter));
+      auto const t(D(mandelbrot(x, y)) / D(max_iter));
       auto const olt(D(1) - t);
 
       std::cout << "\033[48;2;" <<
