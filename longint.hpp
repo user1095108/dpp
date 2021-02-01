@@ -125,9 +125,8 @@ constexpr auto operator+(longint<T, M> const& a,
 
       (
         (
-          tmp = (I < M ? a[I] : T{}) + (I < N ? b[I] : T{}) + carry,
-          r[I] = tmp,
-          carry = (tmp < a[I]) || (tmp < b[I]) || (tmp < carry)
+          r[I] = (I < M ? a[I] : T{}) + (I < N ? b[I] : T{}) + carry,
+          carry = (r[I] < a[I]) || (r[I] < b[I]) || (r[I] < carry)
         ),
         ...
       );
