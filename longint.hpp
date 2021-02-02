@@ -403,17 +403,12 @@ std::string to_string(longint<T, N> a)
 {
   std::string r;
 
-  bool negative{};
-
-  if (a < 0)
-  {
-    a = -a;
-    negative = true;
-  }
+  bool negative(a < 0);
 
   do
   {
-    // r.insert(0, 1, '0' + char(a % 10));
+    // auto const r(a % 10);
+    // r.insert(0, 1, '0' + negative ? -r : r);
     // a /= 10;
   }
   while (a);
