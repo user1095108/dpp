@@ -400,7 +400,7 @@ std::string to_string(longint<T, N> a)
 {
   std::string r;
 
-  bool const negative(a < 0);
+  auto const negative(a < 0);
 
   do
   {
