@@ -352,16 +352,76 @@ constexpr auto operator<=>(longint<T, M> const& a,
 }
 #endif
 
+//
+template <typename T, unsigned N, typename U>
+constexpr auto operator==(longint<T, N> const& a, U const b) noexcept
+{
+  return a == longint<T, N>(b);
+}
+
+template <typename T, unsigned N, typename U>
+constexpr auto operator!=(longint<T, N> const& a, U const b) noexcept
+{
+  return a != longint<T, N>(b);
+}
+
+template <typename T, unsigned N, typename U>
+constexpr auto operator<(longint<T, N> const& a, U const b) noexcept
+{
+  return a < longint<T, N>(b);
+}
+
+template <typename T, unsigned N, typename U>
+constexpr auto operator>(longint<T, N> const& a, U const b) noexcept
+{
+  return a > longint<T, N>(b);
+}
+
+template <typename T, unsigned N, typename U>
+constexpr auto operator<=(longint<T, N> const& a, U const b) noexcept
+{
+  return a <= longint<T, N>(b);
+}
+
+template <typename T, unsigned N, typename U>
+constexpr auto operator>=(longint<T, N> const& a, U const b) noexcept
+{
+  return a >= longint<T, N>(b);
+}
+
+#if __cplusplus > 201703L
+template <typename T, unsigned N, typename U>
+constexpr auto operator<=>(longint<T, N> const& a, U const b) noexcept
+{
+  return (a > b) - (a < b);
+}
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, unsigned N>
 std::string to_string(longint<T, N> a)
 {
   std::string r;
 
+  bool negative{};
+
+  if (a < 0)
+  {
+    a = -a;
+    negative = true;
+  }
+
   do
   {
+    // r.insert(0, 1, '0' + char(a % 10));
+    // a /= 10;
   }
   while (a);
+
+  if (negative)
+  {
+    r.insert(0, 1, '-');
+  }
 
   return r;
 }
