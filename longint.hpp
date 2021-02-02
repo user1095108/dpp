@@ -218,10 +218,7 @@ constexpr auto operator*(longint<T, M> const& a,
   auto const mul([&]<std::size_t ...I, std::size_t ...J>(
     std::index_sequence<I...>, std::index_sequence<J...>) noexcept
     {
-      return
-        (
-          (r_t(a[I] * b[J]) << ((I + J) * r_t::bits_e)) + ...
-        );
+      return ((r_t(a[I] * b[J]) << ((I + J) * r_t::bits_e)) + ...);
     }
   );
 
