@@ -400,12 +400,12 @@ std::string to_string(longint<T, N> a)
 {
   std::string r;
 
-  bool negative(a < 0);
+  bool const negative(a < 0);
 
   do
   {
-    // auto const r(a % 10);
-    // r.insert(0, 1, '0' + negative ? -r : r);
+    // auto const d(a % 10);
+    // r.insert(0, 1, '0' + negative ? -d : d);
     // a /= 10;
   }
   while (a);
