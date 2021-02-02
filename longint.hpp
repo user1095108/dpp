@@ -394,7 +394,7 @@ constexpr auto operator<=>(longint<T, N> const& a, U const b) noexcept
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+//
 template <typename T, unsigned N>
 std::string to_string(longint<T, N> a)
 {
@@ -418,12 +418,12 @@ std::string to_string(longint<T, N> a)
   return r;
 }
 
-}
-
 template <typename T, unsigned N>
 inline auto& operator<<(std::ostream& os, dpp::longint<T, N> const& p)
 {
   return os << to_string(p);
+}
+
 }
 
 namespace std
