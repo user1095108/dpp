@@ -64,8 +64,9 @@ using value_type = std::array<T, N>;
 value_type v_;
 
 public:
-enum : T { max_e = std::numeric_limits<T>::max() };
+enum : unsigned { size = N };
 
+enum : T { max_e = std::numeric_limits<T>::max() };
 enum : unsigned { bits_e = detail::longint::log2(max_e) };
 
 constexpr longint() noexcept :
@@ -178,11 +179,12 @@ constexpr auto operator-(longint<T, N> const& a) noexcept
   return ~a + longint<T, N>(1);
 }
 
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr auto operator+(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
-  longint<T, std::max(M, N)> r;
+  longint<std::conditional_t<(sizeof(T) * M > sizeof(U) * N), T, U>,
+    (sizeof(T) * M > sizeof(U) * N) ? M : N> r;
 
   auto const add([&]<std::size_t ...I>(
     std::index_sequence<I...>) noexcept
@@ -199,7 +201,7 @@ constexpr auto operator+(longint<T, M> const& a,
     }
   );
 
-  return add(std::make_index_sequence<std::max(M, N)>()), r;
+  return add(std::make_index_sequence<decltype(r)::size>()), r;
 }
 
 template <typename T, unsigned M, unsigned N>
@@ -209,16 +211,19 @@ constexpr auto operator-(longint<T, M> const& a,
   return a + (-b);
 }
 
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr auto operator*(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
-  using r_t = longint<T, std::max(M, N)>;
+  using r_t = longint<
+    std::conditional_t<(sizeof(T) * M > sizeof(U) * N), T, U>,
+    (sizeof(T) * M > sizeof(U) * N) ? M : N>;
 
   auto const mul([&]<std::size_t ...I, std::size_t ...J>(
     std::index_sequence<I...>, std::index_sequence<J...>) noexcept
     {
-      return ((r_t(a[I] * b[J]) << ((I + J) * r_t::bits_e)) + ...);
+      return ((r_t(a[I] * b[J]) <<
+        ((I * longint<T, M>::bits_e) + (J * longint<U, N>::bits_e))) + ...);
     }
   );
 
