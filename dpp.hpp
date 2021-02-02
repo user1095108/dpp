@@ -1103,7 +1103,7 @@ std::string to_string(dpp<M, E> p)
       p -= t;
       m = p.mantissa();
 
-      r.append(to_string(t.mantissa())).append(t.exponent(), '0');
+      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
     }
     else
     {
@@ -1112,7 +1112,7 @@ std::string to_string(dpp<M, E> p)
 
     if (auto const e(-p.exponent()); (e > 0) && m)
     {
-      auto const tmp(to_string(abs(m)));
+      auto const tmp(std::to_string(std::abs(m)));
 
       if (auto const s(tmp.size()); std::size_t(e) >= s)
       {
