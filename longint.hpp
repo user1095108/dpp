@@ -132,6 +132,12 @@ constexpr auto& operator-=(longint<U, M> const a) noexcept
   return *this = *this - a;
 }
 
+template <typename U, unsigned M>
+constexpr auto& operator*=(longint<U, M> const a) noexcept
+{
+  return *this = *this * a;
+}
+
 //
 template <typename U, unsigned O, unsigned P>
 friend constexpr bool operator==(longint<U, O> const&,
