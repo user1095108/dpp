@@ -11,13 +11,13 @@ int main()
   using D = longint::longint<std::uint64_t, 2>;
 
   //
-  D a(99);
+  D a(-1025);
   D b(-1024);
 
   //
   {
     std::cout << int(D(1) << 11) << std::endl;
-    std::cout << int(D(-1)) << std::endl;
+    std::cout << int(D(-2) >> 1) << std::endl;
   }
 
   //
