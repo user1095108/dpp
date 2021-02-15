@@ -516,8 +516,8 @@ public:
   }
 
   // increment, decrement
-  constexpr auto& operator++() noexcept { return *this = *this + dpp(1); }
-  constexpr auto& operator--() noexcept { return *this = *this - dpp(1); }
+  constexpr auto& operator++() noexcept { return *this += 1; }
+  constexpr auto& operator--() noexcept { return *this -= 1; }
 
   //
   constexpr int exponent() const noexcept
