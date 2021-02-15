@@ -17,21 +17,6 @@
 namespace longint
 {
 
-namespace detail
-{
-
-constexpr auto pow2(unsigned const e) noexcept
-{
-  return std::uintmax_t(1) << e;
-}
-
-constexpr unsigned log2(std::uintmax_t const x, unsigned e = 0u) noexcept
-{
-  return pow2(e) >= x ? e : log2(x, e + 1);
-}
-
-}
-
 template <typename T, unsigned N>
 class longint
 {
@@ -343,7 +328,7 @@ template <typename A, unsigned B>
 constexpr bool operator<(longint<A, B> const& a,
   longint<A, B> const& b) noexcept
 {
-  return (a - b)[B - 1] & detail::pow2(longint<A, B>::bits_e - 1);
+  return (a - b)[B - 1] >> longint<A, B>::bits_e - 1;
 }
 
 template <typename A, unsigned B>
