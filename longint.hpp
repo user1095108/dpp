@@ -325,7 +325,7 @@ constexpr bool operator==(longint<T, N> const& a,
 }
 
 template <typename T, unsigned N>
-constexpr bool operator!=(longint<T, N> const& a,
+constexpr auto operator!=(longint<T, N> const& a,
   longint<T, N> const& b) noexcept
 {
   return !(a == b);
@@ -333,10 +333,10 @@ constexpr bool operator!=(longint<T, N> const& a,
 
 //
 template <typename T, unsigned N>
-constexpr bool operator<(longint<T, N> const& a,
+constexpr auto operator<(longint<T, N> const& a,
   longint<T, N> const& b) noexcept
 {
-  return (a - b)[N - 1] & detail::longint::pow2(longint<T, N>::bits_e - 1);
+  return (a - b)[N - 1] < 0;
 }
 
 template <typename T, unsigned N>
@@ -371,7 +371,7 @@ constexpr auto operator<=>(longint<T, N> const& a,
 
 //
 template <typename A, unsigned B, typename U>
-constexpr bool operator==(longint<A, B> const& a, U const& b) noexcept
+constexpr auto operator==(longint<A, B> const& a, U const& b) noexcept
 {
   return a == longint<A, B>(b);
 }
@@ -416,7 +416,7 @@ constexpr auto operator<=>(longint<A, B> const& a, U const& b) noexcept
 
 // conversions
 template <typename A, unsigned B, typename U>
-constexpr bool operator==(U const& a, longint<A, B> const& b) noexcept
+constexpr auto operator==(U const& a, longint<A, B> const& b) noexcept
 {
   return longint<A, B>(a) == b;
 }
@@ -428,13 +428,13 @@ constexpr auto operator!=(U const& a, longint<A, B> const& b) noexcept
 }
 
 template <typename A, unsigned B, typename U>
-constexpr bool operator<(U const& a, longint<A, B> const& b) noexcept
+constexpr auto operator<(U const& a, longint<A, B> const& b) noexcept
 {
   return longint<A, B>(a) < b;
 }
 
 template <typename A, unsigned B, typename U>
-constexpr bool operator>(U const& a, longint<A, B> const& b) noexcept
+constexpr auto operator>(U const& a, longint<A, B> const& b) noexcept
 {
   return longint<A, B>(a) > b;
 }
