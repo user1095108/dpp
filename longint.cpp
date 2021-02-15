@@ -6,11 +6,12 @@
 
 int main()
 {
-  using D = longint::longint<std::uint8_t, 8>;
+//using D = longint::longint<std::uint8_t, 8>;
+  using D = longint::longint<std::uint32_t, 4>;
 
   //
   D a(1024);
-  D b(-10);
+  D b(-1024);
 
   //
   {
