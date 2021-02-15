@@ -19,7 +19,7 @@ constexpr int mandelbrot(D const cr, D const ci) noexcept
 
   int j{1};
 
-  for (; j != max_iter; ++j)
+  for (; max_iter != j; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -56,11 +56,11 @@ int main() noexcept
   x0 += .5 * dx;
   y += .5 * dy;
 
-  for (int i{}; i != h; ++i, y += dy)
+  for (int i{}; h != i; ++i, y += dy)
   {
     auto x(x0);
 
-    for (int j{}; j != w; ++j, x += dx)
+    for (int j{}; w != j; ++j, x += dx)
     {
       auto const t(mandelbrot(x, y) / D(max_iter));
       auto const olt(1 - t);
