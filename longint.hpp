@@ -17,7 +17,7 @@
 namespace longint
 {
 
-namespace detail::longint
+namespace detail
 {
 
 constexpr auto pow2(unsigned const e) noexcept
@@ -49,7 +49,7 @@ enum : unsigned { bits = N * sizeof(T) * CHAR_BIT };
 enum : unsigned { size = N };
 
 enum : T { max_e = std::numeric_limits<T>::max() };
-enum : unsigned { bits_e = detail::longint::log2(max_e) };
+enum : unsigned { bits_e = detail::log2(max_e) };
 
 constexpr longint() noexcept = default;
 
@@ -317,59 +317,59 @@ constexpr auto operator>>(longint<T, N> const& a, unsigned M) noexcept
 }
 
 //comparison//////////////////////////////////////////////////////////////////
-template <typename T, unsigned N>
-constexpr bool operator==(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr bool operator==(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
   return a.v_ == b.v_;
 }
 
-template <typename T, unsigned N>
-constexpr auto operator!=(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr auto operator!=(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
   return !(a == b);
 }
 
 //
-template <typename T, unsigned N>
-constexpr auto operator<(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr bool operator<(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
-  return (a - b)[N - 1] < 0;
+  return (a - b)[B - 1] & detail::pow2(longint<A, B>::bits_e - 1);
 }
 
-template <typename T, unsigned N>
-constexpr auto operator>(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr auto operator>(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
   return b < a;
 }
 
-template <typename T, unsigned N>
-constexpr auto operator<=(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr auto operator<=(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
   return !(b < a);
 }
 
-template <typename T, unsigned N>
-constexpr auto operator>=(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr auto operator>=(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
   return !(a < b);
 }
 
 #if __cplusplus > 201703L
-template <typename T, unsigned N>
-constexpr auto operator<=>(longint<T, N> const& a,
-  longint<T, N> const& b) noexcept
+template <typename A, unsigned B>
+constexpr auto operator<=>(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
 {
   return (a > b) - (a < b);
 }
 #endif
 
-//
+// conversions
 template <typename A, unsigned B, typename U>
 constexpr auto operator==(longint<A, B> const& a, U const& b) noexcept
 {
