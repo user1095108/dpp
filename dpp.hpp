@@ -483,19 +483,13 @@ public:
     }
   }
 
-  //
-  constexpr auto& operator+() const noexcept
-  {
-    return *this;
-  }
+  // assignment
+  template <typename U>
+  constexpr auto& operator=(U&& a) noexcept { return *this = dpp(a); }
 
-  constexpr auto operator-() const noexcept
-  {
-    auto const m(v_.m);
-
-    // we need to do it like this, as negating the mantissa can overflow
-    return mmin == m ? dpp(-m, v_.e) : dpp(-m, v_.e, direct{});
-  }
+  // increment, decrement
+  constexpr auto& operator++() noexcept { return *this += dpp(1); }
+  constexpr auto& operator--() noexcept { return *this -= dpp(1); }
 
   //
   template <unsigned N, unsigned F>
@@ -538,6 +532,7 @@ public:
     return v_.e << M | (v_.m & (pow<2, value_type>(M) - 1));
   }
 
+  //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
   friend constexpr auto operator+(dpp<A, B>, dpp<C, D>) noexcept;
 
@@ -551,146 +546,37 @@ public:
   friend constexpr auto operator/(dpp<A, B>, dpp<C, D>) noexcept;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
+//increment, decrement////////////////////////////////////////////////////////
+template <unsigned A, unsigned B>
+constexpr auto operator++(dpp<A, B> const a, int) noexcept
 {
-  return isnan(a) || isnan(b) ? false :
-    (a.exponent() == b.exponent()) && (a.mantissa() == b.mantissa());
+  return dpp<A, B>(a + dpp<A, B>(1));
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator--(dpp<A, B> const a, int) noexcept
 {
-  return !operator==(a, b);
+  return dpp<A, B>(a - dpp<A, B>(1));
 }
 
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
+//arithmetic//////////////////////////////////////////////////////////////////
+template <unsigned A, unsigned B>
+constexpr auto operator+(dpp<A, B> const a) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
-
-  if (isnan(a) || isnan(b))
-  {
-    return false;
-  }
-  else
-  {
-    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
-    auto ea(a.exponent()), eb(b.exponent());
-
-    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
-    {
-      return false;
-    }
-
-    return ma < mb;
-  }
+  return a;
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator-(dpp<A, B> const a) noexcept
 {
-  return b < a;
+  auto const m(a.mantissa());
+  auto const e(a.exponent());
+
+  // we need to do it like this, as negating the mantissa can overflow
+  return dpp<A, B>::mmin == m ? dpp<A, B>(-m, e) : dpp<A, B>(-m, e, direct{});
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return !(b < a);
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return !(a < b);
-}
-
-#if __cplusplus > 201703L
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return (a > b) - (a < b);
-}
-#endif
-
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator==(dpp<A, B> const a, T const b) noexcept
-{
-  return a == dpp<A, B>(b);
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator!=(dpp<A, B> const a, T const b) noexcept
-{
-  return a != dpp<A, B>(b);
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator<(dpp<A, B> const a, T const b) noexcept
-{
-  return a < dpp<A, B>(b);
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator>(dpp<A, B> const a, T const b) noexcept
-{
-  return a > dpp<A, B>(b);
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator<=(dpp<A, B> const a, T const b) noexcept
-{
-  return a <= dpp<A, B>(b);
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator>=(dpp<A, B> const a, T const b) noexcept
-{
-  return a >= dpp<A, B>(b);
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator==(T const a, dpp<A, B> const b) noexcept
-{
-  return dpp<A, B>(a) == b;
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator!=(T const a, dpp<A, B> const b) noexcept
-{
-  return dpp<A, B>(a) != b;
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator<(T const a, dpp<A, B> const b) noexcept
-{
-  return dpp<A, B>(a) < b;
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator>(T const a, dpp<A, B> const b) noexcept
-{
-  return dpp<A, B>(a) > b;
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator<=(T const a, dpp<A, B> const b) noexcept
-{
-  return dpp<A, B>(a) <= b;
-}
-
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator>=(T const a, dpp<A, B> const b) noexcept
-{
-  return dpp<A, B>(a) >= b;
-}
-
-//////////////////////////////////////////////////////////////////////////////
+//
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
@@ -803,14 +689,203 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+// conversions
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator+(dpp<A, B> const a, T const b) noexcept
+{
+  return a + dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator-(dpp<A, B> const a, T const b) noexcept
+{
+  return a - dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator*(dpp<A, B> const a, T const b) noexcept
+{
+  return a * dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator/(dpp<A, B> const a, T const b) noexcept
+{
+  return a / dpp<A, B>(b);
+}
+
+// conversions
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator+(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) + b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator-(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) - b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator*(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) * b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator/(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) / b;
+}
+
+//comparison//////////////////////////////////////////////////////////////////
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return isnan(a) || isnan(b) ? false :
+    (a.exponent() == b.exponent()) && (a.mantissa() == b.mantissa());
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(a == b);
+}
+
+//
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+
+  if (isnan(a) || isnan(b))
+  {
+    return false;
+  }
+  else
+  {
+    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    auto ea(a.exponent()), eb(b.exponent());
+
+    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    {
+      return false;
+    }
+
+    return ma < mb;
+  }
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return b < a;
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(b < a);
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(a < b);
+}
+
+#if __cplusplus > 201703L
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return (a > b) - (a < b);
+}
+#endif
+
+// conversions
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator==(dpp<A, B> const a, T const b) noexcept
+{
+  return a == dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator!=(dpp<A, B> const a, T const b) noexcept
+{
+  return a != dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator<(dpp<A, B> const a, T const b) noexcept
+{
+  return a < dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator>(dpp<A, B> const a, T const b) noexcept
+{
+  return a > dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator<=(dpp<A, B> const a, T const b) noexcept
+{
+  return a <= dpp<A, B>(b);
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator>=(dpp<A, B> const a, T const b) noexcept
+{
+  return a >= dpp<A, B>(b);
+}
+
+// conversions
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator==(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) == b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator!=(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) != b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator<(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) < b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator>(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) > b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator<=(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) <= b;
+}
+
+template <unsigned A, unsigned B, typename T>
+constexpr auto operator>=(T const a, dpp<A, B> const b) noexcept
+{
+  return dpp<A, B>(a) >= b;
+}
+
+//misc////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
 constexpr bool isnan(dpp<M, E> const a) noexcept
 {
   return dpp<M, E>::emin == a.exponent();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+//
 template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const a) noexcept
 {
