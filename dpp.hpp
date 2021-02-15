@@ -520,15 +520,8 @@ public:
   constexpr auto& operator--() noexcept { return *this -= 1; }
 
   //
-  constexpr int exponent() const noexcept
-  {
-    return v_.e;
-  }
-
-  constexpr auto mantissa() const noexcept
-  {
-    return v_.m;
-  }
+  constexpr int exponent() const noexcept { return v_.e; }
+  constexpr auto mantissa() const noexcept { return v_.m; }
 
   constexpr auto packed() const noexcept
   {
