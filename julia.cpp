@@ -17,7 +17,7 @@ constexpr int julia(D zr, D zi, D const cr, D const ci) noexcept
 {
   int j{};
 
-  for (; j != max_iter; ++j)
+  for (; max_iter != j; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -91,11 +91,11 @@ int main(int const argc, char* argv[]) noexcept
   x0 += .5 * dx;
   y += .5 * dy;
 
-  for (int i{}; i != h; ++i, y += dy)
+  for (int i{}; h != i; ++i, y += dy)
   {
     auto x(x0);
 
-    for (int j{}; j != w; ++j, x += dx)
+    for (int j{}; w != j; ++j, x += dx)
     {
       auto const t(julia(x, y, a, b) / D(max_iter));
       auto const olt(1 - t);
