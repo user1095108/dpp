@@ -23,7 +23,7 @@ constexpr int mandelbrot(D const cr, D const ci) noexcept
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
-      zi = D(2) * zr * zi + ci;
+      zi = 2 * zr * zi + ci;
       zr = zr2 - zi2 + cr;
     }
     else
@@ -50,11 +50,11 @@ int main() noexcept
   D x0(-2); D y(1.15);
   D const x1(1), y1(-1.15);
 
-  auto const dx((x1 - x0) / D(w));
-  auto const dy((y1 - y) / D(h));
+  auto const dx((x1 - x0) / w);
+  auto const dy((y1 - y) / h);
 
-  x0 += D(.5) * dx;
-  y += D(.5) * dy;
+  x0 += .5 * dx;
+  y += .5 * dy;
 
   for (int i{}; i != h; ++i, y += dy)
   {
@@ -62,13 +62,13 @@ int main() noexcept
 
     for (int j{}; j != w; ++j, x += dx)
     {
-      auto const t(D(mandelbrot(x, y)) / D(max_iter));
-      auto const olt(D(1) - t);
+      auto const t(mandelbrot(x, y) / D(max_iter));
+      auto const olt(1 - t);
 
       std::cout << "\033[48;2;" <<
-        int(D(9 * 255) * (olt*t*t*t)) << ';' <<
-        int(D(15 * 255) * (olt*olt*t*t)) << ';' <<
-        int(D(8.5 * 255) * (olt*olt*olt*t)) << "m ";
+        int(9 * 255 * (olt*t*t*t)) << ';' <<
+        int(15 * 255 * (olt*olt*t*t)) << ';' <<
+        int(8.5 * 255 * (olt*olt*olt*t)) << "m ";
     }
   }
 
