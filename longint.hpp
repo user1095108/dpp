@@ -110,17 +110,7 @@ constexpr explicit operator bool() const noexcept
   return any(*this);
 }
 
-constexpr auto& operator[](unsigned const i) noexcept
-{
-  return v_[i];
-}
-
-constexpr auto& operator[](unsigned const i) const noexcept
-{
-  return v_[i];
-}
-
-//
+// assignment
 template <typename U, unsigned M>
 constexpr auto& operator+=(longint<U, M> const& a) noexcept
 {
@@ -137,6 +127,17 @@ template <typename U, unsigned M>
 constexpr auto& operator*=(longint<U, M> const a) noexcept
 {
   return *this = *this * a;
+}
+
+// member access
+constexpr auto& operator[](unsigned const i) noexcept
+{
+  return v_[i];
+}
+
+constexpr auto& operator[](unsigned const i) const noexcept
+{
+  return v_[i];
 }
 
 //
@@ -157,13 +158,6 @@ constexpr bool any(longint<T, N> const& a) noexcept
   );
 
   return any(std::make_index_sequence<N>(a));
-}
-
-//logic///////////////////////////////////////////////////////////////////////
-template <typename T, unsigned N>
-constexpr auto operator!(longint<T, N> const& a) noexcept
-{
-  return !any(a);
 }
 
 //arithmetic//////////////////////////////////////////////////////////////////
