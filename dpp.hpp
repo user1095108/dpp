@@ -485,7 +485,10 @@ public:
 
   // assignment
   template <typename U>
-  constexpr auto& operator=(U&& a) noexcept { return *this = dpp(a); }
+  constexpr auto& operator=(U&& a) noexcept
+  {
+    return *this = dpp(std::forward<U>(a));
+  }
 
   // increment, decrement
   constexpr auto& operator++() noexcept { return *this += dpp(1); }
