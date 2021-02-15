@@ -18,36 +18,14 @@ namespace dpp
 namespace detail::longint
 {
 
-template <unsigned B, typename T>
-constexpr T pow(unsigned e) noexcept
+constexpr auto pow2(unsigned const e) noexcept
 {
-  if (e)
-  {
-    T x(B), y(1);
-
-    while (1 != e)
-    {
-      if (e % 2)
-      {
-        //--e;
-        y *= x;
-      }
-
-      x *= x;
-      e /= 2;
-    }
-
-    return x * y;
-  }
-  else
-  {
-    return T(1);
-  }
+  return std::uintmax_t(1) << e;
 }
 
 constexpr unsigned log2(std::uintmax_t const x, unsigned e = 0u) noexcept
 {
-  return pow<2, std::uintmax_t>(e) >= x ? e : log2(x, e + 1);
+  return pow2(e) >= x ? e : log2(x, e + 1);
 }
 
 }
