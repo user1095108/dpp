@@ -44,6 +44,8 @@ using value_type = std::array<T, N>;
 value_type v_{};
 
 public:
+enum : unsigned { bits = N * sizeof(T) * CHAR_BIT };
+
 enum : unsigned { size = N };
 
 enum : T { max_e = std::numeric_limits<T>::max() };
@@ -197,55 +199,57 @@ constexpr auto operator~(longint<T, N> const& a) noexcept
   return longint<T, N>(neg(std::make_index_sequence<N>()));
 }
 
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr auto operator+(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr auto operator+(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
-  longint<std::conditional_t<(sizeof(T) * M > sizeof(U) * N), T, U>,
-    (sizeof(T) * M > sizeof(U) * N) ? M : N> r;
-
   auto const add([&]<std::size_t ...I>(
     std::index_sequence<I...>) noexcept
     {
+      longint<T, N> r;
+
       bool carry{};
 
       (
         (
-          r.v_[I] = (I < M ? a[I] : T{}) + (I < N ? b[I] : T{}) + carry,
+          r.v_[I] = a[I] + b[I] + carry,
           carry = (r[I] < a[I]) || (r[I] < b[I]) || (r[I] < carry)
         ),
         ...
       );
+
+      return r;
     }
   );
 
-  return add(std::make_index_sequence<decltype(r)::size>()), r;
+  return add(std::make_index_sequence<N>());
 }
 
-template <typename T, unsigned M, unsigned N>
-constexpr auto operator-(longint<T, M> const& a,
+template <typename T, unsigned N>
+constexpr auto operator-(longint<T, N> const& a,
   longint<T, N> const& b) noexcept
 {
   return a + (-b);
 }
 
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr auto operator*(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr auto operator*(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
-  using r_t = longint<
-    std::conditional_t<(sizeof(T) * M > sizeof(U) * N), T, U>,
-    (sizeof(T) * M > sizeof(U) * N) ? M : N>;
+  using r_t = longint<T, N>;
 
-  auto const mul([&]<std::size_t ...I, std::size_t ...J>(
-    std::index_sequence<I...>, std::index_sequence<J...>) noexcept
+  auto const mul([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
     {
+      auto e(r_t::bits_e);
+
       auto const mul([&]<std::size_t I0>() noexcept
         {
           return (
             (
-              r_t(a[I0] * b[J]) <<
-                (I0 * longint<T, M>::bits_e) + (J * longint<U, N>::bits_e)
+              (I0 + I) * r_t::bits_e <
+                N * r_t::bits_e - sizeof(a[I0] * b[I]) * CHAR_BIT ?
+                r_t(a[I0] * b[I]) << (I0 + I) * r_t::bits_e :
+                r_t{}
             ) +
             ...
           );
@@ -256,7 +260,7 @@ constexpr auto operator*(longint<T, M> const& a,
     }
   );
 
-  return mul(std::make_index_sequence<M>(), std::make_index_sequence<N>());
+  return mul(std::make_index_sequence<N>());
 }
 
 template <typename T, unsigned N>
@@ -322,48 +326,46 @@ constexpr bool operator==(longint<T, N> const& a,
   return a.v_ == b.v_;
 }
 
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr bool operator!=(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr bool operator!=(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
   return !(a == b);
 }
 
 //
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr bool operator<(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr bool operator<(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
-  auto const r(a - b);
-
-  return r[std::max(M, N) - 1] & ((decltype(r)::max_e >> 1) + 1);
+  return (a - b)[N - 1] & ((longint<T, N>::max_e >> 1) + 1);
 }
 
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr auto operator>(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr auto operator>(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
   return b < a;
 }
 
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr auto operator<=(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr auto operator<=(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
   return !(b < a);
 }
 
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr auto operator>=(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr auto operator>=(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
   return !(a < b);
 }
 
 #if __cplusplus > 201703L
-template <typename T, unsigned M, typename U, unsigned N>
-constexpr auto operator<=>(longint<T, M> const& a,
-  longint<U, N> const& b) noexcept
+template <typename T, unsigned N>
+constexpr auto operator<=>(longint<T, N> const& a,
+  longint<T, N> const& b) noexcept
 {
   return (a > b) - (a < b);
 }
