@@ -3,7 +3,7 @@
 # pragma once
 
 #include <cmath>
-
+#include <climits>
 #include <cstdint>
 
 #include <functional>
@@ -62,7 +62,7 @@ namespace
 template <typename U>
 constexpr auto bit_size() noexcept
 {
-  return 8 * sizeof(U);
+  return CHAR_BIT * sizeof(U);
 }
 
 template <unsigned B, typename T>
@@ -485,34 +485,35 @@ public:
 
   // assignment
   template <typename U>
-  constexpr auto& operator=(U&& a) noexcept
+  constexpr auto& operator=(U const a) noexcept
   {
-    return *this = dpp(std::forward<U>(a));
+    static_assert(std::is_arithmetic_v<U>);
+    return *this = dpp(a);
   }
 
   //
   template <typename U>
-  constexpr auto& operator+=(U&& a) noexcept
+  constexpr auto& operator+=(U const a) noexcept
   {
-    return *this = *this + dpp(std::forward<U>(a));
+    return *this = *this + a;
   }
 
   template <typename U>
-  constexpr auto& operator-=(U&& a) noexcept
+  constexpr auto& operator-=(U const a) noexcept
   {
-    return *this = *this - dpp(std::forward<U>(a));
+    return *this = *this - a;
   }
 
   template <typename U>
-  constexpr auto& operator*=(U&& a) noexcept
+  constexpr auto& operator*=(U const a) noexcept
   {
-    return *this = *this * dpp(std::forward<U>(a));
+    return *this = *this * a;
   }
 
   template <typename U>
-  constexpr auto& operator/=(U&& a) noexcept
+  constexpr auto& operator/=(U const a) noexcept
   {
-    return *this = *this / dpp(std::forward<U>(a));
+    return *this = *this / a;
   }
 
   // increment, decrement
