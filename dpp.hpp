@@ -6,7 +6,7 @@
 #include <climits>
 #include <cstdint>
 
-#include <functional>
+#include <functional> // hash
 
 #include <iterator>
 
