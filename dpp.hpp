@@ -689,24 +689,28 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(dpp<A, B> const a, U const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return a + dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(dpp<A, B> const a, U const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return a - dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(dpp<A, B> const a, U const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return a * dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(dpp<A, B> const a, U const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return a / dpp<A, B>(b);
 }
 
@@ -714,24 +718,28 @@ constexpr auto operator/(dpp<A, B> const a, U const b) noexcept
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(U const a, dpp<A, B> const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) + b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(U const a, dpp<A, B> const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) - b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(U const a, dpp<A, B> const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) * b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(U const a, dpp<A, B> const b) noexcept
 {
+  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) / b;
 }
 
