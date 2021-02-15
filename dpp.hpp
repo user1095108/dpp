@@ -490,10 +490,6 @@ public:
     return *this = dpp(std::forward<U>(a));
   }
 
-  // increment, decrement
-  constexpr auto& operator++() noexcept { return *this += dpp(1); }
-  constexpr auto& operator--() noexcept { return *this -= dpp(1); }
-
   //
   template <unsigned N, unsigned F>
   constexpr auto& operator+=(dpp<N, F> const a) noexcept
@@ -518,6 +514,10 @@ public:
   {
     return *this = *this / a;
   }
+
+  // increment, decrement
+  constexpr auto& operator++() noexcept { return *this += dpp(1); }
+  constexpr auto& operator--() noexcept { return *this -= dpp(1); }
 
   //
   constexpr int exponent() const noexcept
