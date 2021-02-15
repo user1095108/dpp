@@ -946,59 +946,6 @@ constexpr auto sign(dpp<M, E> const a) noexcept
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename T = std::intmax_t, unsigned M, unsigned E>
-constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
-{
-  if (isnan(p))
-  {
-    return {};
-  }
-  else
-  {
-    auto m(p.mantissa());
-
-    if (auto e(p.exponent()); e <= 0)
-    {
-      for (; m && e++; m /= 10);
-
-      return m;
-    }
-    else
-    {
-      if (m > 0)
-      {
-        for (; e--;)
-        {
-          if (m <= std::numeric_limits<T>::max() / 10)
-          {
-            m *= 10;
-          }
-          else
-          {
-            return {};
-          }
-        }
-      }
-      else
-      {
-        for (; e--;)
-        {
-          if (m >= std::numeric_limits<T>::min() / 10)
-          {
-            m *= 10;
-          }
-          else
-          {
-            return {};
-          }
-        }
-      }
-
-      return m;
-    }
-  }
-}
-
 template <typename T, typename It>
 constexpr T to_decimal(It i, It const end) noexcept
 {
@@ -1150,11 +1097,67 @@ constexpr auto to_decimal(S const& s) noexcept ->
   return to_decimal<T>(std::cbegin(s), std::cend(s));
 }
 
+//////////////////////////////////////////////////////////////////////////////
 template <typename T, unsigned M, unsigned E>
 constexpr T to_float(dpp<M, E> const a) noexcept
 {
   return isnan(a) ? NAN : a.mantissa() * std::pow(T(10), a.exponent());
 }
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename T = std::intmax_t, unsigned M, unsigned E>
+constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
+{
+  if (isnan(p))
+  {
+    return {};
+  }
+  else
+  {
+    auto m(p.mantissa());
+
+    if (auto e(p.exponent()); e <= 0)
+    {
+      for (; m && e++; m /= 10);
+
+      return m;
+    }
+    else
+    {
+      if (m > 0)
+      {
+        for (; e--;)
+        {
+          if (m <= std::numeric_limits<T>::max() / 10)
+          {
+            m *= 10;
+          }
+          else
+          {
+            return {};
+          }
+        }
+      }
+      else
+      {
+        for (; e--;)
+        {
+          if (m >= std::numeric_limits<T>::min() / 10)
+          {
+            m *= 10;
+          }
+          else
+          {
+            return {};
+          }
+        }
+      }
+
+      return m;
+    }
+  }
+}
+
 
 template <unsigned M, unsigned E>
 std::string to_string(dpp<M, E> p)
