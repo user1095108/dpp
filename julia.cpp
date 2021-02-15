@@ -53,33 +53,33 @@ int main(int const argc, char* argv[]) noexcept
     {
       default:
       case 6:
-        a = D(-.835); b = D(-.2321);
+        a = -.835; b = -.2321;
         break;
 
       case 1:
-        a = D(-.7); b = D(.27015);
+        a = -.7; b = .27015;
         break;
 
       case 2:
-        a = D(.285); b = D(.01);
+        a = .285; b = .01;
         break;
 
       case 3:
-        a = D(-.74543); b = D(.11301);
+        a = -.74543; b = .11301;
         break;
 
       case 4:
-        a = D(-.11); b = D(.6557);
+        a = -.11; b = .6557;
         break;
 
       case 5:
-        a = D(.45); b = D(.1428);
+        a = .45; b = .1428;
         break;
     }
   }
   else
   {
-    a = D(-.835); b = D(-.2321);
+    a = -.835; b = -.2321;
   }
 
   D x0(-1.6), y(1.15);
