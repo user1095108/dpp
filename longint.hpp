@@ -45,11 +45,11 @@ value_type v_{};
 
 public:
 enum : unsigned { bits = N * sizeof(T) * CHAR_BIT };
-
-enum : unsigned { size = N };
+enum : unsigned { bits_e = sizeof(T) * CHAR_BIT };
 
 enum : T { max_e = std::numeric_limits<T>::max() };
-enum : unsigned { bits_e = detail::log2(max_e) };
+
+enum : unsigned { size = N };
 
 constexpr longint() noexcept = default;
 
@@ -79,7 +79,7 @@ constexpr longint(U const v) noexcept
     }
   );
 
-  convert(std::make_index_sequence<(sizeof(v_) * CHAR_BIT) / bits_e>());
+  convert(std::make_index_sequence<bits / bits_e>());
 }
 
 constexpr longint(longint const&) = default;
@@ -105,10 +105,17 @@ constexpr explicit operator U() const noexcept
 {
   auto const convert([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
     {
-      return (
-        (U(v_[I]) << I * bits_e) |
-        ...
-      );
+      if constexpr (sizeof...(I))
+      {
+        return (
+          (U(v_[I]) << I * bits_e) |
+          ...
+        );
+      }
+      else
+      {
+        return v_[0];
+      }
     }
   );
 
