@@ -306,7 +306,7 @@ constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
 template <typename T, unsigned N>
 constexpr auto operator>>(longint<T, N> const& a, unsigned M) noexcept
 {
-  auto const neg(a < 0);
+  auto const neg(negative(a));
 
   auto r(a);
 
@@ -360,7 +360,7 @@ template <typename A, unsigned B>
 constexpr bool operator<(longint<A, B> const& a,
   longint<A, B> const& b) noexcept
 {
-  return (a - b)[B - 1] >> (longint<A, B>::bits_e - 1);
+  return negative(a - b);
 }
 
 template <typename A, unsigned B>
@@ -476,17 +476,22 @@ constexpr auto operator>=(U const& a, longint<A, B> const& b) noexcept
 }
 
 //misc////////////////////////////////////////////////////////////////////////
-template <typename T, unsigned N>
-constexpr bool any(longint<T, N> const& a) noexcept
+template <typename A, unsigned B>
+constexpr bool any(longint<A, B> const& a) noexcept
 {
-  auto const any([&]<std::size_t ...I>(
-    std::index_sequence<I...>) noexcept
+  constexpr auto any([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
     {
       return (a[I] || ...);
     }
   );
 
-  return any(std::make_index_sequence<N>());
+  return any(std::make_index_sequence<B>());
+}
+
+template <typename A, unsigned B>
+constexpr bool negative(longint<A, B> const& a) noexcept
+{
+  return a[B - 1] >> (longint<A, B>::bits_e - 1);
 }
 
 //
