@@ -7,7 +7,8 @@
 int main()
 {
 //using D = longint::longint<std::uint8_t, 8>;
-  using D = longint::longint<std::uint32_t, 4>;
+//using D = longint::longint<std::uint32_t, 4>;
+  using D = longint::longint<std::uint64_t, 2>;
 
   //
   D a(99);
