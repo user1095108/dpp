@@ -686,51 +686,51 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 }
 
 // conversions
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator+(dpp<A, B> const a, T const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator+(dpp<A, B> const a, U const b) noexcept
 {
   return a + dpp<A, B>(b);
 }
 
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator-(dpp<A, B> const a, T const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator-(dpp<A, B> const a, U const b) noexcept
 {
   return a - dpp<A, B>(b);
 }
 
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator*(dpp<A, B> const a, T const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator*(dpp<A, B> const a, U const b) noexcept
 {
   return a * dpp<A, B>(b);
 }
 
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator/(dpp<A, B> const a, T const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator/(dpp<A, B> const a, U const b) noexcept
 {
   return a / dpp<A, B>(b);
 }
 
 // conversions
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator+(T const a, dpp<A, B> const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator+(U const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) + b;
 }
 
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator-(T const a, dpp<A, B> const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator-(U const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) - b;
 }
 
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator*(T const a, dpp<A, B> const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator*(U const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) * b;
 }
 
-template <unsigned A, unsigned B, typename T>
-constexpr auto operator/(T const a, dpp<A, B> const b) noexcept
+template <unsigned A, unsigned B, typename U>
+constexpr auto operator/(U const a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(a) / b;
 }
