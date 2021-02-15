@@ -6,7 +6,7 @@
 
 int main()
 {
-  using D = dpp::longint<std::uint8_t, 8>;
+  using D = longint::longint<std::uint8_t, 8>;
 
   //
   D a(1024);

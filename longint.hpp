@@ -14,7 +14,7 @@
 
 #include <type_traits>
 
-namespace dpp
+namespace longint
 {
 
 namespace detail::longint
@@ -240,8 +240,6 @@ constexpr auto operator*(longint<T, N> const& a,
 
   auto const mul([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
     {
-      auto e(r_t::bits_e);
-
       auto const mul([&]<std::size_t I0>() noexcept
         {
           return (
@@ -338,7 +336,7 @@ template <typename T, unsigned N>
 constexpr bool operator<(longint<T, N> const& a,
   longint<T, N> const& b) noexcept
 {
-  return (a - b)[N - 1] & ((longint<T, N>::max_e >> 1) + 1);
+  return (a - b)[N - 1] & detail::longint::pow2(longint<T, N>::bits_e - 1);
 }
 
 template <typename T, unsigned N>
@@ -372,49 +370,86 @@ constexpr auto operator<=>(longint<T, N> const& a,
 #endif
 
 //
-template <typename T, unsigned N, typename U>
-constexpr auto operator==(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr bool operator==(longint<A, B> const& a, U const& b) noexcept
 {
-  return a == longint<T, N>(b);
+  return a == longint<A, B>(b);
 }
 
-template <typename T, unsigned N, typename U>
-constexpr auto operator!=(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr auto operator!=(longint<A, B> const& a, U const& b) noexcept
 {
-  return a != longint<T, N>(b);
+  return a != longint<A, B>(b);
 }
 
-template <typename T, unsigned N, typename U>
-constexpr auto operator<(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr auto operator<(longint<A, B> const& a, U const& b) noexcept
 {
-  return a < longint<T, N>(b);
+  return a < longint<A, B>(b);
 }
 
-template <typename T, unsigned N, typename U>
-constexpr auto operator>(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr auto operator>(longint<A, B> const& a, U const& b) noexcept
 {
-  return a > longint<T, N>(b);
+  return a > longint<A, B>(b);
 }
 
-template <typename T, unsigned N, typename U>
-constexpr auto operator<=(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr auto operator<=(longint<A, B> const& a, U const& b) noexcept
 {
-  return a <= longint<T, N>(b);
+  return a <= longint<A, B>(b);
 }
 
-template <typename T, unsigned N, typename U>
-constexpr auto operator>=(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr auto operator>=(longint<A, B> const& a, U const& b) noexcept
 {
-  return a >= longint<T, N>(b);
+  return a >= longint<A, B>(b);
 }
 
 #if __cplusplus > 201703L
-template <typename T, unsigned N, typename U>
-constexpr auto operator<=>(longint<T, N> const& a, U const b) noexcept
+template <typename A, unsigned B, typename U>
+constexpr auto operator<=>(longint<A, B> const& a, U const& b) noexcept
 {
   return (a > b) - (a < b);
 }
 #endif
+
+// conversions
+template <typename A, unsigned B, typename U>
+constexpr bool operator==(U const& a, longint<A, B> const& b) noexcept
+{
+  return longint<A, B>(a) == b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator!=(U const& a, longint<A, B> const& b) noexcept
+{
+  return longint<A, B>(a) != b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr bool operator<(U const& a, longint<A, B> const& b) noexcept
+{
+  return longint<A, B>(a) < b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr bool operator>(U const& a, longint<A, B> const& b) noexcept
+{
+  return longint<A, B>(a) > b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator<=(U const& a, longint<A, B> const& b) noexcept
+{
+  return longint<A, B>(a) <= b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator>=(U const& a, longint<A, B> const& b) noexcept
+{
+  return longint<A, B>(a) >= b;
+}
 
 //misc////////////////////////////////////////////////////////////////////////
 template <typename T, unsigned N>
@@ -454,8 +489,8 @@ std::string to_string(longint<T, N> a)
   return r;
 }
 
-template <typename T, unsigned N>
-inline auto& operator<<(std::ostream& os, dpp::longint<T, N> const& p)
+template <typename A, unsigned B>
+inline auto& operator<<(std::ostream& os, longint<A, B> const& p)
 {
   return os << to_string(p);
 }
@@ -466,9 +501,9 @@ namespace std
 {
 
 template <typename T, unsigned N>
-struct hash<dpp::longint<T, N>>
+struct hash<longint::longint<T, N>>
 {
-  auto operator()(dpp::longint<T, N> const& a) const noexcept
+  auto operator()(longint::longint<T, N> const& a) const noexcept
   {
     auto const combine([&]<std::size_t ...I>(
       std::index_sequence<I...>) noexcept
