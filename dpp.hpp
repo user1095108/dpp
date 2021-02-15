@@ -491,33 +491,33 @@ public:
   }
 
   //
-  template <unsigned N, unsigned F>
-  constexpr auto& operator+=(dpp<N, F> const a) noexcept
+  template <typename U>
+  constexpr auto& operator+=(U&& a) noexcept
   {
-    return *this = *this + a;
+    return *this = *this + dpp(std::forward<U>(a));
   }
 
-  template <unsigned N, unsigned F>
-  constexpr auto& operator-=(dpp<N, F> const a) noexcept
+  template <typename U>
+  constexpr auto& operator-=(U&& a) noexcept
   {
-    return *this = *this - a;
+    return *this = *this - dpp(std::forward<U>(a));
   }
 
-  template <unsigned N, unsigned F>
-  constexpr auto& operator*=(dpp<N, F> const a) noexcept
+  template <typename U>
+  constexpr auto& operator*=(U&& a) noexcept
   {
-    return *this = *this * a;
+    return *this = *this * dpp(std::forward<U>(a));
   }
 
-  template <unsigned N, unsigned F>
-  constexpr auto& operator/=(dpp<N, F> const a) noexcept
+  template <typename U>
+  constexpr auto& operator/=(U&& a) noexcept
   {
-    return *this = *this / a;
+    return *this = *this / dpp(std::forward<U>(a));
   }
 
   // increment, decrement
-  constexpr auto& operator++() noexcept { return *this += dpp(1); }
-  constexpr auto& operator--() noexcept { return *this -= dpp(1); }
+  constexpr auto& operator++() noexcept { return *this = *this + dpp(1); }
+  constexpr auto& operator--() noexcept { return *this = *this - dpp(1); }
 
   //
   constexpr int exponent() const noexcept
