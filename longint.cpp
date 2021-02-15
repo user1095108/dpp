@@ -16,8 +16,8 @@ int main()
 
   //
   {
-    std::cout << int(D(1) << 11) << std::endl;
     std::cout << int(D(-2) >> 1) << std::endl;
+    std::cout << int(D(1) << 11) << std::endl;
   }
 
   //
