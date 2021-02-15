@@ -6,24 +6,31 @@
 
 int main()
 {
-  dpp::longint<std::uint8_t, 2> a(4);
-  dpp::longint<std::uint8_t, 2> b(3);
+  using D = dpp::longint<std::uint8_t, 8>;
 
   //
+  D a(1024);
+  D b(1025);
 
   //
-  auto r(a + b);
-
-  std::cout << unsigned((a + b)[0]) << std::endl;
-  std::cout << unsigned((a - b)[0]) << std::endl;
-  std::cout << "== " << (a == b) << std::endl;
-  std::cout << "> " << (a > b) << std::endl;
-  std::cout << "< " << (a < b) << std::endl;
+  {
+    std::cout << int(D(1) << 11) << std::endl;
+    std::cout << int(D(-1)) << std::endl;
+  }
 
   //
-  r = a * b;
+  {
+    std::cout << "== " << (a == b) << std::endl;
+    std::cout << "> " << (a > b) << std::endl;
+    std::cout << "< " << (a < b) << std::endl;
+    std::cout << int(a + b) << std::endl;
+    std::cout << int(a - b) << std::endl;
+  }
 
-  std::cout << unsigned(r[0]) << std::endl;
+  //
+  {
+    std::cout << int(a * b) << std::endl;
+  }
 
   //
   return 0;

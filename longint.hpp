@@ -2,6 +2,8 @@
 # define LONGINT_HPP
 # pragma once
 
+#include <climits>
+
 #include <array>
 
 #include <limits>
@@ -39,7 +41,7 @@ static_assert(N > 0);
 public:
 using value_type = std::array<T, N>;
 
-value_type v_;
+value_type v_{};
 
 public:
 enum : unsigned { size = N };
@@ -47,10 +49,7 @@ enum : unsigned { size = N };
 enum : T { max_e = std::numeric_limits<T>::max() };
 enum : unsigned { bits_e = detail::longint::log2(max_e) };
 
-constexpr longint() noexcept :
-  v_{}
-{
-}
+constexpr longint() noexcept = default;
 
 constexpr longint(decltype(v_) const& v) noexcept :
   v_(v)
@@ -63,16 +62,22 @@ template <typename U,
     int
   > = 0
 >
-constexpr longint(U v) noexcept
+constexpr longint(U const v) noexcept
 {
-  unsigned i{};
+  auto const convert([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
+    {
+      (
+        (
+          v_[I] = I * bits_e < sizeof(U) * CHAR_BIT ?
+            v >> I * bits_e :
+            v >= 0 ? T{} : ~T{}
+        ),
+        ...
+      );
+    }
+  );
 
-  do
-  {
-    v_[i++] = v & max_e;
-    v /= (max_e + 1);
-  }
-  while (v);
+  convert(std::make_index_sequence<(sizeof(v_) * CHAR_BIT) / bits_e>());
 }
 
 constexpr longint(longint const&) = default;
@@ -88,55 +93,83 @@ constexpr explicit operator bool() const noexcept
   return any(*this);
 }
 
+template <typename U,
+   std::enable_if_t<
+    std::is_integral_v<U> && std::is_signed_v<U>,
+    int
+  > = 0
+>
+constexpr explicit operator U() const noexcept
+{
+  auto const convert([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
+    {
+      return (
+        (U(v_[I]) << I * bits_e) |
+        ...
+      );
+    }
+  );
+
+  return convert(std::make_index_sequence<(sizeof(U) * CHAR_BIT) / bits_e>());
+}
+
 // assignment
-template <typename U, unsigned M>
-constexpr auto& operator+=(longint<U, M> const& a) noexcept
+template <typename A>
+constexpr auto& operator+=(A&& a) noexcept
 {
-  return *this = *this + a;
+  return *this = *this + std::forward<A>(a);
 }
 
-template <typename U, unsigned M>
-constexpr auto& operator-=(longint<U, M> const a) noexcept
+template <typename A>
+constexpr auto& operator-=(A&& a) noexcept
 {
-  return *this = *this - a;
+  return *this = *this - std::forward<A>(a);
 }
 
-template <typename U, unsigned M>
-constexpr auto& operator*=(longint<U, M> const a) noexcept
+template <typename A>
+constexpr auto& operator*=(A&& a) noexcept
 {
-  return *this = *this * a;
+  return *this = *this * std::forward<A>(a);
+}
+
+//
+constexpr auto& operator<<=(unsigned i) noexcept
+{
+  return *this = *this << i;
+}
+
+constexpr auto& operator>>=(unsigned i) noexcept
+{
+  return *this = *this >> i;
 }
 
 // member access
-constexpr auto& operator[](unsigned const i) noexcept
+constexpr auto operator[](unsigned const i) noexcept
 {
   return v_[i];
 }
 
-constexpr auto& operator[](unsigned const i) const noexcept
+constexpr auto operator[](unsigned const i) const noexcept
 {
   return v_[i];
 }
 
 //
-template <typename U, unsigned O, unsigned P>
-friend constexpr bool operator==(longint<U, O> const&,
-  longint<U, P> const&) noexcept;
+template <typename A, unsigned B>
+friend constexpr bool operator==(longint<A, B> const&,
+  longint<A, B> const&) noexcept;
+
+template <typename A, unsigned B, typename C, unsigned D>
+friend constexpr auto operator+(longint<A, B> const&,
+  longint<C, D> const&) noexcept;
+
+template <typename A, unsigned B, typename C, unsigned D>
+friend constexpr auto operator-(longint<A, B> const&,
+  longint<C, D> const&) noexcept;
+
+template <typename A, unsigned B>
+friend constexpr auto operator<<(longint<A, B> const&, unsigned) noexcept;
 };
-
-//misc////////////////////////////////////////////////////////////////////////
-template <typename T, unsigned N>
-constexpr bool any(longint<T, N> const& a) noexcept
-{
-  auto const any([&]<std::size_t ...I>(
-    std::index_sequence<I...>) noexcept
-    {
-      return (a[I] || ...);
-    }
-  );
-
-  return any(std::make_index_sequence<N>(a));
-}
 
 //arithmetic//////////////////////////////////////////////////////////////////
 template <typename T, unsigned N>
@@ -149,6 +182,19 @@ template <typename T, unsigned N>
 constexpr auto operator-(longint<T, N> const& a) noexcept
 {
   return ~a + longint<T, N>(1);
+}
+
+template <typename T, unsigned N>
+constexpr auto operator~(longint<T, N> const& a) noexcept
+{
+  auto const neg([&]<std::size_t ...I>(
+    std::index_sequence<I...>) noexcept
+    {
+      return typename longint<T, N>::value_type{T(~a[I])...};
+    }
+  );
+
+  return longint<T, N>(neg(std::make_index_sequence<N>()));
 }
 
 template <typename T, unsigned M, typename U, unsigned N>
@@ -165,7 +211,7 @@ constexpr auto operator+(longint<T, M> const& a,
 
       (
         (
-          r[I] = (I < M ? a[I] : T{}) + (I < N ? b[I] : T{}) + carry,
+          r.v_[I] = (I < M ? a[I] : T{}) + (I < N ? b[I] : T{}) + carry,
           carry = (r[I] < a[I]) || (r[I] < b[I]) || (r[I] < carry)
         ),
         ...
@@ -194,8 +240,19 @@ constexpr auto operator*(longint<T, M> const& a,
   auto const mul([&]<std::size_t ...I, std::size_t ...J>(
     std::index_sequence<I...>, std::index_sequence<J...>) noexcept
     {
-      return ((r_t(a[I] * b[J]) <<
-        ((I * longint<T, M>::bits_e) + (J * longint<U, N>::bits_e))) + ...);
+      auto const mul([&]<std::size_t I0>() noexcept
+        {
+          return (
+            (
+              r_t(a[I0] * b[J]) <<
+                (I0 * longint<T, M>::bits_e) + (J * longint<U, N>::bits_e)
+            ) +
+            ...
+          );
+        }
+      );
+
+      return (mul.template operator()<I>() + ...);
     }
   );
 
@@ -203,20 +260,7 @@ constexpr auto operator*(longint<T, M> const& a,
 }
 
 template <typename T, unsigned N>
-constexpr auto operator~(longint<T, N> const& a) noexcept
-{
-  auto const negate([&]<std::size_t ...I>(
-    std::index_sequence<I...>) noexcept -> longint<T, N>
-    {
-      return typename longint<T, N>::value_type{T(~a[I])...};
-    }
-  );
-
-  return negate(std::make_index_sequence<N>());
-}
-
-template <typename T, unsigned N>
-constexpr auto operator<<(longint<T, N> const& a, unsigned const M) noexcept
+constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
 {
   auto r(a);
 
@@ -224,18 +268,18 @@ constexpr auto operator<<(longint<T, N> const& a, unsigned const M) noexcept
     {
       (
         (
-          r[N - 1 - I] = 
+          r.v_[N - 1 - I] = 
             (r[N - 1 - I] << 1) |
             (r[N - 1 - I - 1] >> (longint<T, N>::bits_e - 1))
         ),
         ...
       );
 
-      r[0] <<= 1;
+      r.v_[0] <<= 1;
     }
   );
 
-  for (unsigned i{}; M != i; ++i)
+  while (M--)
   {
     shl(std::make_index_sequence<N - 1>());
   }
@@ -244,7 +288,7 @@ constexpr auto operator<<(longint<T, N> const& a, unsigned const M) noexcept
 }
 
 template <typename T, unsigned N>
-constexpr auto operator>>(longint<T, N> const& a, unsigned const M) noexcept
+constexpr auto operator>>(longint<T, N> const& a, unsigned M) noexcept
 {
   auto r(a);
 
@@ -252,18 +296,17 @@ constexpr auto operator>>(longint<T, N> const& a, unsigned const M) noexcept
     {
       (
         (
-          r[I] = 
-            (r[I] >> 1) |
-            (r[I + 1] & ((longint<T, N>::max_e >> 1) + 1))
+          r.v_[I] = (r[I] >> 1) | (r[I + 1] << (longint<T, N>::bits_e - 1))
         ),
         ...
       );
 
-      r[N - 1] >>= 1;
+      r.v_[N - 1] >>= 1;
     }
   );
 
-  for (unsigned i{}; M != i; ++i)
+  // do M right shifts of 1 bit
+  while (M--)
   {
     shr(std::make_index_sequence<N - 1>());
   }
@@ -272,55 +315,55 @@ constexpr auto operator>>(longint<T, N> const& a, unsigned const M) noexcept
 }
 
 //comparison//////////////////////////////////////////////////////////////////
-template <typename T, unsigned M, unsigned N>
-constexpr bool operator==(longint<T, M> const& a,
+template <typename T, unsigned N>
+constexpr bool operator==(longint<T, N> const& a,
   longint<T, N> const& b) noexcept
 {
   return a.v_ == b.v_;
 }
 
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr bool operator!=(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
   return !(a == b);
 }
 
 //
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr bool operator<(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
   auto const r(a - b);
 
   return r[std::max(M, N) - 1] & ((decltype(r)::max_e >> 1) + 1);
 }
 
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr auto operator>(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
   return b < a;
 }
 
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr auto operator<=(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
   return !(b < a);
 }
 
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr auto operator>=(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
   return !(a < b);
 }
 
 #if __cplusplus > 201703L
-template <typename T, unsigned M, unsigned N>
+template <typename T, unsigned M, typename U, unsigned N>
 constexpr auto operator<=>(longint<T, M> const& a,
-  longint<T, N> const& b) noexcept
+  longint<U, N> const& b) noexcept
 {
   return (a > b) - (a < b);
 }
@@ -370,6 +413,20 @@ constexpr auto operator<=>(longint<T, N> const& a, U const b) noexcept
   return (a > b) - (a < b);
 }
 #endif
+
+//misc////////////////////////////////////////////////////////////////////////
+template <typename T, unsigned N>
+constexpr bool any(longint<T, N> const& a) noexcept
+{
+  auto const any([&]<std::size_t ...I>(
+    std::index_sequence<I...>) noexcept
+    {
+      return (a[I] || ...);
+    }
+  );
+
+  return any(std::make_index_sequence<N>());
+}
 
 //
 template <typename T, unsigned N>
