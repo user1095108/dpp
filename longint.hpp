@@ -2,6 +2,7 @@
 # define LONGINT_HPP
 # pragma once
 
+#include <cassert>
 #include <climits>
 
 #include <array>
@@ -9,6 +10,8 @@
 #include <limits>
 
 #include <ostream>
+
+#include <sstream>
 
 #include <utility>
 
@@ -140,6 +143,16 @@ constexpr auto& operator*=(A&& a) noexcept
   return *this = *this * std::forward<A>(a);
 }
 
+template <typename A>
+constexpr auto& operator/=(A&& a) noexcept
+{
+  return *this = *this / std::forward<A>(a);
+}
+
+// increment, decrement
+constexpr auto& operator++() noexcept { return *this += 1; }
+constexpr auto& operator--() noexcept { return *this -= 1; }
+
 //
 constexpr auto& operator<<=(unsigned i) noexcept
 {
@@ -191,7 +204,7 @@ constexpr auto& operator+(longint<T, N> const& a) noexcept
 template <typename T, unsigned N>
 constexpr auto operator-(longint<T, N> const& a) noexcept
 {
-  return ~a + longint<T, N>(1);
+  return ~a + 1;
 }
 
 template <typename T, unsigned N>
@@ -211,6 +224,8 @@ template <typename T, unsigned N>
 constexpr auto operator+(longint<T, N> const& a,
   longint<T, N> const& b) noexcept
 {
+  using r_t = longint<T, N>;
+
   auto const add([&]<std::size_t ...I>(
     std::index_sequence<I...>) noexcept
     {
@@ -221,7 +236,7 @@ constexpr auto operator+(longint<T, N> const& a,
       (
         (
           r.v_[I] = a[I] + b[I] + carry,
-          carry = (r[I] < a[I]) || (r[I] < b[I]) || (r[I] < carry)
+          carry = a[I] > r_t::max_e - b[I] - carry
         ),
         ...
       );
@@ -269,6 +284,122 @@ constexpr auto operator*(longint<T, N> const& a,
   return mul(std::make_index_sequence<N>());
 }
 
+template <typename T, unsigned N>
+constexpr auto operator/(longint<T, N> a, longint<T, N> b) noexcept
+{
+  using r_t = longint<T, N>;
+
+  if (negative(b))
+  {
+    a = -a;
+    b = -b;
+  }
+
+  r_t q;
+  r_t r(a);
+
+  std::cout << int(a) << " " << int(b) << " " << int(q) << " " << int(r) << " : " << to_raw(r) << std::endl;
+
+  if (negative(a))
+  {
+    while (r >= b)
+    {
+      --q;
+      r += b;
+    }
+  }
+  else
+  {
+    while (r >= b)
+    {
+      ++q;
+      r -= b;
+    }
+  }
+
+  return q;
+}
+
+template <typename A, unsigned B>
+constexpr auto operator%(longint<A, B> const& a,
+  longint<A, B> const& b) noexcept
+{
+  return a - (a / b) * b;
+}
+
+// conversions
+template <typename A, unsigned B, typename U>
+constexpr auto operator+(longint<A, B> const& a, U const b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return a + longint<A, B>(b);
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator-(longint<A, B> const& a, U const b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return a - longint<A, B>(b);
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator*(longint<A, B> const& a, U const b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return a * longint<A, B>(b);
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator/(longint<A, B> const& a, U const b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return a / longint<A, B>(b);
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator%(longint<A, B> const& a, U const b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return a % longint<A, B>(b);
+}
+
+// conversions
+template <typename A, unsigned B, typename U>
+constexpr auto operator+(U const a, longint<A, B> const& b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return longint<A, B>(a) + b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator-(U const a, longint<A, B> const& b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return longint<A, B>(a) - b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator*(U const a, longint<A, B> const& b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return longint<A, B>(a) * b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator/(U const a, longint<A, B> const& b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return longint<A, B>(a) / b;
+}
+
+template <typename A, unsigned B, typename U>
+constexpr auto operator%(U const a, longint<A, B> const& b) noexcept
+{
+  static_assert(std::is_arithmetic_v<U>);
+  return longint<A, B>(a) % b;
+}
+
+//
 template <typename T, unsigned N>
 constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
 {
@@ -322,8 +453,8 @@ constexpr auto operator>>(longint<T, N> const& a, unsigned M) noexcept
         ...
       );
 
-      r.v_[N - 1] = r.v_[N - 1] >> e |
-        neg ? ~T{} << (longint<T, N>::bits_e - e) : T{};
+      r.v_[N - 1] = (r.v_[N - 1] >> e) |
+        (neg ? T(~T{}) << (longint<T, N>::bits_e - e) : T{});
     }
   );
 
@@ -479,7 +610,7 @@ constexpr auto operator>=(U const& a, longint<A, B> const& b) noexcept
 template <typename A, unsigned B>
 constexpr bool any(longint<A, B> const& a) noexcept
 {
-  constexpr auto any([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
+  auto const any([&]<std::size_t ...I>(std::index_sequence<I...>) noexcept
     {
       return (a[I] || ...);
     }
@@ -491,26 +622,46 @@ constexpr bool any(longint<A, B> const& a) noexcept
 template <typename A, unsigned B>
 constexpr bool negative(longint<A, B> const& a) noexcept
 {
+//std::cout << "lol: " << a[B - 1] << std::endl;
   return a[B - 1] >> (longint<A, B>::bits_e - 1);
 }
 
 //
 template <typename T, unsigned N>
+auto to_raw(longint<T, N> const& a) noexcept
+{
+  std::stringstream ss;
+
+  ss << std::hex;
+
+  for (unsigned i(N - 1); i; --i)
+  {
+    ss << a[i] << " ";
+  }
+
+  ss << a[0];
+
+  return ss.str();
+}
+
+template <typename T, unsigned N>
 std::string to_string(longint<T, N> a)
 {
-  std::string r;
+  auto const neg(negative(a));
 
-  auto const negative(a < 0);
+  std::string r;
 
   do
   {
-    // auto const d(a % 10);
-    // r.insert(0, 1, '0' + negative ? -d : d);
-    // a /= 10;
+    std::int8_t const d(a % 10);
+
+    r.insert(0, 1, '0' + (neg ? -d : d));
+
+    a /= 10;
   }
   while (a);
 
-  if (negative)
+  if (neg)
   {
     r.insert(0, 1, '-');
   }
