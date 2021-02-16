@@ -73,7 +73,7 @@ constexpr longint(U const v) noexcept
           (
             v_[I] = I * bits_e < sizeof(U) * CHAR_BIT ?
               v >> I * bits_e :
-              T{}
+              (v >> (sizeof(U) * CHAR_BIT) - 1 ? ~T{} : T{})
           ),
           ...
         );
@@ -81,7 +81,7 @@ constexpr longint(U const v) noexcept
     }
   );
 
-  convert(std::make_index_sequence<bits / bits_e>());
+  convert(std::make_index_sequence<N>());
 }
 
 constexpr longint(longint const&) = default;
@@ -267,10 +267,10 @@ constexpr auto operator*(longint<T, N> const& a,
         {
           return (
             (
-              (I0 + I) * r_t::bits_e <
-                N * r_t::bits_e - sizeof(a[I0] * b[I]) * CHAR_BIT ?
-                r_t(a[I0] * b[I]) << (I0 + I) * r_t::bits_e :
-                r_t{}
+//            (I0 + I) * r_t::bits_e <
+//              N * r_t::bits_e - sizeof(a[I0] * b[I]) * CHAR_BIT ?
+                r_t(a[I0] * b[I]) << (I0 + I) * r_t::bits_e
+//              r_t{}
             ) +
             ...
           );
@@ -403,6 +403,8 @@ constexpr auto operator%(U const a, longint<A, B> const& b) noexcept
 template <typename T, unsigned N>
 constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
 {
+  using r_t = longint<T, N>;
+
   auto r(a);
 
   auto const shl([&]<std::size_t ...I>(unsigned const e,
@@ -412,7 +414,7 @@ constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
         (
           r.v_[N - 1 - I] = 
             (r[N - 1 - I] << e) |
-            (r[N - 1 - I - 1] >> (longint<T, N>::bits_e - e))
+            (r[N - 1 - I - 1] >> (r_t::bits_e - e))
         ),
         ...
       );
@@ -421,15 +423,13 @@ constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
     }
   );
 
-  while (M >= longint<T, N>::bits_e)
+  while (M >= r_t::bits_e)
   {
-    shl.template operator()(longint<T, N>::bits_e,
-      std::make_index_sequence<N - 1>());
-    M -= longint<T, N>::bits_e;
+    shl.template operator()(r_t::bits_e, std::make_index_sequence<N - 1>());
+    M -= r_t::bits_e;
   }
 
-  shl.template operator()(M % longint<T, N>::bits_e,
-    std::make_index_sequence<N - 1>());
+  shl.template operator()(M % r_t::bits_e, std::make_index_sequence<N - 1>());
 
   return r;
 }
@@ -437,6 +437,8 @@ constexpr auto operator<<(longint<T, N> const& a, unsigned M) noexcept
 template <typename T, unsigned N>
 constexpr auto operator>>(longint<T, N> const& a, unsigned M) noexcept
 {
+  using r_t = longint<T, N>;
+
   auto const neg(negative(a));
 
   auto r(a);
@@ -448,25 +450,23 @@ constexpr auto operator>>(longint<T, N> const& a, unsigned M) noexcept
         (
           r.v_[I] =
             (r[I] >> e) |
-            (r[I + 1] << (longint<T, N>::bits_e - e))
+            (r[I + 1] << (r_t::bits_e - e))
         ),
         ...
       );
 
       r.v_[N - 1] = (r.v_[N - 1] >> e) |
-        (neg ? T(~T{}) << (longint<T, N>::bits_e - e) : T{});
+        (neg ? T(~T{}) << (r_t::bits_e - e) : T{});
     }
   );
 
-  while (M >= longint<T, N>::bits_e)
+  while (M >= r_t::bits_e)
   {
-    shr.template operator()(longint<T, N>::bits_e,
-      std::make_index_sequence<N - 1>());
-    M -= longint<T, N>::bits_e;
+    shr.template operator()(r_t::bits_e, std::make_index_sequence<N - 1>());
+    M -= r_t::bits_e;
   }
 
-  shr.template operator()(M % longint<T, N>::bits_e,
-    std::make_index_sequence<N - 1>());
+  shr.template operator()(M % r_t::bits_e, std::make_index_sequence<N - 1>());
 
   return r;
 }
