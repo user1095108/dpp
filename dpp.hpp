@@ -1233,22 +1233,22 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
 namespace literals
 {
 
-constexpr auto operator "" _d64(char const* const s,
-  std::size_t const N) noexcept
+template <char ...c>
+constexpr auto operator "" _d64() noexcept
 {
-  return to_decimal<d64>(std::string_view(s, N));
+  return to_decimal<d64>(std::array<char, sizeof...(c)>{c...});
 }
 
-constexpr auto operator "" _d32(char const* const s,
-  std::size_t const N) noexcept
+template <char ...c>
+constexpr auto operator "" _d32() noexcept
 {
-  return to_decimal<d32>(std::string_view(s, N));
+  return to_decimal<d32>(std::array<char, sizeof...(c)>{c...});
 }
 
-constexpr auto operator "" _d16(char const* const s,
-  std::size_t const N) noexcept
+template <char ...c>
+constexpr auto operator "" _d16() noexcept
 {
-  return to_decimal<d16>(std::string_view(s, N));
+  return to_decimal<d16>(std::array<char, sizeof...(c)>{c...});
 }
 
 }
