@@ -126,7 +126,7 @@ void comp_euler64() noexcept
       std::decimal::decimal64(1),
       std::decimal::decimal64(.000001), f)) << " " <<
 #endif
-    euler("1"_d64, "0"_d64, "1"_d64, ".000001"_d64, f) << std::endl;
+    euler(1_d64, 0_d64, 1_d64, .000001_d64, f) << std::endl;
 }
 
 void comp_sqrt32(unsigned const s) noexcept
@@ -184,13 +184,13 @@ int main()
   std::cout << std::setprecision(17);
 
   //
-  std::cout << "-.001"_d32 << " " << "-.001"_d32.packed() << " " <<
-    dpp::d32("-.001"_d32.packed(), dpp::unpack{}) << std::endl;
-  std::cout << "-2"_d32 / "-3"_d64 << " " << "-2"_d32 / "3"_d64 << " " <<
-    "2"_d64 / "-3"_d64 << " " << "2"_d32 / "3"_d32 << std::endl;
-  std::cout << ("3.1622775"_d32 + "3.1622778"_d32) / dpp::d32(2) << std::endl;
+  std::cout << -.001_d32 << " " << (-.001_d32).packed() << " " <<
+    dpp::d32((-.001_d32).packed(), dpp::unpack{}) << std::endl;
+  std::cout << -2_d32 / -3_d64 << " " << -2_d32 / 3_d64 << " " <<
+    2_d64 / -3_d64 << " " << 2_d32 / 3_d32 << std::endl;
+  std::cout << (3.1622775_d32 + 3.1622778_d32) / dpp::d32(2) << std::endl;
 
-  std::cout << -"1000.0123"_d32 << std::endl;
+  std::cout << -1000.0123_d32 << std::endl;
   std::cout << dpp::d32(.0123f) + dpp::d64(1000) << std::endl;
   std::cout << dpp::d64((long double)(-M_PI)) << " " << dpp::d32(1.23456e20f) << std::endl;
   std::cout << dpp::d32(M_PI) << " " << -float(dpp::d32(-M_PI)) << std::endl;
