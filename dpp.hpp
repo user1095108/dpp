@@ -1236,19 +1236,19 @@ namespace literals
 template <char ...c>
 constexpr auto operator "" _d64() noexcept
 {
-  return to_decimal<d64>(std::array<char, sizeof...(c)>{c...});
+  return to_decimal<d64>((char[sizeof...(c)]){c...});
 }
 
 template <char ...c>
 constexpr auto operator "" _d32() noexcept
 {
-  return to_decimal<d32>(std::array<char, sizeof...(c)>{c...});
+  return to_decimal<d32>((char[sizeof...(c)]){c...});
 }
 
 template <char ...c>
 constexpr auto operator "" _d16() noexcept
 {
-  return to_decimal<d16>(std::array<char, sizeof...(c)>{c...});
+  return to_decimal<d16>((char[sizeof...(c)]){c...});
 }
 
 }
