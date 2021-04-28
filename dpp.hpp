@@ -792,13 +792,11 @@ constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
   return !(a < b);
 }
 
-#if __cplusplus > 201703L
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return (a > b) - (a < b);
 }
-#endif
 
 // conversions
 template <unsigned A, unsigned B, typename U>
