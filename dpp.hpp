@@ -263,14 +263,9 @@ public:
   constexpr dpp(dpp const&) = default;
   constexpr dpp(dpp&&) = default;
 
-  template <typename U,
-    std::enable_if_t<
-      std::is_integral_v<U> ||
-      std::is_same_v<U, __int128>,
-      int
-    > = 0
-  >
+  template <typename U>
   constexpr dpp(U m, int e) noexcept
+    requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
     if constexpr (std::is_same_v<U, bool>)
     {
@@ -349,34 +344,26 @@ public:
     }
   }
 
-  template <typename U,
-    std::enable_if_t<std::is_integral_v<U>, int> = 0
-  >
-  constexpr dpp(U const m) noexcept :
+  template <typename U>
+  constexpr dpp(U const m) noexcept requires(std::is_integral_v<U>):
     dpp(m, 0)
   {
   }
 
-  template <unsigned N, unsigned F,
-    std::enable_if_t<(M < N) || (E < F), int> = 0
-  >
-  constexpr dpp(dpp<N, F> const o) noexcept :
+  template <unsigned N, unsigned F>
+  constexpr dpp(dpp<N, F> const o) noexcept requires((M < N) || (E < F)) :
     dpp(o.mantissa(), o.exponent())
   {
   }
 
-  template <unsigned N, unsigned F,
-    std::enable_if_t<(M >= N) && (E >= F), int> = 0
-  >
-  constexpr dpp(dpp<N, F> const o) noexcept :
+  template <unsigned N, unsigned F>
+  constexpr dpp(dpp<N, F> const o) noexcept requires((M >= N) && (E >= F)) :
     dpp(o.mantissa(), o.exponent(), direct{})
   {
   }
 
-  template <typename U,
-    typename = std::enable_if_t<std::is_floating_point_v<U>>
-  >
-  dpp(U f) noexcept
+  template <typename U>
+  dpp(U f) noexcept requires(std::is_floating_point_v<U>)
   {
     if (std::isfinite(f))
     {
@@ -400,10 +387,9 @@ public:
   }
 
   //
-  template <typename U, std::size_t N,
-    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
-  >
+  template <typename U, std::size_t N>
   constexpr dpp(U(&s)[N]) noexcept
+    requires(std::is_same_v<char, std::remove_cv_t<U>>)
   {
     *this = s;
   }
@@ -432,10 +418,9 @@ public:
   constexpr dpp& operator=(dpp const&) = default;
   constexpr dpp& operator=(dpp&&) = default;
 
-  template <typename U, std::size_t N,
-    std::enable_if_t<std::is_same_v<char, std::remove_cv_t<U>>, int> = 0
-  >
+  template <typename U, std::size_t N>
   constexpr auto& operator=(U(&s)[N]) noexcept
+    requires(std::is_same_v<char, std::remove_cv_t<U>>)
   {
     return *this = to_decimal<dpp>(s);
   }
@@ -451,23 +436,17 @@ public:
     return isnan(*this) || v_.m;
   }
 
-  template <typename T,
-    std::enable_if_t<std::is_floating_point_v<T>, int> = 0
-  >
-  constexpr operator T() const noexcept
+  template <typename T>
+  constexpr operator T() const noexcept requires(std::is_floating_point_v<T>)
   {
     return to_float<T>(*this);
   }
 
   // this function is unsafe, take a look at to_integral() for safety
-  template <typename T,
-     std::enable_if_t<
-      !std::is_same_v<std::remove_cv_t<T>, bool> &&
-      std::is_integral_v<T>,
-      int
-    > = 0
-  >
+  template <typename T>
   constexpr explicit operator T() const noexcept
+    requires(!std::is_same_v<std::remove_cv_t<T>, bool> &&
+      std::is_integral_v<T>)
   {
     if (int e(v_.e); e < 0)
     {
@@ -486,8 +465,8 @@ public:
   // assignment
   template <typename U>
   constexpr auto& operator=(U const a) noexcept
+    requires(std::is_arithmetic_v<U>)
   {
-    static_assert(std::is_arithmetic_v<U>);
     return *this = dpp(a);
   }
 
@@ -689,58 +668,58 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a + dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a - dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a * dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a / dpp<A, B>(b);
 }
 
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) + b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) - b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) * b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) / b;
 }
 
@@ -812,86 +791,86 @@ constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator==(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a == dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator!=(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a != dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a < dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a > dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<=(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a <= dpp<A, B>(b);
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>=(dpp<A, B> const a, U const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return a >= dpp<A, B>(b);
 }
 
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator==(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) == b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator!=(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) != b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) < b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) > b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<=(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) <= b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>=(U const a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<U>)
 {
-  static_assert(std::is_arithmetic_v<U>);
   return dpp<A, B>(a) >= b;
 }
 
