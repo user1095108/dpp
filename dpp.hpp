@@ -56,7 +56,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
 template <typename T, unsigned M, unsigned E>
 constexpr T to_float(dpp<M, E>) noexcept;
 
-namespace
+namespace detail
 {
 
 template <typename U>
@@ -104,7 +104,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
   constexpr auto emax(-(emin + 1));
 
   // reserve one bit in case of overflow
-  constexpr auto rmin(-pow<2, T>(bit_size<T>() - 2));
+  constexpr auto rmin(-pow<2, T>(detail::bit_size<T>() - 2));
   constexpr auto rmax(-(rmin + 1));
 
   if (am > 0)
@@ -193,7 +193,7 @@ class dpp
 public:
   enum : unsigned { exponent_bits = E, mantissa_bits = M };
 
-  enum : int { emin = -pow<2, int>(E - 1), emax = -(emin + 1) };
+  enum : int { emin = -detail::pow<2, int>(E - 1), emax = -(emin + 1) };
 
   using value_type = std::conditional_t<
     M + E <= 16,
@@ -209,7 +209,11 @@ public:
     >
   >;
 
-  enum : value_type { mmin = -pow<2, value_type>(M - 1), mmax = -(mmin + 1) };
+  enum : value_type
+  {
+    mmin = -detail::pow<2, value_type>(M - 1),
+    mmax = -(mmin + 1)
+  };
 
 private:
   using doubled_t = std::conditional_t<
@@ -290,7 +294,7 @@ public:
         }
       }
 
-      constexpr auto umin(U(1) << (bit_size<U>() - 1));
+      constexpr auto umin(U(1) << (detail::bit_size<U>() - 1));
       constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
         -(umin + 1) : ~U{});
 
@@ -410,7 +414,7 @@ public:
   }
 
   constexpr dpp(value_type const v, unpack&&) noexcept :
-    v_{.m = v & (pow<2, value_type>(M) - 1), .e = v >> M}
+    v_{.m = v & (detail::pow<2, value_type>(M) - 1), .e = v >> M}
   {
   }
 
@@ -458,7 +462,7 @@ public:
     }
     else
     {
-      return v_.m * pow<10, T>(e);
+      return v_.m * detail::pow<10, T>(e);
     }
   }
 
@@ -505,7 +509,7 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    return v_.e << M | (v_.m & (pow<2, value_type>(M) - 1));
+    return v_.e << M | (v_.m & (detail::pow<2, value_type>(M) - 1));
   }
 
   //
@@ -567,8 +571,10 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
     typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
     int ea(a.v_.e), eb(b.v_.e);
 
-    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    if (((ea > eb) &&
+        detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) &&
+        detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
     {
       return return_t{nan{}};
     }
@@ -592,8 +598,10 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
     typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
     int ea(a.v_.e), eb(b.v_.e);
 
-    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    if (((ea > eb) &&
+        detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) &&
+        detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
     {
       return return_t{nan{}};
     }
@@ -624,7 +632,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else if (auto am(a.v_.m); am) // guard against division by 0
   {
     constexpr auto rmin(typename return_t::doubled_t(1) <<
-      (bit_size<typename return_t::doubled_t>() - 1));
+      (detail::bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
     // dp is the exponent, that generates the maximal power of 10,
@@ -634,7 +642,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     int e(a.v_.e - b.v_.e - dp);
 
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto const q(pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
+    auto const q(detail::pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
 
     // negating both am and r does not change the quotient
     auto r(am < 0 ? am = -am, -q : q);
@@ -645,6 +653,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       while (r > rmax / am)
       {
         r /= 10;
+
         ++e;
       }
     }
@@ -653,6 +662,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
       while (r < rmin / am)
       {
         r /= 10;
+
         ++e;
       }
     }
@@ -752,8 +762,10 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
     auto ea(a.exponent()), eb(b.exponent());
 
-    if (((ea > eb) && equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) && equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    if (((ea > eb) &&
+        detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
+      ((eb > ea) &&
+        detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
     {
       return false;
     }
