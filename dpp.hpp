@@ -616,7 +616,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 
     // dp is the exponent, that generates the maximal power of 10,
     // that fits into doubled_t
-    constexpr auto dp(log10(rmax) - 1);
+    constexpr auto dp(detail::log10(rmax) - 1);
 
     int e(a.v_.e - b.v_.e - dp);
 
