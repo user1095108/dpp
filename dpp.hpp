@@ -73,7 +73,7 @@ constexpr T pow(unsigned const e, T const x = B) noexcept
   return e ? 1 == e ? x : pow<B>(e / 2, x * x) * y : T(1);
 }
 
-constexpr int log10(__uint128_t const x, unsigned e = 0u) noexcept
+constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 {
   return pow<10, __uint128_t>(e) > x ? e : log10(x, e + 1);
 }
