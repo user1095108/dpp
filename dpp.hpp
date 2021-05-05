@@ -66,7 +66,7 @@ constexpr auto bit_size() noexcept
 }
 
 template <unsigned B, typename T>
-constexpr T pow(unsigned const e, T const x = B) noexcept
+constexpr auto pow(unsigned const e, T const x = B) noexcept
 {
   return e ? 1 == e ? x : pow<B>(e / 2, x * x) * (e % 2 ? x : 1) : T(1);
 }
