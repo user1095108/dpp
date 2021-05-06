@@ -65,25 +65,25 @@ constexpr auto bit_size() noexcept
   return CHAR_BIT * sizeof(U);
 }
 
-template <unsigned B, typename T>
-constexpr T pow(unsigned const e, T const x = B) noexcept
+template <typename T, __uint128_t B>
+constexpr T pow(unsigned const e) noexcept
 {
-  return !e ? T(1) : 1 == e ? x : pow<B>(e / 2, x * x) * (e % 2 ? x : 1);
+  return e ? 1 == e ? T(B) : pow<T, B * B>(e / 2) * (e % 2 ? B : 1) : 1;
 }
 
 constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 {
-  return pow<10, __uint128_t>(e) > x ? e : log10(x, e + 1);
+  return pow<__uint128_t, 10>(e) > x ? e : log10(x, e + 1);
 }
 
 template <unsigned E, typename T>
 constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
-  constexpr auto emin(-pow<2, int>(E - 1));
+  constexpr auto emin(-pow<int, 2>(E - 1));
   constexpr auto emax(-(emin + 1));
 
   // reserve one bit in case of overflow
-  constexpr auto rmin(-pow<2, T>(detail::bit_size<T>() - 2));
+  constexpr auto rmin(-pow<T, 2>(detail::bit_size<T>() - 2));
   constexpr auto rmax(-(rmin + 1));
 
   if (am > 0)
@@ -172,7 +172,7 @@ class dpp
 public:
   enum : unsigned { exponent_bits = E, mantissa_bits = M };
 
-  enum : int { emin = -detail::pow<2, int>(E - 1), emax = -(emin + 1) };
+  enum : int { emin = -detail::pow<int, 2>(E - 1), emax = -(emin + 1) };
 
   using value_type = std::conditional_t<
     M + E <= 16,
@@ -190,7 +190,7 @@ public:
 
   enum : value_type
   {
-    mmin = -detail::pow<2, value_type>(M - 1),
+    mmin = -detail::pow<value_type, 2>(M - 1),
     mmax = -(mmin + 1)
   };
 
@@ -393,7 +393,7 @@ public:
   }
 
   constexpr dpp(value_type const v, unpack&&) noexcept :
-    v_{.m = v & (detail::pow<2, value_type>(M) - 1), .e = v >> M}
+    v_{.m = v & (detail::pow<value_type, 2>(M) - 1), .e = v >> M}
   {
   }
 
@@ -441,7 +441,7 @@ public:
     }
     else
     {
-      return v_.m * detail::pow<10, T>(e);
+      return v_.m * detail::pow<T, 10>(e);
     }
   }
 
@@ -488,7 +488,7 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    return v_.e << M | (v_.m & (detail::pow<2, value_type>(M) - 1));
+    return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
   }
 
   //
@@ -621,7 +621,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     int e(a.v_.e - b.v_.e - dp);
 
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto const q(detail::pow<10, typename return_t::doubled_t>(dp) / b.v_.m);
+    auto const q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
 
     // negating both am and r does not change the quotient
     auto r(am < 0 ? am = -am, -q : q);
