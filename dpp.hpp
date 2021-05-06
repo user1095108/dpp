@@ -65,10 +65,12 @@ constexpr auto bit_size() noexcept
   return CHAR_BIT * sizeof(U);
 }
 
-template <typename T, __uint128_t B>
-constexpr T pow(unsigned const e) noexcept
+template <typename T, T B>
+constexpr T pow(unsigned const e, T const x = B) noexcept
 {
-  return e ? 1 == e ? T(B) : pow<T, B * B>(e / 2) * (e % 2 ? B : 1) : 1;
+  T const y(e % 2 ? x : 1);
+
+  return e ? 1 == e ? x : pow<T, B>(e / 2, x * x) * y : 1;
 }
 
 constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
