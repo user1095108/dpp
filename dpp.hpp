@@ -224,6 +224,7 @@ private:
         if (v_.e <= emax - 1)
         {
           ++v_.e;
+
           v_.m /= 10;
         }
         else
@@ -269,6 +270,7 @@ public:
         while ((e <= emin) && m)
         {
           ++e;
+
           m /= 10;
         }
       }
