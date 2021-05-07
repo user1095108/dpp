@@ -115,7 +115,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
   {
     if (bm > 0)
     {
-      while (ae != be)
+      do
       {
         if (be <= emax - 1)
         {
@@ -133,10 +133,11 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
           return true;
         }
       }
+      while (ae != be);
     }
     else if (bm < 0)
     {
-      while (ae != be)
+      do
       {
         if (be <= emax - 1)
         {
@@ -154,6 +155,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
           return true;
         }
       }
+      while (ae != be);
     }
 /*
     else
