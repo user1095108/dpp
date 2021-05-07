@@ -895,7 +895,7 @@ constexpr auto ceil(dpp<M, E> const a) noexcept
 {
   auto const t(trunc(a));
 
-  return t + dpp<M, E>(t < a);
+  return t + (t < a);
 }
 
 template <unsigned M, unsigned E>
@@ -903,7 +903,7 @@ constexpr auto floor(dpp<M, E> const a) noexcept
 {
   auto const t(trunc(a));
 
-  return t - dpp<M, E>(t > a);
+  return t - (t > a);
 }
 
 template <unsigned M, unsigned E>
@@ -931,7 +931,7 @@ constexpr auto frac(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto sign(dpp<M, E> const a) noexcept
 {
-  constexpr auto m(a.mantissa());
+  auto const m(a.mantissa());
 
   return (m > 0) - (m < 0);
 }
