@@ -319,8 +319,8 @@ public:
       }
 
       //
-      v_.e = e;
       v_.m = m;
+      v_.e = e;
     }
   }
 
@@ -380,7 +380,7 @@ public:
   }
 
   constexpr dpp(value_type const m, int const e, direct&&) noexcept :
-    v_{.m = m, .e = value_type(e)}
+    v_{.m = m, .e = e}
   {
   }
 
