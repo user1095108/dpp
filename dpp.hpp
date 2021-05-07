@@ -79,8 +79,8 @@ constexpr unsigned log10(__uint128_t const x, unsigned const e = 0u) noexcept
 template <unsigned E, typename T>
 constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
-  constexpr auto emin(-pow<int, 2>(E - 1));
-  constexpr auto emax(-(emin + 1));
+//constexpr auto emin(-pow<int, 2>(E - 1));
+//constexpr auto emax(-(emin + 1));
 
   // reserve one bit in case of overflow
   constexpr auto rmin(-pow<T, 2>(detail::bit_size<T>() - 2));
@@ -88,7 +88,8 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 
   if (am > 0)
   {
-    while ((ae != be) && (am <= rmax / 10) && (ae > emin + 1))
+    while ((ae != be) && (am <= rmax / 10))
+//  while ((ae != be) && (am <= rmax / 10) && (ae > emin + 1))
     {
       --ae;
 
@@ -97,7 +98,8 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
   }
   else if (am < 0)
   {
-    while ((ae != be) && (am >= rmin / 10) && (ae > emin + 1))
+    while ((ae != be) && (am >= rmin / 10))
+//  while ((ae != be) && (am >= rmin / 10) && (ae > emin + 1))
     {
       --ae;
 
@@ -117,7 +119,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
     {
       do
       {
-        if (be <= emax - 1)
+//      if (be <= emax - 1)
         {
           ++be;
 
@@ -128,10 +130,10 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 
           bm /= 10;
         }
-        else
-        {
-          return true;
-        }
+//      else
+//      {
+//        return true;
+//      }
       }
       while (ae != be);
     }
@@ -139,7 +141,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
     {
       do
       {
-        if (be <= emax - 1)
+//      if (be <= emax - 1)
         {
           ++be;
 
@@ -150,10 +152,10 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
 
           bm /= 10;
         }
-        else
-        {
-          return true;
-        }
+//      else
+//      {
+//        return true;
+//      }
       }
       while (ae != be);
     }
