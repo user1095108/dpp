@@ -231,7 +231,7 @@ public:
   constexpr dpp(U m, int e) noexcept
     requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
-    // sanity checks, recycle if possible
+    // sanity checks, salvage if possible
     if (e > emax)
     {
       *this = nan{};
