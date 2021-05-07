@@ -91,6 +91,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
     while ((ae != be) && (am <= rmax / 10) && (ae > emin + 1))
     {
       --ae;
+
       am *= 10;
     }
   }
@@ -99,6 +100,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
     while ((ae != be) && (am >= rmin / 10) && (ae > emin + 1))
     {
       --ae;
+
       am *= 10;
     }
   }
@@ -215,32 +217,6 @@ private:
     value_type e:E;
   } v_{};
 
-  constexpr void normalize() noexcept
-  {
-    if (v_.m)
-    {
-      while (!(v_.m % 10))
-      {
-        if (v_.e <= emax - 1)
-        {
-          ++v_.e;
-
-          v_.m /= 10;
-        }
-        else
-        {
-          *this = dpp{nan{}};
-
-          break;
-        }
-      }
-    }
-    else
-    {
-      v_.e = 0;
-    }
-  }
-
 public:
   constexpr dpp() = default;
 
@@ -322,10 +298,29 @@ public:
         }
       }
 
-      v_.m = m;
-      v_.e = e;
+      // normalize
+      if (m)
+      {
+        while (!(m % 10))
+        {
+          if (e <= emax - 1)
+          {
+            ++e;
 
-      normalize();
+            m /= 10;
+          }
+          else
+          {
+            *this = dpp{nan{}};
+
+            return;
+          }
+        }
+      }
+
+      //
+      v_.e = e;
+      v_.m = m;
     }
   }
 
