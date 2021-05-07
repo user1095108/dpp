@@ -227,106 +227,105 @@ public:
   constexpr dpp(U m, int e) noexcept
     requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
-    if constexpr (std::is_same_v<U, bool>)
+    if (e > emax)
     {
-      v_.m = m;
-      (void)e;
+      *this = dpp{nan{}};
+
+      return;
     }
     else
     {
-      if (e > emax)
+      // watch the nan
+      while ((e <= emin) && m)
+      {
+        ++e;
+
+        m /= 10;
+      }
+    }
+
+    constexpr auto umin(U(1) << (detail::bit_size<U>() - 1));
+    constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
+      -(umin + 1) : ~U{});
+
+    if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
+    while (m < mmin)
+    {
+      if (e <= emax - 1)
+      {
+        ++e;
+
+        if (m >= umin + 5)
+        {
+          m -= 5;
+        }
+
+        m /= 10;
+      }
+      else
       {
         *this = dpp{nan{}};
 
         return;
       }
+    }
+
+    while (m > mmax)
+    {
+      if (e <= emax - 1)
+      {
+        ++e;
+
+        if (m <= umax - 5)
+        {
+          m += 5;
+        }
+
+        m /= 10;
+      }
       else
       {
-        // watch the nan
-        while ((e <= emin) && m)
-        {
-          ++e;
+        *this = dpp{nan{}};
 
-          m /= 10;
-        }
+        return;
       }
-
-      constexpr auto umin(U(1) << (detail::bit_size<U>() - 1));
-      constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
-        -(umin + 1) : ~U{});
-
-      if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
-      while (m < mmin)
-      {
-        if (e <= emax - 1)
-        {
-          ++e;
-
-          if (m >= umin + 5)
-          {
-            m -= 5;
-          }
-
-          m /= 10;
-        }
-        else
-        {
-          *this = dpp{nan{}};
-
-          return;
-        }
-      }
-
-      while (m > mmax)
-      {
-        if (e <= emax - 1)
-        {
-          ++e;
-
-          if (m <= umax - 5)
-          {
-            m += 5;
-          }
-
-          m /= 10;
-        }
-        else
-        {
-          *this = dpp{nan{}};
-
-          return;
-        }
-      }
-
-      // normalize
-      if (m)
-      {
-        while (!(m % 10))
-        {
-          if (e <= emax - 1)
-          {
-            ++e;
-
-            m /= 10;
-          }
-          else
-          {
-            *this = dpp{nan{}};
-
-            return;
-          }
-        }
-      }
-
-      //
-      v_.m = m;
-      v_.e = e;
     }
+
+    // normalize
+    if (m)
+    {
+      while (!(m % 10))
+      {
+        if (e <= emax - 1)
+        {
+          ++e;
+
+          m /= 10;
+        }
+        else
+        {
+          *this = dpp{nan{}};
+
+          return;
+        }
+      }
+    }
+
+    //
+    v_.m = m;
+    v_.e = e;
   }
 
   template <typename U>
-  constexpr dpp(U const m) noexcept requires(std::is_integral_v<U>):
+  constexpr dpp(U const m) noexcept requires(
+    std::is_integral_v<U> && !std::is_same_v<U, bool>):
     dpp(m, 0)
+  {
+  }
+
+  template <typename U>
+  constexpr dpp(U const m) noexcept requires(std::is_same_v<U, bool>):
+    dpp(m, 0, direct{})
   {
   }
 
@@ -379,7 +378,7 @@ public:
     *this = s;
   }
 
-  constexpr dpp(value_type const m, int const e, direct&&) noexcept :
+  constexpr dpp(value_type const m, int const e, direct) noexcept :
     v_{.m = m, .e = e}
   {
   }
@@ -389,7 +388,7 @@ public:
   {
   }
 
-  constexpr dpp(value_type const v, unpack&&) noexcept :
+  constexpr dpp(value_type const v, unpack) noexcept :
     v_{.m = v & (detail::pow<value_type, 2>(M) - 1), .e = v >> M}
   {
   }
