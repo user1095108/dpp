@@ -230,7 +230,7 @@ public:
     // sanity checks, recycle if possible
     if (e > emax)
     {
-      *this = dpp{nan{}};
+      *this = nan{};
 
       return;
     }
@@ -266,7 +266,7 @@ public:
       }
       else
       {
-        *this = dpp{nan{}};
+        *this = nan{};
 
         return;
       }
@@ -287,7 +287,7 @@ public:
       }
       else
       {
-        *this = dpp{nan{}};
+        *this = nan{};
 
         return;
       }
@@ -306,7 +306,7 @@ public:
         }
         else
         {
-          *this = dpp{nan{}};
+          *this = nan{};
 
           return;
         }
@@ -363,7 +363,7 @@ public:
     }
     else
     {
-      *this = dpp{nan{}};
+      *this = nan{};
     }
   }
 
@@ -385,7 +385,7 @@ public:
   {
   }
 
-  constexpr dpp(nan&&) noexcept :
+  constexpr dpp(nan) noexcept :
     v_{.m = {}, .e = emin}
   {
   }
@@ -938,7 +938,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 {
   if (i == end)
   {
-    return {nan{}};
+    return nan{};
   }
   else
   {
@@ -961,7 +961,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         break;
 
       default:
-        return {nan{}};
+        return nan{};
     }
 
     typename T::value_type r{};
@@ -1016,7 +1016,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         }
 
         default:
-          return {nan{}};
+          return nan{};
       }
 
       break;
@@ -1067,7 +1067,7 @@ constexpr T to_decimal(It i, It const end) noexcept
           break;
 
         default:
-          return {nan{}};
+          return nan{};
       }
 
       break;
