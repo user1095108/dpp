@@ -71,7 +71,7 @@ constexpr T pow(unsigned const e, T const x = B) noexcept
   return !e ? 1 : 1 == e ? x : pow<T, B>(e / 2, x * x) * (e % 2 ? x : 1);
 }
 
-constexpr unsigned log10(__uint128_t const x, unsigned const e = 0u) noexcept
+constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 {
   return pow<__uint128_t, 10>(e) > x ? e : log10(x, e + 1);
 }
@@ -603,43 +603,50 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (auto am(a.v_.m); am) // guard against division by 0
   {
+    auto const abs([](auto const d) noexcept
+      {
+        return d < 0 ? -d : d;
+      }
+    );
+
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (detail::bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
     // dp is the exponent, that generates the maximal power of 10,
     // that fits into doubled_t
+    // 10^dp > rmax, hence 10^(dp - 1) <= rmax
     constexpr auto dp(detail::log10(rmax) - 1);
 
-    int e(a.v_.e - b.v_.e - dp);
-
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto const q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
+    auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
 
     // negating both am and r does not change the quotient
-    auto r(am < 0 ? am = -am, -q : q);
+    //auto r(am < 0 ? am = -am, -q : q);
 
-    // fit r * am into doubled_t, avoid one divide, there are no sign changes
-    if (r > 0)
+    int e(-dp);
+
+    // fit q * am into doubled_t
+    if (auto const c(abs(rmax / am)); q > 0)
     {
-      for (auto const c(rmax / am); r > c;)
+      while (q > c)
       {
-        r /= 10;
+        q /= 10;
 
         ++e;
       }
     }
-    else if (r < 0)
+    else
     {
-      for (auto const c(rmin / am); r < c;)
+      while (q < -c)
       {
-        r /= 10;
+        q /= 10;
 
         ++e;
       }
     }
 
-    return return_t(r * am, e);
+    return return_t(q * am, a.v_.e - b.v_.e + e);
   }
   else
   {
