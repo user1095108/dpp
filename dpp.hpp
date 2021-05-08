@@ -601,7 +601,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     return return_t{nan{}};
   }
-  else if (auto const am(a.v_.m); am) // guard against division by 0
+  else if (typename return_t::doubled_t const am(a.v_.m); am)
   {
     constexpr auto abs([](auto const d) noexcept
       {
@@ -626,13 +626,11 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     // fit q * am into doubled_t
     if (q > 0)
     {
-      for (auto const c(rmax / abs(typename return_t::doubled_t(am))); q > c;
-        q /= 10, ++e);
+      for (auto const c(rmax / abs(am)); q > c; q /= 10, ++e);
     }
     else
     {
-      for (auto const c(rmin / abs(typename return_t::doubled_t(am))); q < c;
-        q /= 10, ++e);
+      for (auto const c(rmin / abs(am)); q < c; q /= 10, ++e);
     }
 
     return return_t(q * am, e);
