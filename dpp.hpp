@@ -603,12 +603,6 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (typename return_t::doubled_t const am(a.v_.m); am)
   {
-    constexpr auto abs([](auto const d) noexcept
-      {
-        return d < 0 ? -d : d;
-      }
-    );
-
     constexpr auto rmin(typename return_t::doubled_t(1) <<
       (detail::bit_size<typename return_t::doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
@@ -624,13 +618,13 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
 
     // fit q * am into doubled_t
-    if (q > 0)
+    if (auto const aam(am < 0 ? -am : am); q > 0)
     {
-      for (auto const c(rmax / abs(am)); q > c; q /= 10, ++e);
+      for (auto const c(rmax / aam); q > c; q /= 10, ++e);
     }
     else
     {
-      for (auto const c(rmin / abs(am)); q < c; q /= 10, ++e);
+      for (auto const c(rmin / aam); q < c; q /= 10, ++e);
     }
 
     return return_t(q * am, e);
