@@ -601,7 +601,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     return return_t{nan{}};
   }
-  else if (auto am(a.v_.m); am) // guard against division by 0
+  else if (auto const am(a.v_.m); am) // guard against division by 0
   {
     constexpr auto abs([](auto const d) noexcept
       {
