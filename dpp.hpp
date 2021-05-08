@@ -618,21 +618,13 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     // 10^dp > rmax, hence 10^(dp - 1) <= rmax
     constexpr auto dp(detail::log10(rmax) - 1);
 
+    int e(-dp);
+
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
     auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
 
-    // negating both am and r does not change the quotient
-    //auto r(am < 0 ? am = -am, -q : q);
-
-    int e(-dp);
-
-    // fit q * am into doubled_t
-    for (auto const c(abs(rmax / am)); abs(q) > c;)
-    {
-      q /= 10;
-
-      ++e;
-    }
+    // fit q * am into doubled_t, we cannot do rmin / am
+    for (auto const c(abs(rmax / am)); abs(q) > c; q /= 10, ++e);
 
     return return_t(q * am, a.v_.e - b.v_.e + e);
   }
