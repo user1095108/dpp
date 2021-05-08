@@ -249,8 +249,9 @@ public:
       {
         ++e;
 
-        m += (m > 0) && (m <= umax - 5) ? 5 :
-          (m < 0) && (m >= umin + 5) ? -5 : 0;
+        // these numbers are so small, that rounding is hardly worthwhile
+        //m += (m > 0) && (m <= umax - 5) ? 5 :
+        //  (m < 0) && (m >= umin + 5) ? -5 : 0;
 
         m /= 10;
       }
