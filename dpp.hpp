@@ -241,7 +241,7 @@ public:
     else
     {
       // watch the nan
-      while ((e <= emin) && m)
+      while (m && (e <= emin))
       {
         ++e;
 
@@ -257,7 +257,7 @@ public:
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
     while (m < mmin)
     {
-      if (e <= emax - 1)
+      if (e < emax)
       {
         ++e;
 
@@ -278,7 +278,7 @@ public:
 
     while (m > mmax)
     {
-      if (e <= emax - 1)
+      if (e < emax)
       {
         ++e;
 
@@ -302,7 +302,7 @@ public:
     {
       while (!(m % 10))
       {
-        if (e <= emax - 1)
+        if (e < emax)
         {
           ++e;
 
