@@ -231,6 +231,10 @@ public:
   constexpr dpp(U m, int e) noexcept
     requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
+    constexpr auto umin(U(1) << (detail::bit_size<U>() - 1));
+    constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
+      -(umin + 1) : ~U{});
+
     // sanity checks, salvage if possible
     if (e > emax)
     {
@@ -241,19 +245,24 @@ public:
     else
     {
       // watch the nan
-      while (m && (e <= emin))
+      while ((e <= emin) && m)
       {
         ++e;
+
+        if ((m > 0) && (m <= umax - 5))
+        {
+          m += 5;
+        }
+        else if ((m < 0) && (m >= umin + 5))
+        {
+          m -= 5;
+        }
 
         m /= 10;
       }
     }
 
     //
-    constexpr auto umin(U(1) << (detail::bit_size<U>() - 1));
-    constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
-      -(umin + 1) : ~U{});
-
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
     while (m < mmin)
     {
