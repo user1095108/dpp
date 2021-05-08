@@ -621,16 +621,17 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     int e(a.v_.e - b.v_.e - dp);
 
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
+    auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
+
     // fit q * am into doubled_t
-    if (auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
-      q > 0)
+    if (q > 0)
     {
-      for (auto const c(rmax / abs(return_t::doubled_t(am))); q > c;
+      for (auto const c(rmax / abs(typename return_t::doubled_t(am))); q > c;
         q /= 10, ++e);
     }
     else
     {
-      for (auto const c(rmin / abs(return_t::doubled_t(am))); q < c;
+      for (auto const c(rmin / abs(typename return_t::doubled_t(am))); q < c;
         q /= 10, ++e);
     }
 
