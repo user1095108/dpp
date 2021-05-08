@@ -603,7 +603,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (auto am(a.v_.m); am) // guard against division by 0
   {
-    auto const abs([](auto const d) noexcept
+    constexpr auto abs([](auto const d) noexcept
       {
         return d < 0 ? -d : d;
       }
@@ -627,23 +627,11 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     int e(-dp);
 
     // fit q * am into doubled_t
-    if (auto const c(abs(rmax / am)); q > 0)
+    for (auto const c(abs(rmax / am)); abs(q) > c;)
     {
-      while (q > c)
-      {
-        q /= 10;
+      q /= 10;
 
-        ++e;
-      }
-    }
-    else
-    {
-      while (q < -c)
-      {
-        q /= 10;
-
-        ++e;
-      }
+      ++e;
     }
 
     return return_t(q * am, a.v_.e - b.v_.e + e);
