@@ -622,13 +622,13 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
 
     // fit q * am into doubled_t
-    if (auto const aam(am < 0 ? -am : am); q > 0)
+    if (auto const aam(am < 0 ? -am : am); q < 0)
     {
-      for (auto const c(rmax / aam); q > c; q /= 10, ++e);
+      for (auto const c(rmin / aam); q < c; q /= 10, ++e);
     }
     else
     {
-      for (auto const c(rmin / aam); q < c; q /= 10, ++e);
+      for (auto const c(rmax / aam); q > c; q /= 10, ++e);
     }
 
     return return_t(q * am, e);
