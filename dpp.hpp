@@ -53,9 +53,6 @@ template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
 
-template <typename T, unsigned M, unsigned E>
-constexpr T to_float(dpp<M, E>) noexcept;
-
 namespace detail
 {
 
@@ -432,7 +429,7 @@ public:
   template <typename T>
   constexpr operator T() const noexcept requires(std::is_floating_point_v<T>)
   {
-    return to_float<T>(*this);
+    return isnan(a) ? NAN : m_ * std::pow(T(10), e_);
   }
 
   // this function is unsafe, take a look at to_integral() for safety
@@ -1082,13 +1079,6 @@ constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T())
 {
   return to_decimal<T>(std::cbegin(s), std::cend(s));
-}
-
-//////////////////////////////////////////////////////////////////////////////
-template <typename T, unsigned M, unsigned E>
-constexpr T to_float(dpp<M, E> const a) noexcept
-{
-  return isnan(a) ? NAN : a.mantissa() * std::pow(T(10), a.exponent());
 }
 
 //////////////////////////////////////////////////////////////////////////////
