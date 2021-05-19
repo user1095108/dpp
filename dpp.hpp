@@ -65,7 +65,7 @@ constexpr auto bit_size() noexcept
 template <typename T, T B>
 constexpr T pow(unsigned const e, T const x = B) noexcept
 {
-  return !e ? 1 : 1 == e ? x : pow<T, B>(e / 2, x * x) * (e % 2 ? x : 1);
+  return !e ? 1 : 1 == e ? x : (e % 2 ? x : 1) * pow<T, B>(e / 2, x * x);
 }
 
 constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
