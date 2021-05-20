@@ -74,7 +74,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 }
 
 template <unsigned E, typename T>
-constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
+constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
 //constexpr auto emin(-pow<int, 2>(E - 1));
 //constexpr auto emax(-(emin + 1));
@@ -107,7 +107,7 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
   {
     ae = be;
 
-    return false;
+    return;
   }
 
   if (ae != be)
@@ -163,8 +163,6 @@ constexpr bool equalize(T& am, int& ae, T& bm, int& be) noexcept
     }
 */
   }
-
-  return false;
 }
 
 }
@@ -542,14 +540,15 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else
   {
     typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
-    int ea(a.v_.e), eb(b.v_.e);
+    int ea(a.v_.e);
 
-    if (((ea > eb) &&
-        detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) &&
-        detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    if (int eb(b.v_.e); ea > eb)
     {
-      return return_t{nan{}};
+      detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+    }
+    else if (eb > ea)
+    {
+      detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
     }
 
     // there can be no overflow
@@ -569,14 +568,15 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else
   {
     typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
-    int ea(a.v_.e), eb(b.v_.e);
+    int ea(a.v_.e);
 
-    if (((ea > eb) &&
-        detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) &&
-        detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    if (int eb(b.v_.e); ea > eb)
     {
-      return return_t{nan{}};
+      detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+    }
+    else if (eb > ea)
+    {
+      detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
     }
 
     // there can be no overflow
@@ -734,14 +734,15 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
-    auto ea(a.exponent()), eb(b.exponent());
+    auto ea(a.exponent());
 
-    if (((ea > eb) &&
-        detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb)) ||
-      ((eb > ea) &&
-        detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea)))
+    if (auto eb(b.exponent()); ea > eb)
     {
-      return false;
+      detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+    }
+    else if (eb > ea)
+    {
+      detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
     }
 
     return ma < mb;
