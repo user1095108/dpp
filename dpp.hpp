@@ -92,15 +92,15 @@ constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
 
     do
     {
-      ++be;
-
       bm += c;
       bm /= 10;
     }
-    while (bm && (ae != be));
+    while (++be != ae);
   }
-
-  ae = be;
+  else
+  {
+    ae = be;
+  }
 }
 
 }
