@@ -35,12 +35,6 @@ using nan = struct {};
 using unpack = struct {};
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator+(dpp<A, B>, dpp<C, D>) noexcept;
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator-(dpp<A, B>, dpp<C, D>) noexcept;
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -57,7 +51,7 @@ namespace detail
 {
 
 template <typename U>
-constexpr auto bit_size() noexcept
+constexpr unsigned bit_size() noexcept
 {
   return CHAR_BIT * sizeof(U);
 }
@@ -91,92 +85,22 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 template <unsigned E, typename T>
 constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
-//constexpr auto emin(-pow<int, 2>(E - 1));
-//constexpr auto emax(-(emin + 1));
-
-  // reserve one bit in case of overflow
-  constexpr auto rmin(-pow<T, 2>(detail::bit_size<T>() - 2));
-  constexpr auto rmax(-(rmin + 1));
-
-  if (am > 0)
+  if (am && bm)
   {
-    while ((ae != be) && (am <= rmax / 10))
-//  while ((ae != be) && (am <= rmax / 10) && (ae > emin + 1))
-    {
-      --ae;
+    T const f(bm >= 0 ? 5 : -5);
 
-      am *= 10;
-    }
-  }
-  else if (am < 0)
-  {
-    while ((ae != be) && (am >= rmin / 10))
-//  while ((ae != be) && (am >= rmin / 10) && (ae > emin + 1))
+    do
     {
-      --ae;
+      ++be;
 
-      am *= 10;
+      bm += f;
+      bm /= 10;
     }
+    while (ae != be);
   }
   else
   {
     ae = be;
-
-    return;
-  }
-
-  if (ae != be)
-  {
-    if (bm > 0)
-    {
-      do
-      {
-//      if (be <= emax - 1)
-        {
-          ++be;
-
-          if (bm <= rmax - 5)
-          {
-            bm += 5;
-          }
-
-          bm /= 10;
-        }
-//      else
-//      {
-//        return true;
-//      }
-      }
-      while (ae != be);
-    }
-    else if (bm < 0)
-    {
-      do
-      {
-//      if (be <= emax - 1)
-        {
-          ++be;
-
-          if (bm >= rmin + 5)
-          {
-            bm -= 5;
-          }
-
-          bm /= 10;
-        }
-//      else
-//      {
-//        return true;
-//      }
-      }
-      while (ae != be);
-    }
-/*
-    else
-    {
-      be = ae;
-    }
-*/
   }
 }
 
@@ -311,16 +235,36 @@ public:
       }
     }
 
-    // normalize
-    if (m)
-    {
-      while (!(m % 10))
-      {
-        if (e < emax)
-        {
-          ++e;
+    // normalize, minimise the exponent
+    value_type tm(m);
 
-          m /= 10;
+    if (m > 0)
+    {
+      while (tm <= mmax / 10)
+      {
+        tm *= 10;
+
+        if (e >= emin + 1)
+        {
+          --e;
+        }
+        else
+        {
+          *this = nan{};
+
+          return;
+        }
+      }
+    }
+    else if (m < 0)
+    {
+      while (tm >= mmin / 10)
+      {
+        tm *= 10;
+
+        if (e >= emin + 1)
+        {
+          --e;
         }
         else
         {
@@ -336,7 +280,7 @@ public:
     }
 
     //
-    v_.m = m;
+    v_.m = tm;
     v_.e = e;
   }
 
@@ -349,7 +293,7 @@ public:
 
   template <typename U>
   constexpr dpp(U const m) noexcept requires(std::is_same_v<U, bool>):
-    dpp(m, 0, direct{})
+    dpp(int(m), 0)
   {
   }
 
@@ -361,7 +305,7 @@ public:
 
   template <unsigned N, unsigned F>
   constexpr dpp(dpp<N, F> const o) noexcept requires((M >= N) && (E >= F)) :
-    dpp(o.mantissa(), o.exponent(), direct{})
+    dpp(o.mantissa(), o.exponent())
   {
   }
 
@@ -554,10 +498,10 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
-    int ea(a.v_.e);
+    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    auto ea(a.exponent());
 
-    if (int eb(b.v_.e); ea > eb)
+    if (auto eb(b.exponent()); ea > eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
@@ -582,10 +526,10 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else
   {
-    typename return_t::value_type ma(a.v_.m), mb(b.v_.m);
-    int ea(a.v_.e);
+    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    auto ea(a.exponent());
 
-    if (int eb(b.v_.e); ea > eb)
+    if (auto eb(b.exponent()); ea > eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
@@ -891,7 +835,7 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
 
     for (; m && e++; m /= 10);
 
-    return dpp<M, E>(m, 0, direct{});
+    return dpp<M, E>(m, 0);
   }
   else
   {
@@ -1163,22 +1107,38 @@ std::string to_string(dpp<M, E> p)
   {
     std::string r;
 
-    auto m(p.mantissa());
-
     if (auto const t(trunc(p)); t)
     {
       p -= t;
-      m = p.mantissa();
 
-      r.append(std::to_string(t.mantissa())).append(t.exponent(), '0');
+      auto m(t.mantissa());
+      auto e(t.exponent());
+
+      while (!(m % 10))
+      {
+        ++e;
+
+        m /= 10;
+      }
+
+      r.append(std::to_string(m)).append(e, '0');
     }
     else
     {
-      m < 0 ? r.append("-0", 2) : r.append(1, '0');
+      p.mantissa() < 0 ? r.append("-0", 2) : r.append(1, '0');
     }
 
-    if (auto const e(-p.exponent()); (e > 0) && m)
+    auto m(p.mantissa());
+
+    if (auto e(-p.exponent()); (e > 0) && m)
     {
+      while (!(m % 10))
+      {
+        --e;
+
+        m /= 10;
+      }
+
       auto const tmp(std::to_string(std::abs(m)));
 
       if (auto const s(tmp.size()); std::size_t(e) >= s)
