@@ -82,6 +82,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
   return pow<__uint128_t, 10>(e) > x ? e : log10(x, e + 1);
 }
 
+// ae and be are minimized, maximize be.
 template <unsigned E, typename T>
 constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
