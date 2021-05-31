@@ -1088,9 +1088,9 @@ std::string to_string(dpp<M, E> p)
 
       while (!(m % 10))
       {
-        ++e;
-
         m /= 10;
+
+        ++e;
       }
 
       r.append(std::to_string(m)).append(e, '0');
@@ -1106,9 +1106,9 @@ std::string to_string(dpp<M, E> p)
     {
       while (!(m % 10))
       {
-        --e;
-
         m /= 10;
+
+        --e;
       }
 
       auto const tmp(std::to_string(std::abs(m)));
