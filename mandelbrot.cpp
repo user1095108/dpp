@@ -3,6 +3,8 @@
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
 
+#include <cassert>
+
 #include <iostream>
 
 #include "dpp.hpp"
