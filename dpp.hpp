@@ -486,7 +486,7 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
     auto ea(a.exponent());
 
-    if (auto eb(b.exponent()); ea > eb)
+    if (auto eb(b.exponent()); ea >= eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
@@ -514,7 +514,7 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
     auto ea(a.exponent());
 
-    if (auto eb(b.exponent()); ea > eb)
+    if (auto eb(b.exponent()); ea >= eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
@@ -679,7 +679,7 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto eb(b.exponent()), ea(a.exponent()); ea > eb)
+    if (auto eb(b.exponent()), ea(a.exponent()); ea >= eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
