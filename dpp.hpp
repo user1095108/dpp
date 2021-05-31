@@ -40,9 +40,6 @@ constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator/(dpp<A, B>, dpp<C, D>) noexcept;
 
-template <unsigned M, unsigned E>
-constexpr bool isnan(dpp<M, E>) noexcept;
-
 template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
