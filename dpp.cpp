@@ -119,7 +119,7 @@ void comp_euler64() noexcept
   );
 
   std::cout << 
-    euler(1., 0., 1., .000001, f) << " " <<
+//  euler(1., 0., 1., .000001, f) << " " <<
 #if !defined(__ARM_ARCH) && !defined(__clang__)
     to_string(euler(std::decimal::decimal64(1),
       std::decimal::decimal64(0),
