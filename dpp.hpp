@@ -84,7 +84,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 
 // ae and be are minimal, cannot be reduced further, ae > be, maximize be.
 template <unsigned E, typename T>
-constexpr void equalize(T const& am, int& ae, T& bm, int& be) noexcept
+constexpr void equalize(T const& am, int const& ae, T& bm, int& be) noexcept
 {
 //constexpr auto rmin(T(1) << (bit_size<T>() - 1));
 //constexpr auto rmax(-(rmin + 1));
@@ -99,8 +99,6 @@ constexpr void equalize(T const& am, int& ae, T& bm, int& be) noexcept
     // force equality, because of bm
     be = ae;
   }
-
-  ae = be;
 }
 
 }
@@ -489,14 +487,15 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
     if (auto eb(b.exponent()); ea >= eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+
+      return return_t(ma + mb, eb);
     }
     else
     {
       detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
-    }
 
-    // there can be no overflow
-    return return_t(ma + mb, ea);
+      return return_t(ma + mb, ea);
+    }
   }
 }
 
@@ -517,14 +516,15 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
     if (auto eb(b.exponent()); ea >= eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+
+      return return_t(ma - mb, eb);
     }
     else
     {
       detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
-    }
 
-    // there can be no overflow
-    return return_t(ma - mb, ea);
+      return return_t(ma - mb, ea);
+    }
   }
 }
 
