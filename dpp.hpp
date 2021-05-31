@@ -84,7 +84,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 
 // ae and be are minimal, cannot be reduced further, ae > be, maximize be.
 template <typename T>
-constexpr void equalize(T const& am, int const& ae, T& bm, int& be) noexcept
+constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
 //constexpr auto rmin(T(1) << (bit_size<T>() - 1));
 //constexpr auto rmax(-(rmin + 1));
