@@ -239,9 +239,7 @@ public:
     }
     else
     {
-      value_type tm(m);
-
-      if (tm > 0)
+      if (value_type tm(m); m > 0)
       {
         while ((tm <= mmax / 10) && (e > emin + 1))
         {
