@@ -88,13 +88,13 @@ constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
 {
   if (am && bm)
   {
-    T const f(bm >= 0 ? 5 : -5);
+    T const c(bm >= 0 ? 5 : -5);
 
     do
     {
       ++be;
 
-      bm += f;
+      bm += c;
       bm /= 10;
     }
     while (bm && (ae != be));
