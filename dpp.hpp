@@ -276,18 +276,12 @@ public:
 
   template <typename U>
   constexpr dpp(U const m) noexcept requires(std::is_same_v<U, bool>):
-    dpp(int(m), 0)
+    dpp(value_type(m), 0)
   {
   }
 
   template <unsigned N, unsigned F>
-  constexpr dpp(dpp<N, F> const o) noexcept requires((M < N) || (E < F)) :
-    dpp(o.mantissa(), o.exponent())
-  {
-  }
-
-  template <unsigned N, unsigned F>
-  constexpr dpp(dpp<N, F> const o) noexcept requires((M >= N) && (E >= F)) :
+  constexpr dpp(dpp<N, F> const o) noexcept requires((M != N) || (E != F)) :
     dpp(o.mantissa(), o.exponent())
   {
   }
