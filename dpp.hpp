@@ -92,15 +92,12 @@ constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
 
     do
     {
-      bm += c;
-      bm /= 10;
+      bm = (bm + c) / 10;
     }
-    while (++be != ae);
+    while ((++be != ae) && bm);
   }
-  else
-  {
-    ae = be;
-  }
+
+  be = ae;
 }
 
 }
@@ -692,9 +689,8 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
-    auto ea(a.exponent());
 
-    if (auto eb(b.exponent()); ea > eb)
+    if (auto eb(b.exponent()), ea(a.exponent()); ea > eb)
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
