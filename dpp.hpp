@@ -83,7 +83,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 }
 
 // ae and be are minimal, cannot be reduced further, ae > be, maximize be.
-template <unsigned E, typename T>
+template <typename T>
 constexpr void equalize(T const& am, int const& ae, T& bm, int& be) noexcept
 {
 //constexpr auto rmin(T(1) << (bit_size<T>() - 1));
@@ -486,13 +486,13 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 
     if (auto eb(b.exponent()); ea >= eb)
     {
-      detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+      detail::equalize(ma, ea, mb, eb);
 
       return return_t(ma + mb, eb);
     }
     else
     {
-      detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
+      detail::equalize(mb, eb, ma, ea);
 
       return return_t(ma + mb, ea);
     }
@@ -515,13 +515,13 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
 
     if (auto eb(b.exponent()); ea >= eb)
     {
-      detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+      detail::equalize(ma, ea, mb, eb);
 
       return return_t(ma - mb, eb);
     }
     else
     {
-      detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
+      detail::equalize(mb, eb, ma, ea);
 
       return return_t(ma - mb, ea);
     }
@@ -679,13 +679,13 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto eb(b.exponent()), ea(a.exponent()); ea >= eb)
+    if (auto ea(a.exponent()), eb(b.exponent()); ea >= eb)
     {
-      detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
+      detail::equalize(ma, ea, mb, eb);
     }
     else
     {
-      detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
+      detail::equalize(mb, eb, ma, ea);
     }
 
     return ma < mb;
