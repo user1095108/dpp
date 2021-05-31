@@ -470,9 +470,8 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
-    auto ea(a.exponent());
 
-    if (auto eb(b.exponent()); ea >= eb)
+    if (auto ea(a.exponent()), eb(b.exponent()); ea >= eb)
     {
       detail::equalize(ma, ea, mb, eb);
 
@@ -499,9 +498,8 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
   else
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
-    auto ea(a.exponent());
 
-    if (auto eb(b.exponent()); ea >= eb)
+    if (auto ea(a.exponent()), eb(b.exponent()); ea >= eb)
     {
       detail::equalize(ma, ea, mb, eb);
 
