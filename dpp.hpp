@@ -96,7 +96,7 @@ constexpr void equalize(T const& am, int const& ae, T& bm, int& be) noexcept
       bm = (bm + c) / 10;
     }
 
-    // force equality, because of bm
+    //
     be = ae;
   }
 }
