@@ -61,14 +61,12 @@ constexpr T pow(unsigned e) noexcept
 {
   for (T r{1}, x(B);;)
   {
-    auto const a(e % 2), b(e /= 2);
-
-    if (a)
+    if (e % 2)
     {
       r *= x;
     }
 
-    if (b)
+    if (e /= 2)
     {
       x *= x;
     }
