@@ -96,12 +96,10 @@ constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
       bm += f;
       bm /= 10;
     }
-    while (ae != be);
+    while (bm && (ae != be));
   }
-  else
-  {
-    ae = be;
-  }
+
+  ae = be;
 }
 
 }
