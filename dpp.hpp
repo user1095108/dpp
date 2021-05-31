@@ -232,7 +232,7 @@ public:
       }
     }
 
-    // normalize, minimise the exponent
+    // normalize, minimize the exponent
     if (!m)
     {
       e = {};
