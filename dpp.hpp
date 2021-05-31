@@ -490,7 +490,7 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
-    else if (eb > ea)
+    else
     {
       detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
     }
@@ -518,7 +518,7 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
-    else if (eb > ea)
+    else
     {
       detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
     }
@@ -683,7 +683,7 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
     {
       detail::equalize<return_t::exponent_bits>(ma, ea, mb, eb);
     }
-    else if (eb > ea)
+    else
     {
       detail::equalize<return_t::exponent_bits>(mb, eb, ma, ea);
     }
