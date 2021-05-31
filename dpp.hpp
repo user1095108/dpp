@@ -84,17 +84,28 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 
 // ae and be are minimized, maximize be.
 template <unsigned E, typename T>
-constexpr void equalize(T& am, int& ae, T& bm, int& be) noexcept
+constexpr void equalize(T const& am, int const& ae, T& bm, int& be) noexcept
 {
+  constexpr T rmin(1 << bit_size<T>() - 1);
+  constexpr T rmax(-(rmin + 1));
+
   if (am && bm)
   {
-    T const c(bm >= 0 ? 5 : -5);
-
-    do
+    if ((bm > 0) && (bm <= rmax - 5))
     {
-      bm = (bm + c) / 10;
+      bm += 5;
     }
-    while ((++be != ae) && bm);
+    else if ((bm < 0) && (bm >= rmin + 5))
+    {
+      bm -= 5;
+    }
+
+    while (be != ae)
+    {
+      ++be;
+
+      bm /= 10;
+    }
   }
 
   be = ae;
@@ -232,51 +243,37 @@ public:
     }
 
     // normalize, minimise the exponent
-    value_type tm(m);
-
-    if (m > 0)
-    {
-      while (tm <= mmax / 10)
-      {
-        tm *= 10;
-
-        if (e >= emin + 1)
-        {
-          --e;
-        }
-        else
-        {
-          *this = nan{};
-
-          return;
-        }
-      }
-    }
-    else if (m < 0)
-    {
-      while (tm >= mmin / 10)
-      {
-        tm *= 10;
-
-        if (e >= emin + 1)
-        {
-          --e;
-        }
-        else
-        {
-          *this = nan{};
-
-          return;
-        }
-      }
-    }
-    else
+    if (!m)
     {
       e = {};
     }
+    else
+    {
+      value_type tm(m);
+
+      if (tm > 0)
+      {
+        while ((tm <= mmax / 10) && (e > emin + 1))
+        {
+          --e;
+
+          tm *= 10;
+        }
+      }
+      else if (tm < 0)
+      {
+        while ((tm >= mmin / 10) && (e > emin + 1))
+        {
+          --e;
+
+          tm *= 10;
+        }
+      }
+
+      v_.m = tm;
+    }
 
     //
-    v_.m = tm;
     v_.e = e;
   }
 
