@@ -82,33 +82,25 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
   return pow<__uint128_t, 10>(e) > x ? e : log10(x, e + 1);
 }
 
-// ae and be are minimized, maximize be.
+// ae and be are minimal, cannot be reduced further, ae > be, maximize be.
 template <unsigned E, typename T>
-constexpr void equalize(T const& am, int const& ae, T& bm, int& be) noexcept
+constexpr void equalize(T const& am, int& ae, T& bm, int& be) noexcept
 {
-  constexpr T rmin(1 << bit_size<T>() - 1);
-  constexpr T rmax(-(rmin + 1));
+//constexpr auto rmin(T(1) << (bit_size<T>() - 1));
+//constexpr auto rmax(-(rmin + 1));
 
-  if (am && bm)
+  if (am)
   {
-    if ((bm > 0) && (bm <= rmax - 5))
+    for (auto const c(bm >= 0 ? 5 : -5); bm && (be != ae); ++be)
     {
-      bm += 5;
-    }
-    else if ((bm < 0) && (bm >= rmin + 5))
-    {
-      bm -= 5;
+      bm = (bm + c) / 10;
     }
 
-    while (be != ae)
-    {
-      ++be;
-
-      bm /= 10;
-    }
+    // force equality, because of bm
+    be = ae;
   }
 
-  be = ae;
+  ae = be;
 }
 
 }
@@ -260,7 +252,7 @@ public:
           tm *= 10;
         }
       }
-      else if (tm < 0)
+      else
       {
         while ((tm >= mmin / 10) && (e > emin + 1))
         {
