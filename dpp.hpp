@@ -1050,12 +1050,7 @@ std::string to_string(dpp<M, E> p)
       auto m(t.mantissa());
       auto e(t.exponent());
 
-      while (!(m % 10))
-      {
-        m /= 10;
-
-        ++e;
-      }
+      for (; !(m % 10); m /= 10, ++e);
 
       r.append(std::to_string(m)).append(e, '0');
     }
@@ -1068,12 +1063,7 @@ std::string to_string(dpp<M, E> p)
 
     if (auto e(-p.exponent()); (e > 0) && m)
     {
-      while (!(m % 10))
-      {
-        m /= 10;
-
-        --e;
-      }
+      for (; !(m % 10); m /= 10, --e);
 
       auto const tmp(std::to_string(std::abs(m)));
 
