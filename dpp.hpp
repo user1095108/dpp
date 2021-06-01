@@ -14,11 +14,9 @@
 
 #include <ostream>
 
-#include <string_view>
+#include <string>
 
 #include <type_traits>
-
-#include <utility>
 
 namespace dpp
 {
