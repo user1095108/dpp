@@ -73,8 +73,8 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (T const c(bm >= 0 ? 5 : -5); bm && (be++ != ae);
-      bm = (bm + c) / 10);
+    for (T const c(bm >= 0 ? 5 : -5); bm && (be != ae);
+      ++be, bm = (bm + c) / 10);
 
     //
     be = ae;
@@ -301,11 +301,11 @@ public:
   constexpr explicit operator T() const noexcept
     requires(!std::is_same_v<T, bool> && std::is_integral_v<T>)
   {
-    if (int e(v_.e); e < 0)
+    if (int e(v_.e); e <= 0)
     {
       auto m(v_.m);
 
-      for (; m && e++; m /= 10);
+      for (; m && e; ++e, m /= 10);
 
       return m;
     }
@@ -728,11 +728,11 @@ constexpr auto isnan(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const a) noexcept
 {
-  if (auto e(a.exponent()); !isnan(a) && (e < 0))
+  if (auto e(a.exponent()); !isnan(a) && (e <= 0))
   {
     auto m(a.mantissa());
 
-    for (; m && e++; m /= 10);
+    for (; m && e; ++e, m /= 10);
 
     return dpp<M, E>(m, 0);
   }
@@ -952,9 +952,9 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
   {
     T m(p.mantissa());
 
-    if (auto e(p.exponent()); e < 0)
+    if (auto e(p.exponent()); e <= 0)
     {
-      for (; m && e++; m /= 10);
+      for (; m && e; ++e, m /= 10);
 
       return m;
     }
