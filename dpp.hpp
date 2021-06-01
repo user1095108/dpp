@@ -181,8 +181,14 @@ public:
     {
       value_type tm(m);
 
-      for (; (e > emin + 1) && (tm >= mmin / 10) && (tm <= mmax / 10);
-        tm *= 10, --e);
+      if (m > 0)
+      {
+        for (; (e > emin + 1) && (tm <= mmax / 10); tm *= 10, --e);
+      }
+      else
+      {
+        for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
+      }
 
       v_.m = tm;
     }
