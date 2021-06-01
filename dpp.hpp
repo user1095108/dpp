@@ -214,8 +214,6 @@ public:
     if (e > emax)
     {
       *this = nan{};
-
-      return;
     }
     else
     {
