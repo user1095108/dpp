@@ -371,7 +371,7 @@ public:
 
 //arithmetic//////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B>
-constexpr auto& operator+(dpp<A, B> const& a) noexcept
+constexpr auto operator+(dpp<A, B> const a) noexcept
 {
   return a;
 }
