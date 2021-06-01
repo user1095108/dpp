@@ -146,6 +146,8 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
+    auto const c(m >= 0 ? 5 : -5);
+
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
     if (m < mmin)
@@ -158,7 +160,7 @@ public:
       m /= 10;
       ++e;
 
-      for (; m < mmin; m = (m - 5) / 10, ++e);
+      for (; m < mmin; m = (m + c) / 10, ++e);
     }
 
     if (m > mmax)
@@ -171,12 +173,11 @@ public:
       m /= 10;
       ++e;
 
-      for (; m > mmax; m = (m + 5) / 10, ++e);
+      for (; m > mmax; m = (m + c) / 10, ++e);
     }
 
-    // watch the nan
-    for (auto const c(m >= 0 ? 5 : -5); (e <= emin) && m;
-      m = (m + c) / 10, ++e);
+    //
+    for (; (e <= emin) && m; m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
     if (!m)
