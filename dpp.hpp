@@ -146,14 +146,6 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
-    // sanity checks, salvage if possible
-    if (e > emax)
-    {
-      *this = nan{};
-
-      return;
-    }
-
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
     if (m < mmin)
