@@ -73,8 +73,7 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (auto const c(bm >= 0 ? T(5) : T(-5)); bm && (be != ae);
-      ++be, bm = (bm + c) / 10);
+    for (T const c(bm >= 0 ? 5 : -5); bm && (be++ != ae); bm = (bm + c) / 10);
 
     //
     be = ae;
@@ -146,7 +145,7 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
-    auto const c(m >= 0 ? U(5) : U(-5));
+    U const c(m >= 0 ? 5 : -5);
 
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
@@ -296,7 +295,7 @@ public:
     {
       auto m(v_.m);
 
-      for (; m && e; ++e, m /= 10);
+      for (; m && e++; m /= 10);
 
       return m;
     }
@@ -719,7 +718,7 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
   {
     auto m(a.mantissa());
 
-    for (; m && e; ++e, m /= 10);
+    for (; m && e++; m /= 10);
 
     return dpp<M, E>(m, 0);
   }
@@ -941,7 +940,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
 
     if (auto e(p.exponent()); e <= 0)
     {
-      for (; m && e; ++e, m /= 10);
+      for (; m && e++; m /= 10);
 
       return m;
     }
