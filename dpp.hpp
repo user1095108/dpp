@@ -181,9 +181,7 @@ public:
     // normalize, minimize the exponent
     if (m)
     {
-      value_type tm(m);
-
-      if (m > 0)
+      if (value_type tm(m); m > 0)
       {
         while ((tm <= mmax / 10) && (e > emin + 1))
         {
