@@ -156,48 +156,43 @@ public:
     else
     {
       // watch the nan
-      // these numbers are so small, that rounding is hardly worthwhile
-      for (; (e <= emin) && m; m /= 10, ++e);
+      for (auto const c(m >= 0 ? 5 : -5); (e <= emin) && m;
+        m = (m + c) / 10, ++e);
     }
 
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
-    while (m < mmin)
+    if (m < mmin)
     {
-      if (e++ < emax)
+      if (m >= umin + 5)
       {
-        if (m >= umin + 5)
-        {
-          m -= 5;
-        }
-
-        m /= 10;
+        m -= 5;
       }
-      else
-      {
-        *this = nan{};
 
-        return;
-      }
+      m /= 10;
+      ++e;
+
+      for (; m < mmin; m = (m - 5) / 10, ++e);
     }
 
-    while (m > mmax)
+    if (m > mmax)
     {
-      if (e++ < emax)
+      if (m <= umax - 5)
       {
-        if (m <= umax - 5)
-        {
-          m += 5;
-        }
-
-        m /= 10;
+        m += 5;
       }
-      else
-      {
-        *this = nan{};
 
-        return;
-      }
+      m /= 10;
+      ++e;
+
+      for (; m > mmax; m = (m + 5) / 10, ++e);
+    }
+
+    if ((e <= emin) || (e > emax))
+    {
+      *this = nan{};
+
+      return;
     }
 
     // normalize, minimize the exponent
@@ -968,7 +963,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
 
     if (auto e(p.exponent()); e <= 0)
     {
-      for (; m && e++; m /= 10);
+      for (; e && m; m /= 10, ++e);
 
       return m;
     }
