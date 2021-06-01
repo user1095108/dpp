@@ -186,10 +186,8 @@ public:
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
     while (m < mmin)
     {
-      if (e < emax)
+      if (e++ < emax)
       {
-        ++e;
-
         if (m >= umin + 5)
         {
           m -= 5;
@@ -207,10 +205,8 @@ public:
 
     while (m > mmax)
     {
-      if (e < emax)
+      if (e++ < emax)
       {
-        ++e;
-
         if (m <= umax - 5)
         {
           m += 5;
