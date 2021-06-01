@@ -179,7 +179,11 @@ public:
     for (; (e <= emin) && m; m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
-    if (m)
+    if (!m)
+    {
+      e = {};
+    }
+    else
     {
       value_type tm(m);
 
@@ -201,10 +205,6 @@ public:
       }
 
       v_.m = tm;
-    }
-    else
-    {
-      e = {};
     }
 
     //
