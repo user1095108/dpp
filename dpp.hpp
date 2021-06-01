@@ -183,10 +183,21 @@ public:
     {
       value_type tm(m);
 
-      while ((tm >= mmin / 10) && (tm <= mmax / 10) && (e > emin + 1))
+      if (m > 0)
       {
-        tm *= 10;
-        --e;
+        while ((tm <= mmax / 10) && (e > emin + 1))
+        {
+          tm *= 10;
+          --e;
+        }
+      }
+      else
+      {
+        while ((tm >= mmin / 10) && (e > emin + 1))
+        {
+          tm *= 10;
+          --e;
+        }
       }
 
       v_.m = tm;
