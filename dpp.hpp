@@ -299,7 +299,7 @@ public:
   // this function is unsafe, take a look at to_integral() for safety
   template <typename T>
   constexpr explicit operator T() const noexcept
-    requires(!std::is_same_v<T, bool> && std::is_integral_v<T>)
+    requires(std::is_integral_v<T>)
   {
     if (int e(v_.e); e <= 0)
     {
