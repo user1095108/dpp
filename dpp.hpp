@@ -34,12 +34,6 @@ using direct = struct {};
 using nan = struct {};
 using unpack = struct {};
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator/(dpp<A, B>, dpp<C, D>) noexcept;
-
 template <typename T, typename S>
 constexpr auto to_decimal(S const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T());
@@ -48,7 +42,7 @@ namespace detail
 {
 
 template <typename U>
-constexpr unsigned bit_size() noexcept
+constexpr auto bit_size() noexcept
 {
   return CHAR_BIT * sizeof(U);
 }
@@ -422,12 +416,6 @@ public:
   }
 
   //
-  template <unsigned A, unsigned B, unsigned C, unsigned D>
-  friend constexpr auto operator+(dpp<A, B>, dpp<C, D>) noexcept;
-
-  template <unsigned A, unsigned B, unsigned C, unsigned D>
-  friend constexpr auto operator-(dpp<A, B>, dpp<C, D>) noexcept;
-
   template <unsigned A, unsigned B, unsigned C, unsigned D>
   friend constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
 
