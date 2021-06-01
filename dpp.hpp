@@ -363,8 +363,7 @@ public:
   // this function is unsafe, take a look at to_integral() for safety
   template <typename T>
   constexpr explicit operator T() const noexcept
-    requires(!std::is_same_v<std::remove_cv_t<T>, bool> &&
-      std::is_integral_v<T>)
+    requires(!std::is_same_v<T, bool> && std::is_integral_v<T>)
   {
     if (int e(v_.e); e < 0)
     {
@@ -442,7 +441,7 @@ public:
 
 //arithmetic//////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B>
-constexpr auto operator+(dpp<A, B> const a) noexcept
+constexpr auto& operator+(dpp<A, B> const& a) noexcept
 {
   return a;
 }
