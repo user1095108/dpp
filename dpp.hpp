@@ -36,10 +36,7 @@ namespace detail
 {
 
 template <typename U>
-constexpr auto bit_size() noexcept
-{
-  return CHAR_BIT * sizeof(U);
-}
+constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename T, T B>
 constexpr T pow(unsigned e) noexcept
@@ -141,14 +138,15 @@ public:
   constexpr dpp(U m, int e) noexcept
     requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
-    constexpr auto umin(U(1) << (detail::bit_size<U>() - 1));
+    constexpr auto umin(U(1) << (detail::bit_size_v<U> - 1));
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
     U const c(m >= 0 ? 5 : -5);
 
     //
-    if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
+    if constexpr ((std::is_signed_v<U> || std::is_same_v<U, __int128>) &&
+      (detail::bit_size_v<U> > M))
     if (m < mmin)
     {
       if (m >= umin + 5)
@@ -162,6 +160,9 @@ public:
       for (; m < mmin; m = (m + c) / 10, ++e);
     }
 
+    if constexpr ((std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)) ||
+      ((std::is_signed_v<U> || std::is_same_v<U, __int128>) &&
+       (detail::bit_size_v<U> > M)))
     if (m > mmax)
     {
       if (m <= umax - 5)
@@ -453,7 +454,7 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
   else if (doubled_t const am(a.v_.m); am)
   {
-    constexpr auto rmin(doubled_t(1) << (detail::bit_size<doubled_t>() - 1));
+    constexpr auto rmin(doubled_t(1) << (detail::bit_size_v<doubled_t> - 1));
     constexpr auto rmax(-(rmin + 1));
 
     // dp is the exponent, that generates the maximal power of 10,
