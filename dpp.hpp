@@ -1004,7 +1004,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
   }
   else
   {
-    auto m(p.mantissa());
+    T m(p.mantissa());
 
     if (auto e(p.exponent()); e <= 0)
     {
@@ -1014,32 +1014,16 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
     }
     else
     {
-      if (m > 0)
+      while (e--)
       {
-        for (; e--;)
+        if ((m >= std::numeric_limits<T>::min() / 10) &&
+          (m <= std::numeric_limits<T>::max() / 10))
         {
-          if (m <= std::numeric_limits<T>::max() / 10)
-          {
-            m *= 10;
-          }
-          else
-          {
-            return {};
-          }
+          m *= 10;
         }
-      }
-      else
-      {
-        for (; e--;)
+        else
         {
-          if (m >= std::numeric_limits<T>::min() / 10)
-          {
-            m *= 10;
-          }
-          else
-          {
-            return {};
-          }
+          return {};
         }
       }
 
