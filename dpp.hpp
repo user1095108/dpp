@@ -289,18 +289,6 @@ public:
   }
 
   //
-  template <typename U, std::size_t N>
-  constexpr dpp(U(&s)[N]) noexcept
-    requires(std::is_same_v<char, std::remove_cv_t<U>>)
-  {
-    *this = s;
-  }
-
-  constexpr dpp(std::string_view const& s) noexcept
-  {
-    *this = s;
-  }
-
   constexpr dpp(value_type const m, int const e, direct) noexcept :
     v_{.m = m, .e = e}
   {
