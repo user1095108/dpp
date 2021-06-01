@@ -715,7 +715,7 @@ constexpr auto isnan(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const a) noexcept
 {
-  if (auto e(a.exponent()); !isnan(a) && (e <= 0))
+  if (auto e(a.exponent()); !isnan(a) && (e < 0))
   {
     auto m(a.mantissa());
 
