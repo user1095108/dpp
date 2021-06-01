@@ -960,7 +960,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
     }
     else
     {
-      while (e--)
+      do
       {
         if ((m >= std::numeric_limits<T>::min() / 10) &&
           (m <= std::numeric_limits<T>::max() / 10))
@@ -972,6 +972,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
           return {};
         }
       }
+      while (--e);
 
       return m;
     }
