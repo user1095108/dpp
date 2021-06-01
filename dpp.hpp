@@ -193,7 +193,7 @@ public:
       }
       else
       {
-        for (; (e > emin + 1) && (tm >= mmin / 10) && ; tm *= 10, --e);
+        for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
       }
 
       v_.m = tm;
