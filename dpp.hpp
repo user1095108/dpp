@@ -243,7 +243,7 @@ public:
         min(std::numeric_limits<std::intmax_t>::min());
         (f > max) || (f < min); f /= 10, ++e);
 
-      *this = dpp{std::intmax_t(f), e};
+      *this = {std::intmax_t(f), e};
     }
     else
     {
