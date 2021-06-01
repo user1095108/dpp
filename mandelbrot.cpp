@@ -13,7 +13,7 @@
 //using D = float;
 using D = dpp::d32;
 
-constexpr auto max_iter = 100;
+constexpr auto max_iter = 100u;
 
 constexpr int mandelbrot(D const cr, D const ci) noexcept
 {
