@@ -73,10 +73,8 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (auto const c(bm >= 0 ? 5 : -5); bm && (be++ != ae);)
-    {
-      bm = (bm + c) / 10;
-    }
+    for (auto const c(bm >= 0 ? 5 : -5); bm && (be++ != ae);
+      bm = (bm + c) / 10);
 
     //
     be = ae;
