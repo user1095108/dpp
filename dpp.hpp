@@ -73,7 +73,7 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (T const c(bm >= 0 ? 5 : -5); bm && (be != ae);
+    for (auto const c(bm >= 0 ? T(5) : T(-5)); bm && (be != ae);
       ++be, bm = (bm + c) / 10);
 
     //
@@ -146,7 +146,7 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
-    U const c(m >= 0 ? 5 : -5);
+    auto const c(m >= 0 ? U(5) : U(-5));
 
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
@@ -301,17 +301,17 @@ public:
   constexpr explicit operator T() const noexcept
     requires(std::is_integral_v<T>)
   {
-    if (int e(v_.e); e <= 0)
+    if (int e(v_.e); e > 0)
+    {
+      return v_.m * detail::pow<T, 10>(e);
+    }
+    else
     {
       auto m(v_.m);
 
       for (; m && e; ++e, m /= 10);
 
       return m;
-    }
-    else
-    {
-      return v_.m * detail::pow<T, 10>(e);
     }
   }
 
