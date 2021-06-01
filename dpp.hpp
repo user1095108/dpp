@@ -73,7 +73,7 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (auto const c(bm >= 0 ? 5 : -5); bm && (be++ != ae);
+    for (T const c(bm >= 0 ? 5 : -5); bm && (be++ != ae);
       bm = (bm + c) / 10);
 
     //
@@ -146,7 +146,7 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
-    auto const c(m >= 0 ? 5 : -5);
+    U const c(m >= 0 ? 5 : -5);
 
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
@@ -456,15 +456,15 @@ template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+  using doubled_t = typename return_t::doubled_t;
 
   if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
   {
     return return_t{nan{}};
   }
-  else if (typename return_t::doubled_t const am(a.v_.m); am)
+  else if (doubled_t const am(a.v_.m); am)
   {
-    constexpr auto rmin(typename return_t::doubled_t(1) <<
-      (detail::bit_size<typename return_t::doubled_t>() - 1));
+    constexpr auto rmin(doubled_t(1) << (detail::bit_size<doubled_t>() - 1));
     constexpr auto rmax(-(rmin + 1));
 
     // dp is the exponent, that generates the maximal power of 10,
@@ -475,16 +475,16 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     int e(a.v_.e - b.v_.e - dp);
 
     // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto q(detail::pow<typename return_t::doubled_t, 10>(dp) / b.v_.m);
+    auto q(detail::pow<doubled_t, 10>(dp) / b.v_.m);
 
     // fit q * am into doubled_t
     if (auto const aam(am < 0 ? -am : am); q < 0)
     {
-      for (auto const c(rmin / aam); q < c; q /= 10, ++e);
+      for (doubled_t const a(rmin / aam); q < a; q /= 10, ++e);
     }
     else
     {
-      for (auto const c(rmax / aam); q > c; q /= 10, ++e);
+      for (doubled_t const a(rmax / aam); q > a; q /= 10, ++e);
     }
 
     return return_t(q * am, e);
@@ -952,9 +952,9 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
   {
     T m(p.mantissa());
 
-    if (auto e(p.exponent()); e <= 0)
+    if (auto e(p.exponent()); e < 0)
     {
-      for (; e && m; m /= 10, ++e);
+      for (; m && e++; m /= 10);
 
       return m;
     }
@@ -1037,22 +1037,22 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
 namespace literals
 {
 
-template <char ...c>
+template <char ...C>
 constexpr auto operator "" _d64() noexcept
 {
-  return to_decimal<d64>((char const[sizeof...(c)]){c...});
+  return to_decimal<d64>((char const[sizeof...(C)]){C...});
 }
 
-template <char ...c>
+template <char ...C>
 constexpr auto operator "" _d32() noexcept
 {
-  return to_decimal<d32>((char const[sizeof...(c)]){c...});
+  return to_decimal<d32>((char const[sizeof...(C)]){C...});
 }
 
-template <char ...c>
+template <char ...C>
 constexpr auto operator "" _d16() noexcept
 {
-  return to_decimal<d16>((char const[sizeof...(c)]){c...});
+  return to_decimal<d16>((char const[sizeof...(C)]){C...});
 }
 
 }
