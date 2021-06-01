@@ -773,7 +773,7 @@ constexpr auto operator>=(U const a, dpp<A, B> const b) noexcept
 
 //misc////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr bool isnan(dpp<M, E> const a) noexcept
+constexpr auto isnan(dpp<M, E> const a) noexcept
 {
   return dpp<M, E>::emin == a.exponent();
 }
