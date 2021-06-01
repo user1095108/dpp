@@ -180,34 +180,21 @@ public:
     for (; (e <= emin) && m; m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
-    if (!m)
-    {
-      e = {};
-    }
-    else
+    if (m)
     {
       value_type tm(m);
 
-      if (m > 0)
+      while ((tm <= mmax / 10) && (tm >= mmin / 10) && (e > emin + 1))
       {
-        while ((tm <= mmax / 10) && (e > emin + 1))
-        {
-          --e;
-
-          tm *= 10;
-        }
-      }
-      else
-      {
-        while ((tm >= mmin / 10) && (e > emin + 1))
-        {
-          --e;
-
-          tm *= 10;
-        }
+        tm *= 10;
+        --e;
       }
 
       v_.m = tm;
+    }
+    else
+    {
+      e = {};
     }
 
     //
