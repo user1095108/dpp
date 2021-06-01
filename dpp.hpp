@@ -142,8 +142,6 @@ public:
     constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
       -(umin + 1) : ~U{});
 
-    U const c(m >= 0 ? 5 : -5);
-
     //
     if constexpr ((std::is_signed_v<U> || std::is_same_v<U, __int128>) &&
       (detail::bit_size_v<U> > M))
@@ -157,7 +155,7 @@ public:
       m /= 10;
       ++e;
 
-      for (; m < mmin; m = (m + c) / 10, ++e);
+      for (U const c(m >= 0 ? 5 : -5); m < mmin; m = (m + c) / 10, ++e);
     }
 
     if constexpr ((std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)) ||
@@ -173,31 +171,25 @@ public:
       m /= 10;
       ++e;
 
-      for (; m > mmax; m = (m + c) / 10, ++e);
+      for (U const c(m >= 0 ? 5 : -5); m > mmax; m = (m + c) / 10, ++e);
     }
 
     //
-    for (; (e <= emin) && m; m = (m + c) / 10, ++e);
+    for (U const c(m >= 0 ? 5 : -5); (e <= emin) && m; m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
-    if (!m)
-    {
-      e = {};
-    }
-    else
+    if (m)
     {
       value_type tm(m);
 
-      if (m > 0)
-      {
-        for (; (e > emin + 1) && (tm <= mmax / 10); tm *= 10, --e);
-      }
-      else
-      {
-        for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
-      }
+      for (; (e > emin + 1) && (tm >= mmin / 10) && (tm <= mmax / 10);
+        tm *= 10, --e);
 
       v_.m = tm;
+    }
+    else
+    {
+      e = {};
     }
 
     //
