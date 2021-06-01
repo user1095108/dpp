@@ -153,12 +153,6 @@ public:
 
       return;
     }
-    else
-    {
-      // watch the nan
-      for (auto const c(m >= 0 ? 5 : -5); (e <= emin) && m;
-        m = (m + c) / 10, ++e);
-    }
 
     //
     if constexpr (std::is_signed_v<U> || std::is_same_v<U, __int128>)
@@ -188,12 +182,9 @@ public:
       for (; m > mmax; m = (m + 5) / 10, ++e);
     }
 
-    if ((e <= emin) || (e > emax))
-    {
-      *this = nan{};
-
-      return;
-    }
+    // watch the nan
+    for (auto const c(m >= 0 ? 5 : -5); (e <= emin) && m;
+      m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
     if (!m)
@@ -227,7 +218,16 @@ public:
     }
 
     //
-    v_.e = e;
+    if (e > emax)
+    {
+      *this = nan{};
+
+      return;
+    }
+    else
+    {
+      v_.e = e;
+    }
   }
 
   template <typename U>
