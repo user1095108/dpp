@@ -480,11 +480,11 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
     // fit q * am into doubled_t
     if (auto const aam(am < 0 ? -am : am); q < 0)
     {
-      for (doubled_t const a(rmin / aam); q < a; q /= 10, ++e);
+      for (auto const a(rmin / aam); q < a; q /= 10, ++e);
     }
     else
     {
-      for (doubled_t const a(rmax / aam); q > a; q /= 10, ++e);
+      for (auto const a(rmax / aam); q > a; q /= 10, ++e);
     }
 
     return return_t(q * am, e);
