@@ -72,7 +72,6 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
   {
     for (T const c(bm >= 0 ? 5 : -5); bm && (be++ != ae); bm = (bm + c) / 10);
 
-    //
     be = ae;
   }
 }
