@@ -189,11 +189,11 @@ public:
 
       if (m > 0)
       {
-        for (; (tm <= mmax / 10) && (e > emin + 1); tm *= 10, --e);
+        for (; (e > emin + 1) && (tm <= mmax / 10); tm *= 10, --e);
       }
       else
       {
-        for (; (tm >= mmin / 10) && (e > emin + 1); tm *= 10, --e);
+        for (; (e > emin + 1) && (tm >= mmin / 10) && ; tm *= 10, --e);
       }
 
       v_.m = tm;
