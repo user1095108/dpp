@@ -154,7 +154,7 @@ public:
       m /= 10;
       ++e;
 
-      for (U const c(m >= 0 ? 5 : -5); m < mmin; m = (m + c) / 10, ++e);
+      for (; m < mmin; m = (m - 5) / 10, ++e);
     }
 
     if constexpr ((std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)) ||
@@ -170,7 +170,7 @@ public:
       m /= 10;
       ++e;
 
-      for (U const c(m >= 0 ? 5 : -5); m > mmax; m = (m + c) / 10, ++e);
+      for (; m > mmax; m = (m + 5) / 10, ++e);
     }
 
     //
@@ -190,21 +190,19 @@ public:
         for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
       }
 
-      v_.m = tm;
+      if (e > emax)
+      {
+        *this = nan{};
+      }
+      else
+      {
+        v_.m = tm;
+        v_.e = e;
+      }
     }
     else
     {
-      e = {};
-    }
-
-    //
-    if (e > emax)
-    {
-      *this = nan{};
-    }
-    else
-    {
-      v_.e = e;
+      v_ = {};
     }
   }
 
