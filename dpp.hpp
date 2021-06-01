@@ -34,10 +34,6 @@ using direct = struct {};
 using nan = struct {};
 using unpack = struct {};
 
-template <typename T, typename S>
-constexpr auto to_decimal(S const& s) noexcept ->
-  decltype(std::cbegin(s), std::cend(s), T());
-
 namespace detail
 {
 
@@ -325,18 +321,6 @@ public:
   //
   constexpr dpp& operator=(dpp const&) = default;
   constexpr dpp& operator=(dpp&&) = default;
-
-  template <typename U, std::size_t N>
-  constexpr auto& operator=(U(&s)[N]) noexcept
-    requires(std::is_same_v<char, std::remove_cv_t<U>>)
-  {
-    return *this = to_decimal<dpp>(s);
-  }
-
-  constexpr auto& operator=(std::string_view const& s) noexcept
-  {
-    return *this = to_decimal<dpp>(s);
-  }
 
   //
   constexpr explicit operator bool() const noexcept
