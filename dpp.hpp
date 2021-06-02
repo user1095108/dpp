@@ -69,7 +69,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 }
 
 template <auto a, typename B>
-constexpr auto xorsign(B const b) noexcept
+constexpr auto selectsign(B const b) noexcept
 {
   if constexpr (is_signed_v<decltype(a)> && is_signed_v<B>)
   {
@@ -87,7 +87,7 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (auto const c(detail::xorsign<T(5)>(bm)); bm && (be++ != ae);
+    for (auto const c(detail::selectsign<T(5)>(bm)); bm && (be++ != ae);
       bm = (bm + c) / 10);
 
     be = ae;
@@ -189,7 +189,7 @@ public:
     }
 
     //
-    for (auto const c(detail::xorsign<U(5)>(m)); (e <= emin) && m;
+    for (auto const c(detail::selectsign<U(5)>(m)); (e <= emin) && m;
       m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
