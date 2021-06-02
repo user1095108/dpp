@@ -38,6 +38,10 @@ namespace detail
 template <typename U>
 constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
+template <typename U>
+constexpr static auto is_signed_v(std::is_signed_v<U> ||
+  std::is_same_v<U, __int128>);
+
 template <typename T, T B>
 constexpr T pow(unsigned e) noexcept
 {
@@ -64,13 +68,27 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
   return pow<__uint128_t, 10>(e) > x ? e : log10(x, e + 1);
 }
 
+template <auto a, typename B>
+constexpr auto xorsign(B const b) noexcept
+{
+  if constexpr (is_signed_v<decltype(a)> && is_signed_v<B>)
+  {
+    return b >= 0 ? a : -a;
+  }
+  else
+  {
+    return a;
+  }
+}
+
 // ae and be are minimal, cannot be reduced further, ae > be, maximize be.
 template <typename T>
 constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (T const c(bm >= 0 ? 5 : -5); bm && (be++ != ae); bm = (bm + c) / 10);
+    for (auto const c(detail::xorsign<T(5)>(bm)); bm && (be++ != ae);
+      bm = (bm + c) / 10);
 
     be = ae;
   }
@@ -138,12 +156,10 @@ public:
     requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
     constexpr auto umin(U(1) << (detail::bit_size_v<U> - 1));
-    constexpr auto umax(std::is_signed_v<U> || std::is_same_v<U, __int128> ?
-      -(umin + 1) : ~U{});
+    constexpr auto umax(detail::is_signed_v<U> ?  -(umin + 1) : ~U{});
 
     //
-    if constexpr ((std::is_signed_v<U> || std::is_same_v<U, __int128>) &&
-      (detail::bit_size_v<U> > M))
+    if constexpr (detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
     if (m < mmin)
     {
       if (m >= umin + 5)
@@ -158,8 +174,7 @@ public:
     }
 
     if constexpr ((std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)) ||
-      ((std::is_signed_v<U> || std::is_same_v<U, __int128>) &&
-       (detail::bit_size_v<U> > M)))
+      (detail::is_signed_v<U> && (detail::bit_size_v<U> > M)))
     if (m > mmax)
     {
       if (m <= umax - 5)
@@ -174,7 +189,8 @@ public:
     }
 
     //
-    for (U const c(m >= 0 ? 5 : -5); (e <= emin) && m; m = (m + c) / 10, ++e);
+    for (auto const c(detail::xorsign<U(5)>(m)); (e <= emin) && m;
+      m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent
     if (m)
@@ -1023,22 +1039,22 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
 namespace literals
 {
 
-template <char ...C>
+template <char ...c>
 constexpr auto operator "" _d64() noexcept
 {
-  return to_decimal<d64>((char const[sizeof...(C)]){C...});
+  return to_decimal<d64>((char const[sizeof...(c)]){c...});
 }
 
-template <char ...C>
+template <char ...c>
 constexpr auto operator "" _d32() noexcept
 {
-  return to_decimal<d32>((char const[sizeof...(C)]){C...});
+  return to_decimal<d32>((char const[sizeof...(c)]){c...});
 }
 
-template <char ...C>
+template <char ...c>
 constexpr auto operator "" _d16() noexcept
 {
-  return to_decimal<d16>((char const[sizeof...(C)]){C...});
+  return to_decimal<d16>((char const[sizeof...(c)]){c...});
 }
 
 }
