@@ -223,15 +223,13 @@ public:
   }
 
   template <typename U>
-  constexpr dpp(U const m) noexcept requires(
-    std::is_integral_v<U> && !std::is_same_v<U, bool>):
-    dpp(m, 0)
-  {
-  }
-
-  template <typename U>
-  constexpr dpp(U const m) noexcept requires(std::is_same_v<U, bool>):
-    dpp(value_type(m), 0)
+  constexpr dpp(U const m) noexcept requires(std::is_integral_v<U>) :
+    dpp(std::conditional_t<
+          detail::bit_size_v<U> < detail::bit_size_v<value_type>,
+          value_type,
+          U
+        >(m), 0
+    )
   {
   }
 
