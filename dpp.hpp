@@ -733,17 +733,31 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto ceil(dpp<M, E> const a) noexcept
 {
-  auto const t(trunc(a));
+  if (!isnan(a))
+  {
+    auto const t(trunc(a));
 
-  return dpp<M, E>(t.mantissa() + (t < a), t.exponent());
+    return dpp<M, E>(t.mantissa() + (t < a), t.exponent());
+  }
+  else
+  {
+    return a;
+  }
 }
 
 template <unsigned M, unsigned E>
 constexpr auto floor(dpp<M, E> const a) noexcept
 {
-  auto const t(trunc(a));
+  if (!isnan(a))
+  {
+    auto const t(trunc(a));
 
-  return dpp<M, E>(t.mantissa() - (t > a), t.exponent());
+    return dpp<M, E>(t.mantissa() - (t > a), t.exponent());
+  }
+  else
+  {
+    return a;
+  }
 }
 
 template <unsigned M, unsigned E>
