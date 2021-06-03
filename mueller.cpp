@@ -31,4 +31,6 @@ int main()
     computeMullersIter<double>(30);
     std::cout << "dpp::d64" << std::endl;
     computeMullersIter<dpp::d64>(30);
+    std::cout << "long double" << std::endl;
+    computeMullersIter<long double>(30);
 }
