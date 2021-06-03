@@ -735,7 +735,7 @@ constexpr auto ceil(dpp<M, E> const a) noexcept
 {
   auto const t(trunc(a));
 
-  return t + (t < a);
+  return dpp<M, E>(t.mantissa() + (t < a), t.exponent());
 }
 
 template <unsigned M, unsigned E>
@@ -743,7 +743,7 @@ constexpr auto floor(dpp<M, E> const a) noexcept
 {
   auto const t(trunc(a));
 
-  return t - (t > a);
+  return dpp<M, E>(t.mantissa() - (t > a), t.exponent());
 }
 
 template <unsigned M, unsigned E>
