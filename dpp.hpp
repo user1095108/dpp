@@ -253,9 +253,9 @@ public:
 
       // slash f, if necessary
       for (constexpr long double
-        max(std::numeric_limits<std::intmax_t>::max()),
-        min(std::numeric_limits<std::intmax_t>::min());
-        (f > max) || (f < min); f /= 10, ++e);
+        min(std::numeric_limits<std::intmax_t>::min()),
+        max(std::numeric_limits<std::intmax_t>::max());
+        (f < min) || (f > max); f /= 10, ++e);
 
       *this = {std::intmax_t(f), e};
     }
@@ -271,10 +271,7 @@ public:
   {
   }
 
-  constexpr dpp(nan) noexcept :
-    v_{.m = {}, .e = emin}
-  {
-  }
+  constexpr dpp(nan) noexcept : v_{.m = {}, .e = emin} { }
 
   constexpr dpp(value_type const v, unpack) noexcept :
     v_{.m = v & (detail::pow<value_type, 2>(M) - 1), .e = v >> M}
