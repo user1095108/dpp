@@ -337,8 +337,8 @@ public:
   }
 
   // increment, decrement
-  constexpr auto& operator++() noexcept { return *this += value_type(1); }
-  constexpr auto& operator--() noexcept { return *this -= value_type(1); }
+  constexpr auto& operator++() noexcept { return *this += dpp(1u, 0); }
+  constexpr auto& operator--() noexcept { return *this -= dpp(1u, 0); }
 
   //
   constexpr int exponent() const noexcept { return v_.e; }
@@ -545,13 +545,13 @@ constexpr auto operator/(U const a, dpp<A, B> const b) noexcept
 template <unsigned A, unsigned B>
 constexpr auto operator++(dpp<A, B> const a, int) noexcept
 {
-  return a + dpp<A, B>::value_type(1);
+  return a + dpp<A, B>(1u, 0);
 }
 
 template <unsigned A, unsigned B>
 constexpr auto operator--(dpp<A, B> const a, int) noexcept
 {
-  return a - dpp<A, B>::value_type(1);
+  return a - dpp<A, B>(1u, 0);
 }
 
 //comparison//////////////////////////////////////////////////////////////////
