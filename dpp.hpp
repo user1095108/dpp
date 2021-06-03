@@ -173,8 +173,8 @@ public:
       for (; m < mmin; m = (m - 5) / 10, ++e);
     }
 
-    if constexpr ((std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)) ||
-      (detail::is_signed_v<U> && (detail::bit_size_v<U> > M)))
+    if constexpr ((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
+      (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
     if (m > mmax)
     {
       if (m <= umax - 5)
