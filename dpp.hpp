@@ -315,14 +315,6 @@ public:
 
   // assignment
   template <typename U>
-  constexpr auto& operator=(U const a) noexcept
-    requires(std::is_arithmetic_v<U>)
-  {
-    return *this = dpp(a);
-  }
-
-  //
-  template <typename U>
   constexpr auto& operator+=(U const a) noexcept
   {
     return *this = *this + a;
