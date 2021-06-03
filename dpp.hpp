@@ -378,7 +378,7 @@ constexpr auto operator-(dpp<A, B> const a) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
 
   if (isnan(a) || isnan(b))
   {
@@ -406,7 +406,7 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
 
   if (isnan(a) || isnan(b))
   {
@@ -434,7 +434,7 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator*(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
 
   return isnan(a) || isnan(b) ? return_t{nan{}} :
     return_t(typename return_t::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
@@ -443,7 +443,7 @@ constexpr auto operator*(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
   using doubled_t = typename return_t::doubled_t;
 
   if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
@@ -572,7 +572,7 @@ constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = dpp<(A > C ? A : C), (A > C ? B : D)>;
+  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
 
   if (isnan(a) || isnan(b))
   {
