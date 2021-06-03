@@ -1,6 +1,8 @@
 // https://github.com/vpiotr/decimal_for_cpp/issues/34
 #include <iostream>
 
+#include <iomanip>
+
 #include "dpp.hpp"
 
 template <typename T>
@@ -20,6 +22,7 @@ void computeMullersIter(int iteration)
 
 int main()
 {
+    std::cout << std::setprecision(17);
     std::cout << "float" << std::endl;
     computeMullersIter<float>(30);
     std::cout << "dpp::d32" << std::endl;
