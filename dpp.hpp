@@ -158,7 +158,7 @@ public:
     constexpr auto umin(U(1) << (detail::bit_size_v<U> - 1));
     constexpr auto umax(detail::is_signed_v<U> ?  -(umin + 1) : ~U{});
 
-    //
+    // slash m, if necessary
     if constexpr (detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
     if (m < mmin)
     {
@@ -188,11 +188,11 @@ public:
       for (; m > mmax; m = (m + 5) / 10, ++e);
     }
 
-    //
+    // additional slashing, if necessary
     for (auto const c(detail::selectsign<U(5)>(m)); (e <= emin) && m;
       m = (m + c) / 10, ++e);
 
-    // normalize, minimize the exponent
+    // normalize, minimize the exponent, if m non-zero
     if (m)
     {
       value_type tm(m);
