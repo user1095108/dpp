@@ -145,11 +145,6 @@ private:
   } v_{};
 
 public:
-  // min, max
-  static constexpr dpp min{mmin, emax};
-  static constexpr dpp max{mmax, emax};
-
-public:
   constexpr dpp() = default;
 
   constexpr dpp(dpp const&) = default;
@@ -317,6 +312,12 @@ public:
 
   // assignment
   template <typename U>
+  constexpr auto& operator=(U&& a) noexcept
+  {
+    return *this = dpp(std::forward<U>(a));
+  }
+
+  template <typename U>
   constexpr auto& operator+=(U const a) noexcept
   {
     return *this = *this + a;
@@ -352,6 +353,10 @@ public:
   {
     return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
   }
+
+  // min, max
+  static constexpr dpp min() noexcept { return {mmin, emax}; }
+  static constexpr dpp max() noexcept { return {mmax, emax}; }
 
   //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
