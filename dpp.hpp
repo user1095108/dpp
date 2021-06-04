@@ -233,7 +233,7 @@ public:
   }
 
   template <unsigned A, unsigned B>
-  constexpr dpp(dpp<A, B> const o) noexcept requires((M != A) || (E != B)) :
+  constexpr dpp(dpp<A, B> const o) noexcept :
     dpp(o.mantissa(), o.exponent())
   {
   }
