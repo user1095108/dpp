@@ -713,9 +713,27 @@ constexpr auto operator>=(U const a, dpp<A, B> const b) noexcept
 
 //misc////////////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
+constexpr auto isfinite(dpp<M, E> const a) noexcept
+{
+  return !isnan(a);
+}
+
+template <unsigned M, unsigned E>
+constexpr auto isinf(dpp<M, E> const a) noexcept
+{
+  return isnan(a);
+}
+
+template <unsigned M, unsigned E>
 constexpr auto isnan(dpp<M, E> const a) noexcept
 {
   return dpp<M, E>::emin == a.exponent();
+}
+
+template <unsigned M, unsigned E>
+constexpr auto isnormal(dpp<M, E> const a) noexcept
+{
+  return !isnan(a);
 }
 
 //
@@ -793,7 +811,7 @@ constexpr auto sign(dpp<M, E> const a) noexcept
 {
   auto const m(a.mantissa());
 
-  return (m > 0) - (m < 0);
+  return isnan(a) ? 0 : (m > 0) - (m < 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
