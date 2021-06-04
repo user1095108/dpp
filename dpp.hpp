@@ -81,13 +81,13 @@ constexpr auto selectsign(B const b) noexcept
   }
 }
 
-// ae and be are minimal, cannot be reduced further, ae > be, maximize be.
+// ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
 template <typename T>
 constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (auto const c(detail::selectsign<T(5)>(bm)); bm && (be++ != ae);
+    for (auto const c(detail::selectsign<T(5)>(bm)); bm && (ae != be++);
       bm = (bm + c) / 10);
 
     be = ae;
