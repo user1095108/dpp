@@ -120,8 +120,7 @@ public:
 
   enum : value_type
   {
-    mmin = -detail::pow<value_type, 2>(M - 1),
-    mmax = -(mmin + 1)
+    mmin = -detail::pow<value_type, 2>(M - 1), mmax = -(mmin + 1)
   };
 
 private:
