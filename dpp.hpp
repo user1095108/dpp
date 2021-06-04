@@ -354,8 +354,8 @@ public:
   }
 
   // min, max
-  static constexpr dpp min() noexcept { return {mmin, emax}; }
-  static constexpr dpp max() noexcept { return {mmax, emax}; }
+  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
+  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 
   //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
