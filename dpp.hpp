@@ -276,10 +276,6 @@ public:
   }
 
   //
-  constexpr dpp& operator=(dpp const&) = default;
-  constexpr dpp& operator=(dpp&&) = default;
-
-  //
   constexpr explicit operator bool() const noexcept
   {
     return isnan(*this) || v_.m;
@@ -311,6 +307,9 @@ public:
   }
 
   // assignment
+  constexpr dpp& operator=(dpp const&) = default;
+  constexpr dpp& operator=(dpp&&) = default;
+
   template <typename U>
   constexpr auto& operator=(U&& a) noexcept
   {
