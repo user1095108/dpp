@@ -371,11 +371,19 @@ constexpr auto operator+(dpp<A, B> const a) noexcept
 template <unsigned A, unsigned B>
 constexpr auto operator-(dpp<A, B> const a) noexcept
 {
-  auto const m(a.mantissa());
-  auto const e(a.exponent());
+  if (isnan(a))
+  {
+    return a;
+  }
+  else
+  {
+    auto const m(a.mantissa());
+    auto const e(a.exponent());
 
-  // we need to do it like this, as negating the mantissa can overflow
-  return dpp<A, B>::mmin == m ? dpp<A, B>(-m, e) : dpp<A, B>(-m, e, direct{});
+    // we need to do it like this, as negating the mantissa can overflow
+    return dpp<A, B>::mmin == m ? dpp<A, B>(-m, e) :
+      dpp<A, B>(-m, e, direct{});
+  }
 }
 
 //
@@ -731,30 +739,30 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto ceil(dpp<M, E> const a) noexcept
 {
-  if (!isnan(a))
+  if (isnan(a))
+  {
+    return a;
+  }
+  else
   {
     auto const t(trunc(a));
 
     return dpp<M, E>(t.mantissa() + (t < a), t.exponent());
-  }
-  else
-  {
-    return a;
   }
 }
 
 template <unsigned M, unsigned E>
 constexpr auto floor(dpp<M, E> const a) noexcept
 {
-  if (!isnan(a))
+  if (isnan(a))
+  {
+    return a;
+  }
+  else
   {
     auto const t(trunc(a));
 
     return dpp<M, E>(t.mantissa() - (t > a), t.exponent());
-  }
-  else
-  {
-    return a;
   }
 }
 
