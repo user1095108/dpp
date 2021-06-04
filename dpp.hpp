@@ -766,7 +766,7 @@ constexpr auto round(dpp<M, E> const a) noexcept
   constexpr dpp<M, E> c(5, -1);
 
   return !isnan(a) && (a.exponent() < 0) ?
-    trunc(a.mantissa() > 0 ? a + c : a - c) :
+    trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
 }
 
