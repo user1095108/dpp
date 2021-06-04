@@ -763,7 +763,7 @@ constexpr auto ceil(dpp<M, E> const a) noexcept
 {
   if (isnan(a))
   {
-    return a;
+    return dpp<M, E>{nan{}};
   }
   else
   {
@@ -778,7 +778,7 @@ constexpr auto floor(dpp<M, E> const a) noexcept
 {
   if (isnan(a))
   {
-    return a;
+    return dpp<M, E>{nan{}};
   }
   else
   {
