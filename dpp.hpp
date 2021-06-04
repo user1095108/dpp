@@ -877,9 +877,7 @@ constexpr T to_decimal(It i, It const end) noexcept
           break;
 
         case '\0':
-        {
           return {r, 0};
-        }
 
         default:
           return nan{};
