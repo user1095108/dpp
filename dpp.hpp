@@ -313,31 +313,31 @@ public:
   template <typename U>
   constexpr auto& operator=(U&& a) noexcept
   {
-    return *this = dpp(std::forward<U>(a));
+    return *this = {std::forward<U>(a)};
   }
 
   template <typename U>
-  constexpr auto& operator+=(U const a) noexcept
+  constexpr auto& operator+=(U&& a) noexcept
   {
-    return *this = *this + a;
+    return *this = *this + std::forward<U>(a);
   }
 
   template <typename U>
-  constexpr auto& operator-=(U const a) noexcept
+  constexpr auto& operator-=(U&& a) noexcept
   {
-    return *this = *this - a;
+    return *this = *this - std::forward<U>(a);
   }
 
   template <typename U>
-  constexpr auto& operator*=(U const a) noexcept
+  constexpr auto& operator*=(U&& a) noexcept
   {
-    return *this = *this * a;
+    return *this = *this * std::forward<U>(a);
   }
 
   template <typename U>
-  constexpr auto& operator/=(U const a) noexcept
+  constexpr auto& operator/=(U&& a) noexcept
   {
-    return *this = *this / a;
+    return *this = *this / std::forward<U>(a);
   }
 
   // increment, decrement
