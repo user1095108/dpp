@@ -35,7 +35,8 @@ using unpack = struct {};
 namespace detail
 {
 
-template <typename U> constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
+template <typename U>
+constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
 constexpr static auto is_signed_v(std::is_signed_v<U> ||
@@ -754,31 +755,17 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto ceil(dpp<M, E> const a) noexcept
 {
-  if (isnan(a))
-  {
-    return dpp<M, E>{nan{}};
-  }
-  else
-  {
-    auto const t(trunc(a));
+  auto const t(trunc(a));
 
-    return t + (t < a);
-  }
+  return t + (t < a);
 }
 
 template <unsigned M, unsigned E>
 constexpr auto floor(dpp<M, E> const a) noexcept
 {
-  if (isnan(a))
-  {
-    return dpp<M, E>{nan{}};
-  }
-  else
-  {
-    auto const t(trunc(a));
+  auto const t(trunc(a));
 
-    return t - (t > a);
-  }
+  return t - (t > a);
 }
 
 template <unsigned M, unsigned E>
@@ -808,7 +795,7 @@ constexpr auto sign(dpp<M, E> const a) noexcept
 {
   auto const m(a.mantissa());
 
-  return isnan(a) ? 0 : (m > 0) - (m < 0);
+  return (m > 0) - (m < 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
