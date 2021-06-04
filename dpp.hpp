@@ -146,6 +146,11 @@ private:
   } v_{};
 
 public:
+  // min, max
+  static constexpr dpp min{mmin, emax};
+  static constexpr dpp max{mmax, emax};
+
+public:
   constexpr dpp() = default;
 
   constexpr dpp(dpp const&) = default;
@@ -347,17 +352,6 @@ public:
   constexpr auto packed() const noexcept
   {
     return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
-  }
-
-  // min, max
-  static constexpr dpp min() noexcept
-  {
-    return {mmin, emax};
-  }
-
-  static constexpr dpp max() noexcept
-  {
-    return {mmax, emax};
   }
 
   //
