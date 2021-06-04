@@ -547,16 +547,10 @@ constexpr auto operator/(U const a, dpp<A, B> const b) noexcept
 
 //increment, decrement////////////////////////////////////////////////////////
 template <unsigned A, unsigned B>
-constexpr auto operator++(dpp<A, B> const a, int) noexcept
-{
-  return a + 1;
-}
+constexpr auto operator++(dpp<A, B> const a, int) noexcept { return a + 1; }
 
 template <unsigned A, unsigned B>
-constexpr auto operator--(dpp<A, B> const a, int) noexcept
-{
-  return a - 1;
-}
+constexpr auto operator--(dpp<A, B> const a, int) noexcept { return a - 1; }
 
 //comparison//////////////////////////////////////////////////////////////////
 template <unsigned A, unsigned B, unsigned C, unsigned D>
