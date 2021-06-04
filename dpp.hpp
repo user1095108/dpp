@@ -73,7 +73,7 @@ constexpr auto selectsign(B const b) noexcept
 {
   if constexpr (is_signed_v<decltype(a)> && is_signed_v<B>)
   {
-    return b >= 0 ? a : -a;
+    return b < 0 ? -a : a;
   }
   else
   {
@@ -382,7 +382,7 @@ constexpr auto operator-(dpp<A, B> const a) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
+  using return_t = std::conditional_t<A + B < C + D, dpp<C, D>, dpp<A, B>>;
 
   if (isnan(a) || isnan(b))
   {
@@ -392,17 +392,17 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto ea(a.exponent()), eb(b.exponent()); ea >= eb)
-    {
-      detail::equalize(ma, ea, mb, eb);
-
-      return return_t(ma + mb, eb);
-    }
-    else
+    if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
 
       return return_t(ma + mb, ea);
+    }
+    else
+    {
+      detail::equalize(ma, ea, mb, eb);
+
+      return return_t(ma + mb, eb);
     }
   }
 }
@@ -410,7 +410,7 @@ constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
+  using return_t = std::conditional_t<A + B < C + D, dpp<C, D>, dpp<A, B>>;
 
   if (isnan(a) || isnan(b))
   {
@@ -420,17 +420,17 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto ea(a.exponent()), eb(b.exponent()); ea >= eb)
-    {
-      detail::equalize(ma, ea, mb, eb);
-
-      return return_t(ma - mb, eb);
-    }
-    else
+    if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
 
       return return_t(ma - mb, ea);
+    }
+    else
+    {
+      detail::equalize(ma, ea, mb, eb);
+
+      return return_t(ma - mb, eb);
     }
   }
 }
@@ -438,7 +438,7 @@ constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator*(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
+  using return_t = std::conditional_t<A + B < C + D, dpp<C, D>, dpp<A, B>>;
 
   return isnan(a) || isnan(b) ? return_t{nan{}} :
     return_t(typename return_t::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
@@ -447,7 +447,7 @@ constexpr auto operator*(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
+  using return_t = std::conditional_t<A + B < C + D, dpp<C, D>, dpp<A, B>>;
   using doubled_t = typename return_t::doubled_t;
 
   if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
@@ -570,7 +570,7 @@ constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
-  using return_t = std::conditional_t<A + B >= C + D, dpp<A, B>, dpp<C, D>>;
+  using return_t = std::conditional_t<A + B < C + D, dpp<C, D>, dpp<A, B>>;
 
   if (isnan(a) || isnan(b))
   {
@@ -580,13 +580,13 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   {
     typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto ea(a.exponent()), eb(b.exponent()); ea >= eb)
+    if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
-      detail::equalize(ma, ea, mb, eb);
+      detail::equalize(mb, eb, ma, ea);
     }
     else
     {
-      detail::equalize(mb, eb, ma, ea);
+      detail::equalize(ma, ea, mb, eb);
     }
 
     return ma < mb;
