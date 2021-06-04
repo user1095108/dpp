@@ -311,12 +311,6 @@ public:
   constexpr dpp& operator=(dpp&&) = default;
 
   template <typename U>
-  constexpr auto& operator=(U&& a) noexcept
-  {
-    return *this = {std::forward<U>(a)};
-  }
-
-  template <typename U>
   constexpr auto& operator+=(U&& a) noexcept
   {
     return *this = *this + std::forward<U>(a);
@@ -354,8 +348,8 @@ public:
   }
 
   // min, max
-  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
-  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
+  static constexpr dpp min() noexcept { return {mmin, emax}; }
+  static constexpr dpp max() noexcept { return {mmax, emax}; }
 
   //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
