@@ -349,6 +349,17 @@ public:
     return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
   }
 
+  // min, max
+  static constexpr dpp min() noexcept
+  {
+    return {mmin, emax};
+  }
+
+  static constexpr dpp max() noexcept
+  {
+    return {mmax, emax};
+  }
+
   //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
   friend constexpr auto operator*(dpp<A, B>, dpp<C, D>) noexcept;
