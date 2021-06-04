@@ -35,8 +35,7 @@ using unpack = struct {};
 namespace detail
 {
 
-template <typename U>
-constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
+template <typename U> constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
 constexpr static auto is_signed_v(std::is_signed_v<U> ||
@@ -155,7 +154,7 @@ public:
     requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
   {
     constexpr auto umin(U(1) << (detail::bit_size_v<U> - 1));
-    constexpr auto umax(detail::is_signed_v<U> ?  -(umin + 1) : ~U{});
+    constexpr auto umax(detail::is_signed_v<U> ? -(umin + 1) : ~U{});
 
     // slash m, if necessary
     if constexpr (detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
@@ -763,7 +762,7 @@ constexpr auto ceil(dpp<M, E> const a) noexcept
   {
     auto const t(trunc(a));
 
-    return dpp<M, E>(t.mantissa() + (t < a), t.exponent());
+    return t + (t < a);
   }
 }
 
@@ -778,7 +777,7 @@ constexpr auto floor(dpp<M, E> const a) noexcept
   {
     auto const t(trunc(a));
 
-    return dpp<M, E>(t.mantissa() - (t > a), t.exponent());
+    return t - (t > a);
   }
 }
 
