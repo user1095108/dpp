@@ -377,7 +377,7 @@ constexpr auto operator-(dpp<A, B> const a) noexcept
 {
   if (isnan(a))
   {
-    return a;
+    return dpp<A, B>{nan{}};
   }
   else
   {
