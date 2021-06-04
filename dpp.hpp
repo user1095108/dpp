@@ -232,8 +232,8 @@ public:
   {
   }
 
-  template <unsigned N, unsigned F>
-  constexpr dpp(dpp<N, F> const o) noexcept requires((M != N) || (E != F)) :
+  template <unsigned A, unsigned B>
+  constexpr dpp(dpp<A, B> const o) noexcept requires((M != A) || (E != B)) :
     dpp(o.mantissa(), o.exponent())
   {
   }
