@@ -496,28 +496,24 @@ constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a + dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a - dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a * dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a / dpp<A, B>(std::forward<U>(b));
 }
@@ -525,28 +521,24 @@ constexpr auto operator/(dpp<A, B> const a, U&& b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) + b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) - b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) * b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) / b;
 }
@@ -626,42 +618,36 @@ constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator==(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a == dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator!=(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a != dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a < dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a > dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<=(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a <= dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>=(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return a >= dpp<A, B>(std::forward<U>(b));
 }
@@ -669,42 +655,36 @@ constexpr auto operator>=(dpp<A, B> const a, U&& b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator==(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) == b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator!=(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) != b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) < b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) > b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<=(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) <= b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>=(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<U>)
 {
   return dpp<A, B>(std::forward<U>(a)) >= b;
 }
