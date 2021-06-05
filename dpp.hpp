@@ -363,75 +363,69 @@ public:
 };
 
 //arithmetic//////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned N>
-constexpr auto operator+(dpp<M, N> const a, dpp<M, N> const b) noexcept
+template <unsigned M, unsigned E>
+constexpr auto operator+(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  using return_t = dpp<M, N>;
-
   if (isnan(a) || isnan(b))
   {
-    return return_t{nan{}};
+    return dpp<M, E>{nan{}};
   }
   else
   {
-    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    auto ma(a.mantissa()), mb(b.mantissa());
 
     if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
 
-      return return_t(ma + mb, ea);
+      return dpp<M, E>(ma + mb, ea);
     }
     else
     {
       detail::equalize(ma, ea, mb, eb);
 
-      return return_t(ma + mb, eb);
+      return dpp<M, E>(ma + mb, eb);
     }
   }
 }
 
-template <unsigned M, unsigned N>
-constexpr auto operator-(dpp<M, N> const a, dpp<M, N> const b) noexcept
+template <unsigned M, unsigned E>
+constexpr auto operator-(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  using return_t = dpp<M, N>;
-
   if (isnan(a) || isnan(b))
   {
-    return return_t{nan{}};
+    return dpp<M, E>{nan{}};
   }
   else
   {
-    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    auto ma(a.mantissa()), mb(b.mantissa());
 
     if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
 
-      return return_t(ma - mb, ea);
+      return dpp<M, E>(ma - mb, ea);
     }
     else
     {
       detail::equalize(ma, ea, mb, eb);
 
-      return return_t(ma - mb, eb);
+      return dpp<M, E>(ma - mb, eb);
     }
   }
 }
 
-template <unsigned M, unsigned N>
-constexpr auto operator*(dpp<M, N> const a, dpp<M, N> const b) noexcept
+template <unsigned M, unsigned E>
+constexpr auto operator*(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  using return_t = dpp<M, N>;
-
-  return isnan(a) || isnan(b) ? return_t{nan{}} :
-    return_t(typename return_t::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
+  return isnan(a) || isnan(b) ? dpp<M, E>{nan{}} :
+    dpp<M, E>(typename dpp<M, E>::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
 }
 
-template <unsigned M, unsigned N>
-constexpr auto operator/(dpp<M, N> const a, dpp<M, N> const b) noexcept
+template <unsigned M, unsigned E>
+constexpr auto operator/(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  using return_t = dpp<M, N>;
+  using return_t = dpp<M, E>;
   using doubled_t = typename return_t::doubled_t;
 
   if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
@@ -556,24 +550,28 @@ constexpr auto operator/(dpp<A, B> const a, U&& b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator+(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) + b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator-(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) - b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator*(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) * b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator/(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) / b;
 }
@@ -586,11 +584,25 @@ template <unsigned A, unsigned B>
 constexpr auto operator--(dpp<A, B> const a, int) noexcept { return a - 1; }
 
 //comparison//////////////////////////////////////////////////////////////////
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned M, unsigned E>
+constexpr auto operator==(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
   return !isnan(a) && !isnan(b) &&
     (a.exponent() == b.exponent()) && (a.mantissa() == b.mantissa());
+}
+
+// conversions
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  if constexpr (A + B < C + D)
+  {
+    return dpp<C, D>(a) == b;
+  }
+  else
+  {
+    return a == dpp<A, B>(b);
+  }
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -600,18 +612,16 @@ constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 }
 
 //
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned M, unsigned E>
+constexpr auto operator<(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  using return_t = std::conditional_t<A + B < C + D, dpp<C, D>, dpp<A, B>>;
-
   if (isnan(a) || isnan(b))
   {
     return false;
   }
   else
   {
-    typename return_t::value_type ma(a.mantissa()), mb(b.mantissa());
+    auto ma(a.mantissa()), mb(b.mantissa());
 
     if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
@@ -623,6 +633,20 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
     }
 
     return ma < mb;
+  }
+}
+
+// conversions
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  if constexpr (A + B < C + D)
+  {
+    return dpp<C, D>(a) < b;
+  }
+  else
+  {
+    return a < dpp<A, B>(b);
   }
 }
 
@@ -653,36 +677,42 @@ constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator==(dpp<A, B> const a, U&& b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return a == dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator!=(dpp<A, B> const a, U&& b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return a != dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<(dpp<A, B> const a, U&& b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return a < dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>(dpp<A, B> const a, U&& b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return a > dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<=(dpp<A, B> const a, U&& b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return a <= dpp<A, B>(std::forward<U>(b));
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>=(dpp<A, B> const a, U&& b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return a >= dpp<A, B>(std::forward<U>(b));
 }
@@ -690,36 +720,42 @@ constexpr auto operator>=(dpp<A, B> const a, U&& b) noexcept
 // conversions
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator==(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) == b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator!=(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) != b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) < b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) > b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator<=(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) <= b;
 }
 
 template <unsigned A, unsigned B, typename U>
 constexpr auto operator>=(U&& a, dpp<A, B> const b) noexcept
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) >= b;
 }
