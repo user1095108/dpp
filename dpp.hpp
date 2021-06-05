@@ -328,9 +328,9 @@ public:
   }
 
   // arithmetic
-  constexpr auto operator+() noexcept { return *this; }
+  constexpr auto operator+() const noexcept { return *this; }
 
-  constexpr auto operator-() noexcept
+  constexpr auto operator-() const noexcept
   {
     // we need to do it like this, as negating the mantissa can overflow
     return isnan(*this) ? dpp{nan{}} :
