@@ -334,7 +334,7 @@ public:
   {
     // we need to do it like this, as negating the mantissa can overflow
     return isnan(*this) ? dpp{nan{}} :
-      mmin == v_.m ? dpp{-v_.m, v_.e} : dpp{-v_.m, v_.e, direct{}};
+      mmin == v_.m ? dpp(-v_.m, v_.e) : dpp(-v_.m, v_.e, direct{});
   }
 
   // increment, decrement
@@ -377,7 +377,7 @@ constexpr dpp<M, E> operator+(dpp<M, E> const a, dpp<M, E> const b) noexcept
   {
     auto ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
+    if (int ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
 
@@ -403,7 +403,7 @@ constexpr dpp<M, E> operator-(dpp<M, E> const a, dpp<M, E> const b) noexcept
   {
     auto ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
+    if (int ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
 
@@ -620,7 +620,7 @@ constexpr auto operator<(dpp<M, E> const a, dpp<M, E> const b) noexcept
   {
     auto ma(a.mantissa()), mb(b.mantissa());
 
-    if (auto ea(a.exponent()), eb(b.exponent()); ea < eb)
+    if (int ea(a.exponent()), eb(b.exponent()); ea < eb)
     {
       detail::equalize(mb, eb, ma, ea);
     }
@@ -786,7 +786,7 @@ constexpr auto isnormal(dpp<M, E> const a) noexcept
 template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const a) noexcept
 {
-  if (auto e(a.exponent()); !isnan(a) && (e < 0))
+  if (int e(a.exponent()); !isnan(a) && (e < 0))
   {
     auto m(a.mantissa());
 
@@ -994,7 +994,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
   {
     T m(p.mantissa());
 
-    if (auto e(p.exponent()); e <= 0)
+    if (int e(p.exponent()); e <= 0)
     {
       for (; m && e++; m /= 10);
 
@@ -1037,7 +1037,7 @@ std::string to_string(dpp<M, E> p)
       p -= t;
 
       auto m(t.mantissa());
-      auto e(t.exponent());
+      int e(t.exponent());
 
       for (; !(m % 10); m /= 10, ++e);
 
@@ -1050,7 +1050,7 @@ std::string to_string(dpp<M, E> p)
 
     auto m(p.mantissa());
 
-    if (auto e(-p.exponent()); (e > 0) && m)
+    if (int e(-p.exponent()); (e > 0) && m)
     {
       for (; !(m % 10); m /= 10, --e);
 
