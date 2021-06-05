@@ -350,6 +350,7 @@ public:
     return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
   }
 
+  //
   static constexpr auto min() noexcept { return dpp{mmin, emax}; }
   static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 
