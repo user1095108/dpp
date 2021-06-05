@@ -341,6 +341,9 @@ public:
   constexpr auto& operator++() noexcept { return *this += 1; }
   constexpr auto& operator--() noexcept { return *this -= 1; }
 
+  constexpr auto operator++(int) const noexcept { return *this + 1; }
+  constexpr auto operator--(int) const noexcept { return *this - 1; }
+
   //
   constexpr int exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
@@ -356,19 +359,19 @@ public:
 
   //
   template <unsigned A, unsigned B>
-  friend constexpr auto operator*(dpp<A, B>, dpp<A, B>) noexcept;
+  friend constexpr dpp<A, B> operator*(dpp<A, B>, dpp<A, B>) noexcept;
 
   template <unsigned A, unsigned B>
-  friend constexpr auto operator/(dpp<A, B>, dpp<A, B>) noexcept;
+  friend constexpr dpp<A, B> operator/(dpp<A, B>, dpp<A, B>) noexcept;
 };
 
 //arithmetic//////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
-constexpr auto operator+(dpp<M, E> const a, dpp<M, E> const b) noexcept
+constexpr dpp<M, E> operator+(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
   if (isnan(a) || isnan(b))
   {
-    return dpp<M, E>{nan{}};
+    return nan{};
   }
   else
   {
@@ -378,23 +381,23 @@ constexpr auto operator+(dpp<M, E> const a, dpp<M, E> const b) noexcept
     {
       detail::equalize(mb, eb, ma, ea);
 
-      return dpp<M, E>(ma + mb, ea);
+      return {ma + mb, ea};
     }
     else
     {
       detail::equalize(ma, ea, mb, eb);
 
-      return dpp<M, E>(ma + mb, eb);
+      return {ma + mb, eb};
     }
   }
 }
 
 template <unsigned M, unsigned E>
-constexpr auto operator-(dpp<M, E> const a, dpp<M, E> const b) noexcept
+constexpr dpp<M, E> operator-(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
   if (isnan(a) || isnan(b))
   {
-    return dpp<M, E>{nan{}};
+    return nan{};
   }
   else
   {
@@ -404,33 +407,34 @@ constexpr auto operator-(dpp<M, E> const a, dpp<M, E> const b) noexcept
     {
       detail::equalize(mb, eb, ma, ea);
 
-      return dpp<M, E>(ma - mb, ea);
+      return {ma - mb, ea};
     }
     else
     {
       detail::equalize(ma, ea, mb, eb);
 
-      return dpp<M, E>(ma - mb, eb);
+      return {ma - mb, eb};
     }
   }
 }
 
 template <unsigned M, unsigned E>
-constexpr auto operator*(dpp<M, E> const a, dpp<M, E> const b) noexcept
+constexpr dpp<M, E> operator*(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  return isnan(a) || isnan(b) ? dpp<M, E>{nan{}} :
-    dpp<M, E>(typename dpp<M, E>::doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e);
+  using doubled_t = typename dpp<M, E>::doubled_t;
+
+  return isnan(a) || isnan(b) ? nan{} :
+    dpp<M, E>{doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e};
 }
 
 template <unsigned M, unsigned E>
-constexpr auto operator/(dpp<M, E> const a, dpp<M, E> const b) noexcept
+constexpr dpp<M, E> operator/(dpp<M, E> const a, dpp<M, E> const b) noexcept
 {
-  using return_t = dpp<M, E>;
-  using doubled_t = typename return_t::doubled_t;
+  using doubled_t = typename dpp<M, E>::doubled_t;
 
   if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
   {
-    return return_t{nan{}};
+    return nan{};
   }
   else if (doubled_t const am(a.v_.m); am)
   {
@@ -457,11 +461,11 @@ constexpr auto operator/(dpp<M, E> const a, dpp<M, E> const b) noexcept
       for (auto const a(rmax / aam); q > a; q /= 10, ++e);
     }
 
-    return return_t(q * am, e);
+    return {q * am, e};
   }
   else
   {
-    return return_t{};
+    return {};
   }
 }
 
@@ -575,13 +579,6 @@ constexpr auto operator/(U&& a, dpp<A, B> const b) noexcept
 {
   return dpp<A, B>(std::forward<U>(a)) / b;
 }
-
-//increment, decrement////////////////////////////////////////////////////////
-template <unsigned A, unsigned B>
-constexpr auto operator++(dpp<A, B> const a, int) noexcept { return a + 1; }
-
-template <unsigned A, unsigned B>
-constexpr auto operator--(dpp<A, B> const a, int) noexcept { return a - 1; }
 
 //comparison//////////////////////////////////////////////////////////////////
 template <unsigned M, unsigned E>
