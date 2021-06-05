@@ -21,13 +21,6 @@
 namespace dpp
 {
 
-template <unsigned, unsigned>
-class dpp;
-
-using d64 = dpp<56, 8>;
-using d32 = dpp<26, 6>;
-using d16 = dpp<11, 5>;
-
 using direct = struct {};
 using nan = struct {};
 using unpack = struct {};
@@ -764,20 +757,6 @@ constexpr auto abs(dpp<M, E> const a) noexcept
   return a.mantissa() < 0 ? -a : a;
 }
 
-template <unsigned M, unsigned E>
-constexpr auto frac(dpp<M, E> const a) noexcept
-{
-  return a - trunc(a);
-}
-
-template <unsigned M, unsigned E>
-constexpr auto sign(dpp<M, E> const a) noexcept
-{
-  auto const m(a.mantissa());
-
-  return (m > 0) - (m < 0);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 template <typename T, typename It>
 constexpr T to_decimal(It i, It const end) noexcept
@@ -1021,6 +1000,10 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
 {
   return os << to_string(p);
 }
+
+using d64 = dpp<56, 8>;
+using d32 = dpp<26, 6>;
+using d16 = dpp<11, 5>;
 
 //////////////////////////////////////////////////////////////////////////////
 namespace literals
