@@ -327,14 +327,21 @@ public:
     return *this = *this / std::forward<U>(a);
   }
 
+  // arithmetic
+  constexpr auto operator+() noexcept { return *this; }
+
+  constexpr auto operator-() noexcept
+  {
+    // we need to do it like this, as negating the mantissa can overflow
+    return isnan(*this) ? dpp{nan{}} :
+      mmin == v_.m ? dpp{-v_.m, v_.e} : dpp{-v_.m, v_.e, direct{}};
+  }
+
   // increment, decrement
   constexpr auto& operator++() noexcept { return *this += 1; }
   constexpr auto& operator--() noexcept { return *this -= 1; }
 
   //
-  static constexpr dpp min() noexcept { return {mmin, emax}; }
-  static constexpr dpp max() noexcept { return {mmax, emax}; }
-
   constexpr int exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
@@ -342,6 +349,9 @@ public:
   {
     return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
   }
+
+  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
+  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 
   //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -352,31 +362,6 @@ public:
 };
 
 //arithmetic//////////////////////////////////////////////////////////////////
-template <unsigned A, unsigned B>
-constexpr auto operator+(dpp<A, B> const a) noexcept
-{
-  return a;
-}
-
-template <unsigned A, unsigned B>
-constexpr auto operator-(dpp<A, B> const a) noexcept
-{
-  if (isnan(a))
-  {
-    return dpp<A, B>{nan{}};
-  }
-  else
-  {
-    auto const m(a.mantissa());
-    auto const e(a.exponent());
-
-    // we need to do it like this, as negating the mantissa can overflow
-    return dpp<A, B>::mmin == m ? dpp<A, B>(-m, e) :
-      dpp<A, B>(-m, e, direct{});
-  }
-}
-
-//
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
