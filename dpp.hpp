@@ -332,6 +332,9 @@ public:
   constexpr auto& operator--() noexcept { return *this -= 1; }
 
   //
+  static constexpr dpp min() noexcept { return {mmin, emax}; }
+  static constexpr dpp max() noexcept { return {mmax, emax}; }
+
   constexpr int exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
@@ -339,10 +342,6 @@ public:
   {
     return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
   }
-
-  // min, max
-  static constexpr dpp min() noexcept { return {mmin, emax}; }
-  static constexpr dpp max() noexcept { return {mmax, emax}; }
 
   //
   template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -746,7 +745,7 @@ constexpr auto round(dpp<M, E> const a) noexcept
 {
   constexpr dpp<M, E> c(5, -1);
 
-  return !isnan(a) && (a.exponent() < 0) ?
+  return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
 }
