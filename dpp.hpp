@@ -62,7 +62,7 @@ constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
 }
 
 template <auto a, typename B>
-constexpr auto selectsign(B const b) noexcept
+constexpr B selectsign(B const b) noexcept
 {
   if constexpr (is_signed_v<decltype(a)> && is_signed_v<B>)
   {
@@ -80,7 +80,7 @@ constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
-    for (auto const c(detail::selectsign<T(5)>(bm)); bm && (ae != be++);
+    for (auto const c(detail::selectsign<5>(bm)); bm && (ae != be++);
       bm = (bm + c) / 10);
 
     be = ae;
@@ -181,7 +181,7 @@ public:
     }
 
     // additional slashing, if necessary
-    for (auto const c(detail::selectsign<U(5)>(m)); (e <= emin) && m;
+    for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
       m = (m + c) / 10, ++e);
 
     // normalize, minimize the exponent, if m non-zero
@@ -602,6 +602,7 @@ constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
 }
 
+//
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
