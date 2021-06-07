@@ -1052,20 +1052,13 @@ std::string to_string(dpp<M, E> p)
 
     auto m(p.mantissa());
 
-    if (int e(-p.exponent()); (e > 0) && m)
+    if (int e(p.exponent()); (e < 0) && m)
     {
-      for (; !(m % 10); m /= 10, --e);
+      for (; !(m % 10); m /= 10, ++e); // we inc e at least once
 
       auto const tmp(std::to_string(std::abs(m)));
 
-      if (auto const s(tmp.size()); std::size_t(e) >= s)
-      {
-        r.append(1, '.').append(e - s, '0').append(tmp);
-      }
-      else
-      {
-        return {"nan", 3};
-      }
+      r.append(1, '.').append(tmp.size() - e, '0').append(tmp);
     }
 
     return r;
