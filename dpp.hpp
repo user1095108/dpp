@@ -1054,11 +1054,11 @@ std::string to_string(dpp<M, E> p)
 
     if (int e(p.exponent()); (e < 0) && m)
     {
-      for (; !(m % 10); m /= 10, ++e);
+      for (; !(m % 10); m /= 10, ++e); // inc e at least once
 
       auto const tmp(std::to_string(std::abs(m)));
 
-      r.append(1, '.').append(-tmp.size() - e, '0').append(tmp);
+      r.append(1, '.').append(-e - tmp.size(), '0').append(tmp);
     }
 
     return r;
