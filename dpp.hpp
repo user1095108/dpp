@@ -350,7 +350,7 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    return v_.e << M | (v_.m & (detail::pow<value_type, 2>(M) - 1));
+    return value_type(v_.e) << M | v_.m & (detail::pow<value_type, 2>(M) - 1);
   }
 
   //
