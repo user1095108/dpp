@@ -1058,7 +1058,7 @@ std::string to_string(dpp<M, E> p)
 
       auto const tmp(std::to_string(std::abs(m)));
 
-      r.append(1, '.').append(tmp.size() - e, '0').append(tmp);
+      r.append(1, '.').append(tmp.size() + e, '0').append(tmp);
     }
 
     return r;
