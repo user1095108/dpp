@@ -1054,7 +1054,7 @@ std::string to_string(dpp<M, E> p)
 
     if (int e(p.exponent()); (e < 0) && m)
     {
-      for (; !(m % 10); m /= 10, ++e); // inc e at least once
+      for (; !(m % 10); m /= 10, ++e);
 
       auto const tmp(std::to_string(std::abs(m)));
 
