@@ -281,17 +281,17 @@ public:
     {
       return NAN;
     }
-    else
+    else if (auto m(v_.m); m)
     {
-      auto m(v_.m);
       int e(v_.e);
 
-      if (m)
-      {
-        for (; !(m % 10); m /= 10, ++e);
-      }
+      for (; !(m % 10); m /= 10, ++e);
 
       return m * std::pow(T(10), e);
+    }
+    else
+    {
+      return T{};
     }
   }
 
