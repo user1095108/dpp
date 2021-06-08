@@ -277,7 +277,19 @@ public:
   template <typename T>
   constexpr operator T() const noexcept requires(std::is_floating_point_v<T>)
   {
-    return isnan(*this) ? NAN : v_.m * std::pow(T(10), v_.e);
+    if (isnan(*this))
+    {
+      return NAN;
+    }
+    else
+    {
+      auto m(v_.m);
+      int e(v_.e);
+
+      for (; !(m % 10); m /= 10, ++e);
+
+      return m * std::pow(T(10), e)
+    }
   }
 
   // this function is unsafe, take a look at to_integral() for safety
