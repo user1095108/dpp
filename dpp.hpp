@@ -6,6 +6,8 @@
 #include <climits>
 #include <cstdint>
 
+#include <bit>
+
 #include <functional> // hash
 
 #include <iterator>
@@ -263,9 +265,9 @@ public:
 
   constexpr dpp(nan) noexcept : v_{.m = {}, .e = emin} { }
 
-  constexpr dpp(value_type const v, unpack) noexcept :
-    v_{.m = v & (detail::pow<value_type, 2>(M) - 1), .e = v >> M}
+  constexpr dpp(value_type const v, unpack) noexcept
   {
+    std::memcpy(&v_, &v, sizeof(v));
   }
 
   //
@@ -457,7 +459,7 @@ public:
   //
   constexpr auto operator==(dpp<M, E> const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
+    return !isnan(*this) && !isnan(o) && (packed() == o.packed());
   }
 
   constexpr auto operator<(dpp<M, E> const o) const noexcept
@@ -493,7 +495,7 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    return value_type(v_.e) << M | v_.m & (detail::pow<value_type, 2>(M) - 1);
+    return std::bit_cast<value_type>(v_);
   }
 };
 
