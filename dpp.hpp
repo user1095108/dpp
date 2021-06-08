@@ -286,7 +286,10 @@ public:
       auto m(v_.m);
       int e(v_.e);
 
-      for (; !(m % 10); m /= 10, ++e);
+      if (m)
+      {
+        for (; !(m % 10); m /= 10, ++e);
+      }
 
       return m * std::pow(T(10), e);
     }
