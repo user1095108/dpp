@@ -327,16 +327,6 @@ public:
     return *this = *this / std::forward<U>(a);
   }
 
-  // arithmetic
-  constexpr auto operator+() const noexcept { return *this; }
-
-  constexpr auto operator-() const noexcept
-  {
-    // we need to do it like this, as negating the mantissa can overflow
-    return isnan(*this) ? dpp{nan{}} :
-      mmin == v_.m ? dpp(-v_.m, v_.e) : dpp(-v_.m, v_.e, direct{});
-  }
-
   // increment, decrement
   constexpr auto& operator++() noexcept { return *this += 1; }
   constexpr auto& operator--() noexcept { return *this -= 1; }
@@ -358,6 +348,15 @@ public:
   static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 
   // arithmetic
+  constexpr auto operator+() const noexcept { return *this; }
+
+  constexpr auto operator-() const noexcept
+  {
+    // we need to do it like this, as negating the mantissa can overflow
+    return isnan(*this) ? dpp{nan{}} :
+      mmin == v_.m ? dpp(-v_.m, v_.e) : dpp(-v_.m, v_.e, direct{});
+  }
+
   constexpr dpp<M, E> operator+(dpp<M, E> const o) const noexcept
   {
     if (isnan(*this) || isnan(o))
