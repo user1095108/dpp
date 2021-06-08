@@ -470,7 +470,7 @@ public:
   //
   constexpr auto operator==(dpp<M, E> const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (v_ == o.v_);
+    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
   }
 
   constexpr auto operator<(dpp<M, E> const o) const noexcept
