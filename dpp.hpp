@@ -288,7 +288,7 @@ public:
 
       for (; !(m % 10); m /= 10, ++e);
 
-      return m * std::pow(T(10), e)
+      return m * std::pow(T(10), e);
     }
   }
 
