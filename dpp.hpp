@@ -131,16 +131,11 @@ private:
     >
   >;
 
-  union
+  struct
   {
-    struct
-    {
-      value_type m:M;
-      value_type e:E;
-    } v_{};
-
-    value_type u_;
-  };
+    value_type m:M;
+    value_type e:E;
+  } v_{};
 
 public:
   constexpr dpp() = default;
@@ -268,7 +263,10 @@ public:
 
   constexpr dpp(nan) noexcept : v_{.m = {}, .e = emin} { }
 
-  constexpr dpp(value_type const u, unpack) noexcept : u_{u} { }
+  constexpr dpp(value_type const v, unpack) noexcept :
+    v_{.m = v & (detail::pow<value_type, 2>(M) - 1), .e = v >> M}
+  {
+  }
 
   //
   constexpr explicit operator bool() const noexcept
@@ -459,7 +457,7 @@ public:
   //
   constexpr auto operator==(dpp<M, E> const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (u_ == o.u_);
+    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
   }
 
   constexpr auto operator<(dpp<M, E> const o) const noexcept
@@ -486,14 +484,17 @@ public:
   }
 
   //
+  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
+  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
+
+  //
   constexpr int exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
-  constexpr auto packed() const noexcept { return u_; }
-
-  //
-  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
-  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
+  constexpr auto packed() const noexcept
+  {
+    return value_type(v_.e) << M | v_.m & (detail::pow<value_type, 2>(M) - 1);
+  }
 };
 
 // conversions
