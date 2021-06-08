@@ -357,117 +357,126 @@ public:
   static constexpr auto min() noexcept { return dpp{mmin, emax}; }
   static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 
+  // arithmetic
+  constexpr dpp<M, E> operator+(dpp<M, E> const o) const noexcept
+  {
+    if (isnan(*this) || isnan(o))
+    {
+      return nan{};
+    }
+    else
+    {
+      auto ma(v_.m), mb(o.v_.m);
+
+      if (int ea(v_.e), eb(o.v_.e); ea < eb)
+      {
+        detail::equalize(mb, eb, ma, ea);
+
+        return {ma + mb, ea};
+      }
+      else
+      {
+        detail::equalize(ma, ea, mb, eb);
+
+        return {ma + mb, eb};
+      }
+    }
+  }
+
+  constexpr dpp<M, E> operator-(dpp<M, E> const o) const noexcept
+  {
+    if (isnan(*this) || isnan(o))
+    {
+      return nan{};
+    }
+    else
+    {
+      auto ma(v_.m), mb(o.v_.m);
+
+      if (int ea(v_.e), eb(o.v_.e); ea < eb)
+      {
+        detail::equalize(mb, eb, ma, ea);
+
+        return {ma - mb, ea};
+      }
+      else
+      {
+        detail::equalize(ma, ea, mb, eb);
+
+        return {ma - mb, eb};
+      }
+    }
+  }
+
+  constexpr dpp<M, E> operator*(dpp<M, E> const o) const noexcept
+  {
+    return isnan(*this) || isnan(o) ? nan{} :
+      dpp<M, E>{doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e};
+  }
+
+  constexpr dpp<M, E> operator/(dpp<M, E> const o) const noexcept
+  {
+    if (isnan(*this) || isnan(o) || !o.v_.m) // guard against division by 0
+    {
+      return nan{};
+    }
+    else if (doubled_t const am(v_.m); am)
+    {
+      constexpr auto rmin(doubled_t(1) << (detail::bit_size_v<doubled_t> - 1));
+      constexpr auto rmax(-(rmin + 1));
+
+      // dp is the exponent, that generates the maximal power of 10,
+      // that fits into doubled_t
+      // 10^dp > rmax, hence 10^(dp - 1) <= rmax
+      constexpr auto dp(detail::log10(rmax) - 1);
+
+      int e(v_.e - o.v_.e - dp);
+
+      // we want an approximation to a.v_.m * (10^dp / b.v_.m)
+      auto q(detail::pow<doubled_t, 10>(dp) / o.v_.m);
+
+      // fit q * am into doubled_t
+      if (auto const aam(am < 0 ? -am : am); q < 0)
+      {
+        for (auto const a(rmin / aam); q < a; q /= 10, ++e);
+      }
+      else
+      {
+        for (auto const a(rmax / aam); q > a; q /= 10, ++e);
+      }
+
+      return {q * am, e};
+    }
+    else
+    {
+      return {};
+    }
+  }
+
   //
-  template <unsigned A, unsigned B>
-  friend constexpr dpp<A, B> operator*(dpp<A, B>, dpp<A, B>) noexcept;
+  constexpr auto operator<(dpp<M, E> const o) const noexcept
+  {
+    if (isnan(*this) || isnan(o))
+    {
+      return false;
+    }
+    else
+    {
+      auto ma(v_.m), mb(o.v_.m);
 
-  template <unsigned A, unsigned B>
-  friend constexpr dpp<A, B> operator/(dpp<A, B>, dpp<A, B>) noexcept;
+      if (int ea(v_.e), eb(o.v_.e); ea < eb)
+      {
+        detail::equalize(mb, eb, ma, ea);
+      }
+      else
+      {
+        detail::equalize(ma, ea, mb, eb);
+      }
+
+      return ma < mb;
+    }
+  }
 };
-
-//arithmetic//////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
-constexpr dpp<M, E> operator+(dpp<M, E> const a, dpp<M, E> const b) noexcept
-{
-  if (isnan(a) || isnan(b))
-  {
-    return nan{};
-  }
-  else
-  {
-    auto ma(a.mantissa()), mb(b.mantissa());
-
-    if (int ea(a.exponent()), eb(b.exponent()); ea < eb)
-    {
-      detail::equalize(mb, eb, ma, ea);
-
-      return {ma + mb, ea};
-    }
-    else
-    {
-      detail::equalize(ma, ea, mb, eb);
-
-      return {ma + mb, eb};
-    }
-  }
-}
-
-template <unsigned M, unsigned E>
-constexpr dpp<M, E> operator-(dpp<M, E> const a, dpp<M, E> const b) noexcept
-{
-  if (isnan(a) || isnan(b))
-  {
-    return nan{};
-  }
-  else
-  {
-    auto ma(a.mantissa()), mb(b.mantissa());
-
-    if (int ea(a.exponent()), eb(b.exponent()); ea < eb)
-    {
-      detail::equalize(mb, eb, ma, ea);
-
-      return {ma - mb, ea};
-    }
-    else
-    {
-      detail::equalize(ma, ea, mb, eb);
-
-      return {ma - mb, eb};
-    }
-  }
-}
-
-template <unsigned M, unsigned E>
-constexpr dpp<M, E> operator*(dpp<M, E> const a, dpp<M, E> const b) noexcept
-{
-  using doubled_t = typename dpp<M, E>::doubled_t;
-
-  return isnan(a) || isnan(b) ? nan{} :
-    dpp<M, E>{doubled_t(a.v_.m) * b.v_.m, a.v_.e + b.v_.e};
-}
-
-template <unsigned M, unsigned E>
-constexpr dpp<M, E> operator/(dpp<M, E> const a, dpp<M, E> const b) noexcept
-{
-  using doubled_t = typename dpp<M, E>::doubled_t;
-
-  if (isnan(a) || isnan(b) || !b.v_.m) // guard against division by 0
-  {
-    return nan{};
-  }
-  else if (doubled_t const am(a.v_.m); am)
-  {
-    constexpr auto rmin(doubled_t(1) << (detail::bit_size_v<doubled_t> - 1));
-    constexpr auto rmax(-(rmin + 1));
-
-    // dp is the exponent, that generates the maximal power of 10,
-    // that fits into doubled_t
-    // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-    constexpr auto dp(detail::log10(rmax) - 1);
-
-    int e(a.v_.e - b.v_.e - dp);
-
-    // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-    auto q(detail::pow<doubled_t, 10>(dp) / b.v_.m);
-
-    // fit q * am into doubled_t
-    if (auto const aam(am < 0 ? -am : am); q < 0)
-    {
-      for (auto const a(rmin / aam); q < a; q /= 10, ++e);
-    }
-    else
-    {
-      for (auto const a(rmax / aam); q > a; q /= 10, ++e);
-    }
-
-    return {q * am, e};
-  }
-  else
-  {
-    return {};
-  }
-}
 
 // conversions
 template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -607,31 +616,6 @@ template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return !(a == b);
-}
-
-//
-template <unsigned M, unsigned E>
-constexpr auto operator<(dpp<M, E> const a, dpp<M, E> const b) noexcept
-{
-  if (isnan(a) || isnan(b))
-  {
-    return false;
-  }
-  else
-  {
-    auto ma(a.mantissa()), mb(b.mantissa());
-
-    if (int ea(a.exponent()), eb(b.exponent()); ea < eb)
-    {
-      detail::equalize(mb, eb, ma, ea);
-    }
-    else
-    {
-      detail::equalize(ma, ea, mb, eb);
-    }
-
-    return ma < mb;
-  }
 }
 
 // conversions
