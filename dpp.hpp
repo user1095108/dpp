@@ -454,6 +454,11 @@ public:
   }
 
   //
+  constexpr auto operator==(dpp<M, E> const o) const noexcept
+  {
+    return !isnan(*this) && !isnan(o) && (v_ == o.v_);
+  }
+
   constexpr auto operator<(dpp<M, E> const o) const noexcept
   {
     if (isnan(*this) || isnan(o))
@@ -587,14 +592,6 @@ constexpr auto operator/(U&& a, dpp<A, B> const b) noexcept
   requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
 {
   return dpp<A, B>(std::forward<U>(a)) / b;
-}
-
-//comparison//////////////////////////////////////////////////////////////////
-template <unsigned M, unsigned E>
-constexpr auto operator==(dpp<M, E> const a, dpp<M, E> const b) noexcept
-{
-  return !isnan(a) && !isnan(b) &&
-    (a.exponent() == b.exponent()) && (a.mantissa() == b.mantissa());
 }
 
 // conversions
