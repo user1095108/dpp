@@ -5,6 +5,7 @@
 #include <cmath>
 #include <climits>
 #include <cstdint>
+#include <cstring>
 
 #include <bit>
 
