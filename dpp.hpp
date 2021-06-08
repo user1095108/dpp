@@ -355,10 +355,7 @@ public:
   constexpr int exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
-  constexpr auto packed() const noexcept
-  {
-    return u_;
-  }
+  constexpr auto packed() const noexcept { return u_; }
 
   //
   static constexpr auto min() noexcept { return dpp{mmin, emax}; }
