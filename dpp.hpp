@@ -351,16 +351,6 @@ public:
   constexpr auto operator++(int) const noexcept { return *this + 1; }
   constexpr auto operator--(int) const noexcept { return *this - 1; }
 
-  //
-  constexpr int exponent() const noexcept { return v_.e; }
-  constexpr auto mantissa() const noexcept { return v_.m; }
-
-  constexpr auto packed() const noexcept { return u_; }
-
-  //
-  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
-  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
-
   // arithmetic
   constexpr auto operator+() const noexcept { return *this; }
 
@@ -494,6 +484,16 @@ public:
       return ma < mb;
     }
   }
+
+  //
+  constexpr int exponent() const noexcept { return v_.e; }
+  constexpr auto mantissa() const noexcept { return v_.m; }
+
+  constexpr auto packed() const noexcept { return u_; }
+
+  //
+  static constexpr auto min() noexcept { return dpp{mmin, emax}; }
+  static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 };
 
 // conversions
