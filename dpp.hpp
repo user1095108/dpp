@@ -266,7 +266,7 @@ public:
 
   constexpr dpp(nan) noexcept : v_{.m = {}, .e = emin} { }
 
-  constexpr dpp(value_type const v, unpack) noexcept
+  dpp(value_type const v, unpack) noexcept
   {
     std::memcpy(&v_, &v, sizeof(v_));
   }
