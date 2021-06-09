@@ -2,8 +2,8 @@
 # define DPP_HPP
 # pragma once
 
-#include <cmath> // std::pow
 #include <climits>
+#include <cmath> // std::pow
 #include <cstdint>
 #include <cstring> // std::memcpy
 
