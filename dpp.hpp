@@ -1021,7 +1021,7 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
 }
 
 template <unsigned M, unsigned E>
-std::string to_string(dpp<M, E> const p)
+std::string to_string(dpp<M, E> p)
 {
   if (isnan(p))
   {
