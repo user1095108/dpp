@@ -25,12 +25,14 @@ int main()
     std::cout << std::setprecision(17);
     std::cout << "float" << std::endl;
     computeMullersIter<float>(30);
-    std::cout << "dpp::d32" << std::endl;
-    computeMullersIter<dpp::d32>(30);
     std::cout << "double" << std::endl;
     computeMullersIter<double>(30);
-    std::cout << "dpp::d64" << std::endl;
-    computeMullersIter<dpp::d64>(30);
     std::cout << "long double" << std::endl;
     computeMullersIter<long double>(30);
+    std::cout << "dpp::d16" << std::endl;
+    computeMullersIter<dpp::d16>(30);
+    std::cout << "dpp::d32" << std::endl;
+    computeMullersIter<dpp::d32>(30);
+    std::cout << "dpp::d64" << std::endl;
+    computeMullersIter<dpp::d64>(30);
 }
