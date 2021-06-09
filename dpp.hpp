@@ -2,14 +2,14 @@
 # define DPP_HPP
 # pragma once
 
-#include <cmath>
+#include <cmath> // std::pow
 #include <climits>
 #include <cstdint>
-#include <cstring>
+#include <cstring> // std::memcpy
 
-#include <bit>
+#include <bit> // std::bit_cast
 
-#include <functional> // hash
+#include <functional> // std::hash
 
 #include <iterator>
 
@@ -496,11 +496,7 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    #if defined(__cpp_lib_bit_cast)
-      return std::bit_cast<value_type>(v_);
-    #else
-    value_type v; std::memcpy(&v, &v_, sizeof(v)); return v;
-    #endif // __cpp_lib_bit_cast
+    return std::bit_cast<value_type>(v_);
   }
 };
 
