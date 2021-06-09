@@ -499,9 +499,7 @@ public:
     #if defined(__cpp_lib_bit_cast)
       return std::bit_cast<value_type>(v_);
     #else
-    value_type v;
-    std::memcpy(&v, &v_, sizeof(v));
-    return v;
+    value_type v; std::memcpy(&v, &v_, sizeof(v)); return v;
     #endif // __cpp_lib_bit_cast
   }
 };
