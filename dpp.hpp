@@ -846,12 +846,11 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     switch (*i)
     {
-      case '+':
-        i = std::next(i);
-        break;
-
       case '-':
         positive = false;
+        [[fallthrough]];
+
+      case '+':
         i = std::next(i);
         break;
 
