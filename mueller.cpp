@@ -18,8 +18,6 @@ void computeMullersIter(int iteration)
     }
 }
 
-
-
 int main()
 {
     std::cout << std::setprecision(17);
