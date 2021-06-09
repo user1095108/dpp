@@ -268,7 +268,7 @@ public:
 
   constexpr dpp(value_type const v, unpack) noexcept
   {
-    std::memcpy(&v_, &v, sizeof(v));
+    std::memcpy(&v_, &v, sizeof(v_));
   }
 
   //
@@ -502,7 +502,7 @@ public:
     value_type v;
     std::memcpy(&v, &v_, sizeof(v));
     return v;
-    #endif
+    #endif // __cpp_lib_bit_cast
   }
 };
 
