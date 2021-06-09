@@ -496,7 +496,13 @@ public:
 
   constexpr auto packed() const noexcept
   {
-    return std::bit_cast<value_type>(v_);
+    #if defined(__cpp_lib_bit_cast)
+      return std::bit_cast<value_type>(v_);
+    #else
+    value_type v;
+    std::memcpy(&v, &v_, sizeof(v));
+    return v;
+    #endif
   }
 };
 
