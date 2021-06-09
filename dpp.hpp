@@ -500,7 +500,7 @@ public:
   }
 };
 
-// conversions
+// type promotion
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
@@ -611,7 +611,7 @@ constexpr auto operator/(U&& a, dpp<A, B> const b) noexcept
   return dpp<A, B>(std::forward<U>(a)) / b;
 }
 
-// conversions
+// type promotion
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
@@ -625,14 +625,6 @@ constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
 }
 
-//
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return !(a == b);
-}
-
-// conversions
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
@@ -646,7 +638,13 @@ constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
   }
 }
 
-//
+// additional comparison operators
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(a == b);
+}
+
 template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
@@ -757,7 +755,7 @@ constexpr auto operator>=(U&& a, dpp<A, B> const b) noexcept
   return dpp<A, B>(std::forward<U>(a)) >= b;
 }
 
-//misc////////////////////////////////////////////////////////////////////////
+// misc
 template <unsigned M, unsigned E>
 constexpr auto isfinite(dpp<M, E> const a) noexcept
 {
