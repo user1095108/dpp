@@ -908,13 +908,13 @@ constexpr T to_decimal(It i, It const end) noexcept
     {
       switch (*i)
       {
-        case '.':
-          i = std::next(i);
-          break;
-
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
           if (scandigit(*i, 0)) break; else continue;
+
+        case '.':
+          i = std::next(i);
+          break;
 
         case '\0':
           return {r, 0};
