@@ -840,6 +840,9 @@ constexpr T to_decimal(It i, It const end) noexcept
   }
   else
   {
+    constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
+    constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
+
     bool positive{true};
 
     switch (*i)
@@ -862,9 +865,6 @@ constexpr T to_decimal(It i, It const end) noexcept
     }
 
     typename T::value_type r{};
-
-    constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
-    constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
 
     for (; i != end; i = std::next(i))
     {
@@ -927,7 +927,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         case '5': case '6': case '7': case '8': case '9':
           if (positive)
           {
-            if ((e > T::emin + 1) && (r <= rmax / 10))
+            if (r <= rmax / 10)
             {
               r *= 10;
 
@@ -942,7 +942,7 @@ constexpr T to_decimal(It i, It const end) noexcept
           }
           else
           {
-            if ((e > T::emin + 1) && (r >= rmin / 10))
+            if (r >= rmin / 10)
             {
               r *= 10;
 
