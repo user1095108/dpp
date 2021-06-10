@@ -500,143 +500,56 @@ public:
   }
 };
 
-// type promotion
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator+(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  if constexpr (A + B < C + D)
-  {
-    return dpp<C, D>(a) + b;
-  }
-  else
-  {
-    return a + dpp<A, B>(b);
-  }
+// type promotions
+#define DPP_TYPE_PROMOTION(OP)\
+template <unsigned A, unsigned B, unsigned C, unsigned D>\
+constexpr auto operator OP (dpp<A, B> const a, dpp<C, D> const b) noexcept\
+{\
+  if constexpr (A + B < C + D)\
+  {\
+    return dpp<C, D>(a) OP b;\
+  }\
+  else\
+  {\
+    return a OP dpp<A, B>(b);\
+  }\
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator-(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  if constexpr (A + B < C + D)
-  {
-    return dpp<C, D>(a) - b;
-  }
-  else
-  {
-    return a - dpp<A, B>(b);
-  }
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator*(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  if constexpr (A + B < C + D)
-  {
-    return dpp<C, D>(a) * b;
-  }
-  else
-  {
-    return a * dpp<A, B>(b);
-  }
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator/(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  if constexpr (A + B < C + D)
-  {
-    return dpp<C, D>(a) / b;
-  }
-  else
-  {
-    return a / dpp<A, B>(b);
-  }
-}
+DPP_TYPE_PROMOTION(+)
+DPP_TYPE_PROMOTION(-)
+DPP_TYPE_PROMOTION(*)
+DPP_TYPE_PROMOTION(/)
 
 // conversions
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator+(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a + dpp<A, B>(std::forward<U>(b));
+#define DPP_RIGHT_CONVERSION(OP)\
+template <unsigned A, unsigned B, typename U>\
+constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
+{\
+  return a OP dpp<A, B>(std::forward<U>(b));\
 }
 
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator-(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a - dpp<A, B>(std::forward<U>(b));
+#define DPP_LEFT_CONVERSION(OP)\
+template <unsigned A, unsigned B, typename U>\
+constexpr auto operator OP (U&& a, dpp<A, B> const b) noexcept\
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
+{\
+  return dpp<A, B>(std::forward<U>(a)) OP b;\
 }
 
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator*(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a * dpp<A, B>(std::forward<U>(b));
-}
+DPP_RIGHT_CONVERSION(+)
+DPP_RIGHT_CONVERSION(-)
+DPP_RIGHT_CONVERSION(*)
+DPP_RIGHT_CONVERSION(/)
 
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator/(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a / dpp<A, B>(std::forward<U>(b));
-}
-
-// conversions
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator+(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) + b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator-(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) - b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator*(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) * b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator/(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) / b;
-}
+DPP_LEFT_CONVERSION(+)
+DPP_LEFT_CONVERSION(-)
+DPP_LEFT_CONVERSION(*)
+DPP_LEFT_CONVERSION(/)
 
 // type promotion
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator==(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  if constexpr (A + B < C + D)
-  {
-    return dpp<C, D>(a) == b;
-  }
-  else
-  {
-    return a == dpp<A, B>(b);
-  }
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  if constexpr (A + B < C + D)
-  {
-    return dpp<C, D>(a) < b;
-  }
-  else
-  {
-    return a < dpp<A, B>(b);
-  }
-}
+DPP_TYPE_PROMOTION(==)
+DPP_TYPE_PROMOTION(<)
 
 // additional comparison operators
 template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -670,90 +583,19 @@ constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 }
 
 // conversions
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator==(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a == dpp<A, B>(std::forward<U>(b));
-}
+DPP_RIGHT_CONVERSION(==);
+DPP_RIGHT_CONVERSION(!=);
+DPP_RIGHT_CONVERSION(<);
+DPP_RIGHT_CONVERSION(>);
+DPP_RIGHT_CONVERSION(<=);
+DPP_RIGHT_CONVERSION(>=);
 
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator!=(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a != dpp<A, B>(std::forward<U>(b));
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator<(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a < dpp<A, B>(std::forward<U>(b));
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator>(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a > dpp<A, B>(std::forward<U>(b));
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator<=(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a <= dpp<A, B>(std::forward<U>(b));
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator>=(dpp<A, B> const a, U&& b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return a >= dpp<A, B>(std::forward<U>(b));
-}
-
-// conversions
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator==(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) == b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator!=(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) != b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator<(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) < b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator>(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) > b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator<=(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) <= b;
-}
-
-template <unsigned A, unsigned B, typename U>
-constexpr auto operator>=(U&& a, dpp<A, B> const b) noexcept
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)
-{
-  return dpp<A, B>(std::forward<U>(a)) >= b;
-}
+DPP_LEFT_CONVERSION(==)
+DPP_LEFT_CONVERSION(!=)
+DPP_LEFT_CONVERSION(<)
+DPP_LEFT_CONVERSION(>)
+DPP_LEFT_CONVERSION(<=)
+DPP_LEFT_CONVERSION(>=)
 
 // misc
 template <unsigned M, unsigned E>
@@ -1050,23 +892,16 @@ using d16 = dpp<11, 5>;
 namespace literals
 {
 
-template <char ...c>
-constexpr auto operator "" _d64() noexcept
-{
-  return to_decimal<d64>((char const[sizeof...(c)]){c...});
+#define DPP_LITERAL(ID)\
+template <char ...c>\
+constexpr auto operator "" _d ## ID() noexcept\
+{\
+  return to_decimal<d ## ID>((char const[sizeof...(c)]){c...});\
 }
 
-template <char ...c>
-constexpr auto operator "" _d32() noexcept
-{
-  return to_decimal<d32>((char const[sizeof...(c)]){c...});
-}
-
-template <char ...c>
-constexpr auto operator "" _d16() noexcept
-{
-  return to_decimal<d16>((char const[sizeof...(c)]){c...});
-}
+DPP_LITERAL(16)
+DPP_LITERAL(32)
+DPP_LITERAL(64)
 
 }
 
