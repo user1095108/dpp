@@ -531,6 +531,17 @@ constexpr auto operator OP (U&& a, dpp<A, B> const b) noexcept\
   return dpp<A, B>(std::forward<U>(a)) OP b;\
 }
 
+DPP_LEFT_CONVERSION(+)
+DPP_LEFT_CONVERSION(-)
+DPP_LEFT_CONVERSION(*)
+DPP_LEFT_CONVERSION(/)
+DPP_LEFT_CONVERSION(==)
+DPP_LEFT_CONVERSION(!=)
+DPP_LEFT_CONVERSION(<)
+DPP_LEFT_CONVERSION(>)
+DPP_LEFT_CONVERSION(<=)
+DPP_LEFT_CONVERSION(>=)
+
 #define DPP_RIGHT_CONVERSION(OP)\
 template <unsigned A, unsigned B, typename U>\
 constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
@@ -539,29 +550,16 @@ constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
   return a OP dpp<A, B>(std::forward<U>(b));\
 }
 
-DPP_LEFT_CONVERSION(+)
-DPP_LEFT_CONVERSION(-)
-DPP_LEFT_CONVERSION(*)
-DPP_LEFT_CONVERSION(/)
-
-DPP_LEFT_CONVERSION(==)
-DPP_LEFT_CONVERSION(!=)
-DPP_LEFT_CONVERSION(<)
-DPP_LEFT_CONVERSION(>)
-DPP_LEFT_CONVERSION(<=)
-DPP_LEFT_CONVERSION(>=)
-
 DPP_RIGHT_CONVERSION(+)
 DPP_RIGHT_CONVERSION(-)
 DPP_RIGHT_CONVERSION(*)
 DPP_RIGHT_CONVERSION(/)
-
-DPP_RIGHT_CONVERSION(==);
-DPP_RIGHT_CONVERSION(!=);
-DPP_RIGHT_CONVERSION(<);
-DPP_RIGHT_CONVERSION(>);
-DPP_RIGHT_CONVERSION(<=);
-DPP_RIGHT_CONVERSION(>=);
+DPP_RIGHT_CONVERSION(==)
+DPP_RIGHT_CONVERSION(!=)
+DPP_RIGHT_CONVERSION(<)
+DPP_RIGHT_CONVERSION(>)
+DPP_RIGHT_CONVERSION(<=)
+DPP_RIGHT_CONVERSION(>=)
 
 // additional comparison operators
 template <unsigned A, unsigned B, unsigned C, unsigned D>
