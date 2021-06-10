@@ -865,6 +865,44 @@ constexpr T to_decimal(It i, It const end) noexcept
     }
 
     typename T::value_type r{};
+    int e{};
+
+    auto const scandigit([&](char const c, int const de) noexcept
+      {
+        if (positive)
+        {
+          if (r <= rmax / 10)
+          {
+            r *= 10;
+
+            if (auto const d(c - '0'); r <= rmax - d)
+            {
+              r += d;
+              e += de;
+
+              return false;
+            }
+          }
+        }
+        else
+        {
+          if (r >= rmin / 10)
+          {
+            r *= 10;
+
+            if (auto const d(c - '0'); r >= rmin + d)
+            {
+              r -= d;
+              e += de;
+
+              return false;
+            }
+          }
+        }
+
+        return true;
+      }
+    );
 
     for (; i != end; i = std::next(i))
     {
@@ -876,36 +914,7 @@ constexpr T to_decimal(It i, It const end) noexcept
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (positive)
-          {
-            if (r <= rmax / 10)
-            {
-              r *= 10;
-
-              if (auto const d(*i - '0'); r <= rmax - d)
-              {
-                r += d;
-
-                continue;
-              }
-            }
-          }
-          else
-          {
-            if (r >= rmin / 10)
-            {
-              r *= 10;
-
-              if (auto const d(*i - '0'); r >= rmin + d)
-              {
-                r -= d;
-
-                continue;
-              }
-            }
-          }
-
-          break;
+          if (scandigit(*i, 0)) break; else continue;
 
         case '\0':
           return {r, 0};
@@ -917,46 +926,13 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    int e{};
-
     for (; i != end; i = std::next(i))
     {
       switch (*i)
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (positive)
-          {
-            if (r <= rmax / 10)
-            {
-              r *= 10;
-
-              if (auto const d(*i - '0'); r <= rmax - d)
-              {
-                r += d;
-                --e;
-
-                continue;
-              }
-            }
-          }
-          else
-          {
-            if (r >= rmin / 10)
-            {
-              r *= 10;
-
-              if (auto const d(*i - '0'); r >= rmin + d)
-              {
-                r -= d;
-                --e;
-
-                continue;
-              }
-            }
-          }
-
-          break;
+          if (scandigit(*i, -1)) break; else continue;
 
         case '\0':
           break;
