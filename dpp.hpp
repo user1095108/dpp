@@ -519,16 +519,10 @@ DPP_TYPE_PROMOTION(+)
 DPP_TYPE_PROMOTION(-)
 DPP_TYPE_PROMOTION(*)
 DPP_TYPE_PROMOTION(/)
+DPP_TYPE_PROMOTION(==)
+DPP_TYPE_PROMOTION(<)
 
 // conversions
-#define DPP_RIGHT_CONVERSION(OP)\
-template <unsigned A, unsigned B, typename U>\
-constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
-{\
-  return a OP dpp<A, B>(std::forward<U>(b));\
-}
-
 #define DPP_LEFT_CONVERSION(OP)\
 template <unsigned A, unsigned B, typename U>\
 constexpr auto operator OP (U&& a, dpp<A, B> const b) noexcept\
@@ -537,19 +531,37 @@ constexpr auto operator OP (U&& a, dpp<A, B> const b) noexcept\
   return dpp<A, B>(std::forward<U>(a)) OP b;\
 }
 
-DPP_RIGHT_CONVERSION(+)
-DPP_RIGHT_CONVERSION(-)
-DPP_RIGHT_CONVERSION(*)
-DPP_RIGHT_CONVERSION(/)
+#define DPP_RIGHT_CONVERSION(OP)\
+template <unsigned A, unsigned B, typename U>\
+constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
+  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
+{\
+  return a OP dpp<A, B>(std::forward<U>(b));\
+}
 
 DPP_LEFT_CONVERSION(+)
 DPP_LEFT_CONVERSION(-)
 DPP_LEFT_CONVERSION(*)
 DPP_LEFT_CONVERSION(/)
 
-// type promotion
-DPP_TYPE_PROMOTION(==)
-DPP_TYPE_PROMOTION(<)
+DPP_LEFT_CONVERSION(==)
+DPP_LEFT_CONVERSION(!=)
+DPP_LEFT_CONVERSION(<)
+DPP_LEFT_CONVERSION(>)
+DPP_LEFT_CONVERSION(<=)
+DPP_LEFT_CONVERSION(>=)
+
+DPP_RIGHT_CONVERSION(+)
+DPP_RIGHT_CONVERSION(-)
+DPP_RIGHT_CONVERSION(*)
+DPP_RIGHT_CONVERSION(/)
+
+DPP_RIGHT_CONVERSION(==);
+DPP_RIGHT_CONVERSION(!=);
+DPP_RIGHT_CONVERSION(<);
+DPP_RIGHT_CONVERSION(>);
+DPP_RIGHT_CONVERSION(<=);
+DPP_RIGHT_CONVERSION(>=);
 
 // additional comparison operators
 template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -581,21 +593,6 @@ constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return (a > b) - (a < b);
 }
-
-// conversions
-DPP_RIGHT_CONVERSION(==);
-DPP_RIGHT_CONVERSION(!=);
-DPP_RIGHT_CONVERSION(<);
-DPP_RIGHT_CONVERSION(>);
-DPP_RIGHT_CONVERSION(<=);
-DPP_RIGHT_CONVERSION(>=);
-
-DPP_LEFT_CONVERSION(==)
-DPP_LEFT_CONVERSION(!=)
-DPP_LEFT_CONVERSION(<)
-DPP_LEFT_CONVERSION(>)
-DPP_LEFT_CONVERSION(<=)
-DPP_LEFT_CONVERSION(>=)
 
 // misc
 template <unsigned M, unsigned E>
