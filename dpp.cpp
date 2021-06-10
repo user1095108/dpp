@@ -218,8 +218,8 @@ int main()
 
   //
   std::cout << std::endl;
-  auto a(dpp::to_decimal<dpp::d64>("1.23"));
-  auto b(dpp::to_decimal<dpp::d64>("45.6"));
+  auto const a(dpp::to_decimal<dpp::d64>("1.23"));
+  auto const b(dpp::to_decimal<dpp::d64>("45.6"));
 
   std::cout << a << std::endl;
   std::cout << b << std::endl;
