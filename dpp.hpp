@@ -500,19 +500,19 @@ public:
   }
 };
 
+using d64 = dpp<56, 8>;
+using d32 = dpp<26, 6>;
+using d16 = dpp<11, 5>;
+
 // type promotions
 #define DPP_TYPE_PROMOTION(OP)\
 template <unsigned A, unsigned B, unsigned C, unsigned D>\
 constexpr auto operator OP (dpp<A, B> const a, dpp<C, D> const b) noexcept\
 {\
   if constexpr (A + B < C + D)\
-  {\
     return dpp<C, D>(a) OP b;\
-  }\
   else\
-  {\
     return a OP dpp<A, B>(b);\
-  }\
 }
 
 DPP_TYPE_PROMOTION(+)
@@ -538,8 +538,8 @@ DPP_LEFT_CONVERSION(/)
 DPP_LEFT_CONVERSION(==)
 DPP_LEFT_CONVERSION(!=)
 DPP_LEFT_CONVERSION(<)
-DPP_LEFT_CONVERSION(>)
 DPP_LEFT_CONVERSION(<=)
+DPP_LEFT_CONVERSION(>)
 DPP_LEFT_CONVERSION(>=)
 
 #define DPP_RIGHT_CONVERSION(OP)\
@@ -557,8 +557,8 @@ DPP_RIGHT_CONVERSION(/)
 DPP_RIGHT_CONVERSION(==)
 DPP_RIGHT_CONVERSION(!=)
 DPP_RIGHT_CONVERSION(<)
-DPP_RIGHT_CONVERSION(>)
 DPP_RIGHT_CONVERSION(<=)
+DPP_RIGHT_CONVERSION(>)
 DPP_RIGHT_CONVERSION(>=)
 
 // additional comparison operators
@@ -792,7 +792,6 @@ constexpr auto to_decimal(S const& s) noexcept ->
   return to_decimal<T>(std::cbegin(s), std::cend(s));
 }
 
-//////////////////////////////////////////////////////////////////////////////
 template <typename T = std::intmax_t, unsigned M, unsigned E>
 constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
 {
@@ -879,10 +878,6 @@ inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
   return os << to_string(p);
 }
 
-using d64 = dpp<56, 8>;
-using d32 = dpp<26, 6>;
-using d16 = dpp<11, 5>;
-
 //////////////////////////////////////////////////////////////////////////////
 namespace literals
 {
@@ -902,6 +897,7 @@ DPP_LITERAL(64)
 
 }
 
+//////////////////////////////////////////////////////////////////////////////
 namespace std
 {
 
