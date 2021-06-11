@@ -509,6 +509,7 @@ using d16 = dpp<11, 5>;
 template <unsigned A, unsigned B, unsigned C, unsigned D>\
 constexpr auto operator OP (dpp<A, B> const a, dpp<C, D> const b) noexcept\
 {\
+  static_assert(A + B != C + D);\
   if constexpr (A + B < C + D)\
     return dpp<C, D>(a) OP b;\
   else\
@@ -541,6 +542,7 @@ DPP_LEFT_CONVERSION(<)
 DPP_LEFT_CONVERSION(<=)
 DPP_LEFT_CONVERSION(>)
 DPP_LEFT_CONVERSION(>=)
+DPP_LEFT_CONVERSION(<=>)
 
 #define DPP_RIGHT_CONVERSION(OP)\
 template <unsigned A, unsigned B, typename U>\
@@ -550,16 +552,11 @@ constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
   return a OP dpp<A, B>(std::forward<U>(b));\
 }
 
-DPP_RIGHT_CONVERSION(+)
-DPP_RIGHT_CONVERSION(-)
-DPP_RIGHT_CONVERSION(*)
-DPP_RIGHT_CONVERSION(/)
-DPP_RIGHT_CONVERSION(==)
 DPP_RIGHT_CONVERSION(!=)
-DPP_RIGHT_CONVERSION(<)
 DPP_RIGHT_CONVERSION(<=)
 DPP_RIGHT_CONVERSION(>)
 DPP_RIGHT_CONVERSION(>=)
+DPP_RIGHT_CONVERSION(<=>)
 
 // additional comparison operators
 template <unsigned A, unsigned B, unsigned C, unsigned D>
