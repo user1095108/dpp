@@ -523,6 +523,37 @@ DPP_TYPE_PROMOTION(/)
 DPP_TYPE_PROMOTION(==)
 DPP_TYPE_PROMOTION(<)
 
+// comparison operators
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(a == b);
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return b < a;
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(b < a);
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return !(a < b);
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return (a > b) - (a < b);
+}
+
 // conversions
 #define DPP_LEFT_CONVERSION(OP)\
 template <unsigned A, unsigned B, typename U>\
@@ -557,37 +588,6 @@ DPP_RIGHT_CONVERSION(<=)
 DPP_RIGHT_CONVERSION(>)
 DPP_RIGHT_CONVERSION(>=)
 DPP_RIGHT_CONVERSION(<=>)
-
-// additional comparison operators
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return !(a == b);
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return b < a;
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return !(b < a);
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return !(a < b);
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return (a > b) - (a < b);
-}
 
 // misc
 template <unsigned M, unsigned E>
