@@ -568,8 +568,8 @@ DPP_LEFT_CONVERSION(-)
 DPP_LEFT_CONVERSION(*)
 DPP_LEFT_CONVERSION(/)
 DPP_LEFT_CONVERSION(==)
-DPP_LEFT_CONVERSION(!=)
 DPP_LEFT_CONVERSION(<)
+DPP_LEFT_CONVERSION(!=)
 DPP_LEFT_CONVERSION(<=)
 DPP_LEFT_CONVERSION(>)
 DPP_LEFT_CONVERSION(>=)
@@ -583,6 +583,12 @@ constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
   return a OP dpp<A, B>(std::forward<U>(b));\
 }
 
+DPP_RIGHT_CONVERSION(+)
+DPP_RIGHT_CONVERSION(-)
+DPP_RIGHT_CONVERSION(*)
+DPP_RIGHT_CONVERSION(/)
+DPP_RIGHT_CONVERSION(==)
+DPP_RIGHT_CONVERSION(<)
 DPP_RIGHT_CONVERSION(!=)
 DPP_RIGHT_CONVERSION(<=)
 DPP_RIGHT_CONVERSION(>)
@@ -615,12 +621,6 @@ constexpr auto isnormal(dpp<M, E> const a) noexcept
 }
 
 //
-template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const a) noexcept
-{
-  return a.mantissa() < 0 ? -a : a;
-}
-
 template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const a) noexcept
 {
@@ -662,6 +662,12 @@ constexpr auto round(dpp<M, E> const a) noexcept
   return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
+}
+
+template <unsigned M, unsigned E>
+constexpr auto abs(dpp<M, E> const a) noexcept
+{
+  return a.mantissa() < 0 ? -a : a;
 }
 
 // conversions
