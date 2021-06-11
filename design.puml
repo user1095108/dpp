@@ -1,0 +1,11 @@
+@startmindmap
++ **""dpp""**
+++ **overview:**\n• <math>(m, e)</math> pair management,\n• conversions,\n• ops.
++++ **conversions (to/from):**\n• strings,\n• ints,\n• floats,\n• <math>(m, e)</math> pairs.
+++++ "slashing"
+++++ normalization\n(<math>+, -</math> ops)
++++ **ops:**\n• <math>+, -</math>,\n• <math>*, /</math>,\n• misc.
+++++ <math>+, -</math>
++++++ shifting operands:\n• ""shift()"".
++++++ normalization\n(perfomance)
+@endmindmap
