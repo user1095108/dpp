@@ -79,7 +79,7 @@ constexpr B selectsign(B const b) noexcept
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
 template <typename T>
-constexpr void equalize(T const am, int const ae, T& bm, int& be) noexcept
+constexpr void shift(T const am, int const ae, T& bm, int& be) noexcept
 {
   if (am)
   {
@@ -374,13 +374,13 @@ public:
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::equalize(mb, eb, ma, ea);
+        detail::shift(mb, eb, ma, ea);
 
         return {ma + mb, ea};
       }
       else
       {
-        detail::equalize(ma, ea, mb, eb);
+        detail::shift(ma, ea, mb, eb);
 
         return {ma + mb, eb};
       }
@@ -399,13 +399,13 @@ public:
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::equalize(mb, eb, ma, ea);
+        detail::shift(mb, eb, ma, ea);
 
         return {ma - mb, ea};
       }
       else
       {
-        detail::equalize(ma, ea, mb, eb);
+        detail::shift(ma, ea, mb, eb);
 
         return {ma - mb, eb};
       }
@@ -475,11 +475,11 @@ public:
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::equalize(mb, eb, ma, ea);
+        detail::shift(mb, eb, ma, ea);
       }
       else
       {
-        detail::equalize(ma, ea, mb, eb);
+        detail::shift(ma, ea, mb, eb);
       }
 
       return ma < mb;
