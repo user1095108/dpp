@@ -218,7 +218,7 @@ public:
   }
 
   template <typename U>
-  constexpr dpp(U const m) noexcept requires(std::is_integral_v<U>) :
+  constexpr dpp(U const m) noexcept requires(std::is_integral_v<U>):
     dpp(std::conditional_t<
           detail::bit_size_v<U> < detail::bit_size_v<value_type>,
           value_type,
@@ -259,12 +259,12 @@ public:
   }
 
   //
-  constexpr dpp(value_type const m, int const e, direct) noexcept :
+  constexpr dpp(value_type const m, int const e, direct) noexcept:
     v_{.m = m, .e = e}
   {
   }
 
-  constexpr dpp(nan) noexcept : v_{.m = {}, .e = emin} { }
+  constexpr dpp(nan) noexcept: v_{.m = {}, .e = emin} { }
 
   dpp(value_type const v, unpack) noexcept
   {
@@ -531,15 +531,15 @@ constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
-{
-  return b < a;
-}
-
-template <unsigned A, unsigned B, unsigned C, unsigned D>
 constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
 {
   return !(b < a);
+}
+
+template <unsigned A, unsigned B, unsigned C, unsigned D>
+constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+{
+  return b < a;
 }
 
 template <unsigned A, unsigned B, unsigned C, unsigned D>
@@ -616,6 +616,12 @@ constexpr auto isnormal(dpp<M, E> const a) noexcept
 
 //
 template <unsigned M, unsigned E>
+constexpr auto abs(dpp<M, E> const a) noexcept
+{
+  return a.mantissa() < 0 ? -a : a;
+}
+
+template <unsigned M, unsigned E>
 constexpr auto trunc(dpp<M, E> const a) noexcept
 {
   if (int e(a.exponent()); !isnan(a) && (e < 0))
@@ -658,13 +664,7 @@ constexpr auto round(dpp<M, E> const a) noexcept
     a;
 }
 
-template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const a) noexcept
-{
-  return a.mantissa() < 0 ? -a : a;
-}
-
-//////////////////////////////////////////////////////////////////////////////
+// conversions
 template <typename T, typename It>
 constexpr T to_decimal(It i, It const end) noexcept
 {
