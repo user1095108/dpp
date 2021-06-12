@@ -3,9 +3,9 @@
 ++ **overview:**\n• <math>(m, e)</math> pair management,\n• conversions,\n• ops.
 +++ **conversions (to/from):**\n• strings,\n• ints,\n• floats,\n• <math>(m, e)</math> pairs.
 ++++ "slashing"
-++++ normalization\n(<math>+, -</math>, comparison ops)
-+++ **ops:**\n• <math>+, -</math>,\n• <math>*, /</math>,\n• comparison,\n• misc.
-++++ • <math>+, -</math>,\n• comparison.
+++++ normalization\n(<math>+, -</math>, comparisons)
++++ **ops:**\n• <math>+, -</math>,\n• <math>*, /</math>,\n• comparisons,\n• misc.
+++++ • <math>+, -</math>,\n• comparisons.
 +++++ shifting operands:\n• ""shift()"".
 +++++ normalization\n(perfomance)
 +++++ "slashing"
