@@ -2,7 +2,7 @@
 + **""dpp:""**\n• <math>(m, e)</math> pair management,\n• conversions,\n• ops.
 ++ **conversions (to/from):**\n• strings,\n• ints,\n• floats,\n• <math>(m, e)</math> pairs.
 +++ "slashing"
-+++ normalization\n(<math>+, -</math>, comparisons)
++++ normalization\n(<math>+, -</math>, comparisons performance)
 ++ **ops:**\n• <math>+, -</math>,\n• <math>*, /</math>,\n• comparisons,\n• misc.
 +++ • <math>+, -</math>,\n• comparisons.
 ++++ shifting operands:\n• ""shift()"".
