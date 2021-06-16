@@ -1,77 +1,29 @@
-/*
-LICENSE
-
-Copyright (c) 2006-2008 Kevin Beason (kevin.beason@gmail.com)
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+#include "dpp.hpp"
 #include <math.h>   // smallpt, a Path Tracer by Kevin Beason, 2008
 #include <stdlib.h> // Make : g++ -O3 -fopenmp smallpt.cpp -o smallpt
 #include <stdio.h>  //        Remove "-fopenmp" for g++ version < 4.2
-#include "dpp.hpp"
-
-using D = dpp::d64;
-using F = double;
-
-inline D pow(D const a, D const x) noexcept
-{
-  return pow(F(a), F(x));
-}
-
-inline D sqrt(D const v) noexcept
-{
-  return sqrt(F(v));
-}
-
-inline D cos(D const v) noexcept
-{
-  return cos(F(v));
-}
-
-inline D sin(D const v) noexcept
-{
-  return sin(F(v));
-}
-
 struct Vec {        // Usage: time ./smallpt 5000 && xv image.ppm
-  D x, y, z;                  // position, also color (r,g,b)
-  Vec(D x_=0, D y_=0, D z_=0){ x=x_; y=y_; z=z_; }
+  dpp::d64 x, y, z;                  // position, also color (r,g,b)
+  Vec(dpp::d64 x_=0, dpp::d64 y_=0, dpp::d64 z_=0){ x=x_; y=y_; z=z_; }
   Vec operator+(const Vec &b) const { return Vec(x+b.x,y+b.y,z+b.z); }
   Vec operator-(const Vec &b) const { return Vec(x-b.x,y-b.y,z-b.z); }
-  Vec operator*(D b) const { return Vec(x*b,y*b,z*b); }
+  Vec operator*(dpp::d64 b) const { return Vec(x*b,y*b,z*b); }
   Vec mult(const Vec &b) const { return Vec(x*b.x,y*b.y,z*b.z); }
-  Vec& norm(){ return *this = *this * (D(1)/sqrt(x*x+y*y+z*z)); }
-  D dot(const Vec &b) const { return x*b.x+y*b.y+z*b.z; } // cross:
+  Vec& norm(){ return *this = *this * (1/sqrt(x*x+y*y+z*z)); }
+  dpp::d64 dot(const Vec &b) const { return x*b.x+y*b.y+z*b.z; } // cross:
   Vec operator%(Vec&b){return Vec(y*b.z-z*b.y,z*b.x-x*b.z,x*b.y-y*b.x);}
 };
 struct Ray { Vec o, d; Ray(Vec o_, Vec d_) : o(o_), d(d_) {} };
 enum Refl_t { DIFF, SPEC, REFR };  // material types, used in radiance()
 struct Sphere {
-  D rad;       // radius
+  dpp::d64 rad;       // radius
   Vec p, e, c;      // position, emission, color
   Refl_t refl;      // reflection type (DIFFuse, SPECular, REFRactive)
-  Sphere(D rad_, Vec p_, Vec e_, Vec c_, Refl_t refl_):
+  Sphere(dpp::d64 rad_, Vec p_, Vec e_, Vec c_, Refl_t refl_):
     rad(rad_), p(p_), e(e_), c(c_), refl(refl_) {}
-  D intersect(const Ray &r) const { // returns distance, 0 if nohit
+  dpp::d64 intersect(const Ray &r) const { // returns distance, 0 if nohit
     Vec op = p-r.o; // Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
-    D t, eps=1e-4, b=op.dot(r.d), det=b*b-op.dot(op)+rad*rad;
+    dpp::d64 t, eps=1e-4, b=op.dot(r.d), det=b*b-op.dot(op)+rad*rad;
     if (det<0) return 0; else det=sqrt(det);
     return (t=b-det)>eps ? t : ((t=b+det)>eps ? t : 0);
   }
@@ -87,37 +39,37 @@ Sphere spheres[] = {//Scene: radius, position, emission, color, material
   Sphere(16.5,Vec(73,16.5,78),       Vec(),Vec(1,1,1)*.999, REFR),//Glas
   Sphere(600, Vec(50,681.6-.27,81.6),Vec(12,12,12),  Vec(), DIFF) //Lite
 };
-inline D clamp(D x){ return x<0 ? 0 : x>1 ? 1 : x; }
-inline int toInt(D x){ return int(pow(clamp(x),D(1/2.2))*D(255)+D(.5)); }
-inline bool intersect(const Ray &r, D &t, int &id){
-  D n=sizeof(spheres)/sizeof(Sphere), d, inf=t=1e20;
+inline dpp::d64 clamp(dpp::d64 x){ return x<0 ? 0 : x>1 ? 1 : x; }
+inline int toInt(dpp::d64 x){ return int(pow(clamp(x),1/2.2)*255+.5); }
+inline bool intersect(const Ray &r, dpp::d64 &t, int &id){
+  dpp::d64 n=sizeof(spheres)/sizeof(Sphere), d, inf=t=1e20;
   for(int i=int(n);i--;) if((d=spheres[i].intersect(r))&&d<t){t=d;id=i;}
   return t<inf;
 }
 Vec radiance(const Ray &r, int depth, unsigned short *Xi){
-  D t;                               // distance to intersection
+  dpp::d64 t;                               // distance to intersection
   int id=0;                               // id of intersected object
   if (!intersect(r, t, id)) return Vec(); // if miss, return black
   const Sphere &obj = spheres[id];        // the hit object
   Vec x=r.o+r.d*t, n=(x-obj.p).norm(), nl=n.dot(r.d)<0?n:n*-1, f=obj.c;
-  D p = f.x>f.y && f.x>f.z ? f.x : f.y>f.z ? f.y : f.z; // max refl
-  if (++depth>5) if (erand48(Xi)<p) f=f*(D(1)/p); else return obj.e; //R.R.
+  dpp::d64 p = f.x>f.y && f.x>f.z ? f.x : f.y>f.z ? f.y : f.z; // max refl
+  if (++depth>5) if (erand48(Xi)<p) f=f*(1/p); else return obj.e; //R.R.
   if (obj.refl == DIFF){                  // Ideal DIFFUSE reflection
-    D r1=2*M_PI*erand48(Xi), r2=erand48(Xi), r2s=sqrt(r2);
-    Vec w=nl, u=((abs(w.x)>.1?Vec(0,1):Vec(1))%w).norm(), v=w%u;
-    Vec d = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(D(1)-r2)).norm();
+    dpp::d64 r1=2*M_PI*erand48(Xi), r2=erand48(Xi), r2s=sqrt(r2);
+    Vec w=nl, u=((fabs(w.x)>.1?Vec(0,1):Vec(1))%w).norm(), v=w%u;
+    Vec d = (u*cos(r1)*r2s + v*sin(r1)*r2s + w*sqrt(1-r2)).norm();
     return obj.e + f.mult(radiance(Ray(x,d),depth,Xi));
   } else if (obj.refl == SPEC)            // Ideal SPECULAR reflection
     return obj.e + f.mult(radiance(Ray(x,r.d-n*2*n.dot(r.d)),depth,Xi));
   Ray reflRay(x, r.d-n*2*n.dot(r.d));     // Ideal dielectric REFRACTION
-  bool into = n.dot(nl)>0;             // Ray from outside going in?
-  D nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=r.d.dot(nl), cos2t;
-  if ((cos2t=D(1)-nnt*nnt*(D(1)-ddn*ddn))<0) // Total internal reflection
+  bool into = n.dot(nl)>0;                // Ray from outside going in?
+  dpp::d64 nc=1, nt=1.5, nnt=into?nc/nt:nt/nc, ddn=r.d.dot(nl), cos2t;
+  if ((cos2t=1-nnt*nnt*(1-ddn*ddn))<0)    // Total internal reflection
     return obj.e + f.mult(radiance(reflRay,depth,Xi));
-  Vec tdir = (r.d*nnt - n*((into?D(1):D(-1))*(ddn*nnt+sqrt(cos2t)))).norm();
-  D a=nt-nc, b=nt+nc, R0=a*a/(b*b), c = D(1)-(into?-ddn:tdir.dot(n));
-  D Re=R0+(D(1)-R0)*c*c*c*c*c,Tr=D(1)-Re,P=D(.25)+D(.5)*Re,RP=Re/P,TP=Tr/(D(1)-P);
-  return obj.e + f.mult(depth>2 ? (erand48(Xi)<P ? // Russian roulette
+  Vec tdir = (r.d*nnt - n*((into?1:-1)*(ddn*nnt+sqrt(cos2t)))).norm();
+  dpp::d64 a=nt-nc, b=nt+nc, R0=a*a/(b*b), c = 1-(into?-ddn:tdir.dot(n));
+  dpp::d64 Re=R0+(1-R0)*c*c*c*c*c,Tr=1-Re,P=.25+.5*Re,RP=Re/P,TP=Tr/(1-P);
+  return obj.e + f.mult(depth>2 ? (erand48(Xi)<P ?   // Russian roulette
     radiance(reflRay,depth,Xi)*RP:radiance(Ray(x,tdir),depth,Xi)*TP) :
     radiance(reflRay,depth,Xi)*Re+radiance(Ray(x,tdir),depth,Xi)*Tr);
 }
@@ -128,15 +80,15 @@ int main(int argc, char *argv[]){
 #pragma omp parallel for schedule(dynamic, 1) private(r)       // OpenMP
   for (int y=0; y<h; y++){                       // Loop over image rows
     fprintf(stderr,"\rRendering (%d spp) %5.2f%%",samps*4,100.*y/(h-1));
-    for (unsigned short x=0, Xi[3]={0,0,(unsigned short)(y*y*y)}; x<w; x++)   // Loop cols
+    for (unsigned short x=0, Xi[3]={0,0,y*y*y}; x<w; x++)   // Loop cols
       for (int sy=0, i=(h-y-1)*w+x; sy<2; sy++)     // 2x2 subpixel rows
         for (int sx=0; sx<2; sx++, r=Vec()){        // 2x2 subpixel cols
           for (int s=0; s<samps; s++){
-            D r1=2*erand48(Xi), dx=r1<1 ? sqrt(r1)-D(1): D(1)-sqrt(D(2)-r1);
-            D r2=2*erand48(Xi), dy=r2<1 ? sqrt(r2)-D(1): D(1)-sqrt(D(2)-r2);
-            Vec d = cx*( ( (D(sx)+D(.5) + dx)/D(2) + D(x))/D(w) - D(.5)) +
-                    cy*( ( (D(sy)+D(.5) + dy)/D(2) + D(y))/D(h) - D(.5)) + cam.d;
-            r = r + radiance(Ray(cam.o+d*140,d.norm()),0,Xi)*(D(1)/D(samps));
+            dpp::d64 r1=2*erand48(Xi), dx=r1<1 ? sqrt(r1)-1: 1-sqrt(2-r1);
+            dpp::d64 r2=2*erand48(Xi), dy=r2<1 ? sqrt(r2)-1: 1-sqrt(2-r2);
+            Vec d = cx*( ( (sx+.5 + dx)/2 + x)/w - .5) +
+                    cy*( ( (sy+.5 + dy)/2 + y)/h - .5) + cam.d;
+            r = r + radiance(Ray(cam.o+d*140,d.norm()),0,Xi)*(1./samps);
           } // Camera rays are pushed ^^^^^ forward to start in interior
           c[i] = c[i] + Vec(clamp(r.x),clamp(r.y),clamp(r.z))*.25;
         }

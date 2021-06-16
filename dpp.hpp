@@ -278,7 +278,8 @@ public:
   }
 
   template <typename T>
-  constexpr operator T() const noexcept requires(std::is_floating_point_v<T>)
+  constexpr explicit (sizeof(T) != sizeof(v_)) operator T() const noexcept
+    requires(std::is_floating_point_v<T>)
   {
     if (isnan(*this))
     {
