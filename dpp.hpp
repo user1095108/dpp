@@ -119,8 +119,10 @@ public:
   >;
 
 private:
-  static constexpr auto mmin{-detail::pow<value_type, 2>(M - 1)};
-  static constexpr auto mmax{-(mmin + 1)};
+  enum : value_type
+  {
+    mmin = -detail::pow<value_type, 2>(M - 1), mmax = -(mmin + 1)
+  };
 
   using doubled_t = std::conditional_t<
     std::is_same_v<value_type, std::int16_t>,
@@ -230,7 +232,7 @@ public:
   }
 
   template <unsigned A, unsigned B>
-  constexpr dpp(dpp<A, B> const o) noexcept :
+  constexpr dpp(dpp<A, B> const o) noexcept:
     dpp(o.mantissa(), o.exponent())
   {
   }
