@@ -35,6 +35,10 @@ template <typename U>
 constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
+constexpr static auto is_integral_v(std::is_integral_v<U> ||
+  std::is_same_v<U, __int128>);
+
+template <typename U>
 constexpr static auto is_signed_v(std::is_signed_v<U> ||
   std::is_same_v<U, __int128>);
 
@@ -147,8 +151,7 @@ public:
   constexpr dpp(dpp&&) = default;
 
   template <typename U>
-  constexpr dpp(U m, int e) noexcept
-    requires(std::is_integral_v<U> || std::is_same_v<U, __int128>)
+  constexpr dpp(U m, int e) noexcept requires(detail::is_integral_v<U>)
   {
     constexpr auto umin(U(1) << (detail::bit_size_v<U> - 1));
     constexpr auto umax(detail::is_signed_v<U> ? -(umin + 1) : ~U{});
@@ -218,7 +221,7 @@ public:
   }
 
   template <typename U>
-  constexpr dpp(U const m) noexcept requires(std::is_integral_v<U>):
+  constexpr dpp(U const m) noexcept requires(detail::is_integral_v<U>):
     dpp(std::conditional_t<
           detail::bit_size_v<U> < detail::bit_size_v<value_type>,
           value_type,
@@ -302,7 +305,7 @@ public:
   // this function is unsafe, take a look at to_integral() for safety
   template <typename T>
   constexpr explicit operator T() const noexcept
-    requires(std::is_integral_v<T>)
+    requires(detail::is_integral_v<T>)
   {
     if (int e(v_.e); e > 0)
     {
