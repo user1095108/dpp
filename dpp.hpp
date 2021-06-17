@@ -364,7 +364,7 @@ public:
       mmin == v_.m ? dpp(-v_.m, v_.e) : dpp(-v_.m, v_.e, direct{});
   }
 
-  constexpr dpp<M, E> operator+(dpp<M, E> const o) const noexcept
+  constexpr dpp operator+(dpp const o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
@@ -389,7 +389,7 @@ public:
     }
   }
 
-  constexpr dpp<M, E> operator-(dpp<M, E> const o) const noexcept
+  constexpr dpp operator-(dpp const o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
@@ -414,13 +414,13 @@ public:
     }
   }
 
-  constexpr dpp<M, E> operator*(dpp<M, E> const o) const noexcept
+  constexpr dpp operator*(dpp const o) const noexcept
   {
     return isnan(*this) || isnan(o) ? nan{} :
       dpp<M, E>{doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e};
   }
 
-  constexpr dpp<M, E> operator/(dpp<M, E> const o) const noexcept
+  constexpr dpp operator/(dpp const o) const noexcept
   {
     if (isnan(*this) || isnan(o) || !o.v_.m) // guard against division by 0
     {
@@ -434,7 +434,7 @@ public:
       // dp is the exponent, that generates the maximal power of 10,
       // that fits into doubled_t
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-      constexpr auto dp(detail::log10(static_cast<double>(rmax)) - 1);
+      constexpr auto dp(detail::log10(rmax) - 1);
 
       int e(v_.e - o.v_.e - dp);
 
@@ -456,12 +456,12 @@ public:
   }
 
   //
-  constexpr bool operator==(dpp<M, E> const o) const noexcept
+  constexpr bool operator==(dpp const o) const noexcept
   {
     return !isnan(*this) && !isnan(o) && (packed() == o.packed());
   }
 
-  constexpr bool operator<(dpp<M, E> const o) const noexcept
+  constexpr bool operator<(dpp const o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
