@@ -456,12 +456,12 @@ public:
   }
 
   //
-  constexpr auto operator==(dpp<M, E> const o) const noexcept
+  constexpr bool operator==(dpp<M, E> const o) const noexcept
   {
     return !isnan(*this) && !isnan(o) && (packed() == o.packed());
   }
 
-  constexpr auto operator<(dpp<M, E> const o) const noexcept
+  constexpr bool operator<(dpp<M, E> const o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
