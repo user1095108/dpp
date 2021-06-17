@@ -36,14 +36,16 @@ constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
 constexpr static auto is_integral_v(std::is_integral_v<U> ||
-  std::is_same_v<U, __int128>);
+  std::is_same_v<U, __int128>
+);
 
 template <typename U>
 constexpr static auto is_signed_v(std::is_signed_v<U> ||
-  std::is_same_v<U, __int128>);
+  std::is_same_v<U, __int128>
+);
 
-template <typename T, T B>
-constexpr T pow(unsigned e) noexcept
+template <typename T, int B>
+constexpr T pow(int e) noexcept
 {
   for (T r{1}, x(B);;)
   {
@@ -63,9 +65,9 @@ constexpr T pow(unsigned e) noexcept
   }
 }
 
-constexpr int log10(__uint128_t const x, unsigned const e = 0u) noexcept
+constexpr int log10(double const x, int const e = 0u) noexcept
 {
-  return pow<__uint128_t, 10>(e) > x ? e : log10(x, e + 1);
+  return pow<double, 10>(e) > x ? e : log10(x, e + 1);
 }
 
 template <auto a, typename B>
@@ -100,8 +102,6 @@ template <unsigned M, unsigned E>
 class dpp
 {
 public:
-  enum : unsigned { exponent_bits = E, mantissa_bits = M };
-
   enum : int { emin = -detail::pow<int, 2>(E - 1), emax = -(emin + 1) };
 
   using value_type = std::conditional_t<
@@ -118,12 +118,10 @@ public:
     >
   >;
 
-  enum : value_type
-  {
-    mmin = -detail::pow<value_type, 2>(M - 1), mmax = -(mmin + 1)
-  };
-
 private:
+  static constexpr auto mmin{-detail::pow<value_type, 2>(M - 1)};
+  static constexpr auto mmax{-(mmin + 1)};
+
   using doubled_t = std::conditional_t<
     std::is_same_v<value_type, std::int16_t>,
     std::int32_t,
@@ -428,7 +426,7 @@ public:
     {
       return nan{};
     }
-    else if (doubled_t const am(v_.m); am)
+    else
     {
       constexpr auto rmin(doubled_t(1) << (detail::bit_size_v<doubled_t> - 1));
       constexpr auto rmax(-(rmin + 1));
@@ -436,28 +434,24 @@ public:
       // dp is the exponent, that generates the maximal power of 10,
       // that fits into doubled_t
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-      constexpr auto dp(detail::log10(rmax) - 1);
+      constexpr auto dp(detail::log10(static_cast<double>(rmax)) - 1);
 
       int e(v_.e - o.v_.e - dp);
 
       // we want an approximation to a.v_.m * (10^dp / b.v_.m)
       auto q(detail::pow<doubled_t, 10>(dp) / o.v_.m);
 
-      // fit q * am into doubled_t
-      if (auto const aam(am < 0 ? -am : am); q < 0)
+      // fit q * v_.m into doubled_t, q * v_.m <= rmax, q * v_.m >= rmin
+      if (auto const am(v_.m < 0 ? -v_.m : v_.m); q < 0)
       {
-        for (auto const a(rmin / aam); q < a; q /= 10, ++e);
+        for (auto const a(rmin / am); q < a; q /= 10, ++e);
       }
       else
       {
-        for (auto const a(rmax / aam); q > a; q /= 10, ++e);
+        for (auto const a(rmax / am); q > a; q /= 10, ++e);
       }
 
-      return {q * am, e};
-    }
-    else
-    {
-      return {};
+      return {q * v_.m, e};
     }
   }
 
