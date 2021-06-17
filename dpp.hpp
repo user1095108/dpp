@@ -426,7 +426,7 @@ public:
     {
       return nan{};
     }
-    else
+    else if (v_.m)
     {
       constexpr auto rmin(doubled_t(1) << (detail::bit_size_v<doubled_t> - 1));
       constexpr auto rmax(-(rmin + 1));
@@ -452,6 +452,10 @@ public:
       }
 
       return {q * v_.m, e};
+    }
+    else
+    {
+      return {};
     }
   }
 
