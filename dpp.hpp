@@ -241,10 +241,7 @@ public:
   }
 
   template <unsigned A>
-  constexpr dpp(dpp<A> const o) noexcept:
-    dpp(o.mantissa(), o.exponent())
-  {
-  }
+  constexpr dpp(dpp<A> const o) noexcept: dpp(o.mantissa(), o.exponent()) { }
 
   template <typename U>
   dpp(U f) noexcept requires(std::is_floating_point_v<U>)
