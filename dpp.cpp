@@ -184,7 +184,7 @@ int main()
   std::cout << std::setprecision(17);
 
   //
-  std::cout << -.001_d32 << " " << (-.001_d32).packed() << " " <<
+  std::cout << -.001_d32 << " " <<
     dpp::d32((-.001_d32).packed(), dpp::unpack{}) << std::endl;
   std::cout << -2_d32 / -3_d64 << " " << -2_d32 / 3_d64 << " " <<
     2_d64 / -3_d64 << " " << 2_d32 / 3_d32 << std::endl;
