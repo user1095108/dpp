@@ -44,22 +44,6 @@ constexpr static auto is_signed_v(std::is_signed_v<U> ||
   std::is_same_v<U, __int128>
 );
 
-template <typename ...T>
-constexpr std::size_t hash_combine(T&& ...v) noexcept
-{
-  std::size_t seed{672807365};
-
-  (
-    (
-      seed ^= std::hash<std::remove_cvref_t<T>>()(std::forward<T>(v)) +
-        0x9e3779b9 + (seed << 6) + (seed >> 2)
-    ),
-    ...
-  );
-
-  return seed;
-}
-
 template <typename T, int B>
 constexpr T pow(int e) noexcept
 {
@@ -927,10 +911,25 @@ namespace std
 template <unsigned M>
 struct hash<dpp::dpp<M>>
 {
+  template <typename ...T>
+  static constexpr std::size_t hash_combine(T&& ...v) noexcept
+  {
+    std::size_t seed{672807365};
+
+    (
+      (
+        seed ^= std::hash<std::remove_cvref_t<T>>()(std::forward<T>(v)) +
+          0x9e3779b9 + (seed << 6) + (seed >> 2)
+      ),
+      ...
+    );
+
+    return seed;
+  }
+
   auto operator()(dpp::dpp<M> const a) const noexcept
   {
-    return std::hash<std::size_t>()(dpp::detail::hash_combine(a.mantissa(),
-      a.exponent()));
+    return std::hash<std::size_t>()(hash_combine(a.mantissa(), a.exponent()));
   }
 };
 
