@@ -436,7 +436,7 @@ public:
       // dp is the exponent, that generates the maximal power of 10,
       // that fits into doubled_t
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-      constexpr auto dp(detail::log10((long double)(rmax)) - 1);
+      enum { dp = detail::log10((long double)(rmax)) - 1 };
 
       int e(v_.e - o.v_.e - dp);
 
