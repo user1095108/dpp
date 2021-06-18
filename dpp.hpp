@@ -380,19 +380,19 @@ public:
     }
     else
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
+      auto ma(v_.m), mb(o.v_.m);
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
         detail::shift(mb, eb, ma, ea);
 
-        return {ma + mb, ea};
+        return {doubled_t(ma) + mb, ea};
       }
       else
       {
         detail::shift(ma, ea, mb, eb);
 
-        return {ma + mb, eb};
+        return {doubled_t(ma) + mb, eb};
       }
     }
   }
@@ -405,19 +405,19 @@ public:
     }
     else
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
+      auto ma(v_.m), mb(o.v_.m);
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
         detail::shift(mb, eb, ma, ea);
 
-        return {ma - mb, ea};
+        return {doubled_t(ma) - mb, ea};
       }
       else
       {
         detail::shift(ma, ea, mb, eb);
 
-        return {ma - mb, eb};
+        return {doubled_t(ma) - mb, eb};
       }
     }
   }
@@ -484,7 +484,7 @@ public:
     }
     else
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
+      auto ma(v_.m), mb(o.v_.m);
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
