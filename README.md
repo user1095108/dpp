@@ -6,3 +6,4 @@ This is a an easily understandable **decimal** floating-point library library fo
 * [DEC64](https://github.com/douglascrockford/DEC64) - legendary asm, one 64-bit type, inspired,
 * [decimal_for_cpp](https://github.com/vpiotr/decimal_for_cpp) - c++, fixed-point, bloated (locales),
 * [libdecnumber](https://github.com/gcc-mirror/gcc/tree/master/libdecnumber) - epic c, supported by gcc (but not everywhere?), complex, huge.
+![image.png](image.png?raw=true)
