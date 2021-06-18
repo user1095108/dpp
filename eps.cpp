@@ -18,6 +18,9 @@ auto eps() noexcept
 
 int main()
 {
+  std::cout << eps<float>() << std::endl;
+  std::cout << eps<double>() << std::endl;
+  std::cout << eps<long double>() << std::endl;
   std::cout << eps<dpp::d16>() << std::endl;
   std::cout << eps<dpp::d32>() << std::endl;
   std::cout << eps<dpp::d64>() << std::endl;
