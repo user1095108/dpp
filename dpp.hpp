@@ -473,7 +473,7 @@ public:
   //
   constexpr bool operator==(dpp const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
+    return !isnan(*this) && !isnan(o) && (v_.e == o.v_.e) && (v_.m == o.v_.m);
   }
 
   constexpr bool operator<(dpp const o) const noexcept
