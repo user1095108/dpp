@@ -65,9 +65,9 @@ constexpr T pow(int e) noexcept
   }
 }
 
-constexpr int log10(long double const x, int const e = 0u) noexcept
+constexpr int log10(auto const x, int const e = 0u) noexcept
 {
-  return pow<long double, 10>(e) > x ? e : log10(x, e + 1);
+  return pow<std::remove_cv_t<decltype(x)>, 10>(e) > x ? e : log10(x, e + 1);
 }
 
 template <auto a, typename B>
