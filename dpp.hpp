@@ -44,6 +44,22 @@ constexpr static auto is_signed_v(std::is_signed_v<U> ||
   std::is_same_v<U, __int128>
 );
 
+template <typename ...T>
+constexpr std::size_t hash_combine(T&& ...v) noexcept
+{
+  std::size_t seed{672807365};
+
+  (
+    (
+      seed ^= std::hash<std::remove_cvref_t<T>>()(std::forward<T>(v)) +
+        0x9e3779b9 + (seed << 6) + (seed >> 2)
+    ),
+    ...
+  );
+
+  return seed;
+}
+
 template <typename T, int B>
 constexpr T pow(int e) noexcept
 {
@@ -98,32 +114,39 @@ constexpr void shift(T const am, int const ae, T& bm, int& be) noexcept
 
 }
 
-template <unsigned M, unsigned E>
+template <unsigned M>
 class dpp
 {
 public:
-  enum : int { emin = -detail::pow<int, 2>(E - 1), emax = -(emin + 1) };
+  using exp_type = std::int16_t;
+
+  enum : int
+  {
+    emin = std::numeric_limits<exp_type>::min(),
+    emax = std::numeric_limits<exp_type>::max()
+  };
 
   using value_type = std::conditional_t<
-    M + E <= 16,
+    M == 16,
     std::int16_t,
     std::conditional_t<
-      M + E <= 32,
+      M == 32,
       std::int32_t,
       std::conditional_t<
-        M + E <= 64,
+        M == 64,
         std::int64_t,
         void
       >
     >
   >;
 
-private:
   enum : value_type
   {
-    mmin = -detail::pow<value_type, 2>(M - 1), mmax = -(mmin + 1)
+    mmin = std::numeric_limits<value_type>::min(),
+    mmax = std::numeric_limits<value_type>::max()
   };
 
+private:
   using doubled_t = std::conditional_t<
     std::is_same_v<value_type, std::int16_t>,
     std::int32_t,
@@ -140,8 +163,8 @@ private:
 
   struct
   {
-    value_type m:M;
-    value_type e:E;
+    value_type m;
+    exp_type e;
   } v_{};
 
 public:
@@ -231,8 +254,8 @@ public:
   {
   }
 
-  template <unsigned A, unsigned B>
-  constexpr dpp(dpp<A, B> const o) noexcept:
+  template <unsigned A>
+  constexpr dpp(dpp<A> const o) noexcept:
     dpp(o.mantissa(), o.exponent())
   {
   }
@@ -262,17 +285,14 @@ public:
   }
 
   //
-  constexpr dpp(value_type const m, int const e, direct) noexcept:
+  constexpr dpp(value_type const m, exp_type const e, direct) noexcept:
     v_{.m = m, .e = e}
   {
   }
 
   constexpr dpp(nan) noexcept: v_{.m = {}, .e = emin} { }
 
-  dpp(value_type const v, unpack) noexcept
-  {
-    std::memcpy(&v_, &v, sizeof(v_));
-  }
+  constexpr dpp(auto const o, unpack) noexcept: dpp(o.m, o.e, direct{}) { }
 
   //
   constexpr explicit operator bool() const noexcept
@@ -374,7 +394,7 @@ public:
     }
     else
     {
-      auto ma(v_.m), mb(o.v_.m);
+      doubled_t ma(v_.m), mb(o.v_.m);
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
@@ -399,7 +419,7 @@ public:
     }
     else
     {
-      auto ma(v_.m), mb(o.v_.m);
+      doubled_t ma(v_.m), mb(o.v_.m);
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
@@ -419,7 +439,7 @@ public:
   constexpr dpp operator*(dpp const o) const noexcept
   {
     return isnan(*this) || isnan(o) ? nan{} :
-      dpp<M, E>{doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e};
+      dpp<M>{doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e};
   }
 
   constexpr dpp operator/(dpp const o) const noexcept
@@ -464,7 +484,7 @@ public:
   //
   constexpr bool operator==(dpp const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (packed() == o.packed());
+    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
   }
 
   constexpr bool operator<(dpp const o) const noexcept
@@ -475,7 +495,7 @@ public:
     }
     else
     {
-      auto ma(v_.m), mb(o.v_.m);
+      doubled_t ma(v_.m), mb(o.v_.m);
 
       if (int ea(v_.e), eb(o.v_.e); ea < eb)
       {
@@ -498,26 +518,22 @@ public:
   constexpr int exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
-  constexpr auto packed() const noexcept
-  {
-    return std::bit_cast<value_type>(v_);
-  }
+  constexpr auto packed() const noexcept { return v_; }
 };
 
-using d64 = dpp<56, 8>;
-using d32 = dpp<26, 6>;
-using d16 = dpp<11, 5>;
+using d64 = dpp<64>;
+using d32 = dpp<32>;
+using d16 = dpp<16>;
 
 // type promotions
 #define DPP_TYPE_PROMOTION(OP)\
-template <unsigned A, unsigned B, unsigned C, unsigned D>\
-constexpr auto operator OP (dpp<A, B> const a, dpp<C, D> const b) noexcept\
+template <unsigned A, unsigned B>\
+constexpr auto operator OP (dpp<A> const a, dpp<B> const b) noexcept\
 {\
-  static_assert(A + B != C + D);\
-  if constexpr (A + B < C + D)\
-    return dpp<C, D>(a) OP b;\
+  if constexpr (A < B)\
+    return dpp<B>(a) OP b;\
   else\
-    return a OP dpp<A, B>(b);\
+    return a OP dpp<A>(b);\
 }
 
 DPP_TYPE_PROMOTION(+)
@@ -528,43 +544,43 @@ DPP_TYPE_PROMOTION(==)
 DPP_TYPE_PROMOTION(<)
 
 // comparison operators
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator!=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator!=(dpp<A> const a, dpp<B> const b) noexcept
 {
   return !(a == b);
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator<=(dpp<A> const a, dpp<B> const b) noexcept
 {
   return !(b < a);
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator>(dpp<A> const a, dpp<B> const b) noexcept
 {
   return b < a;
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator>=(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator>=(dpp<A> const a, dpp<B> const b) noexcept
 {
   return !(a < b);
 }
 
-template <unsigned A, unsigned B, unsigned C, unsigned D>
-constexpr auto operator<=>(dpp<A, B> const a, dpp<C, D> const b) noexcept
+template <unsigned A, unsigned B>
+constexpr auto operator<=>(dpp<A> const a, dpp<B> const b) noexcept
 {
   return (a > b) - (a < b);
 }
 
 // conversions
 #define DPP_LEFT_CONVERSION(OP)\
-template <unsigned A, unsigned B, typename U>\
-constexpr auto operator OP (U&& a, dpp<A, B> const b) noexcept\
+template <unsigned A, typename U>\
+constexpr auto operator OP (U&& a, dpp<A> const b) noexcept\
   requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
 {\
-  return dpp<A, B>(std::forward<U>(a)) OP b;\
+  return dpp<A>(std::forward<U>(a)) OP b;\
 }
 
 DPP_LEFT_CONVERSION(+)
@@ -580,11 +596,11 @@ DPP_LEFT_CONVERSION(>=)
 DPP_LEFT_CONVERSION(<=>)
 
 #define DPP_RIGHT_CONVERSION(OP)\
-template <unsigned A, unsigned B, typename U>\
-constexpr auto operator OP (dpp<A, B> const a, U&& b) noexcept\
+template <unsigned A, typename U>\
+constexpr auto operator OP (dpp<A> const a, U&& b) noexcept\
   requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
 {\
-  return a OP dpp<A, B>(std::forward<U>(b));\
+  return a OP dpp<A>(std::forward<U>(b));\
 }
 
 DPP_RIGHT_CONVERSION(+)
@@ -600,33 +616,33 @@ DPP_RIGHT_CONVERSION(>=)
 DPP_RIGHT_CONVERSION(<=>)
 
 // misc
-template <unsigned M, unsigned E>
-constexpr auto isfinite(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto isfinite(dpp<M> const a) noexcept
 {
   return !isnan(a);
 }
 
-template <unsigned M, unsigned E>
-constexpr auto isinf(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto isinf(dpp<M> const a) noexcept
 {
   return isnan(a);
 }
 
-template <unsigned M, unsigned E>
-constexpr auto isnan(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto isnan(dpp<M> const a) noexcept
 {
-  return dpp<M, E>::emin == a.exponent();
+  return dpp<M>::emin == a.exponent();
 }
 
-template <unsigned M, unsigned E>
-constexpr auto isnormal(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto isnormal(dpp<M> const a) noexcept
 {
   return !isnan(a);
 }
 
 //
-template <unsigned M, unsigned E>
-constexpr auto trunc(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto trunc(dpp<M> const a) noexcept
 {
   if (int e(a.exponent()); !isnan(a) && (e < 0))
   {
@@ -634,7 +650,7 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
 
     for (; m && e++; m /= 10);
 
-    return dpp<M, E>(m, 0);
+    return dpp<M>(m, 0);
   }
   else
   {
@@ -642,34 +658,34 @@ constexpr auto trunc(dpp<M, E> const a) noexcept
   }
 }
 
-template <unsigned M, unsigned E>
-constexpr auto ceil(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto ceil(dpp<M> const a) noexcept
 {
   auto const t(trunc(a));
 
   return t + (t < a);
 }
 
-template <unsigned M, unsigned E>
-constexpr auto floor(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto floor(dpp<M> const a) noexcept
 {
   auto const t(trunc(a));
 
   return t - (t > a);
 }
 
-template <unsigned M, unsigned E>
-constexpr auto round(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto round(dpp<M> const a) noexcept
 {
-  constexpr dpp<M, E> c(5, -1);
+  constexpr dpp<M> c(5, -1);
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
 }
 
-template <unsigned M, unsigned E>
-constexpr auto abs(dpp<M, E> const a) noexcept
+template <unsigned M>
+constexpr auto abs(dpp<M> const a) noexcept
 {
   return a.mantissa() < 0 ? -a : a;
 }
@@ -799,8 +815,8 @@ constexpr auto to_decimal(S const& s) noexcept ->
   return to_decimal<T>(std::cbegin(s), std::cend(s));
 }
 
-template <typename T = std::intmax_t, unsigned M, unsigned E>
-constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
+template <typename T = std::intmax_t, unsigned M>
+constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
 {
   if (isnan(p))
   {
@@ -837,8 +853,8 @@ constexpr std::optional<T> to_integral(dpp<M, E> const p) noexcept
   }
 }
 
-template <unsigned M, unsigned E>
-std::string to_string(dpp<M, E> p)
+template <unsigned M>
+std::string to_string(dpp<M> p)
 {
   if (isnan(p))
   {
@@ -879,8 +895,8 @@ std::string to_string(dpp<M, E> p)
   }
 }
 
-template <unsigned M, unsigned E>
-inline auto& operator<<(std::ostream& os, dpp<M, E> const p)
+template <unsigned M>
+inline auto& operator<<(std::ostream& os, dpp<M> const p)
 {
   return os << to_string(p);
 }
@@ -908,12 +924,13 @@ DPP_LITERAL(64)
 namespace std
 {
 
-template <unsigned M, unsigned E>
-struct hash<dpp::dpp<M, E>>
+template <unsigned M>
+struct hash<dpp::dpp<M>>
 {
-  auto operator()(dpp::dpp<M, E> const a) const noexcept
+  auto operator()(dpp::dpp<M> const a) const noexcept
   {
-    return std::hash<decltype(a.packed())>()(a.packed());
+    return std::hash<std::size_t>()(dpp::detail::hash_combine(a.mantissa(),
+      a.exponent()));
   }
 };
 
