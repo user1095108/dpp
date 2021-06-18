@@ -162,11 +162,9 @@ public:
   template <typename U>
   constexpr dpp(U m, int e) noexcept requires(detail::is_integral_v<U>)
   {
-    enum : U
-    {
-      umin = U(1) << (detail::bit_size_v<U> - 1),
-      umax = detail::is_signed_v<U> ? -(umin + 1) : ~U{}
-    };
+    constexpr auto umin(detail::is_signed_v<U> ?
+      U(1) << (detail::bit_size_v<U> - 1) : U{});
+    constexpr auto umax(detail::is_signed_v<U> ? -(umin + 1) : ~U{});
 
     // slash m, if necessary
     if constexpr (detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
