@@ -65,9 +65,9 @@ constexpr T pow(int e) noexcept
   }
 }
 
-constexpr int log10(double const x, int const e = 0u) noexcept
+constexpr int log10(long double const x, int const e = 0u) noexcept
 {
-  return pow<double, 10>(e) > x ? e : log10(x, e + 1);
+  return pow<long double, 10>(e) > x ? e : log10(x, e + 1);
 }
 
 template <auto a, typename B>
@@ -436,7 +436,7 @@ public:
       // dp is the exponent, that generates the maximal power of 10,
       // that fits into doubled_t
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-      constexpr auto dp(detail::log10(rmax) - 1);
+      constexpr auto dp(detail::log10((long double)(rmax)) - 1);
 
       int e(v_.e - o.v_.e - dp);
 
