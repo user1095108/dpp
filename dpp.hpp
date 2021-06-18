@@ -434,8 +434,11 @@ public:
     }
     else if (v_.m)
     {
-      constexpr auto rmin(doubled_t(1) << (detail::bit_size_v<doubled_t> - 1));
-      constexpr auto rmax(-(rmin + 1));
+      enum : doubled_t
+      {
+        rmin = doubled_t(1) << (detail::bit_size_v<doubled_t> - 1),
+        rmax = -(rmin + 1)
+      };
 
       // dp is the exponent, that generates the maximal power of 10,
       // that fits into doubled_t
