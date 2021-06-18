@@ -104,7 +104,7 @@ class dpp
 public:
   using exp_type = std::int16_t;
 
-  enum : int
+  enum
   {
     emin = std::numeric_limits<exp_type>::min(),
     emax = std::numeric_limits<exp_type>::max()
