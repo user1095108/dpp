@@ -110,7 +110,7 @@ public:
     emax = std::numeric_limits<exp_type>::max()
   };
 
-  using value_type = std::conditional_t<
+  using mantissa_type = std::conditional_t<
     M == 16,
     std::int16_t,
     std::conditional_t<
@@ -124,30 +124,30 @@ public:
     >
   >;
 
-  enum : value_type
+  enum : mantissa_type
   {
-    mmin = std::numeric_limits<value_type>::min(),
-    mmax = std::numeric_limits<value_type>::max()
+    mmin = std::numeric_limits<mantissa_type>::min(),
+    mmax = std::numeric_limits<mantissa_type>::max()
   };
 
 private:
   using doubled_t = std::conditional_t<
-    std::is_same_v<value_type, std::int16_t>,
+    std::is_same_v<mantissa_type, std::int16_t>,
     std::int32_t,
     std::conditional_t<
-      std::is_same_v<value_type, std::int32_t>,
+      std::is_same_v<mantissa_type, std::int32_t>,
       std::int64_t,
       std::conditional_t<
-        std::is_same_v<value_type, std::int64_t>,
+        std::is_same_v<mantissa_type, std::int64_t>,
         __int128_t,
         void
       >
     >
   >;
 
-  struct
+  struct value_type
   {
-    value_type m;
+    mantissa_type m;
     exp_type e;
   } v_{};
 
@@ -200,7 +200,7 @@ public:
     // normalize, minimize the exponent, if m non-zero
     if (m)
     {
-      value_type tm(m);
+      mantissa_type tm(m);
 
       if (m > 0)
       {
@@ -230,8 +230,8 @@ public:
   template <typename U>
   constexpr dpp(U const m) noexcept requires(detail::is_integral_v<U>):
     dpp(std::conditional_t<
-          detail::bit_size_v<U> < detail::bit_size_v<value_type>,
-          value_type,
+          detail::bit_size_v<U> < detail::bit_size_v<mantissa_type>,
+          mantissa_type,
           U
         >(m), 0
     )
@@ -269,14 +269,14 @@ public:
   }
 
   //
-  constexpr dpp(value_type const m, exp_type const e, direct) noexcept:
+  constexpr dpp(mantissa_type const m, exp_type const e, direct) noexcept:
     v_{.m = m, .e = e}
   {
   }
 
   constexpr dpp(nan) noexcept: v_{.m = {}, .e = emin} { }
 
-  constexpr dpp(auto const o, unpack) noexcept: dpp(o.m, o.e, direct{}) { }
+  constexpr dpp(auto const o, unpack) noexcept: dpp(o.m, o.e) { }
 
   //
   constexpr explicit operator bool() const noexcept
@@ -499,7 +499,7 @@ public:
   static constexpr auto max() noexcept { return dpp{mmax, emax}; }
 
   //
-  constexpr int exponent() const noexcept { return v_.e; }
+  constexpr auto exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
   constexpr auto packed() const noexcept { return v_; }
@@ -708,7 +708,7 @@ constexpr T to_decimal(It i, It const end) noexcept
         return nan{};
     }
 
-    typename T::value_type r{};
+    typename T::mantissa_type r{};
     int e{};
 
     auto const scandigit([&](char const c, int const de) noexcept
