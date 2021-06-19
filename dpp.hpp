@@ -917,10 +917,11 @@ struct hash<dpp::dpp<M>>
   auto operator()(dpp::dpp<M> const a) const noexcept
   {
     constexpr auto hash_combine([](auto&& ...v) noexcept
+      requires (bool(sizeof...(v)))
       {
         std::size_t seed{672807365};
 
-        (
+        return (
           (
             seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(
               std::forward<decltype(v)>(v)) + 0x9e3779b9 + (seed << 6) +
@@ -928,8 +929,6 @@ struct hash<dpp::dpp<M>>
           ),
           ...
         );
-
-        return seed;
       }
     );
 
