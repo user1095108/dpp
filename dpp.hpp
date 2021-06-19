@@ -917,7 +917,7 @@ struct hash<dpp::dpp<M>>
   auto operator()(dpp::dpp<M> const a) const noexcept
   {
     constexpr auto hash_combine([](auto&& ...v) noexcept
-      requires (bool(sizeof...(v)))
+      requires(bool(sizeof...(v)))
       {
         std::size_t seed{672807365};
 
@@ -932,8 +932,7 @@ struct hash<dpp::dpp<M>>
       }
     );
 
-    return std::hash<decltype(hash_combine())>()(
-      hash_combine(a.mantissa(), a.exponent()));
+    return hash_combine(a.mantissa(), a.exponent());
   }
 };
 
