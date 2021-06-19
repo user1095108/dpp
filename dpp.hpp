@@ -102,7 +102,7 @@ template <unsigned M>
 class dpp
 {
 public:
-  using exp_type = std::int16_t;
+  using exp_type = std::conditional_t<M == 16, std::int8_t, std::int16_t>;
 
   enum
   {
