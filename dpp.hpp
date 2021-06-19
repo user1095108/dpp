@@ -329,29 +329,17 @@ public:
   constexpr dpp& operator=(dpp const&) = default;
   constexpr dpp& operator=(dpp&&) = default;
 
-  template <typename U>
-  constexpr auto& operator+=(U&& a) noexcept
-  {
-    return *this = *this + std::forward<U>(a);
-  }
+  #define DPP_ASSIGNMENT(OP)\
+    template <typename U>\
+    constexpr auto& operator OP ## =(U&& a) noexcept\
+    {\
+      return *this = *this OP std::forward<U>(a);\
+    }
 
-  template <typename U>
-  constexpr auto& operator-=(U&& a) noexcept
-  {
-    return *this = *this - std::forward<U>(a);
-  }
-
-  template <typename U>
-  constexpr auto& operator*=(U&& a) noexcept
-  {
-    return *this = *this * std::forward<U>(a);
-  }
-
-  template <typename U>
-  constexpr auto& operator/=(U&& a) noexcept
-  {
-    return *this = *this / std::forward<U>(a);
-  }
+  DPP_ASSIGNMENT(+)
+  DPP_ASSIGNMENT(-)
+  DPP_ASSIGNMENT(*)
+  DPP_ASSIGNMENT(/)
 
   // increment, decrement
   constexpr auto& operator++() noexcept { return *this += 1; }
