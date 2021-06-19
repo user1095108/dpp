@@ -933,7 +933,8 @@ struct hash<dpp::dpp<M>>
       }
     );
 
-    return std::hash<std::size_t>()(hash_combine(a.mantissa(), a.exponent()));
+    return std::hash<decltype(hash_combine())>()(
+      hash_combine(a.mantissa(), a.exponent()));
   }
 };
 
