@@ -420,7 +420,7 @@ public:
     {
       return nan{};
     }
-    else if (v_.m)
+    else if (v_.m) // guard against division by 0
     {
       enum : doubled_t
       {
