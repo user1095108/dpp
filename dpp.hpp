@@ -5,9 +5,6 @@
 #include <climits>
 #include <cmath> // std::pow
 #include <cstdint>
-#include <cstring> // std::memcpy
-
-#include <bit> // std::bit_cast
 
 #include <functional> // std::hash
 
