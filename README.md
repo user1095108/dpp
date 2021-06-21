@@ -1,6 +1,7 @@
 # dpp
 This is a an easily understandable **decimal** floating-point library library for non-critical tasks and testing. The library does not adhere to any particular standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
-![image.png](image.png?raw=true)
+![smallpt test image](image.png?raw=true)
+raytraced image produced by a modified [smallpt.cpp](https://www.kevinbeason.com/smallpt/).
 # alternatives
 * [Boost.Multiprecision](https://github.com/boostorg/multiprecision) - artisanal c++, highly recommended,
 * [DEC64](https://github.com/douglascrockford/DEC64) - legendary asm, one 64-bit type,
