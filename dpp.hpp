@@ -699,7 +699,7 @@ constexpr T to_decimal(It i, It const end) noexcept
     typename T::mantissa_type r{};
     int e{};
 
-    auto const scandigit([&]<int DE>(char const c) noexcept
+    auto const scandigit([&]<T::mantissa_type DE>(char const c) noexcept
       {
         if (positive)
         {
