@@ -711,7 +711,7 @@ constexpr T to_decimal(It i, It const end) noexcept
             if (auto const d(c - '0'); r <= rmax - d)
             {
               r += d;
-              if constexpr (DE) e += DE;
+              if constexpr (bool(DE)) e += DE;
 
               return false;
             }
@@ -726,7 +726,7 @@ constexpr T to_decimal(It i, It const end) noexcept
             if (auto const d(c - '0'); r >= rmin + d)
             {
               r -= d;
-              if constexpr (DE) e += DE;
+              if constexpr (bool(DE)) e += DE;
 
               return false;
             }
