@@ -278,7 +278,7 @@ public:
   //
   constexpr explicit operator bool() const noexcept
   {
-    return isnan(*this) || v_.m;
+    return v_.m || isnan(*this);
   }
 
   template <typename T>
@@ -456,7 +456,7 @@ public:
   //
   constexpr bool operator==(dpp const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (v_.e == o.v_.e) && (v_.m == o.v_.m);
+    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
   }
 
   constexpr bool operator<(dpp const o) const noexcept
