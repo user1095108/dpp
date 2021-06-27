@@ -699,8 +699,7 @@ constexpr T to_decimal(It i, It const end) noexcept
     typename T::mantissa_type r{};
     int e{};
 
-    auto const scandigit(
-      [&]<typename T::mantissa_type DE>(char const c) noexcept
+    auto const scandigit([&](char const c) noexcept
       {
         if (positive)
         {
@@ -711,7 +710,6 @@ constexpr T to_decimal(It i, It const end) noexcept
             if (auto const d(c - '0'); r <= rmax - d)
             {
               r += d;
-              if constexpr (bool(DE)) e += DE;
 
               return false;
             }
@@ -726,7 +724,6 @@ constexpr T to_decimal(It i, It const end) noexcept
             if (auto const d(c - '0'); r >= rmin + d)
             {
               r -= d;
-              if constexpr (bool(DE)) e += DE;
 
               return false;
             }
@@ -743,7 +740,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (scandigit.template operator()<0>(*i)) break; else continue;
+          if (scandigit(*i)) break; else continue;
 
         case '.':
           i = std::next(i);
@@ -765,7 +762,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (scandigit.template operator()<-1>(*i)) break; else continue;
+          if (scandigit(*i)) break; else {--e; continue;}
 
         case '\0':
           break;
