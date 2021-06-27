@@ -734,7 +734,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       }
     );
 
-    for (; i != end; i = std::next(i))
+    for (; end != i; i = std::next(i))
     {
       switch (*i)
       {
@@ -756,7 +756,7 @@ constexpr T to_decimal(It i, It const end) noexcept
       break;
     }
 
-    for (; i != end; i = std::next(i))
+    for (; end != i; i = std::next(i))
     {
       switch (*i)
       {
