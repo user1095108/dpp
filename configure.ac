@@ -3,6 +3,7 @@
 AC_PREREQ([2.69])
 AC_INIT([dpp], [0], [giecrilj@stegny.2a.pl])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_CXXFLAGS([])
 AC_CONFIG_SRCDIR([smallpt.cpp])
 AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
