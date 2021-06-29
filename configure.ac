@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.69])
-AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_INIT([dpp], [0], [giecrilj@stegny.2a.pl])
 AC_CONFIG_SRCDIR([smallpt.cpp])
 AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
