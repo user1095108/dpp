@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: configure
-      run: ls /usr/share/doc/autoconf && cat /usr/share/doc/autoconf/README && autoconf && ./configure
+      run: autoscan && autoconf && ./configure
     - name: make
       run: make
     - name: make check
