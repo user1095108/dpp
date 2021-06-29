@@ -15,13 +15,11 @@ using D = dpp::d32;
 
 constexpr auto max_iter = 100u;
 
-constexpr int mandelbrot(D const cr, D const ci) noexcept
+constexpr auto mandelbrot(D const cr, D const ci) noexcept
 {
   auto zr(cr), zi(ci);
 
-  int j{1};
-
-  for (; max_iter != j; ++j)
+  for (auto j{1u}; max_iter != j; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -30,11 +28,11 @@ constexpr int mandelbrot(D const cr, D const ci) noexcept
     }
     else
     {
-      break;
+      return j;
     }
   }
 
-  return j;
+  return max_iter;
 }
 
 int main() noexcept

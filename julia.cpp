@@ -13,11 +13,9 @@ using D = dpp::d32;
 
 constexpr auto max_iter = 100u;
 
-constexpr int julia(D zr, D zi, D const cr, D const ci) noexcept
+constexpr auto julia(D zr, D zi, D const cr, D const ci) noexcept
 {
-  int j{};
-
-  for (; max_iter != j; ++j)
+  for (auto j{1u}; max_iter != j; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -26,11 +24,11 @@ constexpr int julia(D zr, D zi, D const cr, D const ci) noexcept
     }
     else
     {
-      break;
+      return j;
     }
   }
 
-  return j;
+  return max_iter;
 }
 
 int main(int const argc, char* argv[]) noexcept
