@@ -5,7 +5,6 @@ The underlying idea was to extract as many **decimal** digits out of the **int32
 # build instructions
     g++ -std=c++2a -Ofast -s mandelbrot.cpp -o m
     em++ -std=c++20 -O3 -s eps.cpp -o e.js
-If you have problems installing the latest `gcc` and `clang`, have a look [here](https://serverfault.com/questions/22414/how-can-i-run-debian-stable-but-install-some-packages-from-testing).
 # alternatives
 * [Boost.Multiprecision](https://github.com/boostorg/multiprecision) - artisanal c++, highly recommended,
 * [DEC64](https://github.com/douglascrockford/DEC64) - legendary asm, one 64-bit type,
