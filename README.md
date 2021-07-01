@@ -1,5 +1,5 @@
 # dpp
-This is a an easily understandable **decimal** floating-point library library for non-critical tasks and testing. The library does not adhere to any particular standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
+This is a an easily understandable **decimal** floating-point library for non-critical tasks and testing. The library does not adhere to any particular standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
 
 The underlying design goal was to extract as many **decimal** digits as possible out of the **int32_t**/**int64_t** combo, with an eye towards the emerging **int64_t**/**int128_t** combo. Hopefully at tolerable performance and binary size.
 # build instructions
