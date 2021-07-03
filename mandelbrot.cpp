@@ -1,7 +1,13 @@
 // https://github.com/dario-marvin/Mandelbrot
 // https://solarianprogrammer.com/2013/02/28/mandelbrot-set-cpp-11/
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#define VC_EXTRALEAN
+#include <windows.h>
+#else
 #include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
 #include <unistd.h> // for STDOUT_FILENO
+#endif
 
 #include <cassert>
 
@@ -40,11 +46,18 @@ int main() noexcept
   int w, h;
 
   {
-    struct winsize ws;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+    #if defined(_WIN32)
+      CONSOLE_SCREEN_BUFFER_INFO csbi;
+      GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+      w = csbi.srWindow.Right-csbi.srWindow.Left + 1;
+      h = csbi.srWindow.Bottom-csbi.srWindow.Top + 1;
+    #else
+      struct winsize ws;
+      ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
 
-    w = ws.ws_col;
-    h = ws.ws_row - 1;
+      w = ws.ws_col;
+      h = ws.ws_row - 1;
+    #endif
   }
 
   D x0(-2); D y(1.15);
