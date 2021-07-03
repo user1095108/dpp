@@ -18,6 +18,12 @@
 
 #include <type_traits>
 
+#if INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)
+# define DPP_INT128T __int128
+#else
+# define DPP_INT128T void
+#endif // DPP_INT128T
+
 namespace dpp
 {
 
@@ -33,12 +39,12 @@ constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
 constexpr static auto is_integral_v(std::is_integral_v<U> ||
-  std::is_same_v<U, __int128>
+  std::is_same_v<U, DPP_INT128T>
 );
 
 template <typename U>
 constexpr static auto is_signed_v(std::is_signed_v<U> ||
-  std::is_same_v<U, __int128>
+  std::is_same_v<U, DPP_INT128T>
 );
 
 template <typename T, int B>
@@ -142,7 +148,7 @@ private:
       std::int64_t,
       std::conditional_t<
         std::is_same_v<mantissa_type, std::int64_t>,
-        __int128_t,
+        DPP_INT128T,
         void
       >
     >
