@@ -18,7 +18,7 @@
 
 #include <type_traits>
 
-#if INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)
+#if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
 # define DPP_INT128T __int128
 #else
 # define DPP_INT128T void
