@@ -47,8 +47,15 @@ int main() noexcept
 
   {
     #if defined(_WIN32)
+      auto const handle(GetStdHandle(STD_OUTPUT_HANDLE));
+
+      if (DWORD mode; GetConsoleMode(handle, &mode))
+      {
+        SetConsoleMode(handle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+      }
+
       CONSOLE_SCREEN_BUFFER_INFO csbi;
-      GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+      GetConsoleScreenBufferInfo(handle, &csbi);
       w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
       h = csbi.srWindow.Bottom - csbi.srWindow.Top;
     #else
