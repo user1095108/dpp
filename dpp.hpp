@@ -258,7 +258,7 @@ public:
       int e{};
 
       // eliminate the fractional part, slash f, if necessary
-      for (; (std::trunc(f) != f) && (f >= min) && (f <= max); f *= 10, --e);
+      for (; (std::trunc(f) != f) && (f >= min / 10) && (f <= max / 10); f *= 10, --e);
       for (; (f < min) || (f > max); f = std::round(f / U(10)), ++e);
 
       *this = {mantissa_type(std::round(f)), e};
