@@ -261,7 +261,7 @@ public:
       for (constexpr long double
         min(std::numeric_limits<mantissa_type>::min()),
         max(std::numeric_limits<mantissa_type>::max());
-        (f < min) || (f > max); f = std::round(f / 10), ++e);
+        (f < min) || (f > max); f = std::round(f / U(10)), ++e);
 
       *this = {mantissa_type(f), e};
     }
