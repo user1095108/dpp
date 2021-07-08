@@ -259,11 +259,11 @@ public:
 
       // slash f, if necessary
       for (constexpr long double
-        min(std::numeric_limits<std::intmax_t>::min()),
-        max(std::numeric_limits<std::intmax_t>::max());
-        (f < min) || (f > max); f /= 10, ++e);
+        min(std::numeric_limits<mantissa_type>::min()),
+        max(std::numeric_limits<mantissa_type>::max());
+        (f < min) || (f > max); f = std::round(f / 10), ++e);
 
-      *this = {std::intmax_t(f), e};
+      *this = {mantissa_type(f), e};
     }
     else
     {
