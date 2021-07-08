@@ -263,7 +263,7 @@ public:
       // slash f, if necessary
       for (; (f < min) || (f > max); f = std::round(f / U(10)), ++e);
 
-      *this = {mantissa_type(f), e};
+      *this = {mantissa_type(std::round(f)), e};
     }
     else
     {
