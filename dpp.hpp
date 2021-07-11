@@ -708,26 +708,20 @@ constexpr T to_decimal(It i, It const end) noexcept
       {
         if (positive)
         {
-          if (r <= rmax / 10)
+          if ((r <= rmax / 10) && (10 * r <= rmax - d))
           {
-            if (r *= 10; r <= rmax - d)
-            {
-              r += d;
+            r = 10 * r + d;
 
-              return false;
-            }
+            return false;
           }
         }
         else
         {
-          if (r >= rmin / 10)
+          if ((r >= rmin / 10) && (10 * r >= rmin + d))
           {
-            if (r *= 10; r >= rmin + d)
-            {
-              r -= d;
+            r = 10 * r - d;
 
-              return false;
-            }
+            return false;
           }
         }
 
