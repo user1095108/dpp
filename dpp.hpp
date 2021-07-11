@@ -718,16 +718,13 @@ constexpr T to_decimal(It i, It const end) noexcept
             }
           }
         }
-        else
+        else if (r >= rmin / 10)
         {
-          if (r >= rmin / 10)
+          if (auto const t(10 * r); t >= rmin + d)
           {
-            if (auto const t(10 * r); t >= rmin + d)
-            {
-              r = t - d;
+            r = t - d;
 
-              return false;
-            }
+            return false;
           }
         }
 
