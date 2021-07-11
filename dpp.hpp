@@ -710,18 +710,24 @@ constexpr T to_decimal(It i, It const end) noexcept
         {
           if (r <= rmax / 10)
           {
-            r = 10 * r + d;
+            if (r *= 10; r <= rmax - d)
+            {
+              r += d;
 
-            return false;
+              return false;
+            }
           }
         }
         else
         {
           if (r >= rmin / 10)
           {
-            r = 10 * r - d;
+            if (r *= 10; r >= rmin + d)
+            {
+              r -= d;
 
-            return false;
+              return false;
+            }
           }
         }
 
