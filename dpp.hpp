@@ -704,7 +704,7 @@ constexpr T to_decimal(It i, It const end) noexcept
     typename T::mantissa_type r{};
     int e{};
 
-    auto const scandigit([&](char const d) noexcept
+    auto const scandigit([&](decltype(r) const d) noexcept
       {
         if (positive)
         {
