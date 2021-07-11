@@ -706,22 +706,28 @@ constexpr T to_decimal(It i, It const end) noexcept
 
     auto const scandigit([&](decltype(r) const d) noexcept
       {
-        if (auto const t(10 * r); positive)
+        if (positive)
         {
-          if ((r <= rmax / 10) && (t <= rmax - d))
+          if (r <= rmax / 10)
           {
-            r = t + d;
+            if (auto const t(10 * r); t <= rmax - d)
+            {
+              r = t + d;
 
-            return false;
+              return false;
+            }
           }
         }
         else
         {
-          if ((r >= rmin / 10) && (t >= rmin + d))
+          if (r >= rmin / 10)
           {
-            r = t - d;
+            if (auto const t(10 * r); t >= rmin + d)
+            {
+              r = t - d;
 
-            return false;
+              return false;
+            }
           }
         }
 
