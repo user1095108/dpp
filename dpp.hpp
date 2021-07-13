@@ -252,17 +252,16 @@ public:
   {
     if (std::isfinite(f))
     {
-      constexpr long double min(std::numeric_limits<mantissa_type>::min());
-      constexpr long double max(std::numeric_limits<mantissa_type>::max());
+      constexpr long double min(std::numeric_limits<std::intmax_t>::min());
+      constexpr long double max(std::numeric_limits<std::intmax_t>::max());
 
       int e{};
 
       // slash f, if necessary, eliminate the fractional part
+      for (; std::trunc(f) != f; f *= U(10), --e);
       for (; (f < min) || (f > max); f /= U(10), ++e);
-      for (; (std::trunc(f) != f) && (f >= min / 10) && (f <= max / 10);
-        f *= U(10), --e);
 
-      *this = {mantissa_type(std::round(f)), e};
+      *this = {std::intmax_t(f), e};
     }
     else
     {
