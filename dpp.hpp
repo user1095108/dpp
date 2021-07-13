@@ -252,14 +252,14 @@ public:
   {
     if (std::isfinite(f))
     {
-      constexpr long double min(std::numeric_limits<std::intmax_t>::min());
-      constexpr long double max(std::numeric_limits<std::intmax_t>::max());
-
       int e{};
 
       // eliminate the fractional part, slash f, if necessary
       for (; std::trunc(f) != f; f *= U(10), --e);
-      for (; (f < min) || (f > max); f /= U(10), ++e);
+      for (constexpr long double
+        min(std::numeric_limits<std::intmax_t>::min()),
+        max(std::numeric_limits<std::intmax_t>::max());
+        (f < min) || (f > max); f /= 10, ++e);
 
       *this = {std::intmax_t(f), e};
     }
