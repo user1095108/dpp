@@ -257,7 +257,7 @@ public:
 
       int e{};
 
-      // slash f, if necessary, eliminate the fractional part
+      // eliminate the fractional part, slash f, if necessary
       for (; std::trunc(f) != f; f *= U(10), --e);
       for (; (f < min) || (f > max); f /= U(10), ++e);
 
