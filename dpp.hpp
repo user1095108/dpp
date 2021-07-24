@@ -365,7 +365,7 @@ public:
       auto ma(v_.m), mb(o.v_.m);
       int const ea(v_.e), eb(o.v_.e);
 
-      return !ma ? o : !mb ? *this :
+      return !mb ? *this : !ma ? o :
         ea < eb ?
           (detail::shift(ma, eb - ea), dpp{doubled_t(ma) + mb, eb}) :
           (detail::shift(mb, ea - eb), dpp{doubled_t(ma) + mb, ea});
@@ -383,7 +383,7 @@ public:
       auto ma(v_.m), mb(o.v_.m);
       int const ea(v_.e), eb(o.v_.e);
 
-      return !ma ? -o : !mb ? *this :
+      return !mb ? *this : !ma ? -o :
         ea < eb ?
           (detail::shift(ma, eb - ea), dpp{doubled_t(ma) - mb, eb}) :
           (detail::shift(mb, ea - eb), dpp{doubled_t(ma) - mb, ea});
