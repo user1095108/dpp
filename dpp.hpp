@@ -88,15 +88,10 @@ constexpr B selectsign(B const b) noexcept
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
 template <typename T>
-constexpr void shift(T const am, int const ae, T& bm, int& be) noexcept
+inline void shift(T& bm, int e) noexcept
 {
-  if (am)
-  {
-    for (auto const c(detail::selectsign<5>(bm)); bm && (ae != be++);
-      bm = (bm + c) / 10);
-
-    be = ae;
-  }
+  for (auto const c(detail::selectsign<5>(bm)); bm && e--;
+    bm = (bm + c) / 10);
 }
 
 }
@@ -368,18 +363,27 @@ public:
     else
     {
       auto ma(v_.m), mb(o.v_.m);
+      int const ea(v_.e), eb(o.v_.e);
 
-      if (int ea(v_.e), eb(o.v_.e); ea < eb)
+      if (!ma)
       {
-        detail::shift(mb, eb, ma, ea);
+        return o;
+      }
+      else if (!mb)
+      {
+        return *this;
+      }
+      else if (ea < eb)
+      {
+        detail::shift(ma, eb - ea);
 
-        return {doubled_t(ma) + mb, ea};
+        return {doubled_t(ma) + mb, eb};
       }
       else
       {
-        detail::shift(ma, ea, mb, eb);
+        detail::shift(mb, ea - eb);
 
-        return {doubled_t(ma) + mb, eb};
+        return {doubled_t(ma) + mb, ea};
       }
     }
   }
@@ -393,18 +397,27 @@ public:
     else
     {
       auto ma(v_.m), mb(o.v_.m);
+      int const ea(v_.e), eb(o.v_.e);
 
-      if (int ea(v_.e), eb(o.v_.e); ea < eb)
+      if (!ma)
       {
-        detail::shift(mb, eb, ma, ea);
+        return o;
+      }
+      else if (!mb)
+      {
+        return *this;
+      }
+      else if (ea < eb)
+      {
+        detail::shift(ma, eb - ea);
 
-        return {doubled_t(ma) - mb, ea};
+        return {doubled_t(ma) - mb, eb};
       }
       else
       {
-        detail::shift(ma, ea, mb, eb);
+        detail::shift(mb, ea - eb);
 
-        return {doubled_t(ma) - mb, eb};
+        return {doubled_t(ma) - mb, ea};
       }
     }
   }
@@ -472,14 +485,11 @@ public:
     else
     {
       auto ma(v_.m), mb(o.v_.m);
+      int ea(v_.e), eb(o.v_.e);
 
-      if (int ea(v_.e), eb(o.v_.e); ea < eb)
+      if (ma && mb)
       {
-        detail::shift(mb, eb, ma, ea);
-      }
-      else
-      {
-        detail::shift(ma, ea, mb, eb);
+        ea < eb ? detail::shift(ma, eb - ea) : detail::shift(mb, ea - eb);
       }
 
       return ma < mb;
