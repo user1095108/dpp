@@ -485,7 +485,7 @@ public:
     else
     {
       auto ma(v_.m), mb(o.v_.m);
-      int ea(v_.e), eb(o.v_.e);
+      int const ea(v_.e), eb(o.v_.e);
 
       if (ma && mb)
       {
