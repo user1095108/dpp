@@ -362,11 +362,11 @@ public:
     }
     else
     {
-      if (mb(o.v_.m); !o.v_.m)
+      if (auto mb(o.v_.m); !mb)
       {
         return *this;
       }
-      else if (auto ma(v_.m); !v_.m)
+      else if (auto ma(v_.m); !ma)
       {
         return o;
       }
@@ -389,11 +389,11 @@ public:
     }
     else
     {
-      if (mb(o.v_.m); !o.v_.m)
+      if (auto mb(o.v_.m); !mb)
       {
         return *this;
       }
-      else if (auto ma(v_.m); !v_.m)
+      else if (auto ma(v_.m); !ma)
       {
         return -o;
       }
