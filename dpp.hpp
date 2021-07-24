@@ -401,7 +401,7 @@ public:
 
       if (!ma)
       {
-        return o;
+        return -o;
       }
       else if (!mb)
       {
