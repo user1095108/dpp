@@ -362,13 +362,23 @@ public:
     }
     else
     {
-      auto ma(v_.m), mb(o.v_.m);
-      int const ea(v_.e), eb(o.v_.e);
+      if (!o.v_.m)
+      {
+        return *this;
+      }
+      else if (!v_.m)
+      {
+        return o;
+      }
+      else
+      {
+        auto ma(v_.m), mb(o.v_.m);
+        int const ea(v_.e), eb(o.v_.e);
 
-      return !mb ? *this : !ma ? o :
-        ea < eb ?
+        return ea < eb ?
           (detail::shift(ma, eb - ea), dpp{doubled_t(ma) + mb, eb}) :
           (detail::shift(mb, ea - eb), dpp{doubled_t(ma) + mb, ea});
+      }
     }
   }
 
@@ -380,13 +390,23 @@ public:
     }
     else
     {
-      auto ma(v_.m), mb(o.v_.m);
-      int const ea(v_.e), eb(o.v_.e);
+      if (!o.v_.m)
+      {
+        return *this;
+      }
+      else if (!v_.m)
+      {
+        return -o;
+      }
+      else
+      {
+        auto ma(v_.m), mb(o.v_.m);
+        int const ea(v_.e), eb(o.v_.e);
 
-      return !mb ? *this : !ma ? -o :
-        ea < eb ?
+        return ea < eb ?
           (detail::shift(ma, eb - ea), dpp{doubled_t(ma) - mb, eb}) :
           (detail::shift(mb, ea - eb), dpp{doubled_t(ma) - mb, ea});
+      }
     }
   }
 
@@ -453,10 +473,11 @@ public:
     else
     {
       auto ma(v_.m), mb(o.v_.m);
-      int const ea(v_.e), eb(o.v_.e);
 
       if (ma && mb)
       {
+        int const ea(v_.e), eb(o.v_.e);
+
         ea < eb ? detail::shift(ma, eb - ea) : detail::shift(mb, ea - eb);
       }
 
