@@ -364,11 +364,11 @@ public:
     }
     else
     {
-      if (auto mb(o.v_.m); !mb)
+      if (auto const mb(o.v_.m); !mb)
       {
         return *this;
       }
-      else if (auto ma(v_.m); !ma)
+      else if (auto const ma(v_.m); !ma)
       {
         return o;
       }
@@ -391,11 +391,11 @@ public:
     }
     else
     {
-      if (auto mb(o.v_.m); !mb)
+      if (auto const mb(o.v_.m); !mb)
       {
         return *this;
       }
-      else if (auto ma(v_.m); !ma)
+      else if (auto const ma(v_.m); !ma)
       {
         return -o;
       }
@@ -470,7 +470,7 @@ public:
     {
       return false;
     }
-    else if (auto ma(v_.m), mb(o.v_.m); ma && mb)
+    else if (auto const ma(v_.m), mb(o.v_.m); ma && mb)
     {
       int const ea(v_.e), eb(o.v_.e);
 
