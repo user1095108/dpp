@@ -377,8 +377,8 @@ public:
         int const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
-          (dpp{doubled_t(detail::shift(ma, eb - ea)) + mb, eb}) :
-          (dpp{doubled_t(ma) + detail::shift(mb, ea - eb), ea});
+          dpp{doubled_t(detail::shift(ma, eb - ea)) + mb, eb} :
+          dpp{doubled_t(ma) + detail::shift(mb, ea - eb), ea};
       }
     }
   }
@@ -404,8 +404,8 @@ public:
         int const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
-          (dpp{doubled_t(detail::shift(ma, eb - ea)) - mb, eb}) :
-          (dpp{doubled_t(ma) - detail::shift(mb, ea - eb), ea});
+          dpp{doubled_t(detail::shift(ma, eb - ea)) - mb, eb} :
+          dpp{doubled_t(ma) - detail::shift(mb, ea - eb), ea};
       }
     }
   }
