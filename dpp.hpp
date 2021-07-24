@@ -87,8 +87,7 @@ constexpr B selectsign(B const b) noexcept
 }
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
-template <typename T>
-constexpr auto shift(T bm, int e) noexcept
+constexpr auto shift(auto bm, int e) noexcept
 {
   for (auto const c(detail::selectsign<5>(bm)); bm && e--;
     bm = (bm + c) / 10);
