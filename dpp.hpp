@@ -398,7 +398,7 @@ public:
       }
       else if (auto const ma(v_.m); !ma)
       {
-        return dpp{-doubled_t(mb), eb};
+        return mmin == mb ? dpp{-doubled_t(mb), eb} : dpp(-mb, eb, direct{});
       }
       else
       {
