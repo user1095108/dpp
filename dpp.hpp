@@ -88,10 +88,12 @@ constexpr B selectsign(B const b) noexcept
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
 template <typename T>
-inline void shift(T& bm, int e) noexcept
+constexpr auto shift(T bm, int e) noexcept
 {
   for (auto const c(detail::selectsign<5>(bm)); bm && e--;
     bm = (bm + c) / 10);
+
+  return bm;
 }
 
 }
@@ -375,8 +377,8 @@ public:
         int const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
-          (detail::shift(ma, eb - ea), dpp{doubled_t(ma) + mb, eb}) :
-          (detail::shift(mb, ea - eb), dpp{doubled_t(ma) + mb, ea});
+          (dpp{doubled_t(detail::shift(ma, eb - ea)) + mb, eb}) :
+          (dpp{doubled_t(ma) + detail::shift(mb, ea - eb), ea});
       }
     }
   }
@@ -402,8 +404,8 @@ public:
         int const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
-          (detail::shift(ma, eb - ea), dpp{doubled_t(ma) - mb, eb}) :
-          (detail::shift(mb, ea - eb), dpp{doubled_t(ma) - mb, ea});
+          (dpp{doubled_t(detail::shift(ma, eb - ea)) - mb, eb}) :
+          (dpp{doubled_t(ma) - detail::shift(mb, ea - eb), ea});
       }
     }
   }
@@ -468,17 +470,16 @@ public:
     {
       return false;
     }
+    else if (auto ma(v_.m), mb(o.v_.m); ma && mb)
+    {
+      int const ea(v_.e), eb(o.v_.e);
+
+      return ea < eb ?
+        detail::shift(ma, eb - ea) < mb :
+        ma < detail::shift(mb, ea - eb);
+    }
     else
     {
-      auto ma(v_.m), mb(o.v_.m);
-
-      if (ma && mb)
-      {
-        int const ea(v_.e), eb(o.v_.e);
-
-        ea < eb ? detail::shift(ma, eb - ea) : detail::shift(mb, ea - eb);
-      }
-
       return ma < mb;
     }
   }
