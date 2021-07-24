@@ -353,7 +353,7 @@ public:
   {
     // we need to do it like this, as negating the mantissa can overflow
     return isnan(*this) ? dpp{nan{}} :
-      mmin == v_.m ? dpp(-v_.m, v_.e) : dpp(-v_.m, v_.e, direct{});
+      mmin == v_.m ? dpp(-doubled_t(v_.m), v_.e) : dpp(-v_.m, v_.e, direct{});
   }
 
   constexpr dpp operator+(dpp const o) const noexcept
