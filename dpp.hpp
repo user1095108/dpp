@@ -391,17 +391,19 @@ public:
     }
     else
     {
+      int const eb(o.v_.e);
+
       if (auto const mb(o.v_.m); !mb)
       {
         return *this;
       }
       else if (auto const ma(v_.m); !ma)
       {
-        return -o;
+        return dpp{-doubled_t(mb), eb}
       }
       else
       {
-        int const ea(v_.e), eb(o.v_.e);
+        int const ea(v_.e);
 
         return ea < eb ?
           dpp{doubled_t(detail::shift(ma, eb - ea)) - mb, eb} :
