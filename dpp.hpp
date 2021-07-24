@@ -362,17 +362,16 @@ public:
     }
     else
     {
-      if (!o.v_.m)
+      if (mb(o.v_.m); !o.v_.m)
       {
         return *this;
       }
-      else if (!v_.m)
+      else if (auto ma(v_.m); !v_.m)
       {
         return o;
       }
       else
       {
-        auto ma(v_.m), mb(o.v_.m);
         int const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
@@ -390,17 +389,16 @@ public:
     }
     else
     {
-      if (!o.v_.m)
+      if (mb(o.v_.m); !o.v_.m)
       {
         return *this;
       }
-      else if (!v_.m)
+      else if (auto ma(v_.m); !v_.m)
       {
         return -o;
       }
       else
       {
-        auto ma(v_.m), mb(o.v_.m);
         int const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
