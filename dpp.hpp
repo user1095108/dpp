@@ -31,6 +31,8 @@ using direct = struct {};
 using nan = struct {};
 using unpack = struct {};
 
+using int_t = std::int32_t; // int type wide enough to deal with exponents
+
 namespace detail
 {
 
@@ -48,7 +50,7 @@ constexpr static auto is_signed_v(std::is_signed_v<U> ||
 );
 
 template <typename T, int B>
-constexpr T pow(int e) noexcept
+constexpr T pow(int_t e) noexcept
 {
   for (T r{1}, x(B);;)
   {
@@ -68,7 +70,7 @@ constexpr T pow(int e) noexcept
   }
 }
 
-constexpr int log10(auto const x, int const e = 0u) noexcept
+constexpr int_t log10(auto const x, int_t const e = 0u) noexcept
 {
   return pow<std::remove_cv_t<decltype(x)>, 10>(e) > x ? e : log10(x, e + 1);
 }
@@ -87,7 +89,7 @@ constexpr B selectsign(B const b) noexcept
 }
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
-constexpr auto shift(auto bm, int e) noexcept
+constexpr auto shift(auto bm, int_t e) noexcept
 {
   for (auto const c(detail::selectsign<5>(bm)); bm && e--;
     bm = (bm + c) / 10);
@@ -159,7 +161,7 @@ public:
   constexpr dpp(dpp&&) = default;
 
   template <typename U>
-  constexpr dpp(U m, int e) noexcept requires(detail::is_integral_v<U>)
+  constexpr dpp(U m, int_t e) noexcept requires(detail::is_integral_v<U>)
   {
     constexpr auto umin(detail::is_signed_v<U> ?
       U(1) << (detail::bit_size_v<U> - 1) : U{});
@@ -248,7 +250,7 @@ public:
   {
     if (std::isfinite(f))
     {
-      int e{};
+      int_t e{};
 
       // eliminate the fractional part, slash f, if necessary
       for (; std::trunc(f) != f; f *= U(10), --e);
@@ -291,7 +293,7 @@ public:
     }
     else if (auto m(v_.m); m)
     {
-      int e(v_.e);
+      int_t e(v_.e);
 
       for (; !(m % 10); m /= 10, ++e);
 
@@ -308,7 +310,7 @@ public:
   constexpr explicit operator T() const noexcept
     requires(detail::is_integral_v<T>)
   {
-    if (int e(v_.e); e > 0)
+    if (int_t e(v_.e); e > 0)
     {
       return v_.m * detail::pow<T, 10>(e);
     }
@@ -373,7 +375,7 @@ public:
       }
       else
       {
-        int const ea(v_.e), eb(o.v_.e);
+        int_t const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
           dpp{doubled_t(detail::shift(ma, eb - ea)) + mb, eb} :
@@ -390,7 +392,7 @@ public:
     }
     else
     {
-      int const eb(o.v_.e);
+      int_t const eb(o.v_.e);
 
       if (auto const mb(o.v_.m); !mb)
       {
@@ -404,7 +406,7 @@ public:
       }
       else
       {
-        int const ea(v_.e);
+        int_t const ea(v_.e);
 
         return ea < eb ?
           dpp{doubled_t(detail::shift(ma, eb - ea)) - mb, eb} :
@@ -438,7 +440,7 @@ public:
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
       enum { dp = detail::log10((long double)(rmax)) - 1 };
 
-      int e(v_.e - o.v_.e - dp);
+      int_t e(v_.e - o.v_.e - dp);
 
       // we want an approximation to a.v_.m * (10^dp / b.v_.m)
       auto q(detail::pow<doubled_t, 10>(dp) / o.v_.m);
@@ -475,7 +477,7 @@ public:
     }
     else if (auto const ma(v_.m), mb(o.v_.m); ma && mb)
     {
-      int const ea(v_.e), eb(o.v_.e);
+      int_t const ea(v_.e), eb(o.v_.e);
 
       return ea < eb ?
         detail::shift(ma, eb - ea) < mb :
@@ -621,7 +623,7 @@ constexpr auto isnormal(dpp<M> const a) noexcept
 template <unsigned M>
 constexpr auto trunc(dpp<M> const a) noexcept
 {
-  if (int e(a.exponent()); !isnan(a) && (e < 0))
+  if (int_t e(a.exponent()); !isnan(a) && (e < 0))
   {
     auto m(a.mantissa());
 
@@ -702,7 +704,7 @@ constexpr T to_decimal(It i, It const end) noexcept
     }
 
     typename T::mantissa_type r{};
-    int e{};
+    int_t e{};
 
     auto const scandigit([&](decltype(r) const d) noexcept
       {
@@ -794,7 +796,7 @@ constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
   {
     T m(p.mantissa());
 
-    if (int e(p.exponent()); e <= 0)
+    if (int_t e(p.exponent()); e <= 0)
     {
       for (; m && e++; m /= 10);
 
@@ -837,7 +839,7 @@ std::string to_string(dpp<M> p)
       p -= t;
 
       auto m(t.mantissa());
-      int e(t.exponent());
+      int_t e(t.exponent());
 
       for (; !(m % 10); m /= 10, ++e);
 
@@ -850,7 +852,7 @@ std::string to_string(dpp<M> p)
 
     auto m(p.mantissa());
 
-    if (int e(p.exponent()); (e < 0) && m)
+    if (int_t e(p.exponent()); (e < 0) && m)
     {
       for (; !(m % 10); m /= 10, ++e);
 
