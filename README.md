@@ -7,7 +7,7 @@ The underlying design goal was to maximize the number of extractable decimal dig
     g++ -std=c++2a -Ofast -s mandelbrot.cpp -o m
     em++ -std=c++20 -O3 -s eps.cpp -o e.js
 # alternatives
-* [Boost.Multiprecision](https://github.com/boostorg/multiprecision) - artisanal c++, highly recommended,
-* [DEC64](https://github.com/douglascrockford/DEC64) - legendary asm, one 64-bit type,
-* [decimal_for_cpp](https://github.com/vpiotr/decimal_for_cpp) - c++, fixed-point, bloated (locales),
-* [libdecnumber](https://github.com/gcc-mirror/gcc/tree/master/libdecnumber) - epic c, supported by gcc, complex, huge.
+* [Boost.Multiprecision](https://github.com/boostorg/multiprecision),
+* [DEC64](https://github.com/douglascrockford/DEC64),
+* [decimal_for_cpp](https://github.com/vpiotr/decimal_for_cpp),
+* [libdecnumber](https://github.com/gcc-mirror/gcc/tree/master/libdecnumber).
