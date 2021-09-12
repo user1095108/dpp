@@ -552,18 +552,9 @@ constexpr auto operator>=(dpp<A> const a, dpp<B> const b) noexcept
 template <unsigned A, unsigned B>
 constexpr auto operator<=>(dpp<A> const a, dpp<B> const b) noexcept
 {
-  if (a == b)
-  {
-    return std::strong_ordering::equal;
-  }
-  else if (a < b)
-  {
-    return std::strong_ordering::less;
-  }
-  else
-  {
-    return std::strong_ordering::greater;
-  }
+  return a == b ?
+    std::strong_ordering::equal :
+    a < b ? std::strong_ordering::less : std::strong_ordering::greater;
 }
 
 // conversions
