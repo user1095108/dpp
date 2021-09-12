@@ -6,6 +6,8 @@
 #include <cmath> // std::pow
 #include <cstdint>
 
+#include <compare>
+
 #include <functional> // std::hash
 
 #include <iterator>
