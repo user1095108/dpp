@@ -554,7 +554,7 @@ constexpr auto operator<=>(dpp<A> const a, dpp<B> const b) noexcept
   {
     return std::strong_ordering::equal;
   }
-  else (a < b)
+  else if (a < b)
   {
     return std::strong_ordering::less;
   }
