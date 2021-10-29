@@ -415,11 +415,11 @@ public:
 
   constexpr dpp operator/(dpp const o) const noexcept
   {
-    if (isnan(*this) || isnan(o) || !o.v_.m) // guard against division by 0
+    if (auto const om(o.v_.m); isnan(*this) || isnan(o) || !om) // div by 0
     {
       return nan{};
     }
-    else if (v_.m) // guard against division by 0
+    else if (auto const m(v_.m); m) // div 0
     {
       enum : doubled_t
       {
@@ -430,15 +430,15 @@ public:
       // dp is the exponent, that generates the maximal power of 10,
       // that fits into doubled_t
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-      enum { dp = detail::log10((long double)(rmax)) - 1 };
+      enum : int_t { dp = detail::log10((long double)(rmax)) - 1 };
 
       int_t e(v_.e - o.v_.e - dp);
 
       // we want an approximation to a.v_.m * (10^dp / b.v_.m)
-      auto q(detail::pow<doubled_t, 10>(dp) / o.v_.m);
+      auto q(detail::pow<doubled_t, 10>(dp) / om);
 
       // fit q * v_.m into doubled_t, q * v_.m <= rmax, q * v_.m >= rmin
-      if (auto const am(v_.m < 0 ? -v_.m : v_.m); q < 0)
+      if (auto const am(m < 0 ? -m : m); q < 0)
       {
         for (auto const a(rmin / am); q < a; q /= 10, ++e);
       }
@@ -447,7 +447,7 @@ public:
         for (auto const a(rmax / am); q > a; q /= 10, ++e);
       }
 
-      return {q * v_.m, e};
+      return {q * m, e};
     }
     else
     {
