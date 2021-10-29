@@ -46,7 +46,7 @@ constexpr static auto is_signed_v(
 );
 
 template <typename U>
-constexpr U min() noexcept
+consteval auto min() noexcept
 {
   if constexpr(detail::is_signed_v<U>)
   {
@@ -59,7 +59,7 @@ constexpr U min() noexcept
 }
 
 template <typename U>
-constexpr U max() noexcept
+consteval auto max() noexcept
 {
   if constexpr(detail::is_signed_v<U>)
   {
