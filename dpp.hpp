@@ -419,7 +419,7 @@ public:
     {
       return nan{};
     }
-    else if (auto const m(v_.m); m) // div 0
+    else if (doubled_t const m(v_.m); m) // div 0
     {
       enum : doubled_t
       {
