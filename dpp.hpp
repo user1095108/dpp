@@ -437,7 +437,7 @@ public:
       // we want an approximation to a.v_.m * (10^dp / b.v_.m)
       auto q(detail::pow<doubled_t, 10>(dp) / om);
 
-      // fit q * v_.m into doubled_t, q * v_.m <= rmax, q * v_.m >= rmin
+      // fit m * q into doubled_t, m * q <= rmax, m * q >= rmin
       if (auto const am(m < 0 ? -m : m); q < 0)
       {
         for (auto const a(rmin / am); q < a; q /= 10, ++e);
