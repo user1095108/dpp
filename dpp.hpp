@@ -100,7 +100,7 @@ consteval int_t log10(auto const x, int_t const e = 0u) noexcept
 template <auto a, typename B>
 constexpr B selectsign(B const b) noexcept
 {
-  if constexpr (is_signed_v<decltype(a)> && is_signed_v<B>)
+  if constexpr(is_signed_v<decltype(a)> && is_signed_v<B>)
   {
     return b < 0 ? -a : a;
   }
@@ -129,8 +129,8 @@ public:
 
   enum : exp_type
   {
-    emin = std::numeric_limits<exp_type>::min(),
-    emax = std::numeric_limits<exp_type>::max()
+    emin = detail::min<exp_type>(),
+    emax = detail::max<exp_type>()
   };
 
   using mantissa_type = std::conditional_t<
@@ -149,8 +149,8 @@ public:
 
   enum : mantissa_type
   {
-    mmin = std::numeric_limits<mantissa_type>::min(),
-    mmax = std::numeric_limits<mantissa_type>::max()
+    mmin = detail::min<mantissa_type>(),
+    mmax = detail::max<mantissa_type>()
   };
 
 private:
@@ -277,8 +277,8 @@ public:
       // eliminate the fractional part, slash f, if necessary
       for (; std::trunc(f) != f; f *= U(10), --e);
       for (constexpr long double
-        min(std::numeric_limits<std::intmax_t>::min()),
-        max(std::numeric_limits<std::intmax_t>::max());
+        min(detail::min<std::intmax_t>()),
+        max(detail::max<std::intmax_t>());
         (f < min) || (f > max); f /= 10, ++e);
 
       *this = {std::intmax_t(f), e};
@@ -713,8 +713,11 @@ constexpr T to_decimal(std::input_iterator auto i,
   }
   else
   {
-    constexpr auto rmax(std::numeric_limits<std::intmax_t>::max());
-    constexpr auto rmin(std::numeric_limits<std::intmax_t>::min());
+    enum : std::intmax_t
+    {
+      rmax = detail::max<std::intmax_t>(),
+      rmin = detail::min<std::intmax_t>()
+    };
 
     bool positive{true};
 
@@ -822,6 +825,12 @@ constexpr auto to_decimal(S const& s) noexcept ->
 template <typename T = std::intmax_t, unsigned M>
 constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
 {
+  enum : T
+  {
+    tmin = detail::min<T>(),
+    tmax = detail::max<T>()
+  };
+
   if (isnan(p))
   {
     return {};
@@ -840,8 +849,7 @@ constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
     {
       do
       {
-        if ((m >= std::numeric_limits<T>::min() / 10) &&
-          (m <= std::numeric_limits<T>::max() / 10))
+        if ((m >= tmin / 10) && (m <= tmax / 10))
         {
           m *= 10;
         }
