@@ -33,9 +33,6 @@ namespace detail
 {
 
 template <typename U>
-constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
-
-template <typename U>
 constexpr static auto is_integral_v(
   std::is_integral_v<U> || std::is_same_v<U, DPP_INT128T>
 );
@@ -46,11 +43,17 @@ constexpr static auto is_signed_v(
 );
 
 template <typename U>
+consteval auto bit_size() noexcept
+{
+  return CHAR_BIT * sizeof(U);
+}
+
+template <typename U>
 consteval auto min() noexcept
 {
-  if constexpr(detail::is_signed_v<U>)
+  if constexpr(is_signed_v<U>)
   {
-    return U(U(1) << (detail::bit_size_v<U> - 1));
+    return U(U(1) << (bit_size<U>() - 1));
   }
   else
   {
@@ -61,7 +64,7 @@ consteval auto min() noexcept
 template <typename U>
 consteval auto max() noexcept
 {
-  if constexpr(detail::is_signed_v<U>)
+  if constexpr(is_signed_v<U>)
   {
     return -U(min<U>() + U(1));
   }
@@ -190,7 +193,7 @@ public:
     };
 
     // slash m, if necessary
-    if constexpr (detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
+    if constexpr(detail::is_signed_v<U> && (detail::bit_size<U>() > M))
     if (m < mmin)
     {
       if (m >= umin + 5)
@@ -204,8 +207,8 @@ public:
       for (; m < mmin; m = (m - 5) / 10, ++e);
     }
 
-    if constexpr ((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
-      (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
+    if constexpr((detail::is_signed_v<U> && (detail::bit_size<U>() > M)) ||
+      (std::is_unsigned_v<U> && (detail::bit_size<U>() >= M)))
     if (m > mmax)
     {
       if (m <= umax - 5)
@@ -256,7 +259,7 @@ public:
   template <typename U>
   constexpr dpp(U const m) noexcept requires(detail::is_integral_v<U>):
     dpp(std::conditional_t<
-          detail::bit_size_v<U> < detail::bit_size_v<mantissa_type>,
+          detail::bit_size<U>() < detail::bit_size<mantissa_type>(),
           mantissa_type,
           U
         >(m), 0
