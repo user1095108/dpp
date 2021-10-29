@@ -116,8 +116,7 @@ constexpr B selectsign(B const b) noexcept
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
 constexpr auto shift(auto bm, int_t e) noexcept
 {
-  for (auto const c(detail::selectsign<5>(bm)); bm && e--;
-    bm = (bm + c) / 10);
+  for (auto const c(selectsign<5>(bm)); bm && e--; bm = (bm + c) / 10);
 
   return bm;
 }
