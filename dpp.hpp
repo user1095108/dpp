@@ -432,7 +432,7 @@ public:
       // 10^dp > rmax, hence 10^(dp - 1) <= rmax
       enum : int_t { dp = detail::log10((long double)(rmax)) - 1 };
 
-      int_t e(v_.e - o.v_.e - dp);
+      int_t e(-dp + v_.e - o.v_.e);
 
       // we want an approximation to a.v_.m * (10^dp / b.v_.m)
       auto q(detail::pow<doubled_t, 10>(dp) / om);
