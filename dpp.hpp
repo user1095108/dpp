@@ -442,11 +442,11 @@ public:
       // fit m * q into doubled_t, m * q <= rmax, m * q >= rmin
       if (auto const am(m < 0 ? -m : m); q < 0)
       {
-        for (auto const a(rmin / am); q < a; q /= 10, ++e);
+        for (auto const a(rmin / am); q < a; q = (q - 5) / 10, ++e);
       }
       else
       {
-        for (auto const a(rmax / am); q > a; q /= 10, ++e);
+        for (auto const a(rmax / am); q > a; q = (q + 5) / 10, ++e);
       }
 
       return {m * q, e};
