@@ -415,26 +415,28 @@ public:
 
   constexpr dpp operator/(dpp const o) const noexcept
   {
+    enum : doubled_t
+    {
+      rmin = doubled_t(1) << (detail::bit_size_v<doubled_t> - 1),
+      rmax = -(rmin + 1)
+    };
+
+    // dp is the exponent, that generates the maximal power of 10,
+    // that fits into doubled_t
+    // 10^dp > rmax, hence 10^(dp - 1) <= rmax
+    enum : int_t { dp = detail::log10((long double)(rmax)) - 1 };
+
     if (auto const om(o.v_.m); isnan(*this) || isnan(o) || !om) // div by 0
     {
       return nan{};
     }
-    else if (doubled_t const m(v_.m); m) // div 0
+    else if (v_.m) // div 0
     {
-      enum : doubled_t
-      {
-        rmin = doubled_t(1) << (detail::bit_size_v<doubled_t> - 1),
-        rmax = -(rmin + 1)
-      };
-
-      // dp is the exponent, that generates the maximal power of 10,
-      // that fits into doubled_t
-      // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-      enum : int_t { dp = detail::log10((long double)(rmax)) - 1 };
+      doubled_t const m(v_.m);
 
       int_t e(-dp + v_.e - o.v_.e);
 
-      // we want an approximation to a.v_.m * (10^dp / b.v_.m)
+      // we want an approximation to m * (10^dp / om)
       auto q(detail::pow<doubled_t, 10>(dp) / om);
 
       // fit m * q into doubled_t, m * q <= rmax, m * q >= rmin
