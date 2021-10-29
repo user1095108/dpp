@@ -36,14 +36,40 @@ template <typename U>
 constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
-constexpr static auto is_integral_v(std::is_integral_v<U> ||
-  std::is_same_v<U, DPP_INT128T>
+constexpr static auto is_integral_v(
+  std::is_integral_v<U> || std::is_same_v<U, DPP_INT128T>
 );
 
 template <typename U>
-constexpr static auto is_signed_v(std::is_signed_v<U> ||
-  std::is_same_v<U, DPP_INT128T>
+constexpr static auto is_signed_v(
+  std::is_signed_v<U> || std::is_same_v<U, DPP_INT128T>
 );
+
+template <typename U>
+constexpr U min() noexcept
+{
+  if constexpr(detail::is_signed_v<U>)
+  {
+    return U(U(1) << (detail::bit_size_v<U> - 1));
+  }
+  else
+  {
+    return U{};
+  }
+}
+
+template <typename U>
+constexpr U max() noexcept
+{
+  if constexpr(detail::is_signed_v<U>)
+  {
+    return -U(min<U>() + U(1));
+  }
+  else
+  {
+    return ~U();
+  }
+}
 
 template <typename T, int B>
 constexpr T pow(int_t e) noexcept
@@ -157,9 +183,11 @@ public:
   template <typename U>
   constexpr dpp(U m, int_t e) noexcept requires(detail::is_integral_v<U>)
   {
-    constexpr auto umin(detail::is_signed_v<U> ?
-      U(1) << (detail::bit_size_v<U> - 1) : U{});
-    constexpr auto umax(detail::is_signed_v<U> ? -(umin + 1) : ~U{});
+    enum : U
+    {
+      umin = detail::min<U>(),
+      umax = detail::max<U>()
+    };
 
     // slash m, if necessary
     if constexpr (detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
@@ -417,8 +445,8 @@ public:
   {
     enum : doubled_t
     {
-      rmin = doubled_t(1) << (detail::bit_size_v<doubled_t> - 1),
-      rmax = -(rmin + 1)
+      rmin = detail::min<doubled_t>(),
+      rmax = detail::max<doubled_t>()
     };
 
     // dp is the exponent, that generates the maximal power of 10,
