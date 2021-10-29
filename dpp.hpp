@@ -393,7 +393,7 @@ public:
       else if (auto const ma(v_.m); !ma)
       {
         return mmin == mb ?
-          dpp{-(mmin / 10), eb + 1} :
+          dpp(-(mmin / 10), eb + 1) :
           dpp(-mb, eb, direct{});
       }
       else
