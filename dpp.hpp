@@ -426,6 +426,9 @@ public:
     // 10^dp > rmax, hence 10^(dp - 1) <= rmax
     enum : int_t { dp = detail::log10((long double)(rmax)) - 1 };
 
+    static_assert(detail::pow<doubled_t, 10>(dp) <= rmax - 5);
+    static_assert(-detail::pow<doubled_t, 10>(dp) >= rmin + 5);
+
     if (auto const om(o.v_.m); isnan(*this) || isnan(o) || !om) // div by 0
     {
       return nan{};
