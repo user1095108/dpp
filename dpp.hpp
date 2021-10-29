@@ -447,7 +447,7 @@ public:
         for (auto const a(rmax / am); q > a; q /= 10, ++e);
       }
 
-      return {q * m, e};
+      return {m * q, e};
     }
     else
     {
