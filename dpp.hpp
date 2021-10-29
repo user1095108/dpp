@@ -31,7 +31,6 @@ namespace dpp
 
 using direct = struct {};
 using nan = struct {};
-using unpack = struct {};
 
 using int_t = std::int32_t; // int type wide enough to deal with exponents
 
@@ -277,8 +276,6 @@ public:
 
   constexpr dpp(nan) noexcept: v_{.m = {}, .e = emin} { }
 
-  constexpr dpp(auto const o, unpack) noexcept: dpp(o.m, o.e) { }
-
   //
   constexpr explicit operator bool() const noexcept
   {
@@ -499,7 +496,12 @@ public:
   constexpr auto exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
 
-  constexpr auto packed() const noexcept { return v_; }
+  constexpr auto packed() const noexcept { return std::tuple(v_.m, v_.e); }
+
+  static constexpr dpp unpack(auto const& o) noexcept
+  {
+    return {std::get<0>(o), std::get<1>(o)};
+  }
 };
 
 using d64 = dpp<64>;
