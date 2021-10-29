@@ -6,18 +6,12 @@
 #include <cmath> // std::pow
 #include <cstdint>
 
-#include <compare>
-
+#include <compare> // std::strong_ordering
 #include <functional> // std::hash
-
-#include <iterator>
-
-#include <optional>
-
+#include <iterator> // std::begin(), std::end()
+#include <optional> // std::optional
 #include <ostream>
-
 #include <string>
-
 #include <type_traits>
 
 #if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
@@ -677,8 +671,9 @@ constexpr auto abs(dpp<M> const a) noexcept
 }
 
 // conversions
-template <typename T, typename It>
-constexpr T to_decimal(It i, It const end) noexcept
+template <typename T>
+constexpr T to_decimal(std::input_iterator auto i,
+  decltype(i) const end) noexcept
 {
   if (i == end)
   {
