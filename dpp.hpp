@@ -12,6 +12,7 @@
 #include <optional> // std::optional
 #include <ostream>
 #include <string>
+#include <tuple>
 #include <type_traits>
 
 #if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
