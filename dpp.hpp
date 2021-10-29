@@ -127,12 +127,6 @@ public:
     mmax = std::numeric_limits<mantissa_type>::max()
   };
 
-  struct value_type
-  {
-    mantissa_type m;
-    exp_type e;
-  };
-
 private:
   using doubled_t = std::conditional_t<
     std::is_same_v<mantissa_type, std::int16_t>,
@@ -148,7 +142,11 @@ private:
     >
   >;
 
-  struct value_type v_{};
+  struct
+  {
+    mantissa_type m;
+    exp_type e;
+  } v_{};
 
 public:
   constexpr dpp() = default;
