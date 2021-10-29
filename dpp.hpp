@@ -743,7 +743,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         return nan{};
     }
 
-    typename T::mantissa_type r{};
+    std::intmax_t r{};
     int_t e{};
 
     auto const scandigit([&](decltype(r) const d) noexcept
