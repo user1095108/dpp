@@ -407,8 +407,8 @@ public:
   {
     enum : doubled_t
     {
-      rmin = detail::min<doubled_t>(),
-      rmax = detail::max<doubled_t>()
+      rmin = detail::min<doubled_t>() / 2,
+      rmax = detail::max<doubled_t>() / 2
     };
 
     if (isnan(*this) || isnan(o))
@@ -451,8 +451,8 @@ public:
   {
     enum : doubled_t
     {
-      rmin = detail::min<doubled_t>(),
-      rmax = detail::max<doubled_t>()
+      rmin = detail::min<doubled_t>() / 2,
+      rmax = detail::max<doubled_t>() / 2
     };
 
     if (isnan(*this) || isnan(o))
@@ -557,8 +557,8 @@ public:
   {
     enum : doubled_t
     {
-      rmin = detail::min<doubled_t>(),
-      rmax = detail::max<doubled_t>()
+      rmin = detail::min<doubled_t>() / 2,
+      rmax = detail::max<doubled_t>() / 2
     };
 
     if (isnan(*this) || isnan(o))
