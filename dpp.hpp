@@ -407,7 +407,7 @@ public:
         int_t const ea(v_.e), eb(o.v_.e);
 
         return ea < eb ?
-          dpp{doubled_t(detail::shift(ma, eb - ea)) + mb, eb} :
+          dpp{detail::shift(ma, eb - ea) + doubled_t(mb), eb} :
           dpp{doubled_t(ma) + detail::shift(mb, ea - eb), ea};
       }
     }
@@ -438,7 +438,7 @@ public:
         int_t const ea(v_.e);
 
         return ea < eb ?
-          dpp{doubled_t(detail::shift(ma, eb - ea)) - mb, eb} :
+          dpp{detail::shift(ma, eb - ea) - doubled_t(mb), eb} :
           dpp{doubled_t(ma) - detail::shift(mb, ea - eb), ea};
       }
     }
