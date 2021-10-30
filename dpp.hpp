@@ -183,7 +183,8 @@ public:
   constexpr dpp(dpp&&) = default;
 
   template <typename U>
-  constexpr dpp(U m, int_t e) noexcept requires(detail::is_integral_v<U>)
+  constexpr dpp(U m, int_t e) noexcept
+    requires(detail::is_integral_v<U>)
   {
     enum : U
     {
@@ -256,21 +257,27 @@ public:
   }
 
   template <typename U>
-  constexpr dpp(U const m) noexcept requires(detail::is_integral_v<U>):
+  constexpr dpp(U const m) noexcept
+    requires(detail::is_integral_v<U>):
     dpp(std::conditional_t<
           detail::bit_size<U>() < detail::bit_size<mantissa_type>(),
           mantissa_type,
           U
-        >(m), 0
+        >(m),
+        0
     )
   {
   }
 
   template <unsigned A>
-  constexpr dpp(dpp<A> const o) noexcept: dpp(o.mantissa(), o.exponent()) { }
+  constexpr dpp(dpp<A> const o) noexcept:
+    dpp(o.mantissa(), o.exponent())
+  {
+  }
 
   template <typename U>
-  dpp(U f) noexcept requires(std::is_floating_point_v<U>)
+  dpp(U f) noexcept
+    requires(std::is_floating_point_v<U>)
   {
     if (std::isfinite(f))
     {
