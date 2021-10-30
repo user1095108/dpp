@@ -382,7 +382,8 @@ public:
   constexpr auto operator-() const noexcept
   {
     // we need to do it like this, as negating the mantissa can overflow
-    return isnan(*this) ? dpp{nan{}} :
+    return isnan(*this) ?
+      dpp{nan{}} :
       mmin == v_.m ? dpp(-doubled_t(mmin), v_.e) : dpp(-v_.m, v_.e, direct{});
   }
 
@@ -446,8 +447,9 @@ public:
 
   constexpr dpp operator*(dpp const o) const noexcept
   {
-    return isnan(*this) || isnan(o) ? nan{} :
-      dpp<M>{doubled_t(v_.m) * o.v_.m, v_.e + o.v_.e};
+    return isnan(*this) || isnan(o) ?
+      nan{} :
+      dpp<M>{doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e};
   }
 
   constexpr dpp operator/(dpp const o) const noexcept
