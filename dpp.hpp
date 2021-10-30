@@ -427,9 +427,7 @@ public:
       }
       else
       {
-        int_t ea(v_.e), eb(o.v_.e);
-
-        if (ea < eb)
+        if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
         {
           return {
             detail::shift_left<rmin, rmax>(mb, eb, eb - ea) +
@@ -471,15 +469,11 @@ public:
       }
       else if (doubled_t ma(v_.m); !ma)
       {
-        return mmin == mb ?
-          dpp(-doubled_t(mmin), eb) :
-          dpp(-mb, eb, direct{});
+        return mmin == mb ? dpp(-mb, eb) : dpp(-mb, eb, direct{});
       }
       else
       {
-        int_t ea(v_.e);
-
-        if (ea < eb)
+        if (int_t ea(v_.e); ea < eb)
         {
           return {
             detail::shift_left<rmin, rmax>(-mb, eb, eb - ea) +
@@ -573,9 +567,7 @@ public:
     }
     else if (doubled_t ma(v_.m), mb(o.v_.m); ma && mb)
     {
-      int_t ea(v_.e), eb(o.v_.e);
-
-      if (ea < eb)
+      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
         return detail::shift_left<rmin, rmax>(mb, eb, eb - ea) >
           detail::shift_right(ma, eb - ea);
