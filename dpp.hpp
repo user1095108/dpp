@@ -74,6 +74,30 @@ consteval auto max() noexcept
   }
 }
 
+template <auto min, auto max>
+constexpr auto shift_left(auto m, auto& e, int_t i) noexcept
+{
+  if (m < 0)
+  {
+    for (; (m >= min / 10) && i--; m *= 10, --e);
+  }
+  else
+  {
+    for (; (m <= max / 10) && i--; m *= 10, --e);
+  }
+
+  return m;
+}
+
+// ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
+constexpr auto shift_right(auto m, int_t i) noexcept
+{
+  for (auto const c(selectsign<5>(m)); m && i--; m = (m + c) / 10);
+
+  return m;
+}
+
+
 template <typename T, int B>
 constexpr T pow(int_t e) noexcept
 {
@@ -111,14 +135,6 @@ constexpr B selectsign(B const b) noexcept
   {
     return a;
   }
-}
-
-// ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
-constexpr auto shift(auto bm, int_t e) noexcept
-{
-  for (auto const c(selectsign<5>(bm)); bm && e--; bm = (bm + c) / 10);
-
-  return bm;
 }
 
 }
@@ -389,46 +405,71 @@ public:
 
   constexpr dpp operator+(dpp const o) const noexcept
   {
+    enum : doubled_t
+    {
+      rmin = detail::min<doubled_t>(),
+      rmax = detail::max<doubled_t>()
+    };
+
     if (isnan(*this) || isnan(o))
     {
       return nan{};
     }
     else
     {
-      if (auto const mb(o.v_.m); !mb)
+      if (doubled_t mb(o.v_.m); !mb)
       {
         return *this;
       }
-      else if (auto const ma(v_.m); !ma)
+      else if (doubled_t ma(v_.m); !ma)
       {
         return o;
       }
       else
       {
-        int_t const ea(v_.e), eb(o.v_.e);
+        int_t ea(v_.e), eb(o.v_.e);
 
-        return ea < eb ?
-          dpp{detail::shift(ma, eb - ea) + doubled_t(mb), eb} :
-          dpp{doubled_t(ma) + detail::shift(mb, ea - eb), ea};
+        if (ea < eb)
+        {
+          return {
+            detail::shift_left<rmin, rmax>(mb, eb, eb - ea) +
+            detail::shift_right(ma, eb - ea),
+            eb
+          };
+        }
+        else
+        {
+          return {
+            detail::shift_left<rmin, rmax>(ma, ea, ea - eb) +
+            detail::shift_right(mb, ea - eb),
+            ea
+          };
+        }
       }
     }
   }
 
   constexpr dpp operator-(dpp const o) const noexcept
   {
+    enum : doubled_t
+    {
+      rmin = detail::min<doubled_t>(),
+      rmax = detail::max<doubled_t>()
+    };
+
     if (isnan(*this) || isnan(o))
     {
       return nan{};
     }
     else
     {
-      int_t const eb(o.v_.e);
+      int_t eb(o.v_.e);
 
-      if (auto const mb(o.v_.m); !mb)
+      if (doubled_t mb(o.v_.m); !mb)
       {
         return *this;
       }
-      else if (auto const ma(v_.m); !ma)
+      else if (doubled_t ma(v_.m); !ma)
       {
         return mmin == mb ?
           dpp(-doubled_t(mmin), eb) :
@@ -436,11 +477,24 @@ public:
       }
       else
       {
-        int_t const ea(v_.e);
+        int_t ea(v_.e);
 
-        return ea < eb ?
-          dpp{detail::shift(ma, eb - ea) - doubled_t(mb), eb} :
-          dpp{doubled_t(ma) - detail::shift(mb, ea - eb), ea};
+        if (ea < eb)
+        {
+          return {
+            detail::shift_left<rmin, rmax>(-mb, eb, eb - ea) +
+            detail::shift_right(ma, eb - ea),
+            eb
+          };
+        }
+        else
+        {
+          return {
+            detail::shift_left<rmin, rmax>(ma, ea, ea - eb) -
+            detail::shift_right(mb, ea - eb),
+            ea
+          };
+        }
       }
     }
   }
@@ -507,17 +561,30 @@ public:
 
   constexpr bool operator<(dpp const o) const noexcept
   {
+    enum : doubled_t
+    {
+      rmin = detail::min<doubled_t>(),
+      rmax = detail::max<doubled_t>()
+    };
+
     if (isnan(*this) || isnan(o))
     {
       return false;
     }
-    else if (auto const ma(v_.m), mb(o.v_.m); ma && mb)
+    else if (doubled_t ma(v_.m), mb(o.v_.m); ma && mb)
     {
-      int_t const ea(v_.e), eb(o.v_.e);
+      int_t ea(v_.e), eb(o.v_.e);
 
-      return ea < eb ?
-        detail::shift(ma, eb - ea) < mb :
-        ma < detail::shift(mb, ea - eb);
+      if (ea < eb)
+      {
+        return detail::shift_left<rmin, rmax>(mb, eb, eb - ea) >
+          detail::shift_right(ma, eb - ea);
+      }
+      else
+      {
+        return detail::shift_left<rmin, rmax>(ma, ea, ea - eb) <
+          detail::shift_right(mb, ea - eb);
+      }
     }
     else
     {
