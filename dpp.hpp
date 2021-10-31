@@ -460,7 +460,7 @@ public:
   {
     return isnan(*this) || isnan(o) ?
       nan{} :
-      dpp<M>{doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e};
+      dpp{doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e};
   }
 
   constexpr dpp operator/(dpp const o) const noexcept
