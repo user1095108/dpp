@@ -384,33 +384,30 @@ public:
     {
       return nan{};
     }
+    else if (!o.v_.m)
+    {
+      return *this;
+    }
+    else if (!v_.m)
+    {
+      return o;
+    }
     else
     {
-      if (!o.v_.m)
-      {
-        return *this;
-      }
-      else if (!v_.m)
-      {
-        return o;
-      }
-      else
-      {
-        doubled_t ma(v_.m), mb(o.v_.m);
-        int_t ea(v_.e), eb(o.v_.e);
+      doubled_t ma(v_.m), mb(o.v_.m);
+      int_t ea(v_.e), eb(o.v_.e);
 
-        return v_.e < o.v_.e ?
-          dpp{
-            detail::shift_left(mb, eb, eb - ea) +
-            detail::shift_right(ma, eb - ea),
-            eb
-          } :
-          dpp{
-            detail::shift_left(ma, ea, ea - eb) +
-            detail::shift_right(mb, ea - eb),
-            ea
-          };
-      }
+      return v_.e < o.v_.e ?
+        dpp{
+          detail::shift_left(mb, eb, eb - ea) +
+          detail::shift_right(ma, eb - ea),
+          eb
+        } :
+        dpp{
+          detail::shift_left(ma, ea, ea - eb) +
+          detail::shift_right(mb, ea - eb),
+          ea
+        };
     }
   }
 
@@ -420,35 +417,32 @@ public:
     {
       return nan{};
     }
+    else if (auto const om(o.v_.m); !om)
+    {
+      return *this;
+    }
+    else if (auto const oe(o.v_.e); !v_.m)
+    {
+      return mmin == om ?
+        dpp(-doubled_t(mmin), oe) :
+        dpp(-om, oe, direct{});
+    }
     else
     {
-      if (auto const om(o.v_.m); !om)
-      {
-        return *this;
-      }
-      else if (auto const oe(o.v_.e); !v_.m)
-      {
-        return mmin == om ?
-          dpp(-doubled_t(mmin), oe) :
-          dpp(-om, oe, direct{});
-      }
-      else
-      {
-        doubled_t ma(v_.m), mb(om);
-        int_t ea(v_.e), eb(oe);
+      doubled_t ma(v_.m), mb(om);
+      int_t ea(v_.e), eb(oe);
 
-        return v_.e < oe ?
-          dpp{
-            detail::shift_left(-mb, eb, eb - ea) +
-            detail::shift_right(ma, eb - ea),
-            eb
-          } :
-          dpp{
-            detail::shift_left(ma, ea, ea - eb) -
-            detail::shift_right(mb, ea - eb),
-            ea
-          };
-      }
+      return v_.e < oe ?
+        dpp{
+          detail::shift_left(-mb, eb, eb - ea) +
+          detail::shift_right(ma, eb - ea),
+          eb
+        } :
+        dpp{
+          detail::shift_left(ma, ea, ea - eb) -
+          detail::shift_right(mb, ea - eb),
+          ea
+        };
     }
   }
 
