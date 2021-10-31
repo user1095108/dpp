@@ -64,7 +64,7 @@ constexpr B selectsign(B const b) noexcept
   }
 }
 
-constexpr auto shift_left(auto m, auto& e, auto i) noexcept
+constexpr auto shift_left(auto m, auto& e, int_t i) noexcept
 {
   if (m < 0)
   {
@@ -79,7 +79,7 @@ constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 }
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
-constexpr auto shift_right(auto m, auto i) noexcept
+constexpr auto shift_right(auto m, int_t i) noexcept
 {
   for (auto const c(selectsign<5>(m)); m && i--; m = (m + c) / 10);
 
@@ -483,14 +483,12 @@ public:
     {
       return nan{};
     }
-    else
+    else if (doubled_t const m(v_.m); v_.m) // div by 0!
     {
       int_t e(-dp + v_.e - o.v_.e);
 
       // we want an approximation to m * (10^dp / om)
       auto q(detail::pow<doubled_t, 10>(dp) / om);
-
-      doubled_t const m(v_.m);
 
       // fit m * q into doubled_t, m * q <= max, m * q >= min
       if (auto const am(m < 0 ? -m : m); q < 0)
@@ -503,6 +501,10 @@ public:
       }
 
       return {m * q, e};
+    }
+    else
+    {
+      return {};
     }
   }
 
