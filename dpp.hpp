@@ -429,17 +429,17 @@ public:
     }
     else
     {
-      doubled_t ma(v_.m), mb(om);
+      doubled_t ma(v_.m), mb(-om);
       int_t ea(v_.e), eb(oe);
 
       return v_.e < oe ?
         dpp{
-          detail::shift_left(-mb, eb, eb - ea) +
+          detail::shift_left(mb, eb, eb - ea) +
           detail::shift_right(ma, eb - ea),
           eb
         } :
         dpp{
-          detail::shift_left(ma, ea, ea - eb) -
+          detail::shift_left(ma, ea, ea - eb) +
           detail::shift_right(mb, ea - eb),
           ea
         };
