@@ -68,11 +68,11 @@ constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 {
   if (m < 0)
   {
-    for (; (m >= min_v<decltype(m)> / 10) && i--; m *= 10, --e);
+    for (; (m >= min_v<decltype(m)> / 20) && i--; m *= 10, --e);
   }
   else
   {
-    for (; (m <= max_v<decltype(m)> / 10) && i--; m *= 10, --e);
+    for (; (m <= max_v<decltype(m)> / 20) && i--; m *= 10, --e);
   }
 
   return m;
