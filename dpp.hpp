@@ -386,16 +386,18 @@ public:
     }
     else
     {
-      if (doubled_t mb(o.v_.m); !mb)
+      if (!o.v_.m)
       {
         return *this;
       }
-      else if (doubled_t ma(v_.m); !ma)
+      else if (!v_.m)
       {
         return o;
       }
       else
       {
+        doubled_t ma(v_.m), mb(o.v_.m);
+
         if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
         {
           return {
@@ -424,19 +426,21 @@ public:
     }
     else
     {
-      int_t eb(o.v_.e);
-
-      if (doubled_t mb(o.v_.m); !mb)
+      if (auto const om(o.v_.m); !om)
       {
         return *this;
       }
-      else if (doubled_t ma(v_.m); !ma)
+      else if (!v_.m)
       {
-        return mmin == mb ? dpp(-mb, eb) : dpp(-mb, eb, direct{});
+        return mmin == om ?
+          dpp(-doubled_t(mmin), o.v_.e) :
+          dpp(-om, o.v_.e, direct{});
       }
       else
       {
-        if (int_t ea(v_.e); ea < eb)
+        doubled_t ma(v_.m), mb(om);
+
+        if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
         {
           return {
             detail::shift_left(-mb, eb, eb - ea) +
@@ -483,8 +487,9 @@ public:
     {
       return nan{};
     }
-    else if (doubled_t const m(v_.m); v_.m) // div by 0!
+    else if (v_.m) // div by 0!
     {
+      doubled_t const m(v_.m);
       int_t e(-dp + v_.e - o.v_.e);
 
       // we want an approximation to m * (10^dp / om)
@@ -520,8 +525,10 @@ public:
     {
       return false;
     }
-    else if (doubled_t ma(v_.m), mb(o.v_.m); ma && mb)
+    else if (v_.m && o.v_.m)
     {
+      doubled_t ma(v_.m), mb(o.v_.m);
+
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
         return detail::shift_left(mb, eb, eb - ea) >
@@ -535,7 +542,7 @@ public:
     }
     else
     {
-      return ma < mb;
+      return v_.m < o.v_.m;
     }
   }
 
