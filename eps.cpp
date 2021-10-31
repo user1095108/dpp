@@ -1,5 +1,6 @@
 //https://en.wikipedia.org/wiki/Machine_epsilon#Approximation
 #include <iostream>
+#include <iomanip>
 
 #include "dpp.hpp"
 
@@ -18,6 +19,7 @@ auto eps() noexcept
 
 int main()
 {
+  std::cout << std::fixed << std::setprecision(37);
   std::cout << eps<float>() << std::endl;
   std::cout << eps<double>() << std::endl;
   std::cout << eps<long double>() << std::endl;
