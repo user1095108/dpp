@@ -483,14 +483,14 @@ public:
     {
       return nan{};
     }
-    else if (v_.m) // div 0
+    else
     {
-      doubled_t const m(v_.m);
-
       int_t e(-dp + v_.e - o.v_.e);
 
       // we want an approximation to m * (10^dp / om)
       auto q(detail::pow<doubled_t, 10>(dp) / om);
+
+      doubled_t const m(v_.m);
 
       // fit m * q into doubled_t, m * q <= max, m * q >= min
       if (auto const am(m < 0 ? -m : m); q < 0)
@@ -503,10 +503,6 @@ public:
       }
 
       return {m * q, e};
-    }
-    else
-    {
-      return {};
     }
   }
 
@@ -742,8 +738,8 @@ constexpr T to_decimal(std::input_iterator auto i,
   {
     enum : std::intmax_t
     {
-      rmax = detail::max_v<std::intmax_t>,
-      rmin = detail::min_v<std::intmax_t>
+      max = detail::max_v<std::intmax_t>,
+      min = detail::min_v<std::intmax_t>
     };
 
     bool positive{true};
@@ -774,9 +770,9 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         if (positive)
         {
-          if (r <= rmax / 10)
+          if (r <= max / 10)
           {
-            if (auto const t(10 * r); t <= rmax - d)
+            if (auto const t(10 * r); t <= max - d)
             {
               r = t + d;
 
@@ -784,9 +780,9 @@ constexpr T to_decimal(std::input_iterator auto i,
             }
           }
         }
-        else if (r >= rmin / 10)
+        else if (r >= min / 10)
         {
-          if (auto const t(10 * r); t >= rmin + d)
+          if (auto const t(10 * r); t >= min + d)
           {
             r = t - d;
 
