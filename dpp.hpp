@@ -64,7 +64,7 @@ constexpr B selectsign(B const b) noexcept
   }
 }
 
-constexpr auto shift_left(auto m, auto& e, int_t i) noexcept
+constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 {
   if (m < 0)
   {
@@ -79,7 +79,7 @@ constexpr auto shift_left(auto m, auto& e, int_t i) noexcept
 }
 
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
-constexpr auto shift_right(auto m, int_t i) noexcept
+constexpr auto shift_right(auto m, auto i) noexcept
 {
   for (auto const c(selectsign<5>(m)); m && i--; m = (m + c) / 10);
 
