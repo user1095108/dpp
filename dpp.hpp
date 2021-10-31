@@ -467,17 +467,17 @@ public:
   {
     enum : doubled_t
     {
-      rmin = detail::min_v<doubled_t>,
-      rmax = detail::max_v<doubled_t>
+      min = detail::min_v<doubled_t>,
+      max = detail::max_v<doubled_t>
     };
 
     // dp is the exponent, that generates the maximal power of 10,
     // that fits into doubled_t
-    // 10^dp > rmax, hence 10^(dp - 1) <= rmax
-    enum : int_t { dp = detail::log10((long double)(rmax)) - 1 };
+    // 10^dp > max, hence 10^(dp - 1) <= rmax
+    enum : int_t { dp = detail::log10((long double)(max)) - 1 };
 
-    static_assert(detail::pow<doubled_t, 10>(dp) <= rmax - 5);
-    static_assert(-detail::pow<doubled_t, 10>(dp) >= rmin + 5);
+    static_assert(detail::pow<doubled_t, 10>(dp) <= max - 5);
+    static_assert(-detail::pow<doubled_t, 10>(dp) >= min + 5);
 
     if (auto const om(o.v_.m); isnan(*this) || isnan(o) || !om) // div by 0
     {
@@ -492,14 +492,14 @@ public:
       // we want an approximation to m * (10^dp / om)
       auto q(detail::pow<doubled_t, 10>(dp) / om);
 
-      // fit m * q into doubled_t, m * q <= rmax, m * q >= rmin
+      // fit m * q into doubled_t, m * q <= max, m * q >= min
       if (auto const am(m < 0 ? -m : m); q < 0)
       {
-        for (auto const a(rmin / am); q < a; q = (q - 5) / 10, ++e);
+        for (auto const a(min / am); q < a; q = (q - 5) / 10, ++e);
       }
       else
       {
-        for (auto const a(rmax / am); q > a; q = (q + 5) / 10, ++e);
+        for (auto const a(max / am); q > a; q = (q + 5) / 10, ++e);
       }
 
       return {m * q, e};
