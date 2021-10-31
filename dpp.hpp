@@ -43,47 +43,36 @@ constexpr static auto is_signed_v(
 );
 
 template <typename U>
-consteval auto bit_size() noexcept
-{
-  return CHAR_BIT * sizeof(U);
-}
+constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
-consteval auto min() noexcept
+constexpr static U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
+
+template <typename U>
+constexpr static U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
+
+template <auto a, typename B>
+constexpr B selectsign(B const b) noexcept
 {
-  if constexpr(is_signed_v<U>)
+  if constexpr(is_signed_v<decltype(a)> && is_signed_v<B>)
   {
-    return U(U(1) << (bit_size<U>() - 1));
+    return b < 0 ? -a : a;
   }
   else
   {
-    return U{};
+    return a;
   }
 }
 
-template <typename U>
-consteval auto max() noexcept
-{
-  if constexpr(is_signed_v<U>)
-  {
-    return -U(min<U>() + U(1));
-  }
-  else
-  {
-    return ~U();
-  }
-}
-
-template <auto min, auto max>
 constexpr auto shift_left(auto m, auto& e, int_t i) noexcept
 {
   if (m < 0)
   {
-    for (; (m >= min / 10) && i--; m *= 10, --e);
+    for (; (m >= min_v<decltype(m)> / 10) && i--; m *= 10, --e);
   }
   else
   {
-    for (; (m <= max / 10) && i--; m *= 10, --e);
+    for (; (m <= max_v<decltype(m)> / 10) && i--; m *= 10, --e);
   }
 
   return m;
@@ -124,19 +113,6 @@ consteval int_t log10(auto const x, int_t const e = 0u) noexcept
   return pow<std::remove_cv_t<decltype(x)>, 10>(e) > x ? e : log10(x, e + 1);
 }
 
-template <auto a, typename B>
-constexpr B selectsign(B const b) noexcept
-{
-  if constexpr(is_signed_v<decltype(a)> && is_signed_v<B>)
-  {
-    return b < 0 ? -a : a;
-  }
-  else
-  {
-    return a;
-  }
-}
-
 }
 
 template <unsigned M>
@@ -147,8 +123,8 @@ public:
 
   enum : exp_type
   {
-    emin = detail::min<exp_type>(),
-    emax = detail::max<exp_type>()
+    emin = detail::min_v<exp_type>,
+    emax = detail::max_v<exp_type>
   };
 
   using mantissa_type = std::conditional_t<
@@ -167,8 +143,8 @@ public:
 
   enum : mantissa_type
   {
-    mmin = detail::min<mantissa_type>(),
-    mmax = detail::max<mantissa_type>()
+    mmin = detail::min_v<mantissa_type>,
+    mmax = detail::max_v<mantissa_type>
   };
 
 private:
@@ -204,12 +180,12 @@ public:
   {
     enum : U
     {
-      umin = detail::min<U>(),
-      umax = detail::max<U>()
+      umin = detail::min_v<U>,
+      umax = detail::max_v<U>
     };
 
     // slash m, if necessary
-    if constexpr(detail::is_signed_v<U> && (detail::bit_size<U>() > M))
+    if constexpr(detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
     if (m < mmin)
     {
       if (m >= umin + 5)
@@ -223,8 +199,8 @@ public:
       for (; m < mmin; m = (m - 5) / 10, ++e);
     }
 
-    if constexpr((detail::is_signed_v<U> && (detail::bit_size<U>() > M)) ||
-      (std::is_unsigned_v<U> && (detail::bit_size<U>() >= M)))
+    if constexpr((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
+      (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
     if (m > mmax)
     {
       if (m <= umax - 5)
@@ -276,7 +252,7 @@ public:
   constexpr dpp(U const m) noexcept
     requires(detail::is_integral_v<U>):
     dpp(std::conditional_t<
-          detail::bit_size<U>() < detail::bit_size<mantissa_type>(),
+          detail::bit_size_v<U> < detail::bit_size_v<mantissa_type>,
           mantissa_type,
           U
         >(m),
@@ -302,8 +278,8 @@ public:
       // eliminate the fractional part, slash f, if necessary
       for (; std::trunc(f) != f; f *= U(10), --e);
       for (constexpr long double
-        min(detail::min<std::intmax_t>()),
-        max(detail::max<std::intmax_t>());
+        min(detail::min_v<std::intmax_t>),
+        max(detail::max_v<std::intmax_t>);
         (f < min) || (f > max); f /= 10, ++e);
 
       *this = {std::intmax_t(f), e};
@@ -405,12 +381,6 @@ public:
 
   constexpr dpp operator+(dpp const o) const noexcept
   {
-    enum : doubled_t
-    {
-      rmin = detail::min<doubled_t>() / 2,
-      rmax = detail::max<doubled_t>() / 2
-    };
-
     if (isnan(*this) || isnan(o))
     {
       return nan{};
@@ -430,7 +400,7 @@ public:
         if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
         {
           return {
-            detail::shift_left<rmin, rmax>(mb, eb, eb - ea) +
+            detail::shift_left(mb, eb, eb - ea) +
             detail::shift_right(ma, eb - ea),
             eb
           };
@@ -438,7 +408,7 @@ public:
         else
         {
           return {
-            detail::shift_left<rmin, rmax>(ma, ea, ea - eb) +
+            detail::shift_left(ma, ea, ea - eb) +
             detail::shift_right(mb, ea - eb),
             ea
           };
@@ -449,12 +419,6 @@ public:
 
   constexpr dpp operator-(dpp const o) const noexcept
   {
-    enum : doubled_t
-    {
-      rmin = detail::min<doubled_t>() / 2,
-      rmax = detail::max<doubled_t>() / 2
-    };
-
     if (isnan(*this) || isnan(o))
     {
       return nan{};
@@ -476,7 +440,7 @@ public:
         if (int_t ea(v_.e); ea < eb)
         {
           return {
-            detail::shift_left<rmin, rmax>(-mb, eb, eb - ea) +
+            -detail::shift_left(mb, eb, eb - ea) +
             detail::shift_right(ma, eb - ea),
             eb
           };
@@ -484,7 +448,7 @@ public:
         else
         {
           return {
-            detail::shift_left<rmin, rmax>(ma, ea, ea - eb) -
+            detail::shift_left(ma, ea, ea - eb) -
             detail::shift_right(mb, ea - eb),
             ea
           };
@@ -504,8 +468,8 @@ public:
   {
     enum : doubled_t
     {
-      rmin = detail::min<doubled_t>(),
-      rmax = detail::max<doubled_t>()
+      rmin = detail::min_v<doubled_t>,
+      rmax = detail::max_v<doubled_t>
     };
 
     // dp is the exponent, that generates the maximal power of 10,
@@ -555,12 +519,6 @@ public:
 
   constexpr bool operator<(dpp const o) const noexcept
   {
-    enum : doubled_t
-    {
-      rmin = detail::min<doubled_t>() / 2,
-      rmax = detail::max<doubled_t>() / 2
-    };
-
     if (isnan(*this) || isnan(o))
     {
       return false;
@@ -569,12 +527,12 @@ public:
     {
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        return detail::shift_left<rmin, rmax>(mb, eb, eb - ea) >
+        return detail::shift_left(mb, eb, eb - ea) >
           detail::shift_right(ma, eb - ea);
       }
       else
       {
-        return detail::shift_left<rmin, rmax>(ma, ea, ea - eb) <
+        return detail::shift_left(ma, ea, ea - eb) <
           detail::shift_right(mb, ea - eb);
       }
     }
@@ -785,8 +743,8 @@ constexpr T to_decimal(std::input_iterator auto i,
   {
     enum : std::intmax_t
     {
-      rmax = detail::max<std::intmax_t>(),
-      rmin = detail::min<std::intmax_t>()
+      rmax = detail::max_v<std::intmax_t>,
+      rmin = detail::min_v<std::intmax_t>
     };
 
     bool positive{true};
@@ -897,8 +855,8 @@ constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
 {
   enum : T
   {
-    tmin = detail::min<T>(),
-    tmax = detail::max<T>()
+    min = detail::min_v<T>,
+    max = detail::max_v<T>
   };
 
   if (isnan(p))
@@ -919,7 +877,7 @@ constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
     {
       do
       {
-        if ((m >= tmin / 10) && (m <= tmax / 10))
+        if ((m >= min / 10) && (m <= max / 10))
         {
           m *= 10;
         }
