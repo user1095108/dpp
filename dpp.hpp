@@ -86,9 +86,8 @@ constexpr auto shift_right(auto m, auto i) noexcept
   return m;
 }
 
-
 template <typename T, int B>
-constexpr T pow(int_t e) noexcept
+constexpr T pow(auto e) noexcept
 {
   for (T r{1}, x(B);;)
   {
