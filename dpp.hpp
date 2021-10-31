@@ -384,13 +384,13 @@ public:
     {
       return nan{};
     }
-    else if (!o.v_.m)
-    {
-      return *this;
-    }
     else if (!v_.m)
     {
       return o;
+    }
+    else if (!o.v_.m)
+    {
+      return *this;
     }
     else
     {
