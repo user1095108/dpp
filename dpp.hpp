@@ -439,7 +439,7 @@ public:
         if (int_t ea(v_.e); ea < eb)
         {
           return {
-            -detail::shift_left(mb, eb, eb - ea) +
+            detail::shift_left(-mb, eb, eb - ea) +
             detail::shift_right(ma, eb - ea),
             eb
           };
@@ -738,8 +738,8 @@ constexpr T to_decimal(std::input_iterator auto i,
   {
     enum : std::intmax_t
     {
-      max = detail::max_v<std::intmax_t>,
-      min = detail::min_v<std::intmax_t>
+      min = detail::min_v<std::intmax_t>,
+      max = detail::max_v<std::intmax_t>
     };
 
     bool positive{true};
