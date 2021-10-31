@@ -528,17 +528,13 @@ public:
     else if (v_.m && o.v_.m)
     {
       doubled_t ma(v_.m), mb(o.v_.m);
+      int_t ea(v_.e), eb(o.v_.e);
 
-      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
-      {
-        return detail::shift_left(mb, eb, eb - ea) >
-          detail::shift_right(ma, eb - ea);
-      }
-      else
-      {
-        return detail::shift_left(ma, ea, ea - eb) <
-          detail::shift_right(mb, ea - eb);
-      }
+      return v_.e < o.v_.e ?
+        detail::shift_left(mb, eb, eb - ea) >
+        detail::shift_right(ma, eb - ea) :
+        detail::shift_left(ma, ea, ea - eb) <
+        detail::shift_right(mb, ea - eb);
     }
     else
     {
