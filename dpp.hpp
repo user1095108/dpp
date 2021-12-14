@@ -953,7 +953,7 @@ namespace std
 template <unsigned M>
 struct hash<dpp::dpp<M>>
 {
-  constexpr auto operator()(dpp::dpp<M> const a) const noexcept
+  auto operator()(dpp::dpp<M> const a) const noexcept
   {
     auto const hash_combine(
       [](auto&& ...v) noexcept requires(bool(sizeof...(v)))
