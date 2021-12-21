@@ -12,8 +12,8 @@
 #include <optional> // std::optional
 #include <ostream>
 #include <string>
-#include <tuple>
 #include <type_traits>
+#include <utility>
 
 #if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
 # define DPP_INT128T __int128
@@ -537,7 +537,7 @@ public:
   constexpr auto mantissa() const noexcept { return v_.m; }
 
   //
-  constexpr auto packed() const noexcept { return std::tuple(v_.m, v_.e); }
+  constexpr auto packed() const noexcept { return std::pair(v_.m, v_.e); }
 
   static constexpr dpp unpack(auto const& o) noexcept
   {
