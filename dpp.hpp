@@ -321,7 +321,7 @@ public:
     }
     else
     {
-      return T{};
+      return {};
     }
   }
 
