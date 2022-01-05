@@ -165,10 +165,10 @@ private:
   {
     mantissa_type m;
     exp_type e;
-  } v_{};
+  } v_;
 
 public:
-  constexpr dpp() = default;
+  dpp() = default;
 
   constexpr dpp(dpp const&) = default;
   constexpr dpp(dpp&&) = default;
