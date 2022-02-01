@@ -529,8 +529,8 @@ public:
   }
 
   //
-  static constexpr dpp min() noexcept { return {mmin, emax}; }
-  static constexpr dpp max() noexcept { return {mmax, emax}; }
+  static constexpr dpp min() noexcept { return {mmin, emax, direct{}}; }
+  static constexpr dpp max() noexcept { return {mmax, emax, direct{}}; }
 
   //
   constexpr auto exponent() const noexcept { return v_.e; }
