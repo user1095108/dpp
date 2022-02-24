@@ -575,7 +575,7 @@ using d16 = dpp<16>;
 // type promotions
 #define DPP_TYPE_PROMOTION(OP)\
 template <unsigned A, unsigned B>\
-constexpr auto operator OP (dpp<A> const a, dpp<B> const b) noexcept\
+constexpr auto operator OP (dpp<A> const& a, dpp<B> const& b) noexcept\
 {\
   if constexpr (A < B)\
     return dpp<B>(a) OP b;\
@@ -592,31 +592,31 @@ DPP_TYPE_PROMOTION(<)
 
 // comparison operators
 template <unsigned A, unsigned B>
-constexpr auto operator!=(dpp<A> const a, dpp<B> const b) noexcept
+constexpr auto operator!=(dpp<A> const& a, dpp<B> const& b) noexcept
 {
   return !(a == b);
 }
 
 template <unsigned A, unsigned B>
-constexpr auto operator<=(dpp<A> const a, dpp<B> const b) noexcept
+constexpr auto operator<=(dpp<A> const& a, dpp<B> const& b) noexcept
 {
   return !(b < a);
 }
 
 template <unsigned A, unsigned B>
-constexpr auto operator>(dpp<A> const a, dpp<B> const b) noexcept
+constexpr auto operator>(dpp<A> const& a, dpp<B> const& b) noexcept
 {
   return b < a;
 }
 
 template <unsigned A, unsigned B>
-constexpr auto operator>=(dpp<A> const a, dpp<B> const b) noexcept
+constexpr auto operator>=(dpp<A> const& a, dpp<B> const& b) noexcept
 {
   return !(a < b);
 }
 
 template <unsigned A, unsigned B>
-constexpr auto operator<=>(dpp<A> const a, dpp<B> const b) noexcept
+constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
 {
   if (isnan(a) || isnan(b))
   {
@@ -657,7 +657,7 @@ constexpr auto operator<=>(dpp<A> const a, dpp<B> const b) noexcept
 // conversions
 #define DPP_LEFT_CONVERSION(OP)\
 template <unsigned A, typename U>\
-constexpr auto operator OP (U&& a, dpp<A> const b) noexcept\
+constexpr auto operator OP (U&& a, dpp<A> const& b) noexcept\
   requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
 {\
   return dpp<A>(std::forward<U>(a)) OP b;\
@@ -677,7 +677,7 @@ DPP_LEFT_CONVERSION(<=>)
 
 #define DPP_RIGHT_CONVERSION(OP)\
 template <unsigned A, typename U>\
-constexpr auto operator OP (dpp<A> const a, U&& b) noexcept\
+constexpr auto operator OP (dpp<A> const& a, U&& b) noexcept\
   requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
 {\
   return a OP dpp<A>(std::forward<U>(b));\
@@ -697,32 +697,32 @@ DPP_RIGHT_CONVERSION(<=>)
 
 // misc
 template <unsigned M>
-constexpr auto isfinite(dpp<M> const a) noexcept
+constexpr auto isfinite(dpp<M> const& a) noexcept
 {
   return !isnan(a);
 }
 
 template <unsigned M>
-constexpr auto isinf(dpp<M> const a) noexcept
+constexpr auto isinf(dpp<M> const& a) noexcept
 {
   return isnan(a);
 }
 
 template <unsigned M>
-constexpr auto isnan(dpp<M> const a) noexcept
+constexpr auto isnan(dpp<M> const& a) noexcept
 {
   return dpp<M>::emin == a.exponent();
 }
 
 template <unsigned M>
-constexpr auto isnormal(dpp<M> const a) noexcept
+constexpr auto isnormal(dpp<M> const& a) noexcept
 {
   return !isnan(a);
 }
 
 //
 template <unsigned M>
-constexpr auto trunc(dpp<M> const a) noexcept
+constexpr auto trunc(dpp<M> const& a) noexcept
 {
   if (int_t e(a.exponent()); !isnan(a) && (e < 0))
   {
@@ -739,7 +739,7 @@ constexpr auto trunc(dpp<M> const a) noexcept
 }
 
 template <unsigned M>
-constexpr auto ceil(dpp<M> const a) noexcept
+constexpr auto ceil(dpp<M> const& a) noexcept
 {
   auto const t(trunc(a));
 
@@ -747,7 +747,7 @@ constexpr auto ceil(dpp<M> const a) noexcept
 }
 
 template <unsigned M>
-constexpr auto floor(dpp<M> const a) noexcept
+constexpr auto floor(dpp<M> const& a) noexcept
 {
   auto const t(trunc(a));
 
@@ -755,7 +755,7 @@ constexpr auto floor(dpp<M> const a) noexcept
 }
 
 template <unsigned M>
-constexpr auto round(dpp<M> const a) noexcept
+constexpr auto round(dpp<M> const& a) noexcept
 {
   constexpr dpp<M> c(5, -1);
 
@@ -765,7 +765,7 @@ constexpr auto round(dpp<M> const a) noexcept
 }
 
 template <unsigned M>
-constexpr auto abs(dpp<M> const a) noexcept
+constexpr auto abs(dpp<M> const& a) noexcept
 {
   return a.mantissa() < 0 ? -a : a;
 }
