@@ -200,6 +200,7 @@ public:
       umax = detail::max_v<U>
     };
 
+    // reduction of the exponent is a side effect of +- ops
     if (e > emax)
     {
       *this = nan{};
@@ -403,8 +404,8 @@ public:
       // then right if shifting is still necessary
       return ea < eb ?
         dpp{
-          detail::shift_left(mb, eb, eb - ea) +
-          detail::shift_right(ma, eb - ea),
+          detail::shift_left(mb, eb, eb - ea) + // reduce eb
+          detail::shift_right(ma, eb - ea), // increase ea
           eb
         } :
         dpp{
