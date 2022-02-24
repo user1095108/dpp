@@ -542,7 +542,10 @@ public:
   constexpr auto mantissa() const noexcept { return v_.m; }
 
   //
-  constexpr auto packed() const noexcept { return std::pair(v_.m, v_.e); }
+  constexpr auto packed() const noexcept
+  {
+    return std::pair(v_.m, v_.m ? v_.e : exp_type{});
+  }
 
   static constexpr dpp unpack(auto const& o) noexcept
   {
@@ -1007,19 +1010,18 @@ struct hash<dpp::dpp<M>>
       }
     );
 
-    auto m(a.mantissa());
-    dpp::int_t e(a.exponent());
-
-    if (m)
+    if (auto m(a.mantissa()); m)
     {
-      for (; m && !(m % 10); m /= 10, ++e);
+      dpp::int_t e(a.exponent());
+
+      for (; !(m % 10); m /= 10, ++e); // slash zeros
+
+      return hash_combine(m, e);
     }
     else
     {
-      e = {};
+      return hash_combine(decltype(m){}, dpp::int_t{});
     }
-
-    return hash_combine(m, e);
   }
 };
 
