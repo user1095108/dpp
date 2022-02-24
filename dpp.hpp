@@ -219,27 +219,15 @@ public:
     for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
       m = (m + c) / 10, ++e);
 
-    // normalize, minimize the exponent, if m non-zero
     if (m)
     {
-      mantissa_type tm(m);
-
-      if (m > 0)
-      {
-        for (; (e > emin + 1) && (tm <= mmax / 10); tm *= 10, --e);
-      }
-      else
-      {
-        for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
-      }
-
       if (e > emax)
       {
         *this = nan{};
       }
       else
       {
-        v_.m = tm;
+        v_.m = m;
         v_.e = e;
       }
     }
@@ -399,7 +387,7 @@ public:
       doubled_t const ma(m), mb(om);
       int_t ea(v_.e), eb(o.v_.e);
 
-      // we first try to shift left to preserve digits,
+      // we first try shifting left to preserve digits,
       // then right if shifting is still necessary
       return ea < eb ?
         dpp{
