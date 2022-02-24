@@ -187,32 +187,36 @@ public:
 
     // slash m, if necessary
     if constexpr(detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
-    if (m < mmin)
     {
-      if (m >= umin + 5)
+      if (m < mmin)
       {
-        m -= 5;
+        if (m >= umin + 5)
+        {
+          m -= 5;
+        }
+
+        m /= 10;
+        ++e;
+
+        for (; m < mmin; m = (m - 5) / 10, ++e);
       }
-
-      m /= 10;
-      ++e;
-
-      for (; m < mmin; m = (m - 5) / 10, ++e);
     }
 
     if constexpr((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
       (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
-    if (m > mmax)
     {
-      if (m <= umax - 5)
+      if (m > mmax)
       {
-        m += 5;
+        if (m <= umax - 5)
+        {
+          m += 5;
+        }
+
+        m /= 10;
+        ++e;
+
+        for (; m > mmax; m = (m + 5) / 10, ++e);
       }
-
-      m /= 10;
-      ++e;
-
-      for (; m > mmax; m = (m + 5) / 10, ++e);
     }
 
     // additional slashing, if necessary
