@@ -379,9 +379,8 @@ public:
     else
     {
       doubled_t ma(m), mb(om);
-      int_t ea(v_.e), eb(o.v_.e);
-
-      if (ea < eb)
+      
+      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
         detail::shift_left(mb, eb, eb - ea); // reduce eb
         detail::shift_right(ma, eb - ea); // increase ea
@@ -417,9 +416,8 @@ public:
     else
     {
       doubled_t ma(m), mb(om);
-      int_t ea(v_.e), eb(oe);
-
-      if (ea < eb)
+      
+      if (int_t ea(v_.e), eb(oe); ea < eb)
       {
         detail::shift_left(mb, eb, eb - ea); // reduce eb
         detail::shift_right(ma, eb - ea); // increase ea
