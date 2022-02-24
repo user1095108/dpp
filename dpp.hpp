@@ -51,6 +51,22 @@ constexpr static U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 constexpr static U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
+constexpr auto convert_ordering(auto const r) noexcept
+{
+  if (std::strong_ordering::less == r)
+  {
+    return std::partial_ordering::less;
+  }
+  else if (std::strong_ordering::greater == r)
+  {
+    return std::partial_ordering::greater;
+  }
+  else
+  {
+    return std::partial_ordering::equivalent;
+  }
+}
+
 template <auto a, typename B>
 constexpr B selectsign(B const b) noexcept
 {
@@ -184,50 +200,50 @@ public:
       umax = detail::max_v<U>
     };
 
-    // slash m, if necessary
-    if constexpr(detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
-    {
-      if (m < mmin)
-      {
-        if (m >= umin + 5)
-        {
-          m -= 5;
-        }
-
-        m /= 10;
-        ++e;
-
-        for (; m < mmin; m = (m - 5) / 10, ++e);
-      }
-    }
-
-    if constexpr((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
-      (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
-    {
-      if (m > mmax)
-      {
-        if (m <= umax - 5)
-        {
-          m += 5;
-        }
-
-        m /= 10;
-        ++e;
-
-        for (; m > mmax; m = (m + 5) / 10, ++e);
-      }
-    }
-
-    // additional slashing, if necessary
-    for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
-      m = (m + c) / 10, ++e);
-
     if (e > emax)
     {
       *this = nan{};
     }
     else
     {
+      // slash m, if necessary
+      if constexpr(detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
+      {
+        if (m < mmin)
+        {
+          if (m >= umin + 5)
+          {
+            m -= 5;
+          }
+
+          m /= 10;
+          ++e;
+
+          for (; m < mmin; m = (m - 5) / 10, ++e);
+        }
+      }
+
+      if constexpr((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
+        (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
+      {
+        if (m > mmax)
+        {
+          if (m <= umax - 5)
+          {
+            m += 5;
+          }
+
+          m /= 10;
+          ++e;
+
+          for (; m > mmax; m = (m + 5) / 10, ++e);
+        }
+      }
+
+      // additional slashing, if necessary
+      for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
+        m = (m + c) / 10, ++e);
+
       v_.m = m;
       v_.e = e;
     }
@@ -494,7 +510,11 @@ public:
     {
       return false;
     }
-    else if (auto const m(v_.m), om(o.v_.m); m && om)
+    else if (auto const m(v_.m), om(o.v_.m); !m || !om)
+    {
+      return m == om;
+    }
+    else
     {
       doubled_t const ma(m), mb(om);
       int_t ea(v_.e), eb(o.v_.e);
@@ -505,10 +525,6 @@ public:
         detail::shift_left(ma, ea, ea - eb) ==
         detail::shift_right(mb, ea - eb);
     }
-    else
-    {
-      return m == om;
-    }
   }
 
   constexpr bool operator<(dpp const o) const noexcept
@@ -517,7 +533,11 @@ public:
     {
       return false;
     }
-    else if (auto const m(v_.m), om(o.v_.m); m && om)
+    else if (auto const m(v_.m), om(o.v_.m); !m || !om)
+    {
+      return m < om;
+    }
+    else
     {
       doubled_t const ma(m), mb(om);
       int_t ea(v_.e), eb(o.v_.e);
@@ -528,10 +548,6 @@ public:
         detail::shift_left(ma, ea, ea - eb) <
         detail::shift_right(mb, ea - eb);
     }
-    else
-    {
-      return m < om;
-    }
   }
 
   constexpr auto operator<=>(dpp const o) const noexcept
@@ -540,38 +556,27 @@ public:
     {
       return std::partial_ordering::unordered;
     }
+    else if (auto const m(v_.m), om(o.v_.m); !m || !om)
+    {
+      return detail::convert_ordering(m <=> om);
+    }
     else
     {
       doubled_t ma(v_.m), mb(o.v_.m);
+      int_t ea(v_.e), eb(o.v_.e);
 
-      if (ma && mb)
+      if (ea < eb)
       {
-        int_t ea(v_.e), eb(o.v_.e);
-
-        if (ea < eb)
-        {
-          mb = detail::shift_left(mb, eb, eb - ea);
-          ma = detail::shift_right(ma, eb - ea);
-        }
-        else
-        {
-          ma = detail::shift_left(ma, ea, ea - eb);
-          mb = detail::shift_right(mb, ea - eb);
-        }
-      }
-
-      if (auto const r(ma <=> mb); std::strong_ordering::less == r)
-      {
-        return std::partial_ordering::less;
-      }
-      else if (std::strong_ordering::greater == r)
-      {
-        return std::partial_ordering::greater;
+        mb = detail::shift_left(mb, eb, eb - ea);
+        ma = detail::shift_right(ma, eb - ea);
       }
       else
       {
-        return std::partial_ordering::equivalent;
+        ma = detail::shift_left(ma, ea, ea - eb);
+        mb = detail::shift_right(mb, ea - eb);
       }
+
+      return detail::convert_ordering(ma <=> mb);
     }
   }
 
