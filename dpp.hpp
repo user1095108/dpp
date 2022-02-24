@@ -68,11 +68,11 @@ constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 {
   if (m < 0)
   { // we need to be mindful of overflow, since we are shifting left
-    for (; (m >= min_v<decltype(m)> / 20) && i--; m *= 10, --e);
+    for (; (m >= min_v<decltype(m)> / 20) && i; m *= 10, --e, --i);
   }
   else
   {
-    for (; (m <= max_v<decltype(m)> / 20) && i--; m *= 10, --e);
+    for (; (m <= max_v<decltype(m)> / 20) && i; m *= 10, --e, --i);
   }
 
   return m;
@@ -81,7 +81,7 @@ constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 // ae and be are minimal, cannot be reduced further, ae >= be, maximize be.
 constexpr auto shift_right(auto m, auto i) noexcept
 {
-  for (auto const c(selectsign<5>(m)); m && i--; m = (m + c) / 10);
+  for (auto const c(selectsign<5>(m)); m && i; m = (m + c) / 10, --i);
 
   return m;
 }
