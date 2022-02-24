@@ -264,7 +264,7 @@ public:
   }
 
   template <unsigned A>
-  constexpr dpp(dpp<A> const o) noexcept:
+  constexpr dpp(dpp<A> const& o) noexcept:
     dpp(o.mantissa(), o.exponent())
   {
   }
@@ -381,7 +381,7 @@ public:
       mmin == v_.m ? dpp(-doubled_t(mmin), v_.e) : dpp(-v_.m, v_.e, direct{});
   }
 
-  constexpr dpp operator+(dpp const o) const noexcept
+  constexpr dpp operator+(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
@@ -416,7 +416,7 @@ public:
     }
   }
 
-  constexpr dpp operator-(dpp const o) const noexcept
+  constexpr dpp operator-(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
@@ -451,14 +451,14 @@ public:
     }
   }
 
-  constexpr dpp operator*(dpp const o) const noexcept
+  constexpr dpp operator*(dpp const& o) const noexcept
   {
     return isnan(*this) || isnan(o) ?
       nan{} :
       dpp{doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e};
   }
 
-  constexpr dpp operator/(dpp const o) const noexcept
+  constexpr dpp operator/(dpp const& o) const noexcept
   {
     enum : doubled_t
     {
@@ -505,7 +505,7 @@ public:
   }
 
   //
-  constexpr bool operator==(dpp const o) const noexcept
+  constexpr bool operator==(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
@@ -528,7 +528,7 @@ public:
     }
   }
 
-  constexpr bool operator<(dpp const o) const noexcept
+  constexpr bool operator<(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
