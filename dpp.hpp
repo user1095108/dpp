@@ -223,7 +223,7 @@ public:
       m = (m + c) / 10, ++e);
 
     if (m)
-    {
+    { // forego normalization, since we are bathing in digits
       if (e > emax)
       {
         *this = nan{};
