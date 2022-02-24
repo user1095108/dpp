@@ -54,6 +54,8 @@ constexpr static U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 template <auto a, typename B>
 constexpr B selectsign(B const b) noexcept
 {
+  static_assert(a > 0);
+
   if constexpr(is_signed_v<decltype(a)> && is_signed_v<B>)
   {
     return b < 0 ? -a : a;
