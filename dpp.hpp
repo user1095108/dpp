@@ -490,31 +490,7 @@ public:
   //
   constexpr bool operator==(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o))
-    {
-      return false;
-    }
-    else if (auto const m(v_.m), om(o.v_.m); !m || !om)
-    {
-      return m == om;
-    }
-    else
-    {
-      doubled_t ma(m), mb(om);
-
-      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
-      {
-        detail::shift_left(mb, eb, eb - ea);
-        detail::shift_right(ma, eb - ea);
-      }
-      else
-      {
-        detail::shift_left(ma, ea, ea - eb);
-        detail::shift_right(mb, ea - eb);
-      }
-
-      return ma == mb;
-    }
+    return *this <=> o == 0;
   }
 
   constexpr std::partial_ordering operator<=>(dpp const& o) const noexcept
