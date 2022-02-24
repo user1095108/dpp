@@ -218,7 +218,7 @@ public:
       }
     }
 
-    //
+    // reduction of the exponent is a side effect of +- ops
     if (e > emax)
     {
       *this = nan{};
