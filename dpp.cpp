@@ -239,5 +239,5 @@ int main()
   std::cout << dpp::floor(b) << std::endl;
   std::cout << dpp::round(b) << std::endl;
 
-  return 0;
+  return a <=> b > 0;
 }
