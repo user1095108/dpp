@@ -519,15 +519,15 @@ public:
     }
   }
 
-  constexpr bool operator<(dpp const& o) const noexcept
+  constexpr std::partial_ordering operator<=>(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o))
     {
-      return false;
+      return std::partial_ordering::unordered;
     }
     else if (auto const m(v_.m), om(o.v_.m); !m || !om)
     {
-      return m < om;
+      return m <=> om;
     }
     else
     {
@@ -544,7 +544,7 @@ public:
         detail::shift_right(mb, ea - eb);
       }
 
-      return ma < mb;
+      return ma <=> mb;
     }
   }
 
@@ -585,70 +585,7 @@ DPP_TYPE_PROMOTION(-)
 DPP_TYPE_PROMOTION(*)
 DPP_TYPE_PROMOTION(/)
 DPP_TYPE_PROMOTION(==)
-DPP_TYPE_PROMOTION(<)
-
-// comparison operators
-template <unsigned A, unsigned B>
-constexpr auto operator!=(dpp<A> const& a, dpp<B> const& b) noexcept
-{
-  return !(a == b);
-}
-
-template <unsigned A, unsigned B>
-constexpr auto operator<=(dpp<A> const& a, dpp<B> const& b) noexcept
-{
-  return !(b < a);
-}
-
-template <unsigned A, unsigned B>
-constexpr auto operator>(dpp<A> const& a, dpp<B> const& b) noexcept
-{
-  return b < a;
-}
-
-template <unsigned A, unsigned B>
-constexpr auto operator>=(dpp<A> const& a, dpp<B> const& b) noexcept
-{
-  return !(a < b);
-}
-
-template <unsigned A, unsigned B>
-constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
-{
-  if (isnan(a) || isnan(b))
-  {
-    return std::partial_ordering::unordered;
-  }
-  else
-  {
-    auto const am(a.mantissa());
-    auto const bm(b.mantissa());
-
-    if (!am || !bm)
-    {
-      return std::partial_ordering(am <=> bm);
-    }
-    else
-    {
-      using greater_t = std::conditional_t<A < B, dpp<B>, dpp<A>>;
-
-      typename greater_t::doubled_t ma(am), mb(bm);
-
-      if (int_t ea(a.exponent()), eb(b.exponent()); ea < eb)
-      {
-        detail::shift_left(mb, eb, eb - ea);
-        detail::shift_right(ma, eb - ea);
-      }
-      else
-      {
-        detail::shift_left(ma, ea, ea - eb);
-        detail::shift_right(mb, ea - eb);
-      }
-
-      return std::partial_ordering(ma <=> mb);
-    }
-  }
-}
+DPP_TYPE_PROMOTION(<=>)
 
 // conversions
 #define DPP_LEFT_CONVERSION(OP)\
