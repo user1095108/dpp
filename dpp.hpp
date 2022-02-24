@@ -87,6 +87,12 @@ constexpr auto shift_right(auto m, auto i) noexcept
   return m;
 }
 
+constexpr auto swapped_spaceship(auto&& a, auto&& b)
+  noexcept(noexcept(b <=> a))
+{
+  return b <=> a;
+}
+
 template <typename T, int B>
 constexpr T pow(int_t e) noexcept
 {
@@ -620,16 +626,20 @@ constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
 
       if (int_t ea(a.exponent()), eb(b.exponent()); ea < eb)
       {
-        mb = detail::shift_left(mb, eb, eb - ea);
-        ma = detail::shift_right(ma, eb - ea);
+        return std::partial_ordering(
+          detail::swapped_spaceship(
+            detail::shift_left(mb, eb, eb - ea),
+            detail::shift_right(ma, eb - ea)
+          )
+        );
       }
       else
       {
-        ma = detail::shift_left(ma, ea, ea - eb);
-        mb = detail::shift_right(mb, ea - eb);
+        return std::partial_ordering(
+          detail::shift_left(ma, ea, ea - eb) <=>
+          detail::shift_right(mb, ea - eb)
+        );
       }
-
-      return std::partial_ordering(ma <=> mb);
     }
   }
 }
