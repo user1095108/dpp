@@ -218,13 +218,13 @@ public:
       }
     }
 
+    //
     if (e > emax)
     {
       *this = nan{};
     }
     else
     {
-      // additional slashing, if necessary
       for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
         m = (m + c) / 10, ++e);
 
@@ -387,8 +387,8 @@ public:
       // then right if shifting is still necessary
       return ea < eb ?
         dpp{
-          detail::shift_left(mb, eb, eb - ea) +
-          detail::shift_right(ma, eb - ea),
+          detail::shift_left(mb, eb, eb - ea) + // reduce eb
+          detail::shift_right(ma, eb - ea), // increase ea
           eb
         } :
         dpp{
