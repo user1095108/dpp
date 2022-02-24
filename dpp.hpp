@@ -397,6 +397,8 @@ public:
       doubled_t const ma(v_.m), mb(o.v_.m);
       int_t ea(v_.e), eb(o.v_.e);
 
+      // we first try to shift left to preserve digits,
+      // then right if shifting is still necessary
       return ea < eb ?
         dpp{
           detail::shift_left(mb, eb, eb - ea) +
@@ -421,16 +423,16 @@ public:
     {
       return *this;
     }
-    else if (!v_.m)
+    else if (auto const oe(o.v_.e); !v_.m)
     {
       return mmin == om ?
-        dpp(-doubled_t(mmin), o.v_.e) :
-        dpp(-om, o.v_.e, direct{});
+        dpp(-doubled_t(mmin), oe) :
+        dpp(-om, oe, direct{});
     }
     else
     {
       doubled_t const ma(v_.m), mb(-om);
-      int_t ea(v_.e), eb(o.v_.e);
+      int_t ea(v_.e), eb(oe);
 
       return ea < eb ?
         dpp{
