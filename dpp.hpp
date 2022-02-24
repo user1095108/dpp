@@ -253,16 +253,15 @@ public:
   {
   }
 
-  template <typename U>
-  dpp(U f) noexcept
-    requires(std::is_floating_point_v<U>)
+  dpp(auto f) noexcept
+    requires(std::is_floating_point_v<decltype(f)>)
   {
     if (std::isfinite(f))
     {
       int_t e{};
 
       // eliminate the fractional part, slash f, if necessary
-      for (; std::trunc(f) != f; f *= U(10), --e);
+      for (; std::trunc(f) != f; f *= decltype(f)(10), --e);
       for (constexpr long double
         min(detail::min_v<std::intmax_t>),
         max(detail::max_v<std::intmax_t>);
