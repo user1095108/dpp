@@ -51,22 +51,6 @@ constexpr static U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 constexpr static U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
-constexpr auto convert_ordering(auto const r) noexcept
-{
-  if (std::strong_ordering::less == r)
-  {
-    return std::partial_ordering::less;
-  }
-  else if (std::strong_ordering::greater == r)
-  {
-    return std::partial_ordering::greater;
-  }
-  else
-  {
-    return std::partial_ordering::equivalent;
-  }
-}
-
 template <auto a, typename B>
 constexpr B selectsign(B const b) noexcept
 {
@@ -627,7 +611,7 @@ constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
 
     if (!am || !bm)
     {
-      return detail::convert_ordering(am <=> bm);
+      return std::partial_ordering(am <=> bm);
     }
     else
     {
@@ -647,7 +631,7 @@ constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
         mb = detail::shift_right(mb, ea - eb);
       }
 
-      return detail::convert_ordering(ma <=> mb);
+      return std::partial_ordering(ma <=> mb);
     }
   }
 }
@@ -1005,7 +989,7 @@ namespace std
 template <unsigned M>
 struct hash<dpp::dpp<M>>
 {
-  auto operator()(dpp::dpp<M> const a) const noexcept
+  auto operator()(dpp::dpp<M> const& a) const noexcept
   {
     auto const hash_combine(
       [](auto&& ...v) noexcept requires(bool(sizeof...(v)))
