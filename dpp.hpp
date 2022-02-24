@@ -542,10 +542,7 @@ public:
   constexpr auto mantissa() const noexcept { return v_.m; }
 
   //
-  constexpr auto packed() const noexcept
-  {
-    return std::pair(v_.m, v_.m ? v_.e : exp_type{});
-  }
+  constexpr auto packed() const noexcept { return std::pair(v_.m, v_.e); }
 
   static constexpr dpp unpack(auto const& o) noexcept
   {
