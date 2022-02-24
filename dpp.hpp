@@ -416,7 +416,7 @@ public:
     }
     else
     {
-      doubled_t const ma(m), mb(-om);
+      doubled_t const ma(m), mb(-doubled_t(om));
       int_t ea(v_.e), eb(oe);
 
       return ea < eb ?
