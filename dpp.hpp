@@ -69,7 +69,7 @@ constexpr B selectsign(B const b) noexcept
 constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
-  { 
+  {
     for (; (m >= min_v<decltype(m)> / 20) && i; --i, m *= 10, --e);
   }
   else
