@@ -66,31 +66,23 @@ constexpr B selectsign(B const b) noexcept
   }
 }
 
-constexpr auto shift_left(auto m, auto& e, auto i) noexcept
+constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
   {
-    for (; (m >= min_v<decltype(m)> / 20) && i; --i, m *= 10, --e);
+    for (; (m >= min_v<std::remove_cvref_t<decltype(m)>> / 20) && i;
+      --i, m *= 10, --e);
   }
   else
   {
-    for (; (m <= max_v<decltype(m)> / 20) && i; --i, m *= 10, --e);
+    for (; (m <= max_v<std::remove_cvref_t<decltype(m)>> / 20) && i;
+      --i, m *= 10, --e);
   }
-
-  return m;
 }
 
-constexpr auto shift_right(auto m, auto i) noexcept
+constexpr void shift_right(auto& m, auto i) noexcept
 {
   for (auto const c(selectsign<5>(m)); m && i; --i, m = (m + c) / 10);
-
-  return m;
-}
-
-constexpr auto swapped_spaceship(auto&& a, auto&& b)
-  noexcept(noexcept(b <=> a))
-{
-  return b <=> a;
 }
 
 template <typename T, int B>
@@ -386,20 +378,23 @@ public:
     }
     else
     {
-      doubled_t const ma(m), mb(om);
+      doubled_t ma(m), mb(om);
       int_t ea(v_.e), eb(o.v_.e);
 
-      return ea < eb ?
-        dpp{
-          detail::shift_left(mb, eb, eb - ea) + // reduce eb
-          detail::shift_right(ma, eb - ea), // increase ea
-          eb
-        } :
-        dpp{
-          detail::shift_left(ma, ea, ea - eb) + // increase ea
-          detail::shift_right(mb, ea - eb), // reduce eb
-          ea
-        };
+      if (ea < eb)
+      {
+        detail::shift_left(mb, eb, eb - ea); // reduce eb
+        detail::shift_right(ma, eb - ea); // increase ea
+
+        return dpp(ma + mb, eb);
+      }
+      else
+      {
+        detail::shift_left(ma, ea, ea - eb);
+        detail::shift_right(mb, ea - eb);
+
+        return dpp(ma + mb, ea);
+      }
     }
   }
 
@@ -421,20 +416,23 @@ public:
     }
     else
     {
-      doubled_t const ma(m), mb(-doubled_t(om));
+      doubled_t ma(m), mb(om);
       int_t ea(v_.e), eb(oe);
 
-      return ea < eb ?
-        dpp{
-          detail::shift_left(mb, eb, eb - ea) +
-          detail::shift_right(ma, eb - ea),
-          eb
-        } :
-        dpp{
-          detail::shift_left(ma, ea, ea - eb) +
-          detail::shift_right(mb, ea - eb),
-          ea
-        };
+      if (ea < eb)
+      {
+        detail::shift_left(mb, eb, eb - ea); // reduce eb
+        detail::shift_right(ma, eb - ea); // increase ea
+
+        return dpp(ma - mb, eb);
+      }
+      else
+      {
+        detail::shift_left(ma, ea, ea - eb);
+        detail::shift_right(mb, ea - eb);
+
+        return dpp(ma - mb, ea);
+      }
     }
   }
 
@@ -504,14 +502,20 @@ public:
     }
     else
     {
-      doubled_t const ma(m), mb(om);
-      int_t ea(v_.e), eb(o.v_.e);
+      doubled_t ma(m), mb(om);
 
-      return ea < eb ?
-        detail::shift_left(mb, eb, eb - ea) ==
-        detail::shift_right(ma, eb - ea) :
-        detail::shift_left(ma, ea, ea - eb) ==
+      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
+      {
+        detail::shift_left(mb, eb, eb - ea);
+        detail::shift_right(ma, eb - ea);
+      }
+      else
+      {
+        detail::shift_left(ma, ea, ea - eb);
         detail::shift_right(mb, ea - eb);
+      }
+
+      return ma == mb;
     }
   }
 
@@ -527,14 +531,20 @@ public:
     }
     else
     {
-      doubled_t const ma(m), mb(om);
-      int_t ea(v_.e), eb(o.v_.e);
+      doubled_t ma(m), mb(om);
 
-      return ea < eb ?
-        detail::shift_left(mb, eb, eb - ea) >
-        detail::shift_right(ma, eb - ea) :
-        detail::shift_left(ma, ea, ea - eb) <
+      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
+      {
+        detail::shift_left(mb, eb, eb - ea);
+        detail::shift_right(ma, eb - ea);
+      }
+      else
+      {
+        detail::shift_left(ma, ea, ea - eb);
         detail::shift_right(mb, ea - eb);
+      }
+
+      return ma < mb;
     }
   }
 
@@ -626,20 +636,16 @@ constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
 
       if (int_t ea(a.exponent()), eb(b.exponent()); ea < eb)
       {
-        return std::partial_ordering(
-          detail::swapped_spaceship(
-            detail::shift_left(mb, eb, eb - ea),
-            detail::shift_right(ma, eb - ea)
-          )
-        );
+        detail::shift_left(mb, eb, eb - ea);
+        detail::shift_right(ma, eb - ea);
       }
       else
       {
-        return std::partial_ordering(
-          detail::shift_left(ma, ea, ea - eb) <=>
-          detail::shift_right(mb, ea - eb)
-        );
+        detail::shift_left(ma, ea, ea - eb);
+        detail::shift_right(mb, ea - eb);
       }
+
+      return std::partial_ordering(ma <=> mb);
     }
   }
 }
