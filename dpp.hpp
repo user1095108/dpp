@@ -218,16 +218,16 @@ public:
       }
     }
 
-    // additional slashing, if necessary
-    for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
-      m = (m + c) / 10, ++e);
-
     if (e > emax)
     {
       *this = nan{};
     }
     else
     {
+      // additional slashing, if necessary
+      for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
+        m = (m + c) / 10, ++e);
+
       v_.m = m;
       v_.e = e;
     }
