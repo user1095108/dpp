@@ -235,7 +235,7 @@ public:
       }
     }
     else
-    {
+    { // unique zero
       v_ = {};
     }
   }
@@ -984,7 +984,15 @@ struct hash<dpp::dpp<M>>
       }
     );
 
-    return hash_combine(a.mantissa(), a.exponent());
+    auto m(a.mantissa());
+    dpp::int_t e(a.exponent());
+
+    if (m)
+    {
+      for (; m && !(m % 10); m /= 10, ++e);
+    }
+
+    return hash_combine(m, e);
   }
 };
 
