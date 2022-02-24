@@ -460,7 +460,7 @@ public:
     {
       return nan{};
     }
-    else if (v_.m) // div by 0!
+    else if (v_.m) // div by 0
     {
       doubled_t const m(v_.m);
       int_t e(-dp + v_.e - o.v_.e);
