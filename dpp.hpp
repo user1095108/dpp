@@ -515,9 +515,9 @@ public:
     {
       return false;
     }
-    else if (v_.m && o.v_.m)
+    else if (auto const m(v_.m), om(o.v_.m); m && om)
     {
-      doubled_t const ma(v_.m), mb(o.v_.m);
+      doubled_t const ma(m), mb(om);
       int_t ea(v_.e), eb(o.v_.e);
 
       return ea < eb ?
@@ -528,7 +528,7 @@ public:
     }
     else
     {
-      return v_.m < o.v_.m;
+      return m < om;
     }
   }
 
