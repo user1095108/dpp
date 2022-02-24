@@ -67,7 +67,7 @@ constexpr B selectsign(B const b) noexcept
 constexpr auto shift_left(auto m, auto& e, auto i) noexcept
 {
   if (m < 0)
-  {
+  { // we need to be mindful of overflow, since we are shifting left
     for (; (m >= min_v<decltype(m)> / 20) && i--; m *= 10, --e);
   }
   else
@@ -394,10 +394,10 @@ public:
     }
     else
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
+      doubled_t const ma(v_.m), mb(o.v_.m);
       int_t ea(v_.e), eb(o.v_.e);
 
-      return v_.e < o.v_.e ?
+      return ea < eb ?
         dpp{
           detail::shift_left(mb, eb, eb - ea) +
           detail::shift_right(ma, eb - ea),
@@ -421,18 +421,18 @@ public:
     {
       return *this;
     }
-    else if (auto const oe(o.v_.e); !v_.m)
+    else if (!v_.m)
     {
       return mmin == om ?
-        dpp(-doubled_t(mmin), oe) :
-        dpp(-om, oe, direct{});
+        dpp(-doubled_t(mmin), o.v_.e) :
+        dpp(-om, o.v_.e, direct{});
     }
     else
     {
-      doubled_t ma(v_.m), mb(-om);
-      int_t ea(v_.e), eb(oe);
+      doubled_t const ma(v_.m), mb(-om);
+      int_t ea(v_.e), eb(o.v_.e);
 
-      return v_.e < oe ?
+      return ea < eb ?
         dpp{
           detail::shift_left(mb, eb, eb - ea) +
           detail::shift_right(ma, eb - ea),
@@ -513,10 +513,10 @@ public:
     }
     else if (v_.m && o.v_.m)
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
+      doubled_t const ma(v_.m), mb(o.v_.m);
       int_t ea(v_.e), eb(o.v_.e);
 
-      return v_.e < o.v_.e ?
+      return ea < eb ?
         detail::shift_left(mb, eb, eb - ea) >
         detail::shift_right(ma, eb - ea) :
         detail::shift_left(ma, ea, ea - eb) <
