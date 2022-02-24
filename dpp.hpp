@@ -224,24 +224,13 @@ public:
 
     if (m)
     {
-      mantissa_type tm(m);
-
-      if (m > 0)
-      {
-        for (; (e > emin + 1) && (tm <= mmax / 10); tm *= 10, --e);
-      }
-      else
-      {
-        for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
-      }
-
       if (e > emax)
       {
         *this = nan{};
       }
       else
       {
-        v_.m = tm;
+        v_.m = m;
         v_.e = e;
       }
     }
@@ -508,7 +497,25 @@ public:
   //
   constexpr bool operator==(dpp const o) const noexcept
   {
-    return !isnan(*this) && !isnan(o) && (v_.m == o.v_.m) && (v_.e == o.v_.e);
+    if (isnan(*this) || isnan(o))
+    {
+      return false;
+    }
+    else if (auto const m(v_.m), om(o.v_.m); m && om)
+    {
+      doubled_t const ma(m), mb(om);
+      int_t ea(v_.e), eb(o.v_.e);
+
+      return ea < eb ?
+        detail::shift_left(mb, eb, eb - ea) ==
+        detail::shift_right(ma, eb - ea) :
+        detail::shift_left(ma, ea, ea - eb) ==
+        detail::shift_right(mb, ea - eb);
+    }
+    else
+    {
+      return m == om;
+    }
   }
 
   constexpr bool operator<(dpp const o) const noexcept
