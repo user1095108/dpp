@@ -386,17 +386,17 @@ public:
     {
       return nan{};
     }
-    else if (!v_.m)
+    else if (auto const m(v_.m); !m)
     {
       return o;
     }
-    else if (!o.v_.m)
+    else if (auto const om(o.v_.m); !om)
     {
       return *this;
     }
     else
     {
-      doubled_t const ma(v_.m), mb(o.v_.m);
+      doubled_t const ma(m), mb(om);
       int_t ea(v_.e), eb(o.v_.e);
 
       // we first try to shift left to preserve digits,
@@ -421,11 +421,11 @@ public:
     {
       return nan{};
     }
-    else if (auto const om(o.v_.m); !om)
+    else if (auto const m(v_.m), om(o.v_.m); !om)
     {
       return *this;
     }
-    else if (auto const oe(o.v_.e); !v_.m)
+    else if (auto const oe(o.v_.e); !m)
     {
       return mmin == om ?
         dpp(-doubled_t(mmin), oe) :
@@ -433,7 +433,7 @@ public:
     }
     else
     {
-      doubled_t const ma(v_.m), mb(-om);
+      doubled_t const ma(m), mb(-om);
       int_t ea(v_.e), eb(oe);
 
       return ea < eb ?
