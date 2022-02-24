@@ -222,21 +222,14 @@ public:
     for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
       m = (m + c) / 10, ++e);
 
-    if (m)
+    if (e > emax)
     {
-      if (e > emax)
-      {
-        *this = nan{};
-      }
-      else
-      {
-        v_.m = m;
-        v_.e = e;
-      }
+      *this = nan{};
     }
     else
-    { // unique zero
-      v_ = {};
+    {
+      v_.m = m;
+      v_.e = e;
     }
   }
 
@@ -541,6 +534,47 @@ public:
     }
   }
 
+  constexpr auto operator<=>(dpp const o) const noexcept
+  {
+    if (isnan(*this) || isnan(o))
+    {
+      return std::partial_ordering::unordered;
+    }
+    else
+    {
+      doubled_t ma(v_.m), mb(o.v_.m);
+
+      if (ma && mb)
+      {
+        int_t ea(v_.e), eb(o.v_.e);
+
+        if (ea < eb)
+        {
+          mb = detail::shift_left(mb, eb, eb - ea);
+          ma = detail::shift_right(ma, eb - ea);
+        }
+        else
+        {
+          ma = detail::shift_left(ma, ea, ea - eb);
+          mb = detail::shift_right(mb, ea - eb);
+        }
+      }
+
+      if (auto const r(ma <=> mb); std::strong_ordering::less == r)
+      {
+        return std::partial_ordering::less;
+      }
+      else if (std::strong_ordering::greater == r)
+      {
+        return std::partial_ordering::greater;
+      }
+      else
+      {
+        return std::partial_ordering::equivalent;
+      }
+    }
+  }
+
   //
   static constexpr dpp min() noexcept { return {mmin, emax, direct{}}; }
   static constexpr dpp max() noexcept { return {mmax, emax, direct{}}; }
@@ -579,6 +613,7 @@ DPP_TYPE_PROMOTION(*)
 DPP_TYPE_PROMOTION(/)
 DPP_TYPE_PROMOTION(==)
 DPP_TYPE_PROMOTION(<)
+DPP_TYPE_PROMOTION(<=>)
 
 // comparison operators
 template <unsigned A, unsigned B>
@@ -603,14 +638,6 @@ template <unsigned A, unsigned B>
 constexpr auto operator>=(dpp<A> const a, dpp<B> const b) noexcept
 {
   return !(a < b);
-}
-
-template <unsigned A, unsigned B>
-constexpr auto operator<=>(dpp<A> const a, dpp<B> const b) noexcept
-{
-  return a == b ?
-    std::strong_ordering::equal :
-    a < b ? std::strong_ordering::less : std::strong_ordering::greater;
 }
 
 // conversions
@@ -990,6 +1017,10 @@ struct hash<dpp::dpp<M>>
     if (m)
     {
       for (; m && !(m % 10); m /= 10, ++e);
+    }
+    else
+    {
+      e = {};
     }
 
     return hash_combine(m, e);
