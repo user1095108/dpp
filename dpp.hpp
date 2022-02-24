@@ -223,14 +223,25 @@ public:
       m = (m + c) / 10, ++e);
 
     if (m)
-    { // forego normalization, since we are bathing in digits
+    {
+      mantissa_type tm(m);
+
+      if (m > 0)
+      {
+        for (; (e > emin + 1) && (tm <= mmax / 10); tm *= 10, --e);
+      }
+      else
+      {
+        for (; (e > emin + 1) && (tm >= mmin / 10); tm *= 10, --e);
+      }
+
       if (e > emax)
       {
         *this = nan{};
       }
       else
       {
-        v_.m = m;
+        v_.m = tm;
         v_.e = e;
       }
     }
