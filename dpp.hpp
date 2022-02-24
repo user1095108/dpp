@@ -147,7 +147,6 @@ public:
     mmax = detail::max_v<mantissa_type>
   };
 
-private:
   using doubled_t = std::conditional_t<
     std::is_same_v<mantissa_type, std::int16_t>,
     std::int32_t,
@@ -162,6 +161,7 @@ private:
     >
   >;
 
+private:
   struct
   {
     mantissa_type m;
@@ -619,8 +619,7 @@ constexpr auto operator<=>(dpp<A> const& a, dpp<B> const& b) noexcept
 
       typename greater_t::doubled_t ma(am), mb(bm);
 
-      if (typename greater_t::int_t ea(a.exponent()), eb(b.exponent());
-        ea < eb)
+      if (int_t ea(a.exponent()), eb(b.exponent()); ea < eb)
       {
         mb = detail::shift_left(mb, eb, eb - ea);
         ma = detail::shift_right(ma, eb - ea);
