@@ -488,11 +488,6 @@ public:
   }
 
   //
-  constexpr bool operator==(dpp const& o) const noexcept
-  {
-    return *this <=> o == 0;
-  }
-
   constexpr std::partial_ordering operator<=>(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o))
@@ -558,8 +553,13 @@ DPP_TYPE_PROMOTION(+)
 DPP_TYPE_PROMOTION(-)
 DPP_TYPE_PROMOTION(*)
 DPP_TYPE_PROMOTION(/)
-DPP_TYPE_PROMOTION(==)
 DPP_TYPE_PROMOTION(<=>)
+
+template <unsigned A, unsigned B>
+constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
+{
+  return a <=> b == 0;
+}
 
 // conversions
 #define DPP_LEFT_CONVERSION(OP)\
