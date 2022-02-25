@@ -451,7 +451,6 @@ public:
 
     // dp is the exponent, that generates the maximal power of 10,
     // that fits into doubled_t
-    // 10^dp > max, hence 10^(dp - 1) <= rmax
     enum : int_t { dp = detail::log10((long double)(max)) - 1 };
 
     static_assert(detail::pow<doubled_t, 10>(dp) <= max - 5);
