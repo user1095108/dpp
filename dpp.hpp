@@ -797,7 +797,7 @@ constexpr auto to_decimal(S const& s) noexcept ->
 }
 
 template <typename T = std::intmax_t, unsigned M>
-constexpr std::optional<T> to_integral(dpp<M> const p) noexcept
+constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
 {
   enum : T
   {
@@ -882,7 +882,7 @@ std::string to_string(dpp<M> p)
 }
 
 template <unsigned M>
-inline auto& operator<<(std::ostream& os, dpp<M> const p)
+inline auto& operator<<(std::ostream& os, dpp<M> const& p)
 {
   return os << to_string(p);
 }
