@@ -501,15 +501,14 @@ public:
     {
       doubled_t ma(m), mb(om);
 
-      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::shift_left(mb, eb, eb - ea);
-        detail::shift_right(ma, eb - ea);
-      }
-      else
-      {
-        detail::shift_left(ma, ea, ea - eb);
-        detail::shift_right(mb, ea - eb);
+        int_t ea(v_.e), eb(o.v_.e);
+
+        ea < eb ?
+          detail::shift_left(mb, eb, eb - ea),
+          detail::shift_right(ma, eb - ea) :
+          (detail::shift_left(ma, ea, ea - eb),
+          detail::shift_right(mb, ea - eb));
       }
 
       return ma <=> mb;
