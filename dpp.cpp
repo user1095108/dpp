@@ -239,5 +239,9 @@ int main()
   std::cout << dpp::floor(b) << std::endl;
   std::cout << dpp::round(b) << std::endl;
 
+  //
+  std::cout << (dpp::d32(dpp::nan{}) != dpp::d64(dpp::nan{})) << std::endl;
+
+  //
   return a <=> b > 0;
 }
