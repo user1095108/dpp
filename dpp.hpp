@@ -502,7 +502,7 @@ public:
       doubled_t ma(m), mb(om);
 
       {
-        int_t ea(v_.e), eb(o.v_.e);
+        int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
 
         ea < eb ?
           detail::shift_left(mb, eb, eb - ea),
