@@ -385,14 +385,14 @@ public:
         detail::shift_left(mb, eb, eb - ea); // reduce eb
         detail::shift_right(ma, eb - ea); // increase ea
 
-        return dpp(ma + mb, eb);
+        return {ma + mb, eb};
       }
       else
       {
         detail::shift_left(ma, ea, ea - eb);
         detail::shift_right(mb, ea - eb);
 
-        return dpp(ma + mb, ea);
+        return {ma + mb, ea};
       }
     }
   }
@@ -422,14 +422,14 @@ public:
         detail::shift_left(mb, eb, eb - ea); // reduce eb
         detail::shift_right(ma, eb - ea); // increase ea
 
-        return dpp(ma - mb, eb);
+        return {ma - mb, eb};
       }
       else
       {
         detail::shift_left(ma, ea, ea - eb);
         detail::shift_right(mb, ea - eb);
 
-        return dpp(ma - mb, ea);
+        return {ma - mb, ea};
       }
     }
   }
