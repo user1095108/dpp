@@ -912,24 +912,22 @@ namespace std
 template <unsigned M>
 struct hash<dpp::dpp<M>>
 {
+  static auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
+  {
+    std::size_t seed{672807365};
+
+    return (
+      (
+        seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(
+          std::forward<decltype(v)>(v)) + 0x9e3779b9 + (seed << 6) +
+          (seed >> 2)
+      ),
+      ...
+    );
+  }
+
   auto operator()(dpp::dpp<M> const& a) const noexcept
   {
-    auto const hash_combine(
-      [](auto&& ...v) noexcept requires(bool(sizeof...(v)))
-      {
-        std::size_t seed{672807365};
-
-        return (
-          (
-            seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(
-              std::forward<decltype(v)>(v)) + 0x9e3779b9 + (seed << 6) +
-              (seed >> 2)
-          ),
-          ...
-        );
-      }
-    );
-
     if (auto m(a.mantissa()); m)
     {
       dpp::int_t e(a.exponent());
