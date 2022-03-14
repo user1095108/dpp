@@ -929,7 +929,7 @@ struct hash<dpp::dpp<M>>
   auto operator()(dpp::dpp<M> const& a) const noexcept
   {
     if (dpp::isnan(a))
-    {
+    { // unique nan
       return dpp::detail::hash_combine(
         decltype(a.mantissa()){},
         dpp::int_t(dpp::dpp<M>::emin)
@@ -944,7 +944,7 @@ struct hash<dpp::dpp<M>>
       return dpp::detail::hash_combine(m, e);
     }
     else
-    {
+    { // unique zero
       return dpp::detail::hash_combine(decltype(m){}, dpp::int_t{});
     }
   }
