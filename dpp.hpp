@@ -928,7 +928,14 @@ struct hash<dpp::dpp<M>>
 {
   auto operator()(dpp::dpp<M> const& a) const noexcept
   {
-    if (auto m(a.mantissa()); m)
+    if (dpp::isnan(a))
+    {
+      return dpp::detail::hash_combine(
+        decltype(a.mantissa()){},
+        dpp::int_t(dpp::dpp<M>::emin)
+      );
+    }
+    else if (auto m(a.mantissa()); m)
     {
       dpp::int_t e(a.exponent());
 
