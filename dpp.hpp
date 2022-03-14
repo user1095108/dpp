@@ -51,6 +51,20 @@ constexpr static U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 constexpr static U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
+constexpr auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
+{
+  std::size_t seed{672807365};
+
+  return (
+    (
+      seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(
+        std::forward<decltype(v)>(v)) + 0x9e3779b9 + (seed << 6) +
+        (seed >> 2)
+    ),
+    ...
+  );
+}
+
 template <auto a, typename B>
 constexpr B selectsign(B const b) noexcept
 {
@@ -912,20 +926,6 @@ namespace std
 template <unsigned M>
 struct hash<dpp::dpp<M>>
 {
-  static auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
-  {
-    std::size_t seed{672807365};
-
-    return (
-      (
-        seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(
-          std::forward<decltype(v)>(v)) + 0x9e3779b9 + (seed << 6) +
-          (seed >> 2)
-      ),
-      ...
-    );
-  }
-
   auto operator()(dpp::dpp<M> const& a) const noexcept
   {
     if (auto m(a.mantissa()); m)
@@ -934,11 +934,11 @@ struct hash<dpp::dpp<M>>
 
       for (; !(m % 10); m /= 10, ++e); // slash zeros
 
-      return hash_combine(m, e);
+      return dpp::detail::hash_combine(m, e);
     }
     else
     {
-      return hash_combine(decltype(m){}, dpp::int_t{});
+      return dpp::detail::hash_combine(decltype(m){}, dpp::int_t{});
     }
   }
 };
