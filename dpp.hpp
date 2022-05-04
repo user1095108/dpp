@@ -649,7 +649,7 @@ constexpr auto trunc(dpp<M> const& a) noexcept
 
     for (; m && e++; m /= 10);
 
-    return dpp<M>(m, 0);
+    return dpp<M>(m, {}, direct{});
   }
   else
   {
