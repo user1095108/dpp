@@ -647,7 +647,7 @@ constexpr auto trunc(dpp<M> const& a) noexcept
   {
     auto m(a.mantissa());
 
-    for (; m && e++; m /= 10);
+    for (; m && e; ++e, m /= 10);
 
     return dpp<M>(m, {}, direct{});
   }
