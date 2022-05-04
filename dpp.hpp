@@ -24,8 +24,8 @@
 namespace dpp
 {
 
-using direct = struct {};
-using nan = struct {};
+struct direct{};
+struct nan{};
 
 using int_t = std::int32_t; // int type wide enough to deal with exponents
 
