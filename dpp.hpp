@@ -125,6 +125,20 @@ consteval int_t log10(auto const x, int_t const e = 0u) noexcept
   return pow<std::remove_cv_t<decltype(x)>, 10>(e) > x ? e : log10(x, e + 1);
 }
 
+inline auto trunc(auto&& f) noexcept
+{
+#if defined(__DJGPP__)
+  if constexpr(std::is_same_v<long double, std::remove_cvref_t<decltype(f)>>)
+    return ::truncl(std::forward<decltype(f)>(f));
+  else if constexpr(std::is_same_v<double, std::remove_cvref_t<decltype(f)>>)
+    return ::trunc(std::forward<decltype(f)>(f));
+  else if constexpr(std::is_same_v<float, std::remove_cvref_t<decltype(f)>>)
+    return ::truncf(std::forward<decltype(f)>(f));
+#else
+  return std::trunc(f);
+#endif // __DJGPP__
+}
+
 }
 
 template <unsigned M>
@@ -273,7 +287,7 @@ public:
       int_t e{};
 
       // eliminate the fractional part, slash f, if necessary
-      for (; std::trunc(f) != f; f *= decltype(f)(10), --e);
+      for (; detail::trunc(f) != f; f *= decltype(f)(10), --e);
       for (constexpr long double
         min(detail::min_v<std::intmax_t>),
         max(detail::max_v<std::intmax_t>);
