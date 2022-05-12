@@ -135,7 +135,7 @@ inline auto trunc(auto&& f) noexcept
   else if constexpr(std::is_same_v<float, std::remove_cvref_t<decltype(f)>>)
     return ::truncf(std::forward<decltype(f)>(f));
 #else
-  return std::trunc(f);
+  return std::trunc(std::forward<decltype(f)>(f));
 #endif // __DJGPP__
 }
 
