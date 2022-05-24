@@ -6,7 +6,7 @@ The underlying design goal was to maximize the number of extractable decimal dig
 # build instructions
     g++ -std=c++2a -Ofast -s mandelbrot.cpp -o m
     em++ -std=c++20 -O3 -s eps.cpp -o e.js
-# alternatives
+# resources
 * [Boost.Multiprecision](https://github.com/boostorg/multiprecision)
 * [DEC64](https://github.com/douglascrockford/DEC64)
 * [decimal_for_cpp](https://github.com/vpiotr/decimal_for_cpp)
