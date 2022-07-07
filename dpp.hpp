@@ -343,7 +343,7 @@ public:
   constexpr explicit operator T() const noexcept
     requires(detail::is_integral_v<T>)
   {
-    if (int_t e(v_.e); e > 0)
+    if (int_t e(v_.e); e > int_t{})
     {
       return v_.m * detail::pow<T, 10>(e);
     }
