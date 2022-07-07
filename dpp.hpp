@@ -263,12 +263,13 @@ public:
   template <typename U>
   constexpr dpp(U const m) noexcept
     requires(detail::is_integral_v<U>):
-    dpp(std::conditional_t<
-          detail::bit_size_v<U> < detail::bit_size_v<mantissa_type>,
-          mantissa_type,
-          U
-        >(m),
-        0
+    dpp(
+      std::conditional_t<
+        detail::bit_size_v<U> < detail::bit_size_v<mantissa_type>,
+        mantissa_type,
+        U
+      >(m),
+      {}
     )
   {
   }
