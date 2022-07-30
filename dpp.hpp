@@ -120,7 +120,7 @@ constexpr T pow(int_t e) noexcept
   }
 }
 
-consteval int_t log10(auto const x, int_t const e = 0u) noexcept
+consteval int_t log10(auto const x, int_t const e = {}) noexcept
 {
   return pow<std::remove_cv_t<decltype(x)>, 10>(e) > x ? e : log10(x, e + 1);
 }
