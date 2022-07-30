@@ -6,7 +6,7 @@
 #include <cmath> // std::pow
 #include <cstdint>
 
-#include <compare> // std::strong_ordering
+#include <compare> // std::partial_ordering
 #include <functional> // std::hash
 #include <iterator> // std::begin(), std::end()
 #include <optional> // std::optional
