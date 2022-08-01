@@ -33,23 +33,23 @@ namespace detail
 {
 
 template <typename U>
-constexpr static auto is_integral_v(
+static constexpr auto is_integral_v(
   std::is_integral_v<U> || std::is_same_v<U, DPP_INT128T>
 );
 
 template <typename U>
-constexpr static auto is_signed_v(
+static constexpr auto is_signed_v(
   std::is_signed_v<U> || std::is_same_v<U, DPP_INT128T>
 );
 
 template <typename U>
-constexpr static auto bit_size_v(CHAR_BIT * sizeof(U));
+static constexpr auto bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
-constexpr static U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
+static constexpr U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 
 template <typename U>
-constexpr static U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
+static constexpr U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
 constexpr auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
 {
