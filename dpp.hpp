@@ -472,46 +472,22 @@ public:
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    enum : doubled_t
+    // dp is the exponent, that generates the maximal power of 10
+    // that fits into doubled_t
+    enum : int_t
     {
-      min = detail::min_v<doubled_t>,
-      max = detail::max_v<doubled_t>
+      dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
     };
 
-    // dp is the exponent, that generates the maximal power of 10,
-    // that fits into doubled_t
-    enum : int_t { dp = detail::log10((long double)(max)) - 1 };
-
-    static_assert(detail::pow<doubled_t, 10>(dp) <= max - 5);
-    static_assert(-detail::pow<doubled_t, 10>(dp) >= min + 5);
-
-    if (auto const om(o.v_.m); isnan(*this) || isnan(o) || !om) // div by 0
+    if (auto const om(o.v_.m); !om || isnan(*this) || isnan(o))
     {
       return nan{};
     }
-    else if (v_.m) // div by 0
-    {
-      doubled_t const m(v_.m);
-      int_t e(-dp + v_.e - o.v_.e);
-
-      // we want an approximation to m * (10^dp / om)
-      auto q(detail::pow<doubled_t, 10>(dp) / om);
-
-      // fit m * q into doubled_t, m * q <= max, m * q >= min
-      if (auto const am(m < 0 ? -m : m); q < 0)
-      {
-        for (auto const a(min / am); q < a; q = (q - 5) / 10, ++e);
-      }
-      else
-      {
-        for (auto const a(max / am); q > a; q = (q + 5) / 10, ++e);
-      }
-
-      return {m * q, e};
-    }
     else
     {
-      return {};
+      dpp const q{detail::pow<doubled_t, 10>(dp) / om, -dp - o.v_.e};
+
+      return {doubled_t{v_.m} * q.v_.m, int_t(v_.e) + q.v_.e};
     }
   }
 
@@ -702,6 +678,27 @@ template <unsigned M>
 constexpr auto abs(dpp<M> const& a) noexcept
 {
   return a.mantissa() < 0 ? -a : a;
+}
+
+//
+template <unsigned M>
+constexpr dpp<M> inv(dpp<M> const& a) noexcept
+{
+  using doubled_t = typename dpp<M>::doubled_t;
+
+  enum : int_t
+  {
+    dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
+  };
+
+  if (auto const m(a.mantissa()); !m || isnan(a))
+  {
+    return nan{};
+  }
+  else
+  {
+    return {detail::pow<doubled_t, 10>(dp) / m, -dp - a.exponent()};
+  }
 }
 
 // conversions
