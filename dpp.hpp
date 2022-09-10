@@ -472,8 +472,6 @@ public:
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    // dp is the exponent, that generates the maximal power of 10
-    // that fits into doubled_t
     enum : int_t
     {
       dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
