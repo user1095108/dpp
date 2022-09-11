@@ -680,7 +680,7 @@ constexpr auto abs(dpp<M> const& a) noexcept
 
 //
 template <unsigned M>
-constexpr dpp<M> inv(dpp<M> const& a) noexcept
+constexpr auto inv(dpp<M> const& a) noexcept
 {
   using doubled_t = typename dpp<M>::doubled_t;
 
@@ -689,14 +689,10 @@ constexpr dpp<M> inv(dpp<M> const& a) noexcept
     dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
   };
 
-  if (auto const m(a.mantissa()); !m || isnan(a))
-  {
-    return nan{};
-  }
-  else
-  {
-    return {detail::pow<doubled_t, 10>(dp) / m, -dp - a.exponent()};
-  }
+  auto const m(a.mantissa());
+
+  return !m || isnan(a) ? dpp<M>{nan{}} :
+    dpp<M>{detail::pow<doubled_t, 10>(dp) / m, -dp - a.exponent()};
 }
 
 // conversions
