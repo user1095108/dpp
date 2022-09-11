@@ -691,7 +691,8 @@ constexpr auto inv(dpp<M> const& a) noexcept
 
   auto const m(a.mantissa());
 
-  return !m || isnan(a) ? dpp<M>{nan{}} :
+  return !m || isnan(a) ?
+    dpp<M>{nan{}} :
     dpp<M>{detail::pow<doubled_t, 10>(dp) / m, -dp - a.exponent()};
 }
 
