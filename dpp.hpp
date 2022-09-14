@@ -65,6 +65,21 @@ constexpr auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
   );
 }
 
+template <auto a, typename B>
+constexpr B selectsign(B const b) noexcept
+{
+  static_assert(a > 0);
+
+  if constexpr(is_signed_v<decltype(a)> && is_signed_v<B>)
+  {
+    return b < 0 ? -a : a;
+  }
+  else
+  {
+    return a;
+  }
+}
+
 constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
@@ -81,7 +96,9 @@ constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 
 constexpr void shift_right(auto& m, auto i) noexcept
 {
-  for (; m && i; --i, m /= 10);
+  for (; m && (i > 1); --i, m /= 10);
+
+  if (i) m = (m + selectsign<5>(m)) / 10;
 }
 
 template <typename T, int B>
