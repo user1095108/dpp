@@ -65,21 +65,6 @@ constexpr auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
   );
 }
 
-template <auto a, typename B>
-constexpr B selectsign(B const b) noexcept
-{
-  static_assert(a > 0);
-
-  if constexpr(is_signed_v<decltype(a)> && is_signed_v<B>)
-  {
-    return b < 0 ? -a : a;
-  }
-  else
-  {
-    return a;
-  }
-}
-
 constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
@@ -96,7 +81,7 @@ constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 
 constexpr void shift_right(auto& m, auto i) noexcept
 {
-  for (auto const c(selectsign<5>(m)); m && i; --i, m = (m + c) / 10);
+  for (; m && i; --i, m /= 10);
 }
 
 template <typename T, int B>
@@ -204,12 +189,6 @@ public:
   constexpr dpp(U m, int_t e) noexcept
     requires(detail::is_integral_v<U>)
   {
-    enum : U
-    {
-      umin = detail::min_v<U>,
-      umax = detail::max_v<U>
-    };
-
     // reduction of the exponent is a side effect of +- ops
     if (e > emax)
     {
@@ -222,15 +201,10 @@ public:
       {
         if (m < mmin)
         {
-          if (m >= umin + 5)
-          {
-            m -= 5;
-          }
+          for (; m < 10 * U(mmin); m /= 10, ++e);
 
-          m /= 10;
+          m = (m - 5) / 10;
           ++e;
-
-          for (; m < mmin; m = (m - 5) / 10, ++e);
         }
       }
 
@@ -239,21 +213,15 @@ public:
       {
         if (m > mmax)
         {
-          if (m <= umax - 5)
-          {
-            m += 5;
-          }
+          for (; m > 10 * U(mmax); m /= 10, ++e);
 
-          m /= 10;
+          m = (m + 5) / 10;
           ++e;
-
-          for (; m > mmax; m = (m + 5) / 10, ++e);
         }
       }
 
       // additional slashing, if necessary
-      for (auto const c(detail::selectsign<5>(m)); (e <= emin) && m;
-        m = (m + c) / 10, ++e);
+      for (; (e <= emin) && m; m /= 10, ++e);
 
       v_.m = m;
       v_.e = e;
