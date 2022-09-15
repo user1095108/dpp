@@ -206,10 +206,15 @@ public:
           m = (m - 5) / 10;
           ++e;
         }
-      }
+        else if (m > mmax)
+        {
+          for (; m > 10 * U(mmax) - 5; m /= 10, ++e);
 
-      if constexpr((detail::is_signed_v<U> && (detail::bit_size_v<U> > M)) ||
-        (std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M)))
+          m = (m + 5) / 10;
+          ++e;
+        }
+      }
+      else if constexpr(std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M))
       {
         if (m > mmax)
         {
