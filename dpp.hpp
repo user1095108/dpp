@@ -456,7 +456,7 @@ public:
     }
     else
     {
-      int_t e(-dp + v_.e - o.v_.e);
+      auto e(-dp + v_.e - o.v_.e);
 
       auto m(detail::pow<doubled_t, 10>(dp) / o.v_.m);
 
