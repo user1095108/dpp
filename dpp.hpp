@@ -456,9 +456,26 @@ public:
     }
     else
     {
-      dpp const q{detail::pow<doubled_t, 10>(dp) / om, -dp - o.v_.e};
+      int_t e(-dp + v_.e - o.v_.e);
 
-      return {doubled_t{v_.m} * q.v_.m, int_t(v_.e) + q.v_.e};
+      auto m(detail::pow<doubled_t, 10>(dp) / o.v_.m);
+
+      if (m < mmin)
+      {
+        for (; m < 10 * doubled_t(mmin) + 5; m /= 10, ++e);
+
+        m = (m - 5) / 10;
+        ++e;
+      }
+      else if (m > mmax)
+      {
+        for (; m > 10 * doubled_t(mmax) - 5; m /= 10, ++e);
+
+        m = (m + 5) / 10;
+        ++e;
+      }
+
+      return {m * v_.m, e};
     }
   }
 
