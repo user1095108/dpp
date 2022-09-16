@@ -410,10 +410,8 @@ public:
       return *this;
     }
     else if (auto const oe(o.v_.e); !m)
-    {
-      return mmin == om ?
-        dpp(-doubled_t(mmin), oe) :
-        dpp(-om, oe, direct{});
+    { // prevent overflow
+      return mmin == om ? dpp{-doubled_t(mmin), oe} : dpp{-om, oe, direct{}};
     }
     else
     {
@@ -457,7 +455,6 @@ public:
     else
     {
       auto e(-dp + v_.e - o.v_.e);
-
       auto m(detail::pow<doubled_t, 10>(dp) / o.v_.m);
 
       if (m < mmin)
