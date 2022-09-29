@@ -172,7 +172,7 @@ public:
     >
   >;
 
-private:
+public:
   struct
   {
     mantissa_type m;
@@ -182,8 +182,8 @@ private:
 public:
   dpp() = default;
 
-  constexpr dpp(dpp const&) = default;
-  constexpr dpp(dpp&&) = default;
+  dpp(dpp const&) = default;
+  dpp(dpp&&) = default;
 
   template <typename U>
   constexpr dpp(U m, int_t e) noexcept
@@ -331,8 +331,8 @@ public:
   }
 
   // assignment
-  constexpr dpp& operator=(dpp const&) = default;
-  constexpr dpp& operator=(dpp&&) = default;
+  dpp& operator=(dpp const&) = default;
+  dpp& operator=(dpp&&) = default;
 
   #define DPP_ASSIGNMENT(OP)\
     template <typename U>\
