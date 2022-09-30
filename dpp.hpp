@@ -512,14 +512,6 @@ public:
   //
   constexpr auto exponent() const noexcept { return v_.e; }
   constexpr auto mantissa() const noexcept { return v_.m; }
-
-  //
-  constexpr auto packed() const noexcept { return std::pair(v_.m, v_.e); }
-
-  static constexpr dpp unpack(auto const& o) noexcept
-  {
-    return {std::get<0>(o), std::get<1>(o)};
-  }
 };
 
 using d64 = dpp<64>;
