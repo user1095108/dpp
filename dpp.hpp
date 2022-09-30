@@ -281,7 +281,7 @@ public:
   {
   }
 
-  constexpr dpp(nan) noexcept: v_{.m = {}, .e = emin} { }
+  constexpr dpp(nan) noexcept { v_.e = emin; }
 
   //
   constexpr explicit operator bool() const noexcept
