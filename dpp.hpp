@@ -814,9 +814,7 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
 
     if (int_t e(p.exponent()); e <= 0)
     {
-      for (; m && e++; m /= 10);
-
-      return m;
+      for (; m && e; ++e, m /= 10);
     }
     else
     {
@@ -828,13 +826,13 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
         }
         else
         {
-          return {};
+          return {}; // not representable
         }
       }
       while (--e);
-
-      return m;
     }
+
+    return m;
   }
 }
 
