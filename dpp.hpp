@@ -257,12 +257,16 @@ public:
     {
       int_t e{};
 
-      // eliminate the fractional part, slash f, if necessary
-      for (; detail::trunc(f) != f; f *= decltype(f)(10), --e);
-      for (constexpr long double
-        min(detail::min_v<std::intmax_t>),
-        max(detail::max_v<std::intmax_t>);
-        (f < min) || (f > max); f /= 10, ++e);
+      {
+        decltype(f) const ten{10};
+
+        // eliminate the fractional part, slash f, if necessary
+        for (; detail::trunc(f) != f; f *= ten, --e);
+        for (constexpr long double
+          min(detail::min_v<std::intmax_t>),
+          max(detail::max_v<std::intmax_t>);
+          (f < min) || (f > max); f /= ten, ++e);
+      }
 
       *this = {std::intmax_t(f), e};
     }
