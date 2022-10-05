@@ -201,27 +201,24 @@ public:
       {
         if (m < mmin)
         {
-          for (; m < 10 * U(mmin) + 5; m /= 10, ++e);
+          for (++e; m < 10 * U(mmin) + 5; m /= 10, ++e);
 
           m = (m - 5) / 10;
-          ++e;
         }
         else if (m > mmax)
         {
-          for (; m > 10 * U(mmax) - 5; m /= 10, ++e);
+          for (++e; m > 10 * U(mmax) - 5; m /= 10, ++e);
 
           m = (m + 5) / 10;
-          ++e;
         }
       }
       else if constexpr(std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M))
       {
         if (m > mmax)
         {
-          for (; m > 10 * U(mmax) - 5; m /= 10, ++e);
+          for (++e; m > 10 * U(mmax) - 5; m /= 10, ++e);
 
           m = (m + 5) / 10;
-          ++e;
         }
       }
 
@@ -347,11 +344,25 @@ public:
   DPP_ASSIGNMENT(/)
 
   // increment, decrement
-  constexpr auto& operator++() noexcept { return *this += 1; }
-  constexpr auto& operator--() noexcept { return *this -= 1; }
+  constexpr auto& operator++() noexcept
+  {
+    return *this += dpp{mantissa_type{1}, {}, direct{}};
+  }
 
-  constexpr auto operator++(int) const noexcept { return *this + 1; }
-  constexpr auto operator--(int) const noexcept { return *this - 1; }
+  constexpr auto& operator--() noexcept
+  {
+    return *this -= dpp{mantissa_type{1}, {}, direct{}};
+  }
+
+  constexpr auto operator++(int) const noexcept
+  {
+    return *this + dpp{mantissa_type{1}, {}, direct{}};
+  }
+
+  constexpr auto operator--(int) const noexcept
+  {
+    return *this - dpp{mantissa_type{1}, {}, direct{}};
+  }
 
   // arithmetic
   constexpr auto operator+() const noexcept { return *this; }
@@ -459,17 +470,15 @@ public:
 
       if (m < mmin)
       {
-        for (; m < 10 * doubled_t(mmin) + 5; m /= 10, ++e);
+        for (++e; m < 10 * doubled_t(mmin) + 5; m /= 10, ++e);
 
         m = (m - 5) / 10;
-        ++e;
       }
       else if (m > mmax)
       {
-        for (; m > 10 * doubled_t(mmax) - 5; m /= 10, ++e);
+        for (++e; m > 10 * doubled_t(mmax) - 5; m /= 10, ++e);
 
         m = (m + 5) / 10;
-        ++e;
       }
 
       return {m * v_.m, e};
