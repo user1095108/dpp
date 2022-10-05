@@ -304,7 +304,7 @@ public:
 
       for (; !(m % 10); m /= 10, ++e);
 
-      return m * std::pow(T(10), e);
+      return m * std::pow(T{10}, e);
     }
     else
     {
@@ -321,7 +321,7 @@ public:
     {
       auto m(v_.m);
 
-      for (; m && e; ++e, m /= 10);
+      for (; m && e; ++e, m /= T{10});
 
       return m;
     }
@@ -657,7 +657,7 @@ constexpr auto floor(dpp<M> const& a) noexcept
 template <unsigned M>
 constexpr auto round(dpp<M> const& a) noexcept
 {
-  constexpr dpp<M> c(5, -1);
+  constexpr dpp<M> c(5, -1, direct{});
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
@@ -825,7 +825,7 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
   {
     T m(p.mantissa());
 
-    if (int_t e(p.exponent()); e <= 0)
+    if (int_t e(p.exponent()); e <= int_t{})
     {
       for (; m && e; ++e, m /= 10);
     }
