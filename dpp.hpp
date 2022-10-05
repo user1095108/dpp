@@ -65,7 +65,7 @@ constexpr auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
   );
 }
 
-constexpr void shift_left(auto& m, auto& e, auto i) noexcept
+constexpr void shift_left(auto& m, int_t& e, int_t i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
   {
@@ -79,7 +79,7 @@ constexpr void shift_left(auto& m, auto& e, auto i) noexcept
   }
 }
 
-constexpr void shift_right(auto& m, auto i) noexcept
+constexpr void shift_right(auto& m, int_t i) noexcept
 {
   for (; m && i; --i, m /= 10);
 }
