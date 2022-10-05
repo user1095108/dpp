@@ -87,7 +87,7 @@ constexpr void shift_right(auto& m, auto i) noexcept
 template <typename T, int B>
 constexpr T pow(int_t e) noexcept
 {
-  for (T r{T{1}}, x(B);;)
+  for (T r{1}, x(B);;)
   {
     if (e % 2)
     {
