@@ -185,7 +185,6 @@ int main()
 
   //
   std::cout << -.001_d32 << " " <<
-    dpp::d32::unpack((-.001_d32).packed()) << " " <<
     std::hash<dpp::d32>()(-.001_d32) << std::endl;
   std::cout << -2_d32 / -3_d64 << " " << -2_d32 / 3_d64 << " " <<
     2_d64 / -3_d64 << " " << 2_d32 / 3_d32 << std::endl;
