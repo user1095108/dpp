@@ -223,7 +223,7 @@ public:
       }
 
       // additional slashing, if necessary
-      for (; (e <= emin) && m; m /= 10, ++e);
+      for (; e <= emin; ++e, m /= 10);
 
       v_.m = m;
       v_.e = e;
