@@ -196,7 +196,6 @@ public:
     }
     else
     {
-      // slash m, if necessary
       if constexpr(detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
       {
         if (m < mmin)
@@ -222,9 +221,10 @@ public:
         }
       }
 
-      // additional slashing, if necessary
+      //
       for (; e <= emin; ++e, m /= 10);
 
+      //
       v_.m = m;
       v_.e = e;
     }
@@ -258,14 +258,14 @@ public:
       int_t e{};
 
       {
-        decltype(f) const ten{10};
+        decltype(f) const k{10};
 
         // eliminate the fractional part, slash f, if necessary
-        for (; detail::trunc(f) != f; f *= ten, --e);
+        for (; detail::trunc(f) != f; f *= k, --e);
         for (constexpr long double
           min(detail::min_v<std::intmax_t>),
           max(detail::max_v<std::intmax_t>);
-          (f < min) || (f > max); f /= ten, ++e);
+          (f < min) || (f > max); f /= k, ++e);
       }
 
       *this = {std::intmax_t(f), e};
