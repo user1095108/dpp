@@ -17,7 +17,7 @@
 
 //using D = long double;
 //using D = float;
-using D = dpp::d64;
+using D = dpp::d32;
 
 constexpr auto max_iter = 100u;
 
