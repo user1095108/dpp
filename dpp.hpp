@@ -15,10 +15,12 @@
 #include <type_traits>
 #include <utility>
 
+#include "intt/intt.hpp"
+
 #if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
 # define DPP_INT128T __int128
 #else
-# define DPP_INT128T void
+# define DPP_INT128T intt::intt<std::uint64_t, 2>
 #endif // DPP_INT128T
 
 namespace dpp
@@ -31,6 +33,11 @@ using int_t = std::int32_t; // int type wide enough to deal with exponents
 
 namespace detail
 {
+
+template <typename U>
+static constexpr auto is_arithmetic_v(
+  std::is_arithmetic_v<U> || std::is_same_v<U, DPP_INT128T>
+);
 
 template <typename U>
 static constexpr auto is_integral_v(
@@ -225,7 +232,7 @@ public:
       for (; e <= emin; ++e, m /= 10);
 
       //
-      v_.m = m;
+      v_.m = mantissa_type(m);
       v_.e = e;
     }
   }
@@ -426,7 +433,7 @@ public:
     }
     else if (auto const oe(o.v_.e); !m)
     { // prevent overflow
-      return mmin == om ? dpp{-doubled_t(mmin), oe} : dpp{-om, oe, direct{}};
+      return mmin == om ? dpp(-doubled_t(mmin), oe) : dpp(-om, oe, direct{});
     }
     else
     {
@@ -558,7 +565,7 @@ constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
 #define DPP_LEFT_CONVERSION(OP)\
 template <unsigned A, typename U>\
 constexpr auto operator OP (U&& a, dpp<A> const& b) noexcept\
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
+  requires(detail::is_arithmetic_v<std::remove_cvref_t<U>>)\
 {\
   return dpp<A>(std::forward<U>(a)) OP b;\
 }
@@ -578,7 +585,7 @@ DPP_LEFT_CONVERSION(<=>)
 #define DPP_RIGHT_CONVERSION(OP)\
 template <unsigned A, typename U>\
 constexpr auto operator OP (dpp<A> const& a, U&& b) noexcept\
-  requires(std::is_arithmetic_v<std::remove_cvref_t<U>>)\
+  requires(detail::is_arithmetic_v<std::remove_cvref_t<U>>)\
 {\
   return a OP dpp<A>(std::forward<U>(b));\
 }
