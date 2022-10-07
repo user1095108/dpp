@@ -232,7 +232,7 @@ public:
       for (; e <= emin; ++e, m /= 10);
 
       //
-      v_.m = mantissa_type(m);
+      v_.m = m;
       v_.e = e;
     }
   }
