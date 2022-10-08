@@ -263,7 +263,7 @@ public:
       int_t e{};
 
       {
-        decltype(f) const k{10};
+        auto const k{decltype(f)(10)};
 
         // eliminate the fractional part, slash f, if necessary
         for (; detail::trunc(f) != f; f *= k, --e);
