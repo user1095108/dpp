@@ -15,11 +15,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "intt/intt.hpp"
-
 #if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
 # define DPP_INT128T __int128
 #else
+# include "intt/intt.hpp"
 # define DPP_INT128T intt::intt<std::uint64_t, 2>
 #endif // DPP_INT128T
 
