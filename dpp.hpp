@@ -775,7 +775,7 @@ constexpr T to_decimal(std::input_iterator auto i,
           break;
 
         case '\0':
-          return {r, 0};
+          break;
 
         default:
           return nan{};
