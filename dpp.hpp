@@ -627,6 +627,12 @@ constexpr auto isnormal(dpp<M> const& a) noexcept
 
 //
 template <unsigned M>
+constexpr auto abs(dpp<M> const& a) noexcept
+{
+  return a.mantissa() < 0 ? -a : a;
+}
+
+template <unsigned M>
 constexpr auto trunc(dpp<M> const& a) noexcept
 {
   if (int_t e(a.exponent()); !isnan(a) && (e < 0))
@@ -662,17 +668,11 @@ constexpr auto floor(dpp<M> const& a) noexcept
 template <unsigned M>
 constexpr auto round(dpp<M> const& a) noexcept
 {
-  constexpr dpp<M> c(5, -1, direct{});
+  dpp<M> const c{5, -1, direct{}};
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
-}
-
-template <unsigned M>
-constexpr auto abs(dpp<M> const& a) noexcept
-{
-  return a.mantissa() < 0 ? -a : a;
 }
 
 //
