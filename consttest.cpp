@@ -18,9 +18,9 @@ int main()
   test<dpp::inv(11_d32)>();
   test<.123_d32>();
   test<0._d32>();
-  test<.0_d32>();
-  test<0_d32 / 0_d32>();
-  test<.1_d32 + .2_d32>();
+  test<.0_d64>();
+  test<0_d32 / 0_d16>();
+  test<.1_d32 + .2_d64>();
 
   return 0;
 }
