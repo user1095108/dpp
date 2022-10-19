@@ -870,7 +870,7 @@ std::string to_string(dpp<M> const& a)
       }
       else
       { // -e >= numd
-        r.insert(m < 0 ? 1 : 0, std::string("0.", 2).append(-e - numd, '0'));
+        r.insert(m < 0, std::string("0.", 2).append(-e - numd, '0'));
       }
     }
     else // if (e > 0)
