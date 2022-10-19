@@ -865,13 +865,13 @@ std::string to_string(dpp<M> p)
       p.mantissa() < 0 ? r.append("-0", 2) : r.append(1, '0');
     }
 
-    auto m(p.mantissa());
+    auto m{(p = abs(p)).mantissa()};
 
     if (int_t e(p.exponent()); (e < 0) && m)
     {
       for (; !(m % 10); m /= 10, ++e);
 
-      auto const tmp(std::to_string(std::abs(m)));
+      auto const tmp(std::to_string(m));
 
       r.append(1, '.').append(-e - tmp.size(), '0').append(tmp);
     }
