@@ -338,12 +338,12 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    return *this += dpp{mantissa_type{1}, {}, direct{}};
+    return *this += dpp{1, {}, direct{}};
   }
 
   constexpr auto& operator--() noexcept
   {
-    return *this -= dpp{mantissa_type{1}, {}, direct{}};
+    return *this -= dpp{1, {}, direct{}};
   }
 
   constexpr auto operator++(int) noexcept
