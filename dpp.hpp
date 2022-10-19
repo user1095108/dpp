@@ -863,7 +863,7 @@ std::string to_string(dpp<M> const& a)
 
     if (e < 0)
     {
-      if (auto const numd(m < 0 ? r.size() - 1 : r.size()); -e < numd)
+      if (auto const numd(r.size() - (m < 0)); -e < numd)
       {
         r.insert(r.size() + e, 1, '.');
       }
