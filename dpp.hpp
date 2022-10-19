@@ -864,13 +864,15 @@ std::string to_string(dpp<M> const& a)
 
     if (e < 0)
     {
-      if (int_t const n(r.size() - (m < 0) + e); n > 0)
+      auto const neg(m < 0);
+
+      if (int_t const n(r.size() - neg + e); n > 0)
       {
-        r.insert(r.size() + e, 1, '.');
+        r.insert(n + neg, 1, '.');
       }
       else
       { // n <= 0
-        r.insert(m < 0, std::string("0.", 2).append(-n, '0'));
+        r.insert(neg, std::string("0.", 2).append(-n, '0'));
       }
     }
     else // if (e > 0)
