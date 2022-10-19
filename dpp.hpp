@@ -6,7 +6,7 @@
 #include <cmath> // std::pow
 #include <cstdint>
 
-#include <concepts>
+#include <concepts> // std::floating_point, std::integral
 #include <compare> // std::partial_ordering
 #include <functional> // std::hash
 #include <iterator> // std::begin(), std::end()
@@ -14,7 +14,7 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
-#include <utility>
+#include <utility> // std::forward()
 
 #if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
 # define DPP_INT128T __int128
@@ -35,14 +35,15 @@ namespace detail
 
 template <typename U>
 concept arithmetic =
-  std::is_arithmetic_v<U> || std::is_same_v<U, DPP_INT128T>;
+  std::is_arithmetic_v<U> || std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
-concept integral = std::is_integral_v<U> || std::is_same_v<U, DPP_INT128T>;
+concept integral =
+  std::integral<U> || std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
 static constexpr auto is_signed_v(
-  std::is_signed_v<U> || std::is_same_v<U, DPP_INT128T>
+  std::is_signed_v<U> || std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>
 );
 
 template <typename U>
