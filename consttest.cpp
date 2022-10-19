@@ -18,6 +18,7 @@ int main()
   test<0._d32>();
   test<.0_d32>();
   test<0_d32 / 0_d32>();
+  test<.1_d32 + .2_d32>();
 
   return 0;
 }

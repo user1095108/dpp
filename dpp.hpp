@@ -365,12 +365,12 @@ public:
 
   constexpr auto operator++(int) const noexcept
   {
-    return *this + dpp{mantissa_type{1}, {}, direct{}};
+    auto const r(*this); ++*this; return r;
   }
 
   constexpr auto operator--(int) const noexcept
   {
-    return *this - dpp{mantissa_type{1}, {}, direct{}};
+    auto const r(*this); --*this; return r;
   }
 
   // arithmetic
