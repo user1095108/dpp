@@ -20,7 +20,7 @@ int main()
   test<0._d32>();
   test<.0_d64>();
   test<0_d32 / 0_d16>();
-  test<.1_d32 + .2_d64>();
+  test<.1_d32 + .2_d16>();
 
   return 0;
 }
