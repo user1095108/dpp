@@ -734,7 +734,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     std::intmax_t r{};
     int_t e{};
 
-    auto const scandigit([&](decltype(r) const d) noexcept
+    auto const scandigit([&](auto const d) noexcept
       {
         if (positive)
         {
