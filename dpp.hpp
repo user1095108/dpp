@@ -363,12 +363,12 @@ public:
     return *this -= dpp{mantissa_type{1}, {}, direct{}};
   }
 
-  constexpr auto operator++(int) const noexcept
+  constexpr auto operator++(int) noexcept
   {
     auto const r(*this); ++*this; return r;
   }
 
-  constexpr auto operator--(int) const noexcept
+  constexpr auto operator--(int) noexcept
   {
     auto const r(*this); --*this; return r;
   }
