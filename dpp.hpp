@@ -921,9 +921,8 @@ struct hash<dpp::dpp<M>>
         dpp::int_t(dpp::dpp<M>::emin)
       );
     }
-    else if (a.mantissa())
+    else if (auto m(a.mantissa()); m)
     {
-      auto m(a.mantissa());
       dpp::int_t e(a.exponent());
 
       for (; !(m % 10); m /= 10, ++e); // slash zeros
@@ -932,10 +931,7 @@ struct hash<dpp::dpp<M>>
     }
     else
     { // unique zero
-      return dpp::detail::hash_combine(
-        decltype(a.mantissa()){},
-        dpp::int_t{}
-      );
+      return dpp::detail::hash_combine(decltype(m){}, dpp::int_t{});
     }
   }
 };
