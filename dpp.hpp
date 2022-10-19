@@ -867,12 +867,8 @@ std::string to_string(dpp<M> const& a)
       {
         r.insert(r.size() + e, 1, '.');
       }
-      else if (-e == numd)
-      {
-        r.insert(m < 0 ? 1 : 0, "0.", 2);
-      }
       else
-      { // -e > numd
+      { // -e >= numd
         r.insert(m < 0 ? 1 : 0, std::string("0.", 2).append(-e - numd, '0'));
       }
     }
