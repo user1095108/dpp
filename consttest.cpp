@@ -13,7 +13,7 @@ void test()
 int main()
 {
   test<dpp::d32{dpp::nan{}}>();
-  test<1 / 3_d32>();
+  test<dpp::inv(3_d32)>();
   test<.123_d32>();
   test<0._d32>();
   test<.0_d32>();
