@@ -669,7 +669,7 @@ constexpr auto inv(dpp<M> const& a) noexcept
     dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
   };
 
-  auto const m(a.mantissa());
+  auto& m(a.v_.m);
 
   return !m || isnan(a) ?
     dpp<M>{nan{}} :
