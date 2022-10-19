@@ -852,7 +852,7 @@ std::string to_string(dpp<M> const& a)
 
     if (m)
     {
-      for (; !(m % 10) && (e < 0); m /= 10, ++e);
+      for (; (e < 0) && !(m % 10); m /= 10, ++e);
     }
     else
     {
