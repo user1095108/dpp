@@ -524,7 +524,7 @@ using d16 = dpp<16>;
 template <unsigned A, unsigned B>\
 constexpr auto operator OP (dpp<A> const& a, dpp<B> const& b) noexcept\
 {\
-  if constexpr (A < B)\
+  if constexpr(A < B)\
     return dpp<B>(a) OP b;\
   else\
     return a OP dpp<A>(b);\
