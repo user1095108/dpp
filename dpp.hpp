@@ -839,41 +839,42 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
 }
 
 template <unsigned M>
-std::string to_string(dpp<M> p)
+std::string to_string(dpp<M> const& a)
 {
-  if (isnan(p))
+  if (isnan(a))
   {
     return {"nan", 3};
   }
   else
   {
-    std::string r;
+    auto m(a.mantissa());
+    int_t e(a.exponent());
 
-    if (auto const t(trunc(p)); t)
+    if (m)
     {
-      p -= t;
-
-      auto m(t.mantissa());
-      int_t e(t.exponent());
-
       for (; !(m % 10); m /= 10, ++e);
-
-      r.append(std::to_string(m)).append(e, '0');
     }
     else
     {
-      p.mantissa() < 0 ? r.append("-0", 2) : r.append(1, '0');
+      e = {};
     }
 
-    auto m{(p = abs(p)).mantissa()};
+    auto r(std::to_string(m));
 
-    if (int_t e(p.exponent()); (e < 0) && m)
+    if (e < 0)
     {
-      for (; !(m % 10); m /= 10, ++e);
-
-      auto const tmp(std::to_string(m));
-
-      r.append(1, '.').append(-e - tmp.size(), '0').append(tmp);
+      if (auto const numd(m < 0 ? r.size() - 1 : r.size()); -e < numd)
+      {
+        r.insert(r.size() + e, 1, '.');
+      }
+      else if (-e == numd)
+      {
+        r.insert(m < 0 ? 1 : 0, "0.", 2);
+      }
+      else
+      { // -e > numd
+        r.insert(m < 0 ? 1 : 0, std::string("0.", 2).append(-e - numd, '0'));
+      }
     }
 
     return r;
