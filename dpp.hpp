@@ -635,11 +635,11 @@ constexpr auto abs(dpp<M> const& a) noexcept
 template <unsigned M>
 constexpr auto trunc(dpp<M> const& a) noexcept
 {
-  if (int_t e(a.exponent()); !isnan(a) && (e < 0))
+  if (!isnan(a) && (a.exponent() < 0))
   {
     auto m(a.mantissa());
 
-    for (; m && e; ++e, m /= 10);
+    for (int_t e(a.exponent()); m && e; ++e, m /= 10);
 
     return dpp<M>(m, {}, direct{});
   }
