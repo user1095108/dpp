@@ -615,6 +615,7 @@ constexpr auto abs(dpp<M> const& a) noexcept
   return a.mantissa() < 0 ? -a : a;
 }
 
+//
 template <unsigned M>
 constexpr auto trunc(dpp<M> const& a) noexcept
 {
@@ -653,7 +654,7 @@ constexpr auto round(dpp<M> const& a) noexcept
 {
   dpp<M> const c{5, -1, direct{}};
 
-  return !isnan(a) && (a.exponent() < 0) ?
+  return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
 }
@@ -717,7 +718,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     std::intmax_t r{};
     int_t e{};
 
-    auto const scandigit([&](auto const d) noexcept
+    auto const scandigit([&](decltype(r) const d) noexcept
       {
         if (positive)
         {
