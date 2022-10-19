@@ -869,7 +869,7 @@ std::string to_string(dpp<M> const& a)
         r.insert(r.size() + e, 1, '.');
       }
       else
-      {
+      { // n >= 0
         r.insert(m < 0, std::string("0.", 2).append(n, '0'));
       }
     }
