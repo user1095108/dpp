@@ -859,6 +859,7 @@ std::string to_string(dpp<M> const& a)
       e = {};
     }
 
+    //
     auto r(std::to_string(m));
 
     if (e < 0)
