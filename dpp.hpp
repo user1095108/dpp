@@ -252,7 +252,7 @@ public:
 
         // eliminate the fractional part, slash f, if necessary
         for (; detail::trunc(f) != f; f *= k, --e);
-        for (constexpr long double
+        for (long double const
           min(detail::min_v<std::intmax_t>),
           max(detail::max_v<std::intmax_t>);
           (f < min) || (f > max); f /= k, ++e);
