@@ -6,6 +6,7 @@
 #include <cmath> // std::pow
 #include <cstdint>
 
+#include <concepts>
 #include <compare> // std::partial_ordering
 #include <functional> // std::hash
 #include <iterator> // std::begin(), std::end()
@@ -33,14 +34,11 @@ namespace detail
 {
 
 template <typename U>
-static constexpr auto is_arithmetic_v(
-  std::is_arithmetic_v<U> || std::is_same_v<U, DPP_INT128T>
-);
+concept arithmetic =
+  std::is_arithmetic_v<U> || std::is_same_v<U, DPP_INT128T>;
 
 template <typename U>
-static constexpr auto is_integral_v(
-  std::is_integral_v<U> || std::is_same_v<U, DPP_INT128T>
-);
+concept integral = std::is_integral_v<U> || std::is_same_v<U, DPP_INT128T>;
 
 template <typename U>
 static constexpr auto is_signed_v(
@@ -190,9 +188,8 @@ public:
   dpp(dpp const&) = default;
   dpp(dpp&&) = default;
 
-  template <typename U>
+  template <detail::integral U>
   constexpr dpp(U m, int_t e) noexcept
-    requires(detail::is_integral_v<U>)
   {
     // reduction of the exponent is a side effect of +- ops
     if (e > emax)
@@ -235,19 +232,7 @@ public:
     }
   }
 
-  template <typename U>
-  constexpr dpp(U const m) noexcept
-    requires(detail::is_integral_v<U>):
-    dpp(
-      std::conditional_t<
-        detail::bit_size_v<U> < detail::bit_size_v<mantissa_type>,
-        mantissa_type,
-        U
-      >(m),
-      {}
-    )
-  {
-  }
+  constexpr dpp(detail::integral auto const m) noexcept: dpp(m, {}) { }
 
   template <unsigned A>
   constexpr dpp(dpp<A> const& o) noexcept:
@@ -255,8 +240,7 @@ public:
   {
   }
 
-  dpp(auto f) noexcept
-    requires(std::is_floating_point_v<decltype(f)>)
+  dpp(std::floating_point auto f) noexcept
   {
     if (std::isfinite(f))
     {
@@ -295,9 +279,8 @@ public:
     return v_.m || isnan(*this);
   }
 
-  template <typename T>
+  template <std::floating_point T>
   explicit (sizeof(T) != sizeof(v_.m)) operator T() const noexcept
-    requires(std::is_floating_point_v<T>)
   {
     if (isnan(*this))
     {
@@ -318,9 +301,8 @@ public:
   }
 
   // this function is unsafe, take a look at to_integral() for safety
-  template <typename T>
+  template <detail::integral T>
   constexpr explicit operator T() const noexcept
-    requires(detail::is_integral_v<T>)
   {
     if (auto e(v_.e); e < 0)
     {
@@ -561,11 +543,11 @@ constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
 
 // conversions
 #define DPP_LEFT_CONVERSION(OP)\
-template <unsigned A, typename U>\
-constexpr auto operator OP (U&& a, dpp<A> const& b) noexcept\
-  requires(detail::is_arithmetic_v<std::remove_cvref_t<U>>)\
+template <unsigned A>\
+constexpr auto operator OP (detail::arithmetic auto const a,\
+  dpp<A> const& b) noexcept\
 {\
-  return dpp<A>(std::forward<U>(a)) OP b;\
+  return dpp<A>(a) OP b;\
 }
 
 DPP_LEFT_CONVERSION(+)
@@ -581,11 +563,11 @@ DPP_LEFT_CONVERSION(>=)
 DPP_LEFT_CONVERSION(<=>)
 
 #define DPP_RIGHT_CONVERSION(OP)\
-template <unsigned A, typename U>\
-constexpr auto operator OP (dpp<A> const& a, U&& b) noexcept\
-  requires(detail::is_arithmetic_v<std::remove_cvref_t<U>>)\
+template <unsigned A>\
+constexpr auto operator OP (dpp<A> const& a,\
+  detail::arithmetic auto const b) noexcept\
 {\
-  return a OP dpp<A>(std::forward<U>(b));\
+  return a OP dpp<A>(b);\
 }
 
 DPP_RIGHT_CONVERSION(+)
