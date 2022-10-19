@@ -670,7 +670,7 @@ constexpr auto round(dpp<M> const& a) noexcept
 {
   dpp<M> const c{5, -1, direct{}};
 
-  return a.exponent() < 0 ?
+  return !isnan(a) && (a.exponent() < 0) ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
     a;
 }
@@ -898,6 +898,7 @@ std::string to_string(dpp<M> p)
 
 template <unsigned M>
 inline auto& operator<<(std::ostream& os, dpp<M> const& p)
+  noexcept(noexcept(os << to_string(p)))
 {
   return os << to_string(p);
 }
