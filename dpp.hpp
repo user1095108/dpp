@@ -228,7 +228,7 @@ public:
       for (; (e <= emin) && m; m /= 10, ++e);
 
       //
-      v_ = m ? decltype(v_)(m, e) : decltype(v_){};
+      v_.e = (v_.m = m) ? e : 0;
     }
   }
 
