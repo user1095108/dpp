@@ -894,7 +894,6 @@ std::string to_string(dpp<M> const& a)
 
 template <unsigned M>
 inline auto& operator<<(std::ostream& os, dpp<M> const& p)
-  noexcept(noexcept(os << to_string(p)))
 {
   return os << to_string(p);
 }
