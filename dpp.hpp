@@ -225,15 +225,22 @@ public:
       }
 
       //
+      enum : int_t
+      {
+        dp = detail::log10((long double)(detail::max_v<mantissa_type>)) - 1
+      };
+
       if (e <= emin)
       {
-        v_ = {};
+        auto const n(std::min(int_t{dp}, emin - e + 1));
+
+        m /= detail::pow<mantissa_type, 10>(n);
+        e += n;
       }
-      else
-      {
-        v_.m = m;
-        v_.e = e;
-      }
+
+      //
+      v_.m = m;
+      v_.e = e;
     }
   }
 
