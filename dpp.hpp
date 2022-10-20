@@ -228,15 +228,7 @@ public:
       for (; (e <= emin) && m; m /= 10, ++e);
 
       //
-      if (m)
-      {
-        v_.m = m;
-        v_.e = e;
-      }
-      else
-      {
-        v_ = {};
-      }
+      v_ = m ? decltype(v_)(m, e) : decltype(v_){};
     }
   }
 
