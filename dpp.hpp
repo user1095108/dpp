@@ -225,11 +225,18 @@ public:
       }
 
       //
-      for (; e <= emin; ++e, m /= 10);
+      for (; (e <= emin) && m; m /= 10, ++e);
 
       //
-      v_.m = m;
-      v_.e = e;
+      if (m)
+      {
+        v_.m = m;
+        v_.e = e;
+      }
+      else
+      {
+        v_ = {};
+      }
     }
   }
 
