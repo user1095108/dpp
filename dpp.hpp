@@ -308,7 +308,7 @@ public:
     {
       auto m(v_.m);
 
-      for (; m && e; ++e, m /= T{10});
+      for (; m && e; ++e, m /= 10);
 
       return m;
     }
