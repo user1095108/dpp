@@ -813,7 +813,7 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
   {
     T m(p.mantissa());
 
-    if (int_t e(p.exponent()); e <= int_t{})
+    if (int_t e(p.exponent()); e <= 0)
     {
       for (; m && e; ++e, m /= 10);
     }
