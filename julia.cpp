@@ -13,6 +13,8 @@
 
 #include "dpp.hpp"
 
+using namespace dpp::literals;
+
 //using D = long double;
 //using D = float;
 using D = dpp::d32;
@@ -68,46 +70,50 @@ int main(int const argc, char* argv[]) noexcept
   if (2 == argc)
   {
     switch (std::atoi(argv[1]))
-    {
+    { // https://en.wikipedia.org/wiki/Julia_set#Quadratic_polynomials
       default:
-      case 6:
-        a = -.835; b = -.2321;
+      case 7:
+        a = -.835_d32; b = -.2321_d32;
         break;
 
       case 1:
-        a = -.7; b = .27015;
+        a = -.7_d32; b = .27015_d32;
         break;
 
       case 2:
-        a = .285; b = .01;
+        a = .285_d32; b = .01_d32;
         break;
 
       case 3:
-        a = -.74543; b = .11301;
+        a = -.74543_d32; b = .11301_d32;
         break;
 
       case 4:
-        a = -.11; b = .6557;
+        a = -.11_d32; b = .6557_d32;
         break;
 
       case 5:
-        a = .45; b = .1428;
+        a = .45_d32; b = .1428_d32;
+        break;
+
+      case 6:
+        a = {}; b = -.8_d32;
         break;
     }
   }
   else
   {
-    a = -.835; b = -.2321;
+    a = -.835_d32; b = -.2321_d32;
   }
 
-  D x0(-1.6), y(1.15);
-  D const x1(1.6), y1(-1.15);
+  D x0(-1.6_d32), y(1.15_d32);
+  D const x1(1.6_d32), y1(-1.15_d32);
 
   auto const dx((x1 - x0) / w);
   auto const dy((y1 - y) / h);
 
-  x0 += .5 * dx;
-  y += .5 * dy;
+  x0 += .5_d32 * dx;
+  y += .5_d32 * dy;
 
   for (int i{}; h != i; ++i, y += dy)
   {
