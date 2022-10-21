@@ -127,7 +127,7 @@ int main(int const argc, char* argv[]) noexcept
       std::cout << "\033[48;2;" <<
         int(9 * 255 * (olt*t*t*t)) << ';' <<
         int(15 * 255 * (olt*olt*t*t)) << ';' <<
-        int(8.5 * 255 * (olt*olt*olt*t)) << "m ";
+        int(8.5_d32 * 255 * (olt*olt*olt*t)) << "m ";
     }
   }
 
