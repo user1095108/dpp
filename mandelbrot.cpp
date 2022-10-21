@@ -15,6 +15,8 @@
 
 #include "dpp.hpp"
 
+using namespace dpp::literals;
+
 //using D = long double;
 //using D = float;
 using D = dpp::d32;
@@ -67,14 +69,14 @@ int main() noexcept
     #endif
   }
 
-  D x0(-2); D y(1.15);
-  D const x1(1), y1(-1.15);
+  D x0(-2_d32); D y(1.15_d32);
+  D const x1(1_d32), y1(-1.15_d32);
 
   auto const dx((x1 - x0) / w);
   auto const dy((y1 - y) / h);
 
-  x0 += .5 * dx;
-  y += .5 * dy;
+  x0 += .5_d32 * dx;
+  y += .5_d32 * dy;
 
   for (int i{}; h != i; ++i, y += dy)
   {
@@ -88,7 +90,7 @@ int main() noexcept
       std::cout << "\033[48;2;" <<
         int(9 * 255 * (olt*t*t*t)) << ';' <<
         int(15 * 255 * (olt*olt*t*t)) << ';' <<
-        int(8.5 * 255 * (olt*olt*olt*t)) << "m ";
+        int(8.5_d32 * 255 * (olt*olt*olt*t)) << "m ";
     }
   }
 
