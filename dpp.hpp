@@ -811,11 +811,16 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
   }
   else
   {
-    T m(p.mantissa());
+    auto m(p.mantissa());
 
     if (int_t e(p.exponent()); e <= 0)
     {
       for (; m && e; ++e, m /= 10);
+
+      if ((m < min) || (m > max))
+      {
+        return {}; // not representable
+      }
     }
     else
     {
@@ -833,7 +838,7 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
       while (--e);
     }
 
-    return m;
+    return T(m);
   }
 }
 
