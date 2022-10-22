@@ -838,7 +838,7 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
       while (--e);
     }
 
-    return T(m);
+    return m;
   }
 }
 
