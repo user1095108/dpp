@@ -819,7 +819,7 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
 
       if ((m < min) || (m > max))
       {
-        return {}; // not representable
+        return {};
       }
     }
     else
