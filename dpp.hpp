@@ -693,12 +693,12 @@ constexpr T to_decimal(std::input_iterator auto i,
       max = detail::max_v<std::intmax_t>
     };
 
-    bool positive{true};
+    bool neg{};
 
     switch (*i)
     {
       case '-':
-        positive = false;
+        neg = true;
         [[fallthrough]];
 
       case '+':
@@ -719,23 +719,23 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     auto const scandigit([&](decltype(r) const d) noexcept
       {
-        if (positive)
+        if (neg)
         {
-          if (r <= max / 10)
+          if (r >= min / 10)
           {
-            if (auto const t(10 * r); t <= max - d)
+            if (auto const t(10 * r); t >= min + d)
             {
-              r = t + d;
+              r = t - d;
 
               return false;
             }
           }
         }
-        else if (r >= min / 10)
+        else if (r <= max / 10)
         {
-          if (auto const t(10 * r); t >= min + d)
+          if (auto const t(10 * r); t <= max - d)
           {
-            r = t - d;
+            r = t + d;
 
             return false;
           }
