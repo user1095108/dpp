@@ -16,10 +16,10 @@
 #include <type_traits>
 #include <utility> // std::forward()
 
-#if (INTPTR_MAX >= INT64_MAX || defined(__EMSCRIPTEN__)) && !defined(_MSC_VER)
-# define DPP_INT128T __int128
-#else
+#if defined(_MSC_VER)
 # define DPP_INT128T void
+#else
+# define DPP_INT128T __int128
 #endif // DPP_INT128T
 
 namespace dpp
@@ -568,29 +568,11 @@ DPP_RIGHT_CONVERSION(>)
 DPP_RIGHT_CONVERSION(>=)
 DPP_RIGHT_CONVERSION(<=>)
 
-// misc
-template <unsigned M>
-constexpr auto isfinite(dpp<M> const& a) noexcept
-{
-  return !isnan(a);
-}
-
-template <unsigned M>
-constexpr auto isinf(dpp<M> const& a) noexcept
-{
-  return isnan(a);
-}
-
+// utilities
 template <unsigned M>
 constexpr auto isnan(dpp<M> const& a) noexcept
 {
   return dpp<M>::emin == a.exponent();
-}
-
-template <unsigned M>
-constexpr auto isnormal(dpp<M> const& a) noexcept
-{
-  return !isnan(a);
 }
 
 //
