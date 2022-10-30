@@ -20,7 +20,7 @@
 # define DPP_INT128T void
 #else
 # define DPP_INT128T __int128
-#endif // DPP_INT128T
+#endif
 
 namespace dpp
 {
