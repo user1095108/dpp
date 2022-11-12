@@ -17,7 +17,8 @@
 #include <utility> // std::forward()
 
 #if defined(_MSC_VER)
-# define DPP_INT128T void
+#include "intt/intt.hpp"
+# define DPP_INT128T intt::intt<std::uint64_t, 2>
 #else
 # define DPP_INT128T __int128
 #endif
