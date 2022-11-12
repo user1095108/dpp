@@ -109,9 +109,14 @@ constexpr T pow(int_t e) noexcept
   }
 }
 
-consteval int_t log10(auto const x, int_t const e = {}) noexcept
+template <typename U>
+consteval auto maxpow10e() noexcept
 {
-  return pow<std::remove_cv_t<decltype(x)>, 10>(e) > x ? e : log10(x, e + 1);
+  int_t e{};
+
+  for (U x(1); x <= detail::max_v<U> / 10; x *= U(10), ++e);
+
+  return e;
 }
 
 }
@@ -431,10 +436,7 @@ public:
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    enum : int_t
-    {
-      dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
-    };
+    enum : int_t { dp = detail::maxpow10e<doubled_t>() };
 
     if (auto const om(o.v_.m); !om || isnan(*this) || isnan(o))
     {
@@ -632,10 +634,7 @@ constexpr auto inv(dpp<M> const& a) noexcept
 {
   using doubled_t = typename dpp<M>::doubled_t;
 
-  enum : int_t
-  {
-    dp = detail::log10((long double)(detail::max_v<doubled_t>)) - 1
-  };
+  enum : int_t { dp = detail::maxpow10e<doubled_t>() };
 
   auto const m(a.mantissa());
 
