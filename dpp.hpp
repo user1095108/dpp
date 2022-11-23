@@ -719,7 +719,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (scandigit(*i - '0')) break; else continue;
+          if (scandigit(*i - '0')) return nan{}; else continue;
 
         case '.':
           i = std::next(i);
@@ -741,7 +741,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (scandigit(*i - '0')) break; else {--e; continue;}
+          if (scandigit(*i - '0')) return nan{}; else {--e; continue;}
 
         case '\0':
           break;
