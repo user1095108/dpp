@@ -16,8 +16,12 @@
 #include <type_traits>
 #include <utility> // std::forward()
 
+#if defined(_MSC_VER)
 # include "intt/intt.hpp"
 # define DPP_INT128T intt::intt<std::uint64_t, 2>
+#else
+# define DPP_INT128T __int128
+#endif
 
 namespace dpp
 {
@@ -753,8 +757,8 @@ constexpr T to_decimal(std::input_iterator auto i,
   }
 }
 
-template <typename T, typename S>
-constexpr auto to_decimal(S const& s) noexcept ->
+template <typename T>
+constexpr auto to_decimal(auto const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T())
 {
   return to_decimal<T>(std::cbegin(s), std::cend(s));
