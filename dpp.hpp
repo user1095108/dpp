@@ -337,15 +337,8 @@ public:
     return *this -= dpp{1, {}, direct{}};
   }
 
-  constexpr auto operator++(int) noexcept
-  {
-    auto const r(*this); ++*this; return r;
-  }
-
-  constexpr auto operator--(int) noexcept
-  {
-    auto const r(*this); --*this; return r;
-  }
+  constexpr auto operator++(int) noexcept { return +++*this; }
+  constexpr auto operator--(int) noexcept { return --+*this; }
 
   // arithmetic
   constexpr auto operator+() const noexcept { return *this; }
