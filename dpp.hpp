@@ -314,17 +314,17 @@ public:
   dpp& operator=(dpp const&) = default;
   dpp& operator=(dpp&&) = default;
 
-  #define DPP_ASSIGNMENT(OP)\
+  #define DPP_ASSIGNMENT__(OP)\
     template <typename U>\
     constexpr auto& operator OP ## =(U&& a) noexcept\
     {\
       return *this = *this OP std::forward<U>(a);\
     }
 
-  DPP_ASSIGNMENT(+)
-  DPP_ASSIGNMENT(-)
-  DPP_ASSIGNMENT(*)
-  DPP_ASSIGNMENT(/)
+  DPP_ASSIGNMENT__(+)
+  DPP_ASSIGNMENT__(-)
+  DPP_ASSIGNMENT__(*)
+  DPP_ASSIGNMENT__(/)
 
   // increment, decrement
   constexpr auto& operator++() noexcept
@@ -508,7 +508,7 @@ using d32 = dpp<32>;
 using d16 = dpp<16>;
 
 // type promotions
-#define DPP_TYPE_PROMOTION(OP)\
+#define DPP_TYPE_PROMOTION__(OP)\
 template <unsigned A, unsigned B>\
 constexpr auto operator OP (dpp<A> const& a, dpp<B> const& b) noexcept\
 {\
@@ -518,11 +518,11 @@ constexpr auto operator OP (dpp<A> const& a, dpp<B> const& b) noexcept\
     return a OP dpp<A>(b);\
 }
 
-DPP_TYPE_PROMOTION(+)
-DPP_TYPE_PROMOTION(-)
-DPP_TYPE_PROMOTION(*)
-DPP_TYPE_PROMOTION(/)
-DPP_TYPE_PROMOTION(<=>)
+DPP_TYPE_PROMOTION__(+)
+DPP_TYPE_PROMOTION__(-)
+DPP_TYPE_PROMOTION__(*)
+DPP_TYPE_PROMOTION__(/)
+DPP_TYPE_PROMOTION__(<=>)
 
 template <unsigned A, unsigned B>
 constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
@@ -531,7 +531,7 @@ constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
 }
 
 // conversions
-#define DPP_LEFT_CONVERSION(OP)\
+#define DPP_LEFT_CONVERSION__(OP)\
 template <unsigned A>\
 constexpr auto operator OP (detail::arithmetic auto const a,\
   dpp<A> const& b) noexcept\
@@ -539,19 +539,19 @@ constexpr auto operator OP (detail::arithmetic auto const a,\
   return dpp<A>(a) OP b;\
 }
 
-DPP_LEFT_CONVERSION(+)
-DPP_LEFT_CONVERSION(-)
-DPP_LEFT_CONVERSION(*)
-DPP_LEFT_CONVERSION(/)
-DPP_LEFT_CONVERSION(==)
-DPP_LEFT_CONVERSION(!=)
-DPP_LEFT_CONVERSION(<)
-DPP_LEFT_CONVERSION(<=)
-DPP_LEFT_CONVERSION(>)
-DPP_LEFT_CONVERSION(>=)
-DPP_LEFT_CONVERSION(<=>)
+DPP_LEFT_CONVERSION__(+)
+DPP_LEFT_CONVERSION__(-)
+DPP_LEFT_CONVERSION__(*)
+DPP_LEFT_CONVERSION__(/)
+DPP_LEFT_CONVERSION__(==)
+DPP_LEFT_CONVERSION__(!=)
+DPP_LEFT_CONVERSION__(<)
+DPP_LEFT_CONVERSION__(<=)
+DPP_LEFT_CONVERSION__(>)
+DPP_LEFT_CONVERSION__(>=)
+DPP_LEFT_CONVERSION__(<=>)
 
-#define DPP_RIGHT_CONVERSION(OP)\
+#define DPP_RIGHT_CONVERSION__(OP)\
 template <unsigned A>\
 constexpr auto operator OP (dpp<A> const& a,\
   detail::arithmetic auto const b) noexcept\
@@ -559,17 +559,17 @@ constexpr auto operator OP (dpp<A> const& a,\
   return a OP dpp<A>(b);\
 }
 
-DPP_RIGHT_CONVERSION(+)
-DPP_RIGHT_CONVERSION(-)
-DPP_RIGHT_CONVERSION(*)
-DPP_RIGHT_CONVERSION(/)
-DPP_RIGHT_CONVERSION(==)
-DPP_RIGHT_CONVERSION(!=)
-DPP_RIGHT_CONVERSION(<)
-DPP_RIGHT_CONVERSION(<=)
-DPP_RIGHT_CONVERSION(>)
-DPP_RIGHT_CONVERSION(>=)
-DPP_RIGHT_CONVERSION(<=>)
+DPP_RIGHT_CONVERSION__(+)
+DPP_RIGHT_CONVERSION__(-)
+DPP_RIGHT_CONVERSION__(*)
+DPP_RIGHT_CONVERSION__(/)
+DPP_RIGHT_CONVERSION__(==)
+DPP_RIGHT_CONVERSION__(!=)
+DPP_RIGHT_CONVERSION__(<)
+DPP_RIGHT_CONVERSION__(<=)
+DPP_RIGHT_CONVERSION__(>)
+DPP_RIGHT_CONVERSION__(>=)
+DPP_RIGHT_CONVERSION__(<=>)
 
 // utilities
 template <unsigned M>
@@ -867,16 +867,16 @@ inline auto& operator<<(std::ostream& os, dpp<M> const& p)
 namespace literals
 {
 
-#define DPP_LITERAL(ID)\
+#define DPP_LITERAL__(ID)\
 template <char ...c>\
 constexpr auto operator "" _d ## ID() noexcept\
 {\
   return to_decimal<d ## ID>((char const[sizeof...(c)]){c...});\
 }
 
-DPP_LITERAL(16)
-DPP_LITERAL(32)
-DPP_LITERAL(64)
+DPP_LITERAL__(16)
+DPP_LITERAL__(32)
+DPP_LITERAL__(64)
 
 }
 
