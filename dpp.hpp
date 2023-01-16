@@ -16,8 +16,9 @@
 #include <type_traits>
 #include <utility> // std::forward()
 
+#include "intt/intt.hpp"
+
 #if defined(_MSC_VER)
-# include "intt/intt.hpp"
 # define DPP_INT128T intt::intt<std::uint64_t, 2>
 #else
 # define DPP_INT128T __int128
@@ -36,15 +37,21 @@ namespace detail
 
 template <typename U>
 concept arithmetic =
-  std::is_arithmetic_v<U> || std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
+  std::is_arithmetic_v<U> ||
+  intt::intt_type<U> ||
+  std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
 concept integral =
-  std::integral<U> || std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
+  std::integral<U> ||
+  intt::intt_type<U> ||
+  std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
 static constexpr auto is_signed_v(
-  std::is_signed_v<U> || std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>
+  std::is_signed_v<U> ||
+  intt::detail::is_intt<U>::value ||
+  std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>
 );
 
 template <typename U>
