@@ -194,13 +194,13 @@ public:
       if constexpr(detail::is_signed_v<U> &&
         (detail::bit_size_v<U> > detail::bit_size_v<T>))
       {
-        if (m < mmin)
+        if (m < intt::coeff<mmin>())
         {
           for (++e; m < intt::coeff<10 * U(mmin) + 5>(); m /= 10, ++e);
 
           m = (m - 5) / 10;
         }
-        else if (m > mmax)
+        else if (m > intt::coeff<mmax>())
         {
           for (++e; m > intt::coeff<10 * U(mmax) - 5>(); m /= 10, ++e);
 
@@ -357,7 +357,9 @@ public:
     // we need to do it like this, as negating the mantissa can overflow
     return isnan(*this) ?
       dpp{nan{}} :
-      mmin == v_.m ? dpp(-doubled_t(mmin), v_.e) : dpp(-v_.m, v_.e, direct{});
+      intt::coeff<mmin>() == v_.m ?
+        dpp(intt::coeff<-doubled_t(mmin)>(), v_.e) :
+        dpp(-v_.m, v_.e, direct{});
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
@@ -407,7 +409,9 @@ public:
     }
     else if (auto const oe(o.v_.e); !m)
     { // prevent overflow
-      return mmin == om ? dpp(-doubled_t(mmin), oe) : dpp(-om, oe, direct{});
+      return intt::coeff<mmin>() == om ?
+        dpp(intt::coeff<-doubled_t(mmin)>(), oe) :
+        dpp(-om, oe, direct{});
     }
     else
     {
@@ -448,13 +452,13 @@ public:
       auto e(-dp__ + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow<doubled_t, 10>(dp__)>() / o.v_.m);
 
-      if (m < mmin)
+      if (m < intt::coeff<mmin>())
       {
         for (++e; m < intt::coeff<10 * doubled_t(mmin) + 5>(); m /= 10, ++e);
 
         m = (m - 5) / 10;
       }
-      else if (m > mmax)
+      else if (m > intt::coeff<mmax>())
       {
         for (++e; m > intt::coeff<10 * doubled_t(mmax) - 5>(); m /= 10, ++e);
 
@@ -495,8 +499,15 @@ public:
   }
 
   //
-  static constexpr dpp min() noexcept { return {mmin, emax, direct{}}; }
-  static constexpr dpp max() noexcept { return {mmax, emax, direct{}}; }
+  static constexpr dpp min() noexcept
+  {
+    return intt::coeff<dpp{mmin, emax, direct{}}>();
+  }
+
+  static constexpr dpp max() noexcept
+  {
+    return intt::coeff<dpp{mmax, emax, direct{}}>();
+  }
 
   //
   constexpr auto exponent() const noexcept { return v_.e; }
@@ -768,12 +779,6 @@ constexpr auto to_decimal(auto const& s) noexcept ->
 template <typename U = std::intmax_t, typename T>
 constexpr std::optional<T> to_integral(dpp<T> const& p) noexcept
 {
-  enum : U
-  {
-    min = detail::min_v<U>,
-    max = detail::max_v<U>
-  };
-
   if (isnan(p))
   {
     return {};
@@ -786,7 +791,8 @@ constexpr std::optional<T> to_integral(dpp<T> const& p) noexcept
     {
       for (; m && e; ++e, m /= 10);
 
-      if ((m < min) || (m > max))
+      if ((m < intt::coeff<detail::min_v<U>>()) ||
+        (m > intt::coeff<detail::max_v<U>()>()))
       {
         return {};
       }
@@ -795,7 +801,8 @@ constexpr std::optional<T> to_integral(dpp<T> const& p) noexcept
     {
       do
       {
-        if ((m >= min / 10) && (m <= max / 10))
+        if ((m >= intt::coeff<detail::min_v<U> / 10>()) &&
+          (m <= intt::coeff<detail::max_v<U>() / 10>()))
         {
           m *= 10;
         }
