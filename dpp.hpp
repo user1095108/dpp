@@ -210,7 +210,7 @@ public:
       else if constexpr(std::is_unsigned_v<U> &&
         (detail::bit_size_v<U> >= detail::bit_size_v<T>))
       {
-        if (m > mmax)
+        if (m > intt::coeff<mmax>())
         {
           for (++e; m > intt::coeff<10 * U(mmax) - 5>(); m /= 10, ++e);
 
