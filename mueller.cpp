@@ -33,4 +33,6 @@ int main()
     computeMullersIter<dpp::d32>(30);
     std::cout << "dpp::d64" << std::endl;
     computeMullersIter<dpp::d64>(30);
+    std::cout << "dpp::d256" << std::endl;
+    computeMullersIter<dpp::dpp<intt::intt<std::uint64_t, 4>>>(30);
 }
