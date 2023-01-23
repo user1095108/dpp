@@ -242,8 +242,8 @@ int main()
 
   std::cout << .1_d16 + .2_d64 << std::endl;
 
-  auto const a(dpp::to_decimal<dpp::dpp<intt::intt<std::uint64_t, 3>>>("1.23"));
-  auto const b(dpp::to_decimal<dpp::dpp<intt::intt<std::uint64_t, 3>>>("45.6"));
+  auto const a(dpp::to_decimal<dpp::d64>("1.23"));
+  auto const b(dpp::to_decimal<dpp::d64>("45.6"));
 
   std::cout << a << std::endl;
   std::cout << b << std::endl;
