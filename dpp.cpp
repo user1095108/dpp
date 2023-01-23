@@ -114,10 +114,9 @@ constexpr auto ssqrt(T const S) noexcept
   return (xo + xn) / T(2);
 }
 
-template <unsigned M>
-inline auto exact_sqrt(dpp::dpp<M> const& a) noexcept
+template <typename T>
+inline auto exact_sqrt(dpp::dpp<T> const& a) noexcept
 {
-  using T = typename dpp::dpp<M>::mantissa_type;
   using U = typename std::make_unsigned<T>::type;
   using V = intt::intt<U, 3>;
 
@@ -127,7 +126,7 @@ inline auto exact_sqrt(dpp::dpp<M> const& a) noexcept
   for (; m <= V::max() / 10; m *= 10, --e);
   if (e % 2) { ++e; m /= 10; }
 
-  return dpp::dpp<M>(intt::seqsqrt(m), e / 2);
+  return dpp::dpp<T>(intt::seqsqrt(m), e / 2);
 }
 
 void comp_euler64() noexcept
@@ -243,8 +242,8 @@ int main()
 
   std::cout << .1_d16 + .2_d64 << std::endl;
 
-  auto const a(dpp::to_decimal<dpp::d64>("1.23"));
-  auto const b(dpp::to_decimal<dpp::d64>("45.6"));
+  auto const a(dpp::to_decimal<dpp::dpp<intt::intt<std::uint64_t, 3>>>("1.23"));
+  auto const b(dpp::to_decimal<dpp::dpp<intt::intt<std::uint64_t, 3>>>("45.6"));
 
   std::cout << a << std::endl;
   std::cout << b << std::endl;

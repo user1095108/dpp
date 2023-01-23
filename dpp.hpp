@@ -50,7 +50,7 @@ concept integral =
 template <typename U>
 static constexpr auto is_signed_v(
   std::is_signed_v<U> ||
-  intt::detail::is_intt<U>::value ||
+  intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>
 );
 
@@ -129,7 +129,7 @@ consteval auto maxpow10e() noexcept
 
 }
 
-template <unsigned M>
+template <typename T> requires(detail::is_signed_v<T>)
 class dpp
 {
 public:
@@ -141,39 +141,30 @@ public:
     emax = detail::max_v<exp_type>
   };
 
-  using mantissa_type = std::conditional_t<
-    M == 16,
-    std::int16_t,
-    std::conditional_t<
-      M == 32,
-      std::int32_t,
-      std::conditional_t<
-        M == 64,
-        std::int64_t,
-        void
-      >
-    >
-  >;
+  using mantissa_type = T;
 
-  enum : mantissa_type
-  {
-    mmin = detail::min_v<mantissa_type>,
-    mmax = detail::max_v<mantissa_type>
-  };
+  static constexpr auto mmin{detail::min_v<T>};
+  static constexpr auto mmax{detail::max_v<T>};
 
   using doubled_t = std::conditional_t<
-    std::is_same_v<mantissa_type, std::int16_t>,
+    std::is_same_v<T, std::int16_t>,
     std::int32_t,
     std::conditional_t<
-      std::is_same_v<mantissa_type, std::int32_t>,
+      std::is_same_v<T, std::int32_t>,
       std::int64_t,
       std::conditional_t<
-        std::is_same_v<mantissa_type, std::int64_t>,
+        std::is_same_v<T, std::int64_t>,
         DPP_INT128T,
-        void
+        std::conditional_t<
+          intt::is_intt_v<T>,
+          typename intt::detail::double_<T>::type,
+          void
+        >
       >
     >
   >;
+
+  enum : int_t { dp__ = detail::maxpow10e<doubled_t>() };
 
 public:
   struct
@@ -198,7 +189,8 @@ public:
     }
     else
     {
-      if constexpr(detail::is_signed_v<U> && (detail::bit_size_v<U> > M))
+      if constexpr(detail::is_signed_v<U> &&
+        (detail::bit_size_v<U> > detail::bit_size_v<T>))
       {
         if (m < mmin)
         {
@@ -213,7 +205,8 @@ public:
           m = (m + 5) / 10;
         }
       }
-      else if constexpr(std::is_unsigned_v<U> && (detail::bit_size_v<U> >= M))
+      else if constexpr(std::is_unsigned_v<U> &&
+        (detail::bit_size_v<U> >= detail::bit_size_v<T>))
       {
         if (m > mmax)
         {
@@ -233,8 +226,8 @@ public:
 
   constexpr dpp(detail::integral auto const m) noexcept: dpp(m, {}) { }
 
-  template <unsigned A>
-  constexpr dpp(dpp<A> const& o) noexcept:
+  template <typename U>
+  constexpr dpp(dpp<U> const& o) noexcept:
     dpp(o.mantissa(), o.exponent())
   {
   }
@@ -278,8 +271,8 @@ public:
     return v_.m || isnan(*this);
   }
 
-  template <std::floating_point T>
-  explicit (sizeof(T) != sizeof(v_.m)) operator T() const noexcept
+  template <std::floating_point U>
+  explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
   {
     if (isnan(*this))
     {
@@ -291,7 +284,7 @@ public:
 
       for (; !(m % 10); m /= 10, ++e);
 
-      return m * std::pow(T{10}, e);
+      return m * std::pow(U{10}, e);
     }
     else
     {
@@ -300,8 +293,8 @@ public:
   }
 
   // this function is unsafe, take a look at to_integral() for safety
-  template <detail::integral T>
-  constexpr explicit operator T() const noexcept
+  template <detail::integral U>
+  constexpr explicit operator U() const noexcept
   {
     if (auto e(v_.e); e < 0)
     {
@@ -313,7 +306,7 @@ public:
     }
     else
     {
-      return v_.m * detail::pow<T, 10>(e);
+      return v_.m * detail::pow<U, 10>(e);
     }
   }
 
@@ -444,16 +437,14 @@ public:
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    enum : int_t { dp = detail::maxpow10e<doubled_t>() };
-
     if (auto const om(o.v_.m); !om || isnan(*this) || isnan(o))
     {
       return nan{};
     }
     else
     {
-      auto e(-dp + v_.e - o.v_.e);
-      auto m(detail::pow<doubled_t, 10>(dp) / o.v_.m);
+      auto e(-dp__ + v_.e - o.v_.e);
+      auto m(detail::pow<doubled_t, 10>(dp__) / o.v_.m);
 
       if (m < mmin)
       {
@@ -510,16 +501,16 @@ public:
   constexpr auto mantissa() const noexcept { return v_.m; }
 };
 
-using d64 = dpp<64>;
-using d32 = dpp<32>;
-using d16 = dpp<16>;
+using d64 = dpp<std::int64_t>;
+using d32 = dpp<std::int32_t>;
+using d16 = dpp<std::int16_t>;
 
 // type promotions
 #define DPP_TYPE_PROMOTION__(OP)\
-template <unsigned A, unsigned B>\
+template <typename A, typename B>\
 constexpr auto operator OP (dpp<A> const& a, dpp<B> const& b) noexcept\
 {\
-  if constexpr(A < B)\
+  if constexpr(detail::bit_size_v<A> < detail::bit_size_v<B>)\
     return dpp<B>(a) OP b;\
   else\
     return a OP dpp<A>(b);\
@@ -531,7 +522,7 @@ DPP_TYPE_PROMOTION__(*)
 DPP_TYPE_PROMOTION__(/)
 DPP_TYPE_PROMOTION__(<=>)
 
-template <unsigned A, unsigned B>
+template <typename A, typename B>
 constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
 {
   return a <=> b == 0;
@@ -539,7 +530,7 @@ constexpr bool operator==(dpp<A> const& a, dpp<B> const& b) noexcept
 
 // conversions
 #define DPP_LEFT_CONVERSION__(OP)\
-template <unsigned A>\
+template <typename A>\
 constexpr auto operator OP (detail::arithmetic auto const a,\
   dpp<A> const& b) noexcept\
 {\
@@ -559,7 +550,7 @@ DPP_LEFT_CONVERSION__(>=)
 DPP_LEFT_CONVERSION__(<=>)
 
 #define DPP_RIGHT_CONVERSION__(OP)\
-template <unsigned A>\
+template <typename A>\
 constexpr auto operator OP (dpp<A> const& a,\
   detail::arithmetic auto const b) noexcept\
 {\
@@ -579,22 +570,22 @@ DPP_RIGHT_CONVERSION__(>=)
 DPP_RIGHT_CONVERSION__(<=>)
 
 // utilities
-template <unsigned M>
-constexpr auto isnan(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto isnan(dpp<T> const& a) noexcept
 {
-  return dpp<M>::emin == a.exponent();
+  return dpp<T>::emin == a.exponent();
 }
 
 //
-template <unsigned M>
-constexpr auto abs(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto abs(dpp<T> const& a) noexcept
 {
   return a.mantissa() < 0 ? -a : a;
 }
 
 //
-template <unsigned M>
-constexpr auto trunc(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto trunc(dpp<T> const& a) noexcept
 {
   if (!isnan(a) && (a.exponent() < 0))
   {
@@ -602,7 +593,7 @@ constexpr auto trunc(dpp<M> const& a) noexcept
 
     for (int_t e(a.exponent()); m && e; ++e, m /= 10);
 
-    return dpp<M>(m, {}, direct{});
+    return dpp<T>(m, {}, direct{});
   }
   else
   {
@@ -610,26 +601,26 @@ constexpr auto trunc(dpp<M> const& a) noexcept
   }
 }
 
-template <unsigned M>
-constexpr auto ceil(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto ceil(dpp<T> const& a) noexcept
 {
   auto const t(trunc(a));
 
   return t + (t < a);
 }
 
-template <unsigned M>
-constexpr auto floor(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto floor(dpp<T> const& a) noexcept
 {
   auto const t(trunc(a));
 
   return t - (t > a);
 }
 
-template <unsigned M>
-constexpr auto round(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto round(dpp<T> const& a) noexcept
 {
-  dpp<M> const c{5, -1, direct{}};
+  dpp<T> const c{5, -1, direct{}};
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < 0 ? a - c : a + c) :
@@ -637,18 +628,19 @@ constexpr auto round(dpp<M> const& a) noexcept
 }
 
 //
-template <unsigned M>
-constexpr auto inv(dpp<M> const& a) noexcept
+template <typename T>
+constexpr auto inv(dpp<T> const& a) noexcept
 {
-  using doubled_t = typename dpp<M>::doubled_t;
-
-  enum : int_t { dp = detail::maxpow10e<doubled_t>() };
+  using doubled_t = typename dpp<T>::doubled_t;
 
   auto const m(a.mantissa());
 
   return !m || isnan(a) ?
-    dpp<M>{nan{}} :
-    dpp<M>{detail::pow<doubled_t, 10>(dp) / m, -dp - a.exponent()};
+    dpp<T>{nan{}} :
+    dpp<T>{
+      detail::pow<doubled_t, 10>(dpp<T>::dp__) / m,
+      -dpp<T>::dp__ - a.exponent()
+    };
 }
 
 // conversions
@@ -771,13 +763,13 @@ constexpr auto to_decimal(auto const& s) noexcept ->
   return to_decimal<T>(std::cbegin(s), std::cend(s));
 }
 
-template <typename T = std::intmax_t, unsigned M>
-constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
+template <typename U = std::intmax_t, typename T>
+constexpr std::optional<T> to_integral(dpp<T> const& p) noexcept
 {
-  enum : T
+  enum : U
   {
-    min = detail::min_v<T>,
-    max = detail::max_v<T>
+    min = detail::min_v<U>,
+    max = detail::max_v<U>
   };
 
   if (isnan(p))
@@ -817,8 +809,8 @@ constexpr std::optional<T> to_integral(dpp<M> const& p) noexcept
   }
 }
 
-template <unsigned M>
-std::string to_string(dpp<M> const& a)
+template <typename T>
+std::string to_string(dpp<T> const& a)
 {
   if (isnan(a))
   {
@@ -839,7 +831,16 @@ std::string to_string(dpp<M> const& a)
     }
 
     //
-    auto r(std::to_string(m));
+    std::string r;
+
+    if constexpr(intt::is_intt_v<T>)
+    {
+      r = intt::to_string(m);
+    }
+    else
+    {
+      r = std::to_string(m);
+    }
 
     if (e < 0)
     {
@@ -864,8 +865,8 @@ std::string to_string(dpp<M> const& a)
   }
 }
 
-template <unsigned M>
-inline auto& operator<<(std::ostream& os, dpp<M> const& p)
+template <typename T>
+inline auto& operator<<(std::ostream& os, dpp<T> const& p)
 {
   return os << to_string(p);
 }
@@ -893,16 +894,16 @@ DPP_LITERAL__(64)
 namespace std
 {
 
-template <unsigned M>
-struct hash<dpp::dpp<M>>
+template <typename T>
+struct hash<dpp::dpp<T>>
 {
-  auto operator()(dpp::dpp<M> const& a) const noexcept
+  auto operator()(dpp::dpp<T> const& a) const noexcept
   {
     if (dpp::isnan(a))
     { // unique nan
       return dpp::detail::hash_combine(
         decltype(a.mantissa()){},
-        dpp::int_t(dpp::dpp<M>::emin)
+        dpp::int_t(dpp::dpp<T>::emin)
       );
     }
     else if (auto m(a.mantissa()); m)
