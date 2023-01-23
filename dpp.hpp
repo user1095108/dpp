@@ -120,9 +120,11 @@ constexpr T pow(int_t e) noexcept
 template <typename U>
 consteval auto maxpow10e() noexcept
 {
+  auto const k(detail::max_v<U> / U(10));
+
   int_t e{};
 
-  for (U x(1); x <= detail::max_v<U> / 10; x *= U(10), ++e);
+  for (U x(1); x <= k; x *= U(10), ++e);
 
   return e;
 }
