@@ -26,6 +26,7 @@ int main()
   std::cout << eps<dpp::d16>() << std::endl;
   std::cout << eps<dpp::d32>() << std::endl;
   std::cout << eps<dpp::d64>() << std::endl;
+  std::cout << eps<dpp::dpp<intt::intt<std::uint64_t, 3>>>() << std::endl;
 
   return 0;
 }
