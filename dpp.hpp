@@ -196,13 +196,13 @@ public:
       {
         if (m < mmin)
         {
-          for (++e; m < 10 * U(mmin) + 5; m /= 10, ++e);
+          for (++e; m < intt::coeff<10 * U(mmin) + 5>(); m /= 10, ++e);
 
           m = (m - 5) / 10;
         }
         else if (m > mmax)
         {
-          for (++e; m > 10 * U(mmax) - 5; m /= 10, ++e);
+          for (++e; m > intt::coeff<10 * U(mmax) - 5>(); m /= 10, ++e);
 
           m = (m + 5) / 10;
         }
@@ -212,7 +212,7 @@ public:
       {
         if (m > mmax)
         {
-          for (++e; m > 10 * U(mmax) - 5; m /= 10, ++e);
+          for (++e; m > intt::coeff<10 * U(mmax) - 5>(); m /= 10, ++e);
 
           m = (m + 5) / 10;
         }
@@ -446,17 +446,17 @@ public:
     else
     {
       auto e(-dp__ + v_.e - o.v_.e);
-      auto m(detail::pow<doubled_t, 10>(dp__) / o.v_.m);
+      auto m(intt::coeff<detail::pow<doubled_t, 10>(dp__)>() / o.v_.m);
 
       if (m < mmin)
       {
-        for (++e; m < 10 * doubled_t(mmin) + 5; m /= 10, ++e);
+        for (++e; m < intt::coeff<10 * doubled_t(mmin) + 5>(); m /= 10, ++e);
 
         m = (m - 5) / 10;
       }
       else if (m > mmax)
       {
-        for (++e; m > 10 * doubled_t(mmax) - 5; m /= 10, ++e);
+        for (++e; m > intt::coeff<10 * doubled_t(mmax) - 5>(); m /= 10, ++e);
 
         m = (m + 5) / 10;
       }
@@ -640,7 +640,7 @@ constexpr auto inv(dpp<T> const& a) noexcept
   return !m || isnan(a) ?
     dpp<T>{nan{}} :
     dpp<T>{
-      detail::pow<doubled_t, 10>(dpp<T>::dp__) / m,
+      intt::coeff<detail::pow<doubled_t, 10>(dpp<T>::dp__)>() / m,
       -dpp<T>::dp__ - a.exponent()
     };
 }
