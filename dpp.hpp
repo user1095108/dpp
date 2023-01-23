@@ -81,12 +81,14 @@ constexpr void shift_left(auto& m, int_t& e, int_t i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
   {
-    for (; (m >= min_v<std::remove_cvref_t<decltype(m)>> / 20) && i;
+    for (;
+      (m >= intt::coeff<min_v<std::remove_cvref_t<decltype(m)>> / 20>()) && i;
       --i, m *= 10, --e);
   }
   else
   {
-    for (; (m <= max_v<std::remove_cvref_t<decltype(m)>> / 20) && i;
+    for (;
+      (m <= intt::coeff<max_v<std::remove_cvref_t<decltype(m)>> / 20>()) && i;
       --i, m *= 10, --e);
   }
 }
