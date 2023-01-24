@@ -516,7 +516,6 @@ public:
   constexpr auto mantissa() const noexcept { return v_.m; }
 };
 
-using d512 = dpp<intt::intt<std::uint64_t, 8>>;
 using d256 = dpp<intt::intt<std::uint64_t, 4>>;
 using d128 = dpp<intt::intt<std::uint64_t, 2>>;
 using d64 = dpp<std::int64_t>;
@@ -899,6 +898,8 @@ constexpr auto operator "" _d ## ID() noexcept\
 DPP_LITERAL__(16)
 DPP_LITERAL__(32)
 DPP_LITERAL__(64)
+DPP_LITERAL__(128)
+DPP_LITERAL__(256)
 
 }
 
