@@ -846,16 +846,10 @@ std::string to_string(dpp<T> const& a)
     }
 
     //
-    std::string r;
+    using intt::to_string;
+    using std::to_string;
 
-    if constexpr(intt::is_intt_v<T>)
-    {
-      r = intt::to_string(m);
-    }
-    else
-    {
-      r = std::to_string(m);
-    }
+    auto r(to_string(m));
 
     if (e < 0)
     {
