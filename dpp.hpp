@@ -196,15 +196,15 @@ public:
       if constexpr(detail::is_signed_v<U> &&
         (detail::bit_size_v<U> > detail::bit_size_v<T>))
       {
-        if (m < intt::coeff<mmin>())
+        if (m < intt::coeff<U(mmin)>())
         {
-          for (++e; m < intt::coeff<10 * U(mmin) + 5>(); m /= 10, ++e);
+          for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
 
           m = (m - 5) / 10;
         }
-        else if (m > intt::coeff<mmax>())
+        else if (m > intt::coeff<U(mmax)>())
         {
-          for (++e; m > intt::coeff<10 * U(mmax) - 5>(); m /= 10, ++e);
+          for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
 
           m = (m + 5) / 10;
         }
@@ -212,9 +212,9 @@ public:
       else if constexpr(std::is_unsigned_v<U> &&
         (detail::bit_size_v<U> >= detail::bit_size_v<T>))
       {
-        if (m > intt::coeff<mmax>())
+        if (m > intt::coeff<U(mmax)>())
         {
-          for (++e; m > intt::coeff<10 * U(mmax) - 5>(); m /= 10, ++e);
+          for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
 
           m = (m + 5) / 10;
         }
@@ -454,13 +454,13 @@ public:
       auto e(-dp__ + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow<doubled_t, 10>(dp__)>() / o.v_.m);
 
-      if (m < intt::coeff<mmin>())
+      if (m < intt::coeff<doubled_t(mmin)>())
       {
         for (++e; m < intt::coeff<10 * doubled_t(mmin) + 5>(); m /= 10, ++e);
 
         m = (m - 5) / 10;
       }
-      else if (m > intt::coeff<mmax>())
+      else if (m > intt::coeff<doubled_t(mmax)>())
       {
         for (++e; m > intt::coeff<10 * doubled_t(mmax) - 5>(); m /= 10, ++e);
 
