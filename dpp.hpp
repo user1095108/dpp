@@ -451,18 +451,20 @@ public:
     }
     else
     {
-      auto e(-dp__ + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow<doubled_t, 10>(dp__)>() / o.v_.m);
+      using U = doubled_t;
 
-      if (m < intt::coeff<doubled_t(mmin)>())
+      auto e(-dp__ + v_.e - o.v_.e);
+      auto m(intt::coeff<detail::pow<U, 10>(dp__)>() / o.v_.m);
+
+      if (m < intt::coeff<U(mmin)>())
       {
-        for (++e; m < intt::coeff<10 * doubled_t(mmin) + 5>(); m /= 10, ++e);
+        for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
 
         m = (m - 5) / 10;
       }
-      else if (m > intt::coeff<doubled_t(mmax)>())
+      else if (m > intt::coeff<U(mmax)>())
       {
-        for (++e; m > intt::coeff<10 * doubled_t(mmax) - 5>(); m /= 10, ++e);
+        for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
 
         m = (m + 5) / 10;
       }
@@ -597,7 +599,7 @@ constexpr auto isnan(dpp<T> const& a) noexcept
 template <typename T>
 constexpr auto abs(dpp<T> const& a) noexcept
 {
-  return a.mantissa() < 0 ? -a : a;
+  return a.mantissa() < T{} ? -a : a;
 }
 
 //
@@ -640,7 +642,7 @@ constexpr auto round(dpp<T> const& a) noexcept
   dpp<T> const c{5, -1, direct{}};
 
   return a.exponent() < 0 ?
-    trunc(a.mantissa() < 0 ? a - c : a + c) :
+    trunc(a.mantissa() < T{} ? a - c : a + c) :
     a;
 }
 
@@ -796,7 +798,7 @@ constexpr std::optional<T> to_integral(dpp<T> const& p) noexcept
       for (; m && e; ++e, m /= 10);
 
       if ((m < intt::coeff<detail::min_v<U>>()) ||
-        (m > intt::coeff<detail::max_v<U>()>()))
+        (m > intt::coeff<detail::max_v<U>>()))
       {
         return {};
       }
@@ -806,13 +808,13 @@ constexpr std::optional<T> to_integral(dpp<T> const& p) noexcept
       do
       {
         if ((m >= intt::coeff<detail::min_v<U> / 10>()) &&
-          (m <= intt::coeff<detail::max_v<U>() / 10>()))
+          (m <= intt::coeff<detail::max_v<U> / 10>()))
         {
           m *= 10;
         }
         else
         {
-          return {}; // not representable
+          return {};
         }
       }
       while (--e);
