@@ -859,7 +859,7 @@ std::string to_string(dpp<T> const& a)
 
     if (e < 0)
     {
-      auto const neg(m < 0);
+      auto const neg(m < T{});
 
       if (int_t const n(r.size() - neg + e); n > 0)
       {
