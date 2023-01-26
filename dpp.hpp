@@ -639,7 +639,7 @@ constexpr auto floor(dpp<T> const& a) noexcept
 template <typename T>
 constexpr auto round(dpp<T> const& a) noexcept
 {
-  dpp<T> const c{5, -1, direct{}};
+  auto const c(intt::coeff<dpp<T>{5, -1, direct{}}>());
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < T{} ? a - c : a + c) :
