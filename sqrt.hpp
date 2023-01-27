@@ -31,7 +31,7 @@ constexpr auto sqrt(dpp<T> const& a) noexcept
   using U = typename std::make_unsigned<T>::type;
   using V = intt::intt<U, 3>;
 
-  return detail::sqrt<T>(V(a.mantissa(), intt::direct{}), a.exponent());
+  return detail::sqrt<T>(V(intt::direct{}, U(a.mantissa())), a.exponent());
 }
 
 template <intt::intt_type T>
