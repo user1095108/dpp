@@ -11,7 +11,7 @@ namespace detail
 {
 
 template <typename T>
-constexpr auto sqrt(auto m, int_t e) noexcept
+constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
 {
   using V = decltype(m);
 
