@@ -6,7 +6,7 @@
 
 #include <iomanip>
 
-#include "dpp.hpp"
+#include "sqrt.hpp"
 
 using namespace dpp::literals;
 
@@ -114,21 +114,6 @@ constexpr auto ssqrt(T const S) noexcept
   return (xo + xn) / T(2);
 }
 
-template <typename T>
-inline auto exact_sqrt(dpp::dpp<T> const& a) noexcept
-{
-  using U = typename std::make_unsigned<T>::type;
-  using V = intt::intt<U, 3>;
-
-  V m(intt::direct{}, U(a.mantissa()));
-  dpp::int_t e(a.exponent());
-
-  for (; m <= V::max() / 10; m *= 10, --e);
-  if (e % 2) { ++e; m /= 10; }
-
-  return dpp::dpp<T>(intt::seqsqrt(m), e / 2);
-}
-
 void comp_euler64() noexcept
 {
   auto const f([](auto const& y, auto const&) noexcept
@@ -156,7 +141,7 @@ void comp_sqrt32(unsigned const s) noexcept
     to_string(ssqrt(std::decimal::decimal32(s))) << " " <<
 #endif
     ssqrt(dpp::d32(s)) << " " <<
-    exact_sqrt(dpp::d32(s)) << std::endl;
+    sqrt(dpp::d32(s)) << std::endl;
 }
 
 void comp_sqrt64(unsigned const s) noexcept
@@ -167,7 +152,7 @@ void comp_sqrt64(unsigned const s) noexcept
     to_string(ssqrt(std::decimal::decimal64(s))) << " " <<
 #endif
     ssqrt(dpp::d64(s)) << " " <<
-    exact_sqrt(dpp::d64(s)) << std::endl;
+    sqrt(dpp::d64(s)) << std::endl;
 }
 
 void comp_trapezoidal64() noexcept
