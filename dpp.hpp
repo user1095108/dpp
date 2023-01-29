@@ -707,7 +707,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         if (neg)
         {
-          if (r >= min / 10)
+          if (r >= intt::coeff<min / 10>())
           {
             if (auto const t(10 * r); t >= min + d)
             {
@@ -717,7 +717,7 @@ constexpr T to_decimal(std::input_iterator auto i,
             }
           }
         }
-        else if (r <= max / 10)
+        else if (r <= intt::coeff<max / 10>())
         {
           if (auto const t(10 * r); t <= max - d)
           {
