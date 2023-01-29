@@ -685,7 +685,6 @@ constexpr T to_decimal(std::input_iterator auto i,
     {
       case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
-      case '.':
         break;
 
       case '-':
@@ -759,7 +758,10 @@ constexpr T to_decimal(std::input_iterator auto i,
       break;
     }
 
-    return {neg ? r : -(min == r ? r / 10 : r), min == r ? e + 1 : e};
+    return {
+      neg ? r : -(min == r ? r / 10 : r),
+      !neg && (min == r) ? e + 1 : e
+    };
   }
 }
 
