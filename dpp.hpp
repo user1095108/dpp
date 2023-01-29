@@ -705,23 +705,11 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     auto const scandigit([&](decltype(r) const d) noexcept
       {
-        if (neg)
+        if (r >= intt::coeff<min / 10>())
         {
-          if (r >= intt::coeff<min / 10>())
+          if (auto const t(10 * r); t >= min + d)
           {
-            if (auto const t(10 * r); t >= min + d)
-            {
-              r = t - d;
-
-              return false;
-            }
-          }
-        }
-        else if (r <= intt::coeff<max / 10>())
-        {
-          if (auto const t(10 * r); t <= max - d)
-          {
-            r = t + d;
+            r = t - d;
 
             return false;
           }
@@ -771,7 +759,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       break;
     }
 
-    return {r, e};
+    return {neg ? r : min == r ? -(r / 10) : -r, e};
   }
 }
 
