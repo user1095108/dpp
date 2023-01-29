@@ -759,7 +759,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       break;
     }
 
-    return {neg ? r : min == r ? -(r / 10) : -r, e};
+    return {neg ? r : min == r ? ++e, -(r / 10) : -r, e};
   }
 }
 
