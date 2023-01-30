@@ -900,18 +900,10 @@ struct hash<dpp::dpp<T>>
     }
 
     //
-    return [](auto const& ...v) noexcept
-    {
-      std::size_t seed{672807365};
+    auto const seed(hash<decltype(m)>()(m));
 
-      return (
-        (
-          seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(v) +
-            0x9e3779b9 + (seed << 6) + (seed >> 2)
-        ),
-        ...
-      );
-    }(m, e);
+    return seed ^ hash<decltype(e)>()(e) + 0x9e3779b9 +
+      (seed << 6) + (seed >> 2);
   }
 };
 

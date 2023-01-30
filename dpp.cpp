@@ -128,9 +128,9 @@ void comp_euler64() noexcept
     to_string(euler(std::decimal::decimal64(1),
       std::decimal::decimal64(0),
       std::decimal::decimal64(1),
-      std::decimal::decimal64(.000001), f)) << " " <<
+      std::decimal::decimal64(0.000001), f)) << " " <<
 #endif
-    euler(1_d64, 0_d64, 1_d64, .000001_d64, f) << std::endl;
+    euler(1_d64, 0_d64, 1_d64, 0.000001_d64, f) << std::endl;
 }
 
 void comp_sqrt32(unsigned const s) noexcept
