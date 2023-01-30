@@ -225,7 +225,7 @@ int main()
   //
   std::cout << std::endl;
 
-  std::cout << .1_d16 + .2_d64 << std::endl;
+  std::cout << 0.1_d16 + 0.2_d64 << std::endl;
 
   auto const a(dpp::to_decimal<dpp::d64>("1.23"));
   auto const b(dpp::to_decimal<dpp::d64>("45.6"));

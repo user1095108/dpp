@@ -63,20 +63,6 @@ static constexpr U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 static constexpr U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
-constexpr auto hash_combine(auto&& ...v) noexcept requires(bool(sizeof...(v)))
-{
-  std::size_t seed{672807365};
-
-  return (
-    (
-      seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(
-        std::forward<decltype(v)>(v)) + 0x9e3779b9 + (seed << 6) +
-        (seed >> 2)
-    ),
-    ...
-  );
-}
-
 constexpr void shift_left(auto& m, int_t& e, int_t i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
@@ -897,25 +883,35 @@ struct hash<dpp::dpp<T>>
 {
   auto operator()(dpp::dpp<T> const& a) const noexcept
   {
+    decltype(a.mantissa()) m;
+    dpp::int_t e;
+
     if (dpp::isnan(a))
     { // unique nan
-      return dpp::detail::hash_combine(
-        decltype(a.mantissa()){},
-        dpp::int_t(dpp::dpp<T>::emin)
-      );
+      m = {};
     }
-    else if (auto m(a.mantissa()); m)
-    {
-      dpp::int_t e(a.exponent());
-
-      for (; !(m % 10); m /= 10, ++e); // slash zeros
-
-      return dpp::detail::hash_combine(m, e);
+    else if ((m = a.mantissa()))
+    { // unique everything
+      for (e = a.exponent(); !(m % 10); m /= 10, ++e); // slash zeros
     }
     else
     { // unique zero
-      return dpp::detail::hash_combine(decltype(m){}, dpp::int_t{});
+      e = {};
     }
+
+    //
+    return [](auto const& ...v) noexcept
+    {
+      std::size_t seed{672807365};
+
+      return (
+        (
+          seed ^= std::hash<std::remove_cvref_t<decltype(v)>>()(v) +
+            0x9e3779b9 + (seed << 6) + (seed >> 2)
+        ),
+        ...
+      );
+    }(m, e);
   }
 };
 
