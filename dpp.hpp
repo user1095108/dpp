@@ -881,9 +881,15 @@ namespace std
 template <typename T>
 struct hash<dpp::dpp<T>>
 {
-  constexpr auto operator()(dpp::dpp<T> const& a) const noexcept
+  constexpr auto operator()(dpp::dpp<T> const& a)
+    noexcept(
+      noexcept(std::declval<std::hash<T>>()(std::declval<T>())) &&
+      noexcept(
+        std::declval<std::hash<dpp::int_t>>()(std::declval<dpp::int_t>())
+      )
+    )
   {
-    decltype(a.mantissa()) m;
+    T m;
     dpp::int_t e;
 
     if (dpp::isnan(a))
@@ -902,8 +908,8 @@ struct hash<dpp::dpp<T>>
     //
     auto const seed(std::hash<decltype(m)>()(m));
 
-    return seed ^ (std::hash<decltype(e)>()(e) + intt::IGR +
-      (seed << 6) + (seed >> 2));
+    return seed ^ (std::hash<decltype(e)>()(e) + intt::IGR + (seed << 6) +
+      (seed >> 2));
   }
 };
 
