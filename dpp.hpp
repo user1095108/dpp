@@ -909,8 +909,8 @@ struct hash<dpp::dpp<T>>
     //
     auto const seed(std::hash<decltype(m)>()(m));
 
-    return seed ^ (std::hash<decltype(e)>()(e) + intt::IGR + (seed << 6) +
-      (seed >> 2));
+    return seed ^ (std::hash<decltype(e)>()(e) + intt::coeff<magic::igr()>() +
+      (seed << 6) + (seed >> 2));
   }
 };
 
