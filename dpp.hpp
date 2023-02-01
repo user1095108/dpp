@@ -891,7 +891,7 @@ struct hash<dpp::dpp<T>>
     )
   {
     T m;
-    dpp::int_t e;
+    dpp::int_t e(a.exponent());
 
     if (dpp::isnan(a))
     { // unique nan
@@ -899,7 +899,7 @@ struct hash<dpp::dpp<T>>
     }
     else if ((m = a.mantissa()))
     { // unique everything
-      for (e = a.exponent(); !(m % 10); m /= 10, ++e); // slash zeros
+      for (; !(m % 10); m /= 10, ++e); // slash zeros
     }
     else
     { // unique zero
