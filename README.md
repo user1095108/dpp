@@ -3,7 +3,7 @@
 This is an easily understandable arbitrary-precision decimal floating-point library for non-critical tasks and testing. The library does not adhere to any standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
 
 # build instructions
-    git submodule init --update
+    git submodule update --init
     g++ -std=c++2a -Ofast -s mandelbrot.cpp -o m
     em++ -std=c++20 -O3 -s eps.cpp -o e.js
 # resources
