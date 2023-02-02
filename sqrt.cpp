@@ -2,18 +2,20 @@
 
 #include "sqrt.hpp"
 
+using namespace dpp::literals;
+
 int main()
 {
-  std::cout << dpp::sqrt(dpp::d16(2)) << std::endl;
-  std::cout << dpp::sqrt(dpp::d24(2)) << std::endl;
-  std::cout << dpp::sqrt(dpp::d32(2)) << std::endl;
-  std::cout << dpp::sqrt(dpp::d48(2)) << std::endl;
-  std::cout << dpp::sqrt(dpp::d64(2)) << std::endl;
-  std::cout << dpp::sqrt(dpp::d96(2)) << std::endl;
-  std::cout << dpp::sqrt(dpp::d256(2)) << std::endl;
+  std::cout << dpp::sqrt(2_d16) << std::endl;
+  std::cout << dpp::sqrt(2_d24) << std::endl;
+  std::cout << dpp::sqrt(2_d32) << std::endl;
+  std::cout << dpp::sqrt(2_d48) << std::endl;
+  std::cout << dpp::sqrt(2_d64) << std::endl;
+  std::cout << dpp::sqrt(2_d96) << std::endl;
+  std::cout << dpp::sqrt(2_d256) << std::endl;
 
   //
-  auto const igr(2 / (1 + dpp::sqrt(dpp::d256(5))));
+  auto const igr(2 / (1 + dpp::sqrt(5_d256)));
 
   std::cout << igr << std::endl;
 

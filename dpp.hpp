@@ -859,8 +859,11 @@ constexpr auto operator "" _d ## ID() noexcept\
 }
 
 DPP_LITERAL__(16)
+DPP_LITERAL__(24)
 DPP_LITERAL__(32)
+DPP_LITERAL__(48)
 DPP_LITERAL__(64)
+DPP_LITERAL__(96)
 DPP_LITERAL__(128)
 DPP_LITERAL__(256)
 
