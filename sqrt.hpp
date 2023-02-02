@@ -12,7 +12,7 @@ namespace detail
 
 template <typename T>
 constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
-{
+{ // no time for checks, write your own, if you need them
   using V = decltype(m);
 
   m *= intt::coeff<
