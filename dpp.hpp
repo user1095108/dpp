@@ -903,10 +903,10 @@ struct hash<dpp::dpp<T>>
     }
 
     //
-    auto const seed(std::hash<decltype(m)>()(m));
+    auto const s(std::hash<decltype(m)>()(m));
 
-    return seed ^ (std::hash<decltype(e)>()(e) + intt::magic::IGR +
-      (seed << 6) + (seed >> 2));
+    return s ^ (std::hash<decltype(e)>()(e) + intt::magic::IGR +
+      (s << 6) + (s >> 2));
   }
 };
 
