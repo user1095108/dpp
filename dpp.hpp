@@ -2,19 +2,9 @@
 # define DPP_HPP
 # pragma once
 
-#include <climits>
 #include <cmath> // std::pow
-#include <cstdint>
-
-#include <concepts> // std::floating_point, std::integral
 #include <compare> // std::partial_ordering
-#include <functional> // std::hash
-#include <iterator> // std::begin(), std::end()
 #include <optional> // std::optional
-#include <ostream>
-#include <string>
-#include <type_traits>
-#include <utility> // std::forward()
 
 #include "intt/intt.hpp"
 
