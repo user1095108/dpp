@@ -15,10 +15,17 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
 {
   using V = decltype(m);
 
-  constexpr auto k(intt::coeff<V(10)>());
+  m *= intt::coeff<pow<V, 10>(
+      (V::words - 1) * maxpow10e<typename V::value_type>()
+    )>();
+  e -= intt::coeff<(V::words - 1) * maxpow10e<typename V::value_type>()>();
 
-  for (; m <= intt::coeff<V::max() / k>(); m *= k, --e);
-  if (e % 2) { ++e; m /= k; }
+  {
+    constexpr auto k(intt::coeff<V(10)>());
+
+    for (; m <= intt::coeff<V::max() / k>(); m *= k, --e);
+    if (e % 2) { ++e; m /= k; }
+  }
 
   return dpp<T>(intt::seqsqrt(m), e / 2);
 }
