@@ -23,7 +23,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   {
     constexpr auto k(intt::coeff<V(10)>());
 
-    for (; m <= intt::coeff<V::max() / k>(); m *= k, --e);
+    for (; m <= intt::coeff<V::max() / k>(); m = intt::hwmul(10, m), --e);
     if (e % 2) { ++e; m /= k; }
   }
 
