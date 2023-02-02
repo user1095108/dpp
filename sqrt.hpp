@@ -15,12 +15,16 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
 { // no time for checks, write your own, if you need them
   using V = decltype(m);
 
-  m *= intt::coeff<
-      pow<V, 10>((2 * V::words / 3) * maxpow10e<typename V::value_type>())
-    >();
-  e -= intt::coeff<
-      (2 * V::words / 3) * maxpow10e<typename V::value_type>()
-    >();
+  {
+    constexpr auto e0(
+      intt::coeff<
+        (2 * V::words / 3) * maxpow10e<typename V::value_type>()
+      >()
+    );
+
+    m *= intt::coeff<pow<V, 10>(e0)>();
+    e -= e0;
+  }
 
   {
     constexpr auto k(intt::coeff<V(10)>());
