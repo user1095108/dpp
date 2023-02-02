@@ -496,8 +496,11 @@ public:
 
 using d256 = dpp<intt::intt<std::uint64_t, 4>>;
 using d128 = dpp<intt::intt<std::uint64_t, 2>>;
+using d96 = dpp<intt::intt<std::uint32_t, 3>>;
 using d64 = dpp<std::int64_t>;
+using d48 = dpp<intt::intt<std::uint16_t, 3>>;
 using d32 = dpp<std::int32_t>;
+using d24 = dpp<intt::intt<std::uint8_t, 3>>;
 using d16 = dpp<std::int16_t>;
 
 // type promotions
