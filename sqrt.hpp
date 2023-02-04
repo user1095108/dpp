@@ -19,7 +19,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
     constexpr auto e0(
       intt::coeff<
         (1 * V::words / 2) * maxpow10e<typename V::value_type>()
-      >()
+      >() - 1
     );
 
     m *= intt::coeff<pow<V, 10>(e0)>();
@@ -27,9 +27,19 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   }
 
   //
-  for (; intt::ucompare(m, intt::coeff<V::max() / 10>()) <= 0;
-    m = intt::hwmul(10, m), --e);
-  if (e % 2) { ++e; m /= intt::coeff<V(10)>(); }
+  for (; intt::ucompare(m, intt::coeff<V::max() / 10>()) <= 0;)
+  {
+    if (auto const tmp(intt::hwmul(10, m));
+      !(e % 2) && intt::ucompare(tmp, intt::coeff<V::max() / 10>()) > 0)
+    {
+      break;
+    }
+    else
+    {
+      m = tmp;
+      --e;
+    }
+  }
 
   //
   return dpp<T>(intt::seqsqrt(m), e / 2);
