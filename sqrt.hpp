@@ -18,7 +18,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   {
     constexpr auto e0(
       intt::coeff<
-        (2 * V::words / 3) * maxpow10e<typename V::value_type>()
+        (1 * V::words / 2) * maxpow10e<typename V::value_type>()
       >()
     );
 
@@ -41,7 +41,7 @@ template <std::integral T>
 constexpr auto sqrt(dpp<T> const& a) noexcept
 {
   using U = typename std::make_unsigned<T>::type;
-  using V = intt::intt<U, 3>;
+  using V = intt::intt<U, 2>;
 
   return detail::sqrt<T>(V(intt::direct{}, U(a.mantissa())), a.exponent());
 }
@@ -50,7 +50,7 @@ template <intt::intt_type T>
 constexpr auto sqrt(dpp<T> const& a) noexcept
 {
   using U = typename std::make_unsigned<typename T::value_type>::type;
-  using V = intt::intt<U, 3 * T::size()>;
+  using V = intt::intt<U, 2 * T::size()>;
 
   return detail::sqrt<T>(V(a.mantissa(), intt::direct{}), a.exponent());
 }
