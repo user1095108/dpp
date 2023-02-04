@@ -18,8 +18,8 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   {
     constexpr auto e0(
       intt::coeff<
-        (1 * V::words / 2) * maxpow10e<typename V::value_type>()
-      >() - 1
+        (1 * V::words / 2) * maxpow10e<typename V::value_type>() - 1
+      >()
     );
 
     m *= intt::coeff<pow<V, 10>(e0)>();
