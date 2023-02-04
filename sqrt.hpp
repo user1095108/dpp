@@ -27,7 +27,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   }
 
   //
-  for (; intt::ucompare(m, intt::coeff<V::max() / 5>()) <= 0;)
+  while (intt::ucompare(m, intt::coeff<V::max() / 5>()) <= 0)
   {
     if (auto const tmp(intt::hwmul(10, m));
       !(e % 2) && intt::ucompare(tmp, intt::coeff<V::max() / 5>()) > 0)
