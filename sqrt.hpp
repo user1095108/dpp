@@ -22,8 +22,8 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
       >()
     );
 
-    m *= intt::coeff<pow<V, 10>(e0)>();
     e -= e0;
+    m *= intt::coeff<pow<V, 10>(e0)>();
   }
 
   //
