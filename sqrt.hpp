@@ -26,13 +26,12 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
     e -= e0;
   }
 
-  {
-    constexpr auto k(intt::coeff<V(10)>());
+  //
+  for (; intt::ucompare(m, intt::coeff<V::max() / 5>()) <= 0;
+    m = intt::hwmul(10, m), --e);
+  if (e % 2) { ++e; m /= intt::coeff<V(10)>(); }
 
-    for (; m <= intt::coeff<V::max() / k>(); m = intt::hwmul(10, m), --e);
-    if (e % 2) { ++e; m /= k; }
-  }
-
+  //
   return dpp<T>(intt::seqsqrt(m), e / 2);
 }
 
