@@ -29,19 +29,9 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   else
   {
     static_assert(1 == V::words);
+    using U = std::make_unsigned_t<T>;
 
-    using U = typename V::value_type;
-    using H = std::conditional_t<
-      std::is_same_v<U, std::uint64_t>,
-      std::uint32_t,
-      std::conditional_t<
-        std::is_same_v<U, std::uint32_t>,
-        std::uint16_t,
-        std::uint8_t
-      >
-    >;
-
-    constexpr auto e0(intt::coeff<maxpow10e<H>() - 1>());
+    constexpr auto e0(intt::coeff<maxpow10e<U>() - 1>());
 
     e -= e0;
     m *= intt::coeff<pow<V, 10>(e0)>();
@@ -79,7 +69,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
 template <std::integral T>
 constexpr auto sqrt(dpp<T> const& a) noexcept
 {
-  using U = typename std::make_unsigned<T>::type;
+  using U = std::make_unsigned_t<T>;
 
   if constexpr(std::is_same_v<U, std::uint64_t>)
   {
@@ -111,7 +101,7 @@ constexpr auto sqrt(dpp<T> const& a) noexcept
 template <intt::intt_type T>
 constexpr auto sqrt(dpp<T> const& a) noexcept
 {
-  using U = typename std::make_unsigned<typename T::value_type>::type;
+  using U = std::make_unsigned_t<typename T::value_type>;
   using V = intt::intt<U, 2 * T::size()>;
 
   return detail::sqrt<T>(V(a.mantissa(), intt::direct{}), a.exponent());
