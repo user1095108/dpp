@@ -15,6 +15,7 @@ int main()
   std::cout << dpp::sqrt(2_d256) << std::endl;
 
   //
+  std::cout << 1 / (1 + dpp::sqrt(2_d256)) << std::endl;
   std::cout << 2 / (1 + dpp::sqrt(5_d256)) << std::endl;
 
   //
