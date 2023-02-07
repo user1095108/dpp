@@ -12,7 +12,7 @@ namespace detail
 
 template <typename T>
 constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
-{ // no time for checks, write your own, if you need them
+{
   using V = decltype(m);
 
   {
@@ -30,7 +30,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   do
   {
     if (auto const tmp(intt::hwmul(10, m));
-      (e % 2) || intt::ucompare(tmp, intt::coeff<V::max() / 5>()) <= 0)
+      (e % 2) || (intt::ucompare(tmp, intt::coeff<V::max() / 5>()) <= 0))
     {
       --e;
       m = tmp;
