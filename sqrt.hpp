@@ -10,8 +10,9 @@ namespace dpp
 namespace detail
 {
 
-template <typename T>
-constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
+template <typename T, typename E>
+constexpr auto sqrt(intt::intt_type auto m,
+  typename dpp<T, E>::int_t e) noexcept
 {
   using V = decltype(m);
 
@@ -19,7 +20,8 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   {
     constexpr auto e0(
       intt::coeff<
-        (1 * V::words / 2) * maxpow10e<typename V::value_type>() - 1
+        (1 * V::words / 2) *
+        maxpow10e<typename V::value_type, decltype(e)>() - 1
       >()
     );
 
@@ -31,7 +33,7 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
     static_assert(1 == V::words);
     using U = std::make_unsigned_t<T>;
 
-    constexpr auto e0(intt::coeff<maxpow10e<U>() - 1>());
+    constexpr auto e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
 
     e -= e0;
     m *= intt::coeff<pow<V, 10>(e0)>();
@@ -56,18 +58,18 @@ constexpr auto sqrt(intt::intt_type auto m, int_t e) noexcept
   //
   if constexpr(V::words > 1)
   {
-    return dpp<T>(intt::seqsqrt(m), e / 2);
+    return dpp<T, E>(intt::seqsqrt(m), e / 2);
   }
   else
   {
-    return dpp<T>(typename V::value_type(intt::seqsqrt(m)), e / 2);
+    return dpp<T, E>(typename V::value_type(intt::seqsqrt(m)), e / 2);
   }
 }
 
 }
 
-template <std::integral T>
-constexpr auto sqrt(dpp<T> const& a) noexcept
+template <std::integral T, typename E>
+constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = std::make_unsigned_t<T>;
 
@@ -75,7 +77,9 @@ constexpr auto sqrt(dpp<T> const& a) noexcept
   {
     using V = intt::intt<U, 2>;
 
-    return detail::sqrt<T>(V(intt::direct{}, U(a.mantissa())), a.exponent());
+    return detail::sqrt<T, E>(
+        V(intt::direct{}, U(a.mantissa())), a.exponent()
+      );
   }
   else
   {
@@ -93,18 +97,24 @@ constexpr auto sqrt(dpp<T> const& a) noexcept
       >
     >;
     using V = intt::intt<D, 1>;
+    using int_t = typename dpp<T, E>::int_t;
 
-    return detail::sqrt<T>(V(intt::direct{}, D(a.mantissa())), a.exponent());
+    return detail::sqrt<T, E>(
+        V(intt::direct{}, D(a.mantissa())), int_t(a.exponent())
+      );
   }
 }
 
-template <intt::intt_type T>
-constexpr auto sqrt(dpp<T> const& a) noexcept
+template <intt::intt_type T, typename E>
+constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = std::make_unsigned_t<typename T::value_type>;
   using V = intt::intt<U, 2 * T::size()>;
+  using int_t = typename dpp<T, E>::int_t;
 
-  return detail::sqrt<T>(V(a.mantissa(), intt::direct{}), a.exponent());
+  return detail::sqrt<T, E>(
+      V(a.mantissa(), intt::direct{}), int_t(a.exponent())
+    );
 }
 
 }
