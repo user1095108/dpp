@@ -656,7 +656,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
     dpp<T, E>{nan{}} :
     dpp<T, E>{
       intt::coeff<detail::pow<doubled_t, 10>(int_t(dpp<T, E>::dp__))>() / m,
-      int_t(-dpp<T, E>::dp__) - a.exponent()
+      int_t(int_t(-dpp<T, E>::dp__) - a.exponent())
     };
 }
 
