@@ -447,7 +447,7 @@ public:
     {
       using U = doubled_t;
 
-      auto e(int_t(-dp__) + v_.e - o.v_.e);
+      auto e(-int_t(dp__) + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow<U, 10>(E(dp__))>() / o.v_.m);
 
       if (m < intt::coeff<U(mmin)>())
@@ -656,7 +656,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
     dpp<T, E>{nan{}} :
     dpp<T, E>{
       intt::coeff<detail::pow<doubled_t, 10>(E(dpp<T, E>::dp__))>() / m,
-      int_t(-dpp<T, E>::dp__) - a.exponent()
+      -int_t(dpp<T, E>::dp__) - a.exponent()
     };
 }
 
