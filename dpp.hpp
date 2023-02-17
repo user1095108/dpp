@@ -51,7 +51,8 @@ static constexpr U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 static constexpr U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
-constexpr void shift_left(auto& m, auto& e, auto i) noexcept
+constexpr void shift_left(auto& m, auto& e,
+  std::remove_cvref_t<decltype(e)> i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   if (m < 0)
   {
@@ -447,7 +448,7 @@ public:
     {
       using U = doubled_t;
 
-      int_t e(int_t(-dp__) + v_.e - o.v_.e);
+      int_t e(-dp__ + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow<U, 10>(int_t(dp__))>() / o.v_.m);
 
       if (m < intt::coeff<U(mmin)>())
@@ -656,7 +657,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
     dpp<T, E>{nan{}} :
     dpp<T, E>{
       intt::coeff<detail::pow<doubled_t, 10>(int_t(dpp<T, E>::dp__))>() / m,
-      int_t(int_t(-dpp<T, E>::dp__) - a.exponent())
+      int_t(-dpp<T, E>::dp__ - a.exponent())
     };
 }
 
