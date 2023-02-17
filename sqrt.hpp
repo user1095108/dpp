@@ -43,7 +43,7 @@ constexpr auto sqrt(intt::intt_type auto m,
   //
   do
   {
-    if (auto const tmp(intt::hwmul(10, m));
+    if (auto const tmp(intt::hwmul(m, 10));
       (e % 2) || (intt::ucompare(tmp, intt::coeff<V::max() / 5>()) <= 0))
     {
       --e;
