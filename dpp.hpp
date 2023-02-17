@@ -435,7 +435,7 @@ public:
   {
     return isnan(*this) || isnan(o) ?
       nan{} :
-      dpp(doubled_t(v_.m) * o.v_.m, int_t(int_t(v_.e) + o.v_.e));
+      dpp(doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e);
   }
 
   constexpr dpp operator/(dpp const& o) const noexcept
@@ -657,7 +657,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
     dpp<T, E>{nan{}} :
     dpp<T, E>{
       intt::coeff<detail::pow<doubled_t, 10>(int_t(dpp<T, E>::dp__))>() / m,
-      int_t(-dpp<T, E>::dp__ - a.exponent())
+      -dpp<T, E>::dp__ - a.exponent()
     };
 }
 
