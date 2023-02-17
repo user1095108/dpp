@@ -162,7 +162,7 @@ public:
     >
   >;
 
-  enum : int_t { dp__ = detail::maxpow10e<doubled_t, E>() };
+  enum : int_t { dp__ = detail::maxpow10e<doubled_t, int_t>() };
 
 public:
   struct
