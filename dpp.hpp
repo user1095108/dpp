@@ -4,7 +4,6 @@
 
 #include <cmath> // std::pow
 #include <compare> // std::partial_ordering
-#include <optional> // std::optional
 
 #include "intt/intt.hpp"
 
@@ -770,11 +769,11 @@ constexpr auto to_decimal(auto const& s) noexcept ->
 }
 
 template <typename U = std::intmax_t, typename T, typename E>
-constexpr std::optional<T> to_integral(dpp<T, E> const& p) noexcept
+constexpr auto to_integral(dpp<T, E> const& p) noexcept
 {
   if (isnan(p))
   {
-    return {};
+    return std::pair(p, true);
   }
   else
   {
@@ -787,7 +786,7 @@ constexpr std::optional<T> to_integral(dpp<T, E> const& p) noexcept
       if ((m < intt::coeff<detail::min_v<U>>()) ||
         (m > intt::coeff<detail::max_v<U>>()))
       {
-        return {};
+        return std::pair(m, true);
       }
     }
     else
@@ -801,13 +800,13 @@ constexpr std::optional<T> to_integral(dpp<T, E> const& p) noexcept
         }
         else
         {
-          return {};
+          return std::pair(m, true);
         }
       }
       while (--e);
     }
 
-    return m;
+    return std::pair(m, false);
   }
 }
 
