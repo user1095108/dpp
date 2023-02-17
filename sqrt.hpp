@@ -15,10 +15,11 @@ constexpr auto sqrt(intt::intt_type auto m,
   typename dpp<T, E>::int_t e) noexcept
 {
   using V = decltype(m);
+  using int_t = decltype(e);
 
   if constexpr(V::words > 1)
   {
-    constexpr auto e0(
+    constexpr int_t e0(
       intt::coeff<
         (1 * V::words / 2) *
         maxpow10e<typename V::value_type, decltype(e)>() - 1
@@ -33,7 +34,7 @@ constexpr auto sqrt(intt::intt_type auto m,
     static_assert(1 == V::words);
     using U = std::make_unsigned_t<T>;
 
-    constexpr auto e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
+    constexpr int_t e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
 
     e -= e0;
     m *= intt::coeff<pow<V, 10>(e0)>();
