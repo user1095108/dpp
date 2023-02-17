@@ -794,8 +794,8 @@ constexpr std::optional<T> to_integral(dpp<T, E> const& p) noexcept
     {
       do
       {
-        if ((m > intt::coeff<detail::min_v<U> / 10>()) &&
-          (m < intt::coeff<detail::max_v<U> / 10>()))
+        if ((m >= intt::coeff<detail::min_v<U> / 10>()) &&
+          (m <= intt::coeff<detail::max_v<U> / 10>()))
         {
           m *= 10;
         }
