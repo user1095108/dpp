@@ -230,24 +230,27 @@ public:
   {
   }
 
-  constexpr dpp(std::floating_point auto f) noexcept
+  constexpr dpp(std::floating_point auto a) noexcept
   {
-    if (std::isfinite(f))
+    if (std::isfinite(a))
     {
-      int_t e{};
+      int e2;
 
-      {
-        decltype(f) const k(10);
+      a = std::ldexp(
+          std::frexp(a, &e2),
+          detail::bit_size_v<std::intmax_t> - 1
+        );
 
-        // eliminate the fractional part, slash f, if necessary
-        for (; std::trunc(f) != f; f *= k, --e);
-        for (long double const
-          min(detail::min_v<std::intmax_t>),
-          max(detail::max_v<std::intmax_t>);
-          (f < min) || (f > max); f /= k, ++e);
-      }
+      e2 -= detail::bit_size_v<std::intmax_t> - 1;
 
-      *this = {std::intmax_t(f), e};
+      int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
+
+      //
+      a = std::ldexp(a, e2 - e10);
+
+      auto const b(detail::pow<decltype(a), 5>(std::abs(e10)));
+
+      *this = dpp(std::intmax_t(e10 <= 0 ? a * b : a / b), e10);
     }
     else
     {
