@@ -2,7 +2,6 @@
 # define DPP_HPP
 # pragma once
 
-#include <cmath> // std::pow
 #include <compare> // std::partial_ordering
 
 #include "intt/intt.hpp"
@@ -295,7 +294,9 @@ public:
 
       for (; !(m % 10); m /= 10, ++e);
 
-      return m * std::pow(U{10}, e);
+      auto const b(detail::pow<U, 5>(std::abs(e)));
+
+      return std::ldexp(e >= 0 ? m * b : m / b, int(e));
     }
     else
     {
