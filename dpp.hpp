@@ -42,7 +42,12 @@ static constexpr auto is_signed_v(
 );
 
 template <typename U>
-static constexpr auto bit_size_v(CHAR_BIT * sizeof(U));
+static constexpr std::size_t bit_size_v(CHAR_BIT * sizeof(U));
+
+template <typename U>
+constexpr std::size_t sig_size_v(
+  std::is_same_v<U, float> ? 24 : std::is_same_v<U, double> ? 53 : 64
+);
 
 template <typename U>
 static constexpr U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
@@ -234,22 +239,27 @@ public:
   {
     if (std::isfinite(a))
     {
+      enum
+      {
+        bits = std::min(
+            detail::sig_size_v<decltype(a)>,
+            detail::bit_size_v<std::intmax_t> - 1
+          )
+      };
+
       int e2;
 
-      a = std::ldexp(
-          std::frexp(a, &e2),
-          detail::bit_size_v<std::intmax_t> - 1
-        );
-
-      e2 -= detail::bit_size_v<std::intmax_t> - 1;
-
-      int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
+      a = std::ldexp(std::frexp(a, &e2), bits);
+      e2 -= bits;
 
       //
+      int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
+
       a = std::ldexp(a, e2 - e10);
 
       auto const b(detail::pow<decltype(a), 5>(std::abs(e10)));
 
+      //
       *this = dpp(std::intmax_t(e10 <= 0 ? a * b : a / b), e10);
     }
     else
