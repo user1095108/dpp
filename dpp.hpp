@@ -290,13 +290,13 @@ public:
     }
     else if (auto m(v_.m); m)
     {
-      int_t e(v_.e);
+      int e(v_.e);
 
       for (; !(m % 10); m /= 10, ++e);
 
       auto const b(detail::pow<U, 5>(std::abs(e)));
 
-      return std::ldexp(e >= 0 ? m * b : m / b, int(e));
+      return std::ldexp(e >= 0 ? m * b : m / b, e);
     }
     else
     {
