@@ -84,19 +84,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   }
   else
   {
-    using D = std::conditional_t<
-      std::is_same_v<U, std::uint8_t>,
-      std::uint16_t,
-      std::conditional_t<
-        std::is_same_v<U, std::uint16_t>,
-        std::uint32_t,
-        std::conditional_t<
-          std::is_same_v<U, std::uint32_t>,
-          std::uint64_t,
-          void
-        >
-      >
-    >;
+    using D = typename intt::intt<U, 1>::D;
     using V = intt::intt<D, 1>;
     using int_t = typename dpp<T, E>::int_t;
 
