@@ -86,10 +86,9 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   {
     using D = typename intt::intt<U, 1>::D;
     using V = intt::intt<D, 1>;
-    using int_t = typename dpp<T, E>::int_t;
 
     return detail::sqrt<T, E>(
-        V(intt::direct{}, D(a.mantissa())), int_t(a.exponent())
+        V(intt::direct{}, D(a.mantissa())), a.exponent()
       );
   }
 }
@@ -99,10 +98,9 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = std::make_unsigned_t<typename T::value_type>;
   using V = intt::intt<U, 2 * T::size()>;
-  using int_t = typename dpp<T, E>::int_t;
 
   return detail::sqrt<T, E>(
-      V(a.mantissa(), intt::direct{}), int_t(a.exponent())
+      V(a.mantissa(), intt::direct{}), a.exponent()
     );
 }
 
