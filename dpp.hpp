@@ -108,7 +108,7 @@ consteval auto maxpow10e() noexcept
 }
 
 template <typename T, typename E>
-  requires(detail::is_signed_v<T> && detail::is_signed_v<E>)
+  requires(detail::is_signed_v<T> && std::is_signed_v<E>)
 class dpp
 {
 public:
