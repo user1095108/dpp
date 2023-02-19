@@ -296,7 +296,7 @@ public:
 
       auto const b(detail::pow<U, 5>(std::abs(e10)));
 
-      return std::ldexp(e >= 0 ? m * b : m / b, e10);
+      return std::ldexp(e10 >= 0 ? m * b : m / b, e10);
     }
     else
     {
