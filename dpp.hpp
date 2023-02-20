@@ -44,7 +44,7 @@ template <typename U>
 static constexpr std::size_t bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
-constexpr std::size_t sig_size_v(
+static constexpr std::size_t sig_bit_size_v(
   std::is_same_v<U, float> ? 24 : std::is_same_v<U, double> ? 53 : 64
 );
 
@@ -241,7 +241,7 @@ public:
       enum
       {
         bits = std::min(
-            detail::sig_size_v<decltype(a)>,
+            detail::sig_bit_size_v<decltype(a)>,
             detail::bit_size_v<std::intmax_t> - 1
           )
       };
