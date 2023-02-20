@@ -462,7 +462,7 @@ public:
       using U = doubled_t;
 
       int_t e(-dp__ + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow<U, 10>(int_t(dp__))>() / o.v_.m);
+      auto m(intt::coeff<detail::pow<U, 10>(int_t(dp__))>() / om);
 
       if (m < intt::coeff<U(mmin)>())
       {
