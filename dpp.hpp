@@ -283,20 +283,20 @@ public:
 
   template <std::floating_point U>
   explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
-  {
+  { // possibly inexact
     if (isnan(*this))
     {
       return NAN;
     }
     else if (auto m(v_.m); m)
     {
-      int e10(v_.e);
+      int_t e10(v_.e);
 
       for (; !(m % 10); m /= 10, ++e10);
 
       auto const b(detail::pow<U, 5>(std::abs(e10)));
 
-      return std::ldexp(e10 >= 0 ? m * b : m / b, e10);
+      return std::ldexp(e10 >= 0 ? m * b : m / b, int(e10));
     }
     else
     {
