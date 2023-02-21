@@ -288,19 +288,13 @@ public:
     {
       return NAN;
     }
-    else if (auto m(v_.m); m)
-    {
-      int_t e10(v_.e);
-
-      for (; !(m % 10); m /= 10, ++e10);
-
-      auto const b(detail::pow<U, 5>(std::abs(e10)));
-
-      return std::ldexp(e10 >= 0 ? m * b : m / b, int(e10));
-    }
     else
     {
-      return {};
+      int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
+
+      auto const b(detail::pow<dpp, 2>(std::abs(e)));
+
+      return std::ldexp(U(trunc(e <= 0 ? *this * b : *this / b).v_.m), e);
     }
   }
 
@@ -650,7 +644,7 @@ constexpr auto floor(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto round(dpp<T, E> const& a) noexcept
 {
-  auto const c(intt::coeff<dpp<T, E>{5, -1, direct{}}>());
+  dpp<T, E> const c{5, -1, direct{}};
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < T{} ? a - c : a + c) :
