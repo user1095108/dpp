@@ -291,7 +291,6 @@ public:
     else
     {
       int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
-
       auto const b(detail::pow<dpp, 2>(std::abs(e)));
 
       return std::ldexp(U(trunc(e <= 0 ? *this * b : *this / b).v_.m), e);
