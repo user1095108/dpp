@@ -257,8 +257,8 @@ public:
       a = std::ldexp(a, e2 - e10);
 
       e10 <= 0 ?
-        detail::pow(decltype(a)(5), e10, [&](auto const& x)noexcept{a *= x;}):
-        detail::pow(decltype(a)(5), e10, [&](auto const& x)noexcept{a /= x;});
+        detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a *= x;}) :
+        detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a /= x;});
 
       *this = dpp(mantissa_type(a), e10);
     }
@@ -296,8 +296,8 @@ public:
       int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
 
       e <= 0 ?
-        detail::pow(dpp(2,{},direct{}),e,[&](auto const& x)noexcept{a *= x;}):
-        detail::pow(dpp(2,{},direct{}),e,[&](auto const& x)noexcept{a /= x;});
+        detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a *= x;}):
+        detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a /= x;});
 
       return std::ldexp(U(mantissa_type(a)), e);
     }
