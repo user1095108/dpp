@@ -242,7 +242,7 @@ public:
       {
         bits = std::min(
             detail::sig_bit_size_v<decltype(a)>,
-            detail::bit_size_v<std::intmax_t> - 1
+            detail::bit_size_v<mantissa_type> - 1
           )
       };
 
@@ -259,7 +259,7 @@ public:
       auto const b(detail::pow<decltype(a), 5>(e10));
 
       //
-      *this = dpp(std::intmax_t(e10 <= 0 ? a * b : a / b), e10);
+      *this = dpp(mantissa_type(e10 <= 0 ? a * b : a / b), e10);
     }
     else
     {
