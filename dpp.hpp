@@ -256,7 +256,7 @@ public:
 
       a = std::ldexp(a, e2 - e10);
 
-      auto const b(detail::pow<decltype(a), 5>(std::abs(e10)));
+      auto const b(detail::pow<decltype(a), 5>(e10));
 
       //
       *this = dpp(std::intmax_t(e10 <= 0 ? a * b : a / b), e10);
@@ -283,7 +283,7 @@ public:
 
   template <std::floating_point U>
   explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
-  { // possibly inexact
+  {
     if (isnan(*this))
     {
       return NAN;
@@ -291,9 +291,26 @@ public:
     else
     {
       int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
-      auto const b(detail::pow<dpp, 2>(std::abs(e)));
+      auto f(e);
 
-      return std::ldexp(U(mantissa_type(e <= 0 ? *this * b : *this / b)), e);
+      auto r(*this);
+
+      for (dpp x(2, {}, direct{});;)
+      {
+        if (f % 2)
+        {
+          r = e <= 0 ? r * x : r / x;
+        }
+
+        if (f /= 2)
+        {
+          x *= x;
+        }
+        else
+        {
+          return std::ldexp(U(mantissa_type(r)), e);
+        }
+      }
     }
   }
 
