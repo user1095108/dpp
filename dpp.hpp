@@ -253,13 +253,28 @@ public:
 
       //
       int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
+      auto f(e10);
 
       a = std::ldexp(a, e2 - e10);
 
-      auto const b(detail::pow<decltype(a), 5>(e10));
+      for (decltype(a) x(5);;)
+      {
+        if (f % 2)
+        {
+          a = e10 <= 0 ? a * x : a / x;
+        }
 
-      //
-      *this = dpp(mantissa_type(e10 <= 0 ? a * b : a / b), e10);
+        if (f /= 2)
+        {
+          x *= x;
+        }
+        else
+        {
+          *this = dpp(mantissa_type(a), e10);
+
+          break;
+        }
+      }
     }
     else
     {
@@ -293,13 +308,13 @@ public:
       int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
       auto f(e);
 
-      auto r(*this);
+      auto a(*this);
 
       for (dpp x(2, {}, direct{});;)
       {
         if (f % 2)
         {
-          r = e <= 0 ? r * x : r / x;
+          a = e <= 0 ? a * x : a / x;
         }
 
         if (f /= 2)
@@ -308,7 +323,7 @@ public:
         }
         else
         {
-          return std::ldexp(U(mantissa_type(r)), e);
+          return std::ldexp(U(mantissa_type(a)), e);
         }
       }
     }
