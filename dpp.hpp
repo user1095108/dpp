@@ -134,11 +134,7 @@ public:
       std::conditional_t<
         std::is_same_v<E, std::int32_t>,
         std::int64_t,
-        std::conditional_t<
-          std::is_same_v<E, std::int64_t>,
-          DPP_INT128T,
-          void
-        >
+        void
       >
     >
   >;
