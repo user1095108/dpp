@@ -76,24 +76,25 @@ constexpr void shift_right(auto& m, auto i) noexcept
   for (; m && i; --i, m /= 10);
 }
 
-template <typename T, int B>
-constexpr T pow(auto e) noexcept
+template <auto B>
+constexpr auto pow(auto e) noexcept
 {
-  for (T r{1}, x(B);;)
+  for (std::remove_cv_t<decltype(B)> r{1}, x(B);;)
   {
-    if (e % 2)
-    {
-      r *= x;
-    }
+    if (e % 2) r *= x;
 
-    if (e /= 2)
-    {
-      x *= x;
-    }
-    else
-    {
-      return r;
-    }
+    if (e /= 2) x *= x; else return r;
+  }
+}
+
+template <auto B>
+constexpr void pow(auto e, auto const f) noexcept
+{
+  for (auto x(B);;)
+  {
+    if (e % 2) f(x);
+
+    if (e /= 2) x *= x; else break;
   }
 }
 
@@ -253,28 +254,14 @@ public:
 
       //
       int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
-      auto f(e10);
 
       a = std::ldexp(a, e2 - e10);
 
-      for (decltype(a) x(5);;)
-      {
-        if (f % 2)
-        {
-          a = e10 <= 0 ? a * x : a / x;
-        }
+      e10 <= 0 ?
+        detail::pow<decltype(a)(5)>(e10, [&](auto const& x)noexcept{a *= x;}):
+        detail::pow<decltype(a)(5)>(e10, [&](auto const& x)noexcept{a /= x;});
 
-        if (f /= 2)
-        {
-          x *= x;
-        }
-        else
-        {
-          *this = dpp(mantissa_type(a), e10);
-
-          break;
-        }
-      }
+      *this = dpp(mantissa_type(a), e10);
     }
     else
     {
@@ -305,27 +292,15 @@ public:
     }
     else
     {
-      int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
-      auto f(e);
-
       auto a(*this);
 
-      for (dpp x(2, {}, direct{});;)
-      {
-        if (f % 2)
-        {
-          a = e <= 0 ? a * x : a / x;
-        }
+      int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
 
-        if (f /= 2)
-        {
-          x *= x;
-        }
-        else
-        {
-          return std::ldexp(U(mantissa_type(a)), e);
-        }
-      }
+      e <= 0 ?
+        detail::pow<dpp(2)>(e, [&](auto const& x) noexcept {a *= x;}) :
+        detail::pow<dpp(2)>(e, [&](auto const& x) noexcept {a /= x;});
+
+      return std::ldexp(U(mantissa_type(a)), e);
     }
   }
 
@@ -343,7 +318,7 @@ public:
     }
     else
     {
-      return v_.m * detail::pow<U, 10>(e);
+      return v_.m * detail::pow<U(10)>(e);
     }
   }
 
@@ -487,7 +462,7 @@ public:
       using U = doubled_t;
 
       int_t e(-dp__ + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow<U, 10>(int_t(dp__))>() / om);
+      auto m(intt::coeff<detail::pow<U(10)>(int_t(dp__))>() / om);
 
       if (m < intt::coeff<U(mmin)>())
       {
@@ -694,7 +669,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
   return !m || isnan(a) ?
     dpp<T, E>{nan{}} :
     dpp<T, E>{
-      intt::coeff<detail::pow<doubled_t, 10>(int_t(dpp<T, E>::dp__))>() / m,
+      intt::coeff<detail::pow<doubled_t(10)>(int_t(dpp<T, E>::dp__))>() / m,
       -dpp<T, E>::dp__ - a.exponent()
     };
 }
