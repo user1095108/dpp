@@ -27,7 +27,7 @@ constexpr auto sqrt(intt::intt_type auto m,
     );
 
     e -= e0;
-    m *= intt::coeff<pow<V, 10>(e0)>();
+    m *= intt::coeff<pow<V(10)>(e0)>();
   }
   else
   {
@@ -37,7 +37,7 @@ constexpr auto sqrt(intt::intt_type auto m,
     constexpr int_t e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
 
     e -= e0;
-    m *= intt::coeff<pow<V, 10>(e0)>();
+    m *= intt::coeff<pow<V(10)>(e0)>();
   }
 
   //
