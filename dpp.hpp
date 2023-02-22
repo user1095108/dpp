@@ -296,8 +296,8 @@ public:
       int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
 
       e <= 0 ?
-        detail::pow(dpp(2), e, [&](auto const& x) noexcept {a *= x;}) :
-        detail::pow(dpp(2), e, [&](auto const& x) noexcept {a /= x;});
+        detail::pow(dpp(2,{},direct{}),e,[&](auto const& x)noexcept{a *= x;}):
+        detail::pow(dpp(2,{},direct{}),e,[&](auto const& x)noexcept{a /= x;});
 
       return std::ldexp(U(mantissa_type(a)), e);
     }
