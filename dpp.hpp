@@ -680,12 +680,6 @@ constexpr T to_decimal(std::input_iterator auto i,
   }
   else
   {
-    enum : std::intmax_t
-    {
-      min = detail::min_v<std::intmax_t>,
-      max = detail::max_v<std::intmax_t>
-    };
-
     bool neg{};
 
     switch (*i)
@@ -707,14 +701,14 @@ constexpr T to_decimal(std::input_iterator auto i,
         return nan{};
     }
 
-    std::intmax_t r{};
+    typename T::mantissa_type r{};
     typename T::int_t e{};
 
     auto const scandigit([&](decltype(r) const d) noexcept
       {
-        if (r >= intt::coeff<min / 10>())
+        if (r >= intt::coeff<T::mmin / 10>())
         {
-          if (auto const t(10 * r); t >= min + d)
+          if (auto const t(10 * r); t >= intt::coeff<T::mmin>() + d)
           {
             r = t - d;
 
@@ -766,7 +760,10 @@ constexpr T to_decimal(std::input_iterator auto i,
       break;
     }
 
-    return T(neg ? r : -(min == r ? r / 10 : r), e + (!neg && (min == r)));
+    return T(
+      neg ? r : -(intt::coeff<T::mmin>() == r ? r / 10 : r),
+      e + (!neg && (intt::coeff<T::mmin>() == r))
+    );
   }
 }
 
