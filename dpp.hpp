@@ -907,10 +907,8 @@ struct hash<dpp::dpp<T, E>>
 
   constexpr auto operator()(dpp::dpp<T, E> const& a)
     noexcept(
-      noexcept(std::declval<std::hash<T>>()(std::declval<T>())) &&
-      noexcept(
-        std::declval<std::hash<int_t>>()(std::declval<int_t>())
-      )
+      noexcept(std::hash<T>()(std::declval<T>())) &&
+      noexcept(std::hash<int_t>()(std::declval<int_t>()))
     )
   {
     T m;
