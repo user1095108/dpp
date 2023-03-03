@@ -701,7 +701,6 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     typename T::mantissa_type r{};
-    typename T::int_t e{};
 
     auto const scandigit([&](decltype(r) const d) noexcept
       {
@@ -740,6 +739,8 @@ constexpr T to_decimal(std::input_iterator auto i,
 
       break;
     }
+
+    typename T::int_t e{};
 
     for (; end != i; i = std::next(i))
     {
