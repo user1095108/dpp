@@ -750,8 +750,8 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if ((e == detail::min_v<decltype(e)>) || scandigit(*i - '0')) break;
-          else { --e; continue; }
+          if ((intt::coeff<detail::min_v<decltype(e)>>() == e) ||
+            scandigit(*i - '0')) break; else { --e; continue; }
 
         case '\0':
           break;
@@ -765,7 +765,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     //
     return {
-      neg ? r : -(intt::coeff<T::mmin>() == r ? intt::coeff<-T::mmax>() : r),
+      neg ? r : intt::coeff<T::mmin>() == r ? intt::coeff<T::mmax>() : -r,
       e
     };
   }
