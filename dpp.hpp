@@ -700,6 +700,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         return nan{};
     }
 
+    //
     typename T::mantissa_type r{};
 
     auto const scandigit([&](decltype(r) const d) noexcept
@@ -740,6 +741,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       break;
     }
 
+    //
     typename T::int_t e{};
 
     for (; end != i; i = std::next(i))
@@ -760,6 +762,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       break;
     }
 
+    //
     auto const eq{intt::coeff<T::mmin>() == r};
 
     return T(neg ? r : -(eq ? r / 10 : r), e + (!neg && eq));
