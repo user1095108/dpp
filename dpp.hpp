@@ -92,7 +92,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   {
     if (e % 2) f(x);
 
-    if (e /= 2) x *= x; else break;
+    if (e /= 2) x *= x; else return;
   }
 }
 
