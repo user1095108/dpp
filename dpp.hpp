@@ -78,7 +78,7 @@ constexpr void shift_right(auto& m, auto i) noexcept
 
 constexpr auto pow(auto x, auto e) noexcept
 {
-  for (std::remove_cvref_t<decltype(x)> r{1};;)
+  for (decltype(x) r{1};;)
   {
     if (e % 2) r *= x;
 
