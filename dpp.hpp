@@ -76,10 +76,9 @@ constexpr void shift_right(auto& m, auto i) noexcept
   for (; m && i; --i, m /= 10);
 }
 
-template <auto B>
-constexpr auto pow(auto e) noexcept
+constexpr auto pow(auto x, auto e) noexcept
 {
-  for (std::remove_cv_t<decltype(B)> r{1}, x(B);;)
+  for (std::remove_cvref_t<decltype(x)> r{1};;)
   {
     if (e % 2) r *= x;
 
@@ -313,7 +312,7 @@ public:
     }
     else
     {
-      return v_.m * detail::pow<U(10)>(e);
+      return v_.m * detail::pow(U(10), e);
     }
   }
 
@@ -457,7 +456,7 @@ public:
       using U = doubled_t;
 
       int_t e(-dp__ + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow<U(10)>(int_t(dp__))>() / om);
+      auto m(intt::coeff<detail::pow(U(10), int_t(dp__))>() / om);
 
       if (m < intt::coeff<U(mmin)>())
       {
@@ -664,7 +663,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
   return !m || isnan(a) ?
     dpp<T, E>{nan{}} :
     dpp<T, E>{
-      intt::coeff<detail::pow<doubled_t(10)>(int_t(dpp<T, E>::dp__))>() / m,
+      intt::coeff<detail::pow(doubled_t(10), int_t(dpp<T, E>::dp__))>() / m,
       -dpp<T, E>::dp__ - a.exponent()
     };
 }
