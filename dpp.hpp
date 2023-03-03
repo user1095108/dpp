@@ -750,7 +750,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (scandigit(*i - '0') || (e <= detail::min_v<decltype(e)>)) break;
+          if (scandigit(*i - '0') || (e == detail::min_v<decltype(e)>)) break;
           else { --e; continue; }
 
         case '\0':
