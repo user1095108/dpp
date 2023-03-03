@@ -763,9 +763,10 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     //
-    auto const eq{intt::coeff<T::mmin>() == r};
-
-    return T(neg ? r : -(eq ? r / 10 : r), e + (!neg && eq));
+    return {
+      neg ? r : -(intt::coeff<T::mmin>() == r ? intt::coeff<-T::mmax>() : r),
+      e
+    };
   }
 }
 
