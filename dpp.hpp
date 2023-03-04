@@ -128,12 +128,16 @@ public:
       std::is_same_v<E, std::int16_t>,
       std::int32_t,
       std::conditional_t<
-        std::is_same_v<T, std::int64_t>,
-        DPP_INT128T,
+        std::is_same_v<E, std::int32_t>,
+        std::int64_t,
         std::conditional_t<
-          intt::is_intt_v<T>,
-          typename intt::detail::double_<T>::type,
-          void
+          std::is_same_v<T, std::int64_t>,
+          DPP_INT128T,
+          std::conditional_t<
+            intt::is_intt_v<T>,
+            typename intt::detail::double_<T>::type,
+            void
+          >
         >
       >
     >
