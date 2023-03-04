@@ -111,17 +111,14 @@ consteval auto maxpow10e() noexcept
 }
 
 template <typename T, typename E>
-  requires(detail::is_signed_v<T> && std::is_signed_v<E>)
+  requires(detail::is_signed_v<T> && detail::is_signed_v<E>)
 class dpp
 {
 public:
   using exp_type = E;
 
-  enum : exp_type
-  {
-    emin = detail::min_v<exp_type>,
-    emax = detail::max_v<exp_type>
-  };
+  static constexpr auto emin{detail::min_v<E>};
+  static constexpr auto emax{detail::max_v<E>};
 
   // int type wide enough to deal with exponents
   using int_t = std::conditional_t<
@@ -131,9 +128,13 @@ public:
       std::is_same_v<E, std::int16_t>,
       std::int32_t,
       std::conditional_t<
-        std::is_same_v<E, std::int32_t>,
-        std::int64_t,
-        void
+        std::is_same_v<T, std::int64_t>,
+        DPP_INT128T,
+        std::conditional_t<
+          intt::is_intt_v<T>,
+          typename intt::detail::double_<T>::type,
+          void
+        >
       >
     >
   >;
@@ -161,7 +162,7 @@ public:
     >
   >;
 
-  enum : int_t { dp__ = detail::maxpow10e<doubled_t, int_t>() };
+  static constexpr auto dp__{detail::maxpow10e<doubled_t, int_t>()};
 
 public:
   struct
@@ -180,7 +181,7 @@ public:
   constexpr dpp(U m, int_t e) noexcept
   {
     // reduction of the exponent is a side effect of +- ops
-    if (e > emax)
+    if (e > intt::coeff<emax>())
     {
       *this = nan{};
     }
@@ -214,10 +215,10 @@ public:
       }
 
       //
-      for (; (e <= emin) && m; m /= 10, ++e);
+      for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
 
       //
-      v_.e = (v_.m = m) ? e : 0;
+      v_.e = (v_.m = m) ? exp_type(e) : 0;
     }
   }
 
@@ -269,7 +270,7 @@ public:
   {
   }
 
-  constexpr dpp(nan) noexcept: v_{.m = {}, .e = emin} { }
+  constexpr dpp(nan) noexcept: v_{.m = {}, .e = intt::coeff<emin>()} { }
 
   //
   constexpr explicit operator bool() const noexcept
@@ -455,8 +456,8 @@ public:
     {
       using U = doubled_t;
 
-      int_t e(-dp__ + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow(U(10), int_t(dp__))>() / om);
+      int_t e(intt::coeff<-dp__>() + v_.e - o.v_.e);
+      auto m(intt::coeff<detail::pow(U(10), dp__)>() / om);
 
       if (m < intt::coeff<U(mmin)>())
       {
@@ -520,8 +521,8 @@ public:
   constexpr auto mantissa() const noexcept { return v_.m; }
 };
 
-using d256 = dpp<intt::intt<std::uint64_t, 4>, std::int16_t>;
-using d128 = dpp<intt::intt<std::uint64_t, 2>, std::int16_t>;
+using d256 = dpp<intt::intt<std::uint64_t, 4>, std::int32_t>;
+using d128 = dpp<intt::intt<std::uint64_t, 2>, std::int32_t>;
 using d96 = dpp<intt::intt<std::uint32_t, 3>, std::int16_t>;
 using d64 = dpp<std::int64_t, std::int16_t>;
 using d48 = dpp<intt::intt<std::uint16_t, 3>, std::int16_t>;
@@ -597,7 +598,7 @@ DPP_RIGHT_CONVERSION__(<=>)
 template <typename T, typename E>
 constexpr auto isnan(dpp<T, E> const& a) noexcept
 {
-  return dpp<T, E>::emin == a.exponent();
+  return intt::coeff<dpp<T, E>::emin>() == a.exponent();
 }
 
 //
@@ -644,7 +645,7 @@ constexpr auto floor(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto round(dpp<T, E> const& a) noexcept
 {
-  dpp<T, E> const c{5, -1, direct{}};
+  dpp<T, E> const c(5, -1, direct{});
 
   return a.exponent() < 0 ?
     trunc(a.mantissa() < T{} ? a - c : a + c) :
@@ -656,15 +657,14 @@ template <typename T, typename E>
 constexpr auto inv(dpp<T, E> const& a) noexcept
 {
   using doubled_t = typename dpp<T, E>::doubled_t;
-  using int_t = typename dpp<T, E>::int_t;
 
   auto const m(a.mantissa());
 
   return !m || isnan(a) ?
     dpp<T, E>{nan{}} :
     dpp<T, E>{
-      intt::coeff<detail::pow(doubled_t(10), int_t(dpp<T, E>::dp__))>() / m,
-      -dpp<T, E>::dp__ - a.exponent()
+      intt::coeff<detail::pow(doubled_t(10), dpp<T, E>::dp__)>() / m,
+      intt::coeff<-dpp<T, E>::dp__>() - a.exponent()
     };
 }
 
