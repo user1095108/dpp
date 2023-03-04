@@ -108,6 +108,29 @@ consteval auto maxpow10e() noexcept
   return e;
 }
 
+template <typename U>
+using double_ = std::conditional_t<
+  std::is_same_v<U, std::int8_t>,
+  std::int16_t,
+  std::conditional_t<
+    std::is_same_v<U, std::int16_t>,
+    std::int32_t,
+    std::conditional_t<
+      std::is_same_v<U, std::int32_t>,
+      std::int64_t,
+      std::conditional_t<
+        std::is_same_v<U, std::int64_t>,
+        DPP_INT128T,
+        std::conditional_t<
+          intt::is_intt_v<U>,
+          typename intt::detail::double_<U>::type,
+          void
+        >
+      >
+    >
+  >
+>;
+
 }
 
 template <typename T, typename E>
@@ -121,50 +144,14 @@ public:
   static constexpr auto emax{detail::max_v<E>};
 
   // int type wide enough to deal with exponents
-  using int_t = std::conditional_t<
-    std::is_same_v<E, std::int8_t>,
-    std::int16_t,
-    std::conditional_t<
-      std::is_same_v<E, std::int16_t>,
-      std::int32_t,
-      std::conditional_t<
-        std::is_same_v<E, std::int32_t>,
-        std::int64_t,
-        std::conditional_t<
-          std::is_same_v<T, std::int64_t>,
-          DPP_INT128T,
-          std::conditional_t<
-            intt::is_intt_v<T>,
-            typename intt::detail::double_<T>::type,
-            void
-          >
-        >
-      >
-    >
-  >;
+  using int_t = detail::double_<E>;
 
   using mantissa_type = T;
 
   static constexpr auto mmin{detail::min_v<T>};
   static constexpr auto mmax{detail::max_v<T>};
 
-  using doubled_t = std::conditional_t<
-    std::is_same_v<T, std::int16_t>,
-    std::int32_t,
-    std::conditional_t<
-      std::is_same_v<T, std::int32_t>,
-      std::int64_t,
-      std::conditional_t<
-        std::is_same_v<T, std::int64_t>,
-        DPP_INT128T,
-        std::conditional_t<
-          intt::is_intt_v<T>,
-          typename intt::detail::double_<T>::type,
-          void
-        >
-      >
-    >
-  >;
+  using doubled_t = detail::double_<T>;
 
   static constexpr auto dp__{detail::maxpow10e<doubled_t, int_t>()};
 
