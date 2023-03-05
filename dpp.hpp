@@ -296,7 +296,7 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   {
-    if (auto e(v_.e); e < 0)
+    if (auto e(v_.e); e < exp_type{})
     {
       auto m(v_.m);
 
