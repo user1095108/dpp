@@ -278,9 +278,11 @@ public:
     }
     else
     {
-      auto a(*this);
+      int const e(
+        std::ceil(int(v_.e) * 3.321928094887362347870319429489390175864831393)
+      );
 
-      int const e(std::ceil(v_.e * 3.3219280948873623478703194294893901758f));
+      auto a(*this);
 
       e <= 0 ?
         detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a *= x;}):
