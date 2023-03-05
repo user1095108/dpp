@@ -605,7 +605,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  if (!isnan(a) && (a.exponent() < 0))
+  if (!isnan(a) && (a.exponent() < E{}))
   {
     auto m(a.mantissa());
 
@@ -640,7 +640,7 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 {
   dpp<T, E> const c(5, -1, direct{});
 
-  return a.exponent() < 0 ?
+  return a.exponent() < E{} ?
     trunc(a.mantissa() < T{} ? a - c : a + c) :
     a;
 }
