@@ -300,11 +300,11 @@ public:
 
     if (auto e(v_.e); e < exp_type{})
     {
-      for (; m && e; ++e, m /= 10);
+      for (; m && e; ++e, m /= mantissa_type(10));
     }
     else
     {
-      detail::pow(U(10), e, [&](auto&& x) noexcept {m *= x;});
+      detail::pow(mantissa_type(10), e, [&](auto&& x) noexcept { m *= x; });
     }
 
     return m;
