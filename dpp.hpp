@@ -296,18 +296,18 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   {
+    auto m(v_.m);
+
     if (auto e(v_.e); e < exp_type{})
     {
-      auto m(v_.m);
-
       for (; m && e; ++e, m /= 10);
-
-      return m;
     }
     else
     {
-      return v_.m * detail::pow(U(10), e);
+      detail::pow(U(10), e, [&](auto&& x) noexcept {m *= x;});
     }
+
+    return m;
   }
 
   // assignment
