@@ -836,8 +836,17 @@ std::string to_string(dpp<T, E> const& a)
   }
   else
   {
-    T m(a);
-    typename dpp<T, E>::int_t e(m ? a.exponent() : E{});
+    T m(a.mantissa());
+    typename dpp<T, E>::int_t e;
+
+    if (m)
+    {
+      for (e = a.exponent(); (e < 0) && !(m % 10); m /= 10, ++e);
+    }
+    else
+    {
+      e = {};
+    }
 
     //
     using intt::to_string;
