@@ -841,7 +841,7 @@ std::string to_string(dpp<T, E> const& a)
 
     if (m)
     {
-      if (e = a.exponent(); e < E{})
+      if ((e = a.exponent()) < E{})
       {
         for (; !(m % 10); m /= 10, ++e);
       }
