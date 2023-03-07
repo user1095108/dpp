@@ -836,7 +836,7 @@ std::string to_string(dpp<T, E> const& a)
   }
   else
   {
-    T m(a.mantissa());
+    auto m(a.mantissa());
     typename dpp<T, E>::int_t e;
 
     if (m)
