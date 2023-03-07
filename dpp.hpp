@@ -54,39 +54,21 @@ static constexpr U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 static constexpr U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
-constexpr void shift_left(auto& m, auto& e,
-  std::remove_cvref_t<decltype(e)> i) noexcept
-{ // we need to be mindful of overflow, since we are shifting left
-  if (m < 0)
-  {
-    for (;
-      (m >= intt::coeff<min_v<std::remove_cvref_t<decltype(m)>> / 20>()) && i;
-      --i, m *= 10, --e);
-  }
-  else
-  {
-    for (;
-      (m <= intt::coeff<max_v<std::remove_cvref_t<decltype(m)>> / 20>()) && i;
-      --i, m *= 10, --e);
-  }
-}
-
-constexpr void shift_right(auto& m, auto i) noexcept
+constexpr auto pow(auto&& x, auto&& e) noexcept
 {
-  for (; m && i; --i, m /= 10);
-}
+  std::remove_cvref_t<decltype(x)> r(1);
 
-constexpr auto pow(auto x, auto e) noexcept
-{
-  for (decltype(x) r{1};;)
-  {
-    if (e % 2) r *= x;
+  pow(
+    std::forward<decltype(x)>(x),
+    std::forward<decltype(e)>(e),
+    [&](auto&& x) noexcept { r *= x; }
+  );
 
-    if (e /= 2) x *= x; else return r;
-  }
+  return r;
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
+  requires(std::is_same_v<void, decltype(f(x))>)
 {
   for (;;)
   {
@@ -96,11 +78,47 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
+constexpr void pow(auto x, auto e, auto const f) noexcept
+  requires(std::is_same_v<bool, decltype(f(x))>)
+{
+  for (;;)
+  {
+    if ((e % 2) && !f(x)) break;
+
+    if (e /= 2) x *= x; else return;
+  }
+}
+
+constexpr void shift_left(auto& m, auto& e,
+  std::remove_cvref_t<decltype(e)> i) noexcept
+{ // we need to be mindful of overflow, since we are shifting left
+  if (m < 0)
+  {
+    for (;
+      (m >= intt::coeff<min_v<std::remove_cvref_t<decltype(m)>> / 20>()) && i;
+      --i, --e, m *= 10);
+  }
+  else
+  {
+    for (;
+      (m <= intt::coeff<max_v<std::remove_cvref_t<decltype(m)>> / 20>()) && i;
+      --i, --e, m *= 10);
+  }
+}
+
+constexpr void shift_right(auto& m, auto&& i) noexcept
+{
+  detail::pow(
+    std::remove_cvref_t<decltype(m)>(10),
+    std::forward<decltype(i)>(i),
+    [&](auto&& x) noexcept { return bool(m /= x); }
+  );
+}
+
 template <typename U, typename E>
 consteval auto maxpow10e() noexcept
 {
   auto const k(detail::max_v<U> / U(10));
-
   E e{};
 
   for (U x(1); x <= k; x *= U(10), ++e);
@@ -297,15 +315,11 @@ public:
   constexpr explicit operator U() const noexcept
   {
     auto m(v_.m);
+    auto const e(v_.e);
 
-    if (auto e(v_.e); e < exp_type{})
-    {
-      for (; m && e; ++e, m /= mantissa_type(10));
-    }
-    else
-    {
-      detail::pow(mantissa_type(10), e, [&](auto&& x) noexcept { m *= x; });
-    }
+    e < exp_type{} ?
+      detail::pow(T(10), e, [&](auto&& x) noexcept { return bool(m /= x); }) :
+      detail::pow(T(10), e, [&](auto&& x) noexcept { m *= x; });
 
     return m;
   }
@@ -605,11 +619,11 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  if (!isnan(a) && (a.exponent() < E{}))
+  if (auto const e(a.exponent()); !isnan(a) && (e < E{}))
   {
     auto m(a.mantissa());
 
-    for (typename dpp<T, E>::int_t e(a.exponent()); m && e; ++e, m /= 10);
+    detail::pow(T(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
 
     return dpp<T, E>(m, {}, direct{});
   }
@@ -784,7 +798,7 @@ constexpr auto to_integral(dpp<T, E> const& p) noexcept
 
     if (typename dpp<T, E>::int_t e(p.exponent()); e <= 0)
     {
-      for (; m && e; ++e, m /= 10);
+      detail::pow(T(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
 
       if ((m < intt::coeff<detail::min_v<U>>()) ||
         (m > intt::coeff<detail::max_v<U>>()))
@@ -822,17 +836,8 @@ std::string to_string(dpp<T, E> const& a)
   }
   else
   {
-    auto m(a.mantissa());
-    typename dpp<T, E>::int_t e(a.exponent());
-
-    if (m)
-    {
-      for (; (e < 0) && !(m % 10); m /= 10, ++e);
-    }
-    else
-    {
-      e = {};
-    }
+    T m(a);
+    typename dpp<T, E>::int_t e(m ? a.exponent() : E{});
 
     //
     using intt::to_string;
