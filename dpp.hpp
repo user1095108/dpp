@@ -314,12 +314,14 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   {
-    auto m(v_.m);
+    using V = std::conditional_t<sizeof(U) < sizeof(T), T, U>;
+
+    V m(v_.m);
     auto const e(v_.e);
 
     e < exp_type{} ?
-      detail::pow(T(10), e, [&](auto&& x) noexcept { return bool(m /= x); }) :
-      detail::pow(T(10), e, [&](auto&& x) noexcept { m *= x; });
+      detail::pow(V(10), e, [&](auto&& x) noexcept { return bool(m /= x); }) :
+      detail::pow(V(10), e, [&](auto&& x) noexcept { m *= x; });
 
     return m;
   }
