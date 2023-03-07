@@ -625,7 +625,7 @@ constexpr auto trunc(dpp<T, E> const& a) noexcept
   {
     auto m(a.mantissa());
 
-    detail::pow(T(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
+    for (typename dpp<T, E>::int_t e(a.exponent()); m && e; ++e, m /= 10);
 
     return dpp<T, E>(m, {}, direct{});
   }
@@ -800,7 +800,7 @@ constexpr auto to_integral(dpp<T, E> const& p) noexcept
 
     if (typename dpp<T, E>::int_t e(p.exponent()); e <= 0)
     {
-      detail::pow(T(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
+      for (; m && e; ++e, m /= 10);
 
       if ((m < intt::coeff<detail::min_v<U>>()) ||
         (m > intt::coeff<detail::max_v<U>>()))
