@@ -108,9 +108,19 @@ constexpr void shift_left(auto& m, auto& e,
 
   auto const e0(std::min(i, intt::coeff<maxpow10e<U, decltype(i)>()>()));
 
+  i -= e0;
   e -= e0;
 
   pow(T(10), e0, [&](auto&& x) noexcept { m *= x; });
+
+  if (m < T{})
+  {
+    for (; (m >= intt::coeff<min_v<T> / 10>()) && i; --i, --e, m *= T(10));
+  }
+  else
+  {
+    for (; (m <= intt::coeff<max_v<T> / 10>()) && i; --i, --e, m *= T(10));
+  }
 }
 
 constexpr void shift_right(auto& m, auto&& i) noexcept
