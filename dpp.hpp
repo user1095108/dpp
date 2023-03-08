@@ -314,7 +314,7 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   {
-    using V = std::conditional_t<sizeof(U) < sizeof(T), T, U>;
+    using V = doubled_t;
 
     V m(v_.m);
     auto const e(v_.e);
@@ -623,9 +623,11 @@ constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
   if (auto const e(a.exponent()); !isnan(a) && (e < E{}))
   {
-    auto m(a.mantissa());
+    using V = typename dpp<T, E>::doubled_t;
 
-    for (typename dpp<T, E>::int_t e(a.exponent()); m && e; ++e, m /= 10);
+    V m(a.v_.m);
+
+    detail::pow(V(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
 
     return dpp<T, E>(m, {}, direct{});
   }
@@ -788,24 +790,26 @@ constexpr auto to_decimal(auto const& s) noexcept ->
 }
 
 template <typename U = std::intmax_t, typename T, typename E>
-constexpr auto to_integral(dpp<T, E> const& p) noexcept
+constexpr auto to_integral(dpp<T, E> const& a) noexcept
 {
-  if (isnan(p))
+  if (isnan(a))
   {
-    return std::pair(p, true);
+    return std::pair(T{}, true);
   }
   else
   {
-    auto m(p.mantissa());
+    using V = typename dpp<T, E>::doubled_t;
 
-    if (typename dpp<T, E>::int_t e(p.exponent()); e <= 0)
+    V m(a.v_.m);
+
+    if (auto const e(a.exponent()); e <= E{})
     {
-      for (; m && e; ++e, m /= 10);
+      detail::pow(V(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
 
       if ((m < intt::coeff<detail::min_v<U>>()) ||
         (m > intt::coeff<detail::max_v<U>>()))
       {
-        return std::pair(m, true);
+        return std::pair(T{}, true);
       }
     }
     else
@@ -819,13 +823,13 @@ constexpr auto to_integral(dpp<T, E> const& p) noexcept
         }
         else
         {
-          return std::pair(m, true);
+          return std::pair(T{}, true);
         }
       }
       while (--e);
     }
 
-    return std::pair(m, false);
+    return std::pair(T(m), false);
   }
 }
 
