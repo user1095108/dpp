@@ -111,9 +111,7 @@ constexpr void shift_left(auto& m, auto& e,
   e -= e0;
   i -= e0;
 
-  pow(T(10), e0, [&](auto&& x) noexcept { m *= x; });
-
-  if (m < 0)
+  if (pow(T(10), e0, [&](auto&& x) noexcept { m *= x; }); m < 0)
   {
     for (; (m >= intt::coeff<min_v<T> / 20>()) && i; --e, --i, m *= T(10));
   }
