@@ -107,7 +107,7 @@ constexpr void shift_left(auto& m, auto& e,
   using T = std::remove_cvref_t<decltype(m)>;
   using I = std::remove_cvref_t<decltype(i)>;
 
-  auto const e0(std::min(i, I(intt::coeff<maxpow10e<U, decltype(i)>()>()-1)));
+  auto const e0(std::min(i, intt::coeff<I(maxpow10e<U, I>() - 1)>()));
 
   e -= e0;
   i -= e0;
