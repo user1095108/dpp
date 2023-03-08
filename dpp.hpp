@@ -117,11 +117,11 @@ constexpr void shift_left(auto& m, auto& e,
 
   if (m < T{})
   {
-    for (; (m >= intt::coeff<min_v<T> / 20>()) && i; --e, --i, m *= T(10));
+    for (; (m >= intt::coeff<min_v<T> / 10>()) && i; --e, --i, m *= T(10));
   }
   else
   {
-    for (; (m <= intt::coeff<max_v<T> / 20>()) && i; --e, --i, m *= T(10));
+    for (; (m <= intt::coeff<max_v<T> / 10>()) && i; --e, --i, m *= T(10));
   }
 }
 
