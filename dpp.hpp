@@ -109,7 +109,6 @@ constexpr void shift_left(auto& m, auto& e,
   auto const e0(std::min(i, intt::coeff<maxpow10e<U, decltype(i)>()>()));
 
   e -= e0;
-  i -= e0;
 
   pow(T(10), e0, [&](auto&& x) noexcept { m *= x; });
 }
