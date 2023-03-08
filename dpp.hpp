@@ -104,15 +104,19 @@ template <typename U>
 constexpr void shift_left(auto& m, auto& e,
   std::remove_cvref_t<decltype(e)> i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
-  using T = std::remove_cvref_t<decltype(m)>;
   using I = std::remove_cvref_t<decltype(i)>;
+  using T = std::remove_cvref_t<decltype(m)>;
 
-  auto const e0(std::min(i, intt::coeff<I(maxpow10e<U, I>() - 1)>()));
+  {
+    auto const e0(std::min(i, intt::coeff<I(maxpow10e<U, I>() - 1)>()));
 
-  e -= e0;
-  i -= e0;
+    e -= e0;
+    i -= e0;
 
-  if (pow(T(10), e0, [&](auto&& x) noexcept { m *= x; }); m < 0)
+    pow(T(10), e0, [&](auto&& x) noexcept { m *= x; });
+  }
+
+  if (m < T{})
   {
     for (; (m >= intt::coeff<min_v<T> / 20>()) && i; --e, --i, m *= T(10));
   }
