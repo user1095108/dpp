@@ -798,7 +798,7 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
 {
   if (isnan(a))
   {
-    return std::pair(T{}, true);
+    return std::pair(U{}, true);
   }
   else
   {
@@ -813,7 +813,7 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
       if ((m < intt::coeff<detail::min_v<U>>()) ||
         (m > intt::coeff<detail::max_v<U>>()))
       {
-        return std::pair(T{}, true);
+        return std::pair(U{}, true);
       }
     }
     else
@@ -827,13 +827,13 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
         }
         else
         {
-          return std::pair(T{}, true);
+          return std::pair(U{}, true);
         }
       }
       while (--e);
     }
 
-    return std::pair(T(m), false);
+    return std::pair(U(m), false);
   }
 }
 
