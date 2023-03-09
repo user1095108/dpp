@@ -870,7 +870,7 @@ std::string to_string(dpp<T, E> const& a)
 
     auto r(to_string(m));
 
-    if (e < 0)
+    if (e < E{})
     {
       auto const neg(m < T{});
 
