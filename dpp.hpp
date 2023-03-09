@@ -92,10 +92,9 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
 template <typename U, typename E>
 consteval auto maxpow10e() noexcept
 {
-  auto const k(detail::max_v<U> / U(10));
   E e{};
 
-  for (U x(1); x <= k; x *= U(10), ++e);
+  for (U x(1); x <= intt::coeff<detail::max_v<U> / U(10)>(); x *= U(10), ++e);
 
   return e;
 }
