@@ -54,6 +54,16 @@ static constexpr U min_v(is_signed_v<U> ? U(1) << (bit_size_v<U> - 1) : U{});
 template <typename U>
 static constexpr U max_v(is_signed_v<U> ? -(min_v<U> + U(1)) : ~U());
 
+template <typename U, typename E>
+consteval auto maxpow10e() noexcept
+{
+  E e{};
+
+  for (U x(1); x <= intt::coeff<detail::max_v<U> / U(10)>(); x *= U(10), ++e);
+
+  return e;
+}
+
 constexpr auto pow(auto&& x, auto&& e) noexcept
 {
   std::remove_cvref_t<decltype(x)> r(1);
@@ -89,15 +99,13 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-template <typename U, typename E>
-consteval auto maxpow10e() noexcept
-{
-  E e{};
-
-  for (U x(1); x <= intt::coeff<detail::max_v<U> / U(10)>(); x *= U(10), ++e);
-
-  return e;
-}
+template <typename T, std::size_t E>
+static constexpr auto powers10{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<T, E + 1>{pow(T(10), I)...};
+  }(std::make_index_sequence<E + 1>())
+};
 
 template <typename U>
 constexpr void shift_left(auto& m, auto& e,
@@ -111,7 +119,7 @@ constexpr void shift_left(auto& m, auto& e,
     i -= e0;
     e -= e0;
 
-    pow(T(10), e0, [&](auto&& x) noexcept { m *= x; });
+    m *= powers10<T, maxpow10e<U, decltype(i)>()>[e0];
   }
 
   if (m < T{})
