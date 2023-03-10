@@ -332,16 +332,30 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   {
-    using V = doubled_t;
+    if (auto e(v_.e); e < E{})
+    {
+      auto m(v_.m);
 
-    V m(v_.m);
-    auto const e(v_.e);
+      while (e && m)
+      {
+        auto const e0(
+          -std::max(e, intt::coeff<E(-detail::maxpow10e<T, E>())>())
+        );
 
-    e < exp_type{} ?
-      detail::pow(V(10), e, [&](auto&& x) noexcept { return bool(m /= x); }) :
-      detail::pow(V(10), e, [&](auto&& x) noexcept { m *= x; });
+        e += e0;
+        m /= detail::pwrs<T(10), detail::maxpow10e<T, E>()>[e0];
+      }
 
-    return m;
+      return m;
+    }
+    else
+    {
+      U m(v_.m);
+
+      detail::pow(U(10), e, [&](auto&& x) noexcept { m *= x; });
+
+      return m;
+    }
   }
 
   // assignment
@@ -639,20 +653,9 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  if (auto const e(a.exponent()); !isnan(a) && (e < E{}))
-  {
-    using V = typename dpp<T, E>::doubled_t;
-
-    V m(a.v_.m);
-
-    detail::pow(V(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
-
-    return dpp<T, E>(m, {}, direct{});
-  }
-  else
-  {
-    return a;
-  }
+  return !isnan(a) && (a.exponent() < E{}) ?
+    dpp<T, E>(T(a), {}, direct{}) :
+    a;
 }
 
 template <typename T, typename E>
@@ -816,13 +819,11 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
   }
   else
   {
-    using V = typename dpp<T, E>::doubled_t;
-
-    V m(a.v_.m);
+    T m;
 
     if (auto const e(a.exponent()); e <= E{})
     {
-      detail::pow(V(10), e, [&](auto&& x) noexcept { return bool(m /= x); });
+      m = T(a);
 
       if ((m < intt::coeff<detail::min_v<U>>()) ||
         (m > intt::coeff<detail::max_v<U>>()))
@@ -832,6 +833,8 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
     }
     else
     {
+      m = a.mantissa();
+
       do
       {
         if ((m >= intt::coeff<detail::min_v<U> / 10>()) &&
