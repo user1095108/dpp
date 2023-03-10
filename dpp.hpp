@@ -653,9 +653,9 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return !isnan(a) && (a.exponent() < E{}) ?
-    dpp<T, E>(T(a), {}, direct{}) :
-    a;
+  return isnan(a) || (a.exponent() >= E{}) ?
+    a :
+    dpp<T, E>(T(a), {}, direct{});
 }
 
 template <typename T, typename E>
