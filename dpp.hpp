@@ -118,8 +118,7 @@ constexpr void shift_left(auto& m, auto& e,
 
     i -= e0;
     e -= e0;
-
-    m *= pwrs<T(10), maxpow10e<U, decltype(i)>()>[e0];
+    m *= pwrs<T(10), maxpow10e<T, decltype(i)>()>[e0];
   }
 
   if (m < T{})
@@ -132,13 +131,17 @@ constexpr void shift_left(auto& m, auto& e,
   }
 }
 
-constexpr void shift_right(auto& m, auto&& i) noexcept
+constexpr void shift_right(auto& m, auto i) noexcept
 {
-  detail::pow(
-    std::remove_reference_t<decltype(m)>(10),
-    std::forward<decltype(i)>(i),
-    [&](auto&& x) noexcept { return bool(m /= x); }
-  );
+  using T = std::remove_reference_t<decltype(m)>;
+
+  while (i && m)
+  {
+    auto const e0(std::min(i, intt::coeff<maxpow10e<T, decltype(i)>()>()));
+
+    i -= e0;
+    m /= pwrs<T(10), maxpow10e<T, decltype(i)>()>[e0];
+  }
 }
 
 template <typename U>
