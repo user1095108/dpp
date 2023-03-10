@@ -109,9 +109,9 @@ static constexpr auto pwrs{
 
 template <typename U>
 constexpr void shift_left(auto& m, auto& e,
-  std::remove_cvref_t<decltype(e)> i) noexcept
+  std::remove_reference_t<decltype(e)> i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
-  using T = std::remove_cvref_t<decltype(m)>;
+  using T = std::remove_reference_t<decltype(m)>;
 
   {
     auto const e0(std::min(i, intt::coeff<maxpow10e<U, decltype(i)>()>()));
@@ -135,7 +135,7 @@ constexpr void shift_left(auto& m, auto& e,
 constexpr void shift_right(auto& m, auto&& i) noexcept
 {
   detail::pow(
-    std::remove_cvref_t<decltype(m)>(10),
+    std::remove_reference_t<decltype(m)>(10),
     std::forward<decltype(i)>(i),
     [&](auto&& x) noexcept { return bool(m /= x); }
   );
