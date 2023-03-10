@@ -338,9 +338,7 @@ public:
 
       while (e && m)
       {
-        auto const e0(
-          -std::max(e, intt::coeff<E(-detail::maxpow10e<T, E>())>())
-        );
+        E const e0(-std::max(e, intt::coeff<E(-detail::maxpow10e<T,E>())>()));
 
         e += e0;
         m /= detail::pwrs<T(10), detail::maxpow10e<T, E>()>[e0];
