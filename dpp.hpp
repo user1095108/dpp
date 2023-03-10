@@ -99,11 +99,11 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-template <typename T, std::size_t E>
-static constexpr auto powers10{
+template <auto X, std::size_t E>
+static constexpr auto pwrs{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<T, E + 1>{pow(T(10), I)...};
+    return std::array<decltype(X), E + 1>{pow(X, I)...};
   }(std::make_index_sequence<E + 1>())
 };
 
@@ -119,7 +119,7 @@ constexpr void shift_left(auto& m, auto& e,
     i -= e0;
     e -= e0;
 
-    m *= powers10<T, maxpow10e<U, decltype(i)>()>[e0];
+    m *= pwrs<T(10), maxpow10e<U, decltype(i)>()>[e0];
   }
 
   if (m < T{})
