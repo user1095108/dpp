@@ -64,7 +64,7 @@ consteval auto maxpow10e() noexcept
   return e;
 }
 
-constexpr auto pow(auto&& x, auto&& e) noexcept
+consteval auto pow(auto&& x, auto&& e) noexcept
 {
   std::remove_cvref_t<decltype(x)> r(1);
 
