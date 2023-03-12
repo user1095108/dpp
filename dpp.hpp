@@ -110,7 +110,7 @@ static constexpr auto pwrs{
 template <typename U>
 constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
-  using I = std::remove_reference_t<decltype(i)>;
+  using I = decltype(i);
   using T = std::remove_reference_t<decltype(m)>;
 
   {
@@ -134,7 +134,7 @@ constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 template <typename U>
 constexpr void shift_right(auto& m, auto i) noexcept
 {
-  using I = std::remove_reference_t<decltype(i)>;
+  using I = decltype(i);
   using T = std::remove_reference_t<decltype(m)>;
 
   while (i && m)
