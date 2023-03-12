@@ -107,18 +107,17 @@ static constexpr auto pwrs{
   }(std::make_index_sequence<E + 1>())
 };
 
-template <typename U>
-constexpr void shift_left(auto& m, auto& e,
-  std::remove_reference_t<decltype(e)> i) noexcept
+constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
+  using I = std::remove_reference_t<decltype(i)>;
   using T = std::remove_reference_t<decltype(m)>;
 
   {
-    auto const e0(std::min(i, intt::coeff<maxpow10e<U, decltype(i)>()>()));
+    auto const e0(std::min(i, intt::coeff<I(maxpow10e<T, I>() / 2 + 1)>()));
 
     i -= e0;
     e -= e0;
-    m *= pwrs<T(10), maxpow10e<T, decltype(i)>()>[e0];
+    m *= pwrs<T(10), maxpow10e<T, I>()>[e0];
   }
 
   if (m < T{})
@@ -133,14 +132,15 @@ constexpr void shift_left(auto& m, auto& e,
 
 constexpr void shift_right(auto& m, auto i) noexcept
 {
+  using I = std::remove_reference_t<decltype(i)>;
   using T = std::remove_reference_t<decltype(m)>;
 
   while (i && m)
   {
-    auto const e0(std::min(i, intt::coeff<maxpow10e<T, decltype(i)>()>()));
+    auto const e0(std::min(i, intt::coeff<I(maxpow10e<T, I>() / 2 + 1)>()));
 
     i -= e0;
-    m /= pwrs<T(10), maxpow10e<T, decltype(i)>()>[e0];
+    m /= pwrs<T(10), maxpow10e<T, I>()>[e0];
   }
 }
 
@@ -426,14 +426,14 @@ public:
 
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::shift_left<T>(mb, eb, eb - ea); // reduce eb
+        detail::shift_left(mb, eb, eb - ea); // reduce eb
         detail::shift_right(ma, eb - ea); // increase ea
 
         return {ma + mb, eb};
       }
       else
       {
-        detail::shift_left<T>(ma, ea, ea - eb);
+        detail::shift_left(ma, ea, ea - eb);
         detail::shift_right(mb, ea - eb);
 
         return {ma + mb, ea};
@@ -463,14 +463,14 @@ public:
 
       if (int_t ea(v_.e), eb(oe); ea < eb)
       {
-        detail::shift_left<T>(mb, eb, eb - ea); // reduce eb
+        detail::shift_left(mb, eb, eb - ea); // reduce eb
         detail::shift_right(ma, eb - ea); // increase ea
 
         return {ma - mb, eb};
       }
       else
       {
-        detail::shift_left<T>(ma, ea, ea - eb);
+        detail::shift_left(ma, ea, ea - eb);
         detail::shift_right(mb, ea - eb);
 
         return {ma - mb, ea};
@@ -534,9 +534,9 @@ public:
         int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
 
         ea < eb ?
-          detail::shift_left<T>(mb, eb, eb - ea),
+          detail::shift_left(mb, eb, eb - ea),
           detail::shift_right(ma, eb - ea) :
-          (detail::shift_left<T>(ma, ea, ea - eb),
+          (detail::shift_left(ma, ea, ea - eb),
           detail::shift_right(mb, ea - eb));
       }
 
