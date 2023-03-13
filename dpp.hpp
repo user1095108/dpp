@@ -334,16 +334,18 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   {
-    if (auto e(v_.e); e < E{})
+    using I = int_t;
+
+    if (I e(v_.e); e < I{})
     {
       auto m(v_.m);
 
       while (e && m)
       {
-        E const e0(-std::max(e, intt::coeff<E(-detail::maxpow10e<T,E>())>()));
+        I const e0(-std::max(e, intt::coeff<I(-detail::maxpow10e<T,I>())>()));
 
         e += e0;
-        m /= detail::pwrs<T(10), detail::maxpow10e<T, E>()>[e0];
+        m /= detail::pwrs<T(10), detail::maxpow10e<T, I>()>[e0];
       }
 
       return m;
