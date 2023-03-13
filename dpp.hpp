@@ -132,17 +132,16 @@ constexpr void shift_left(auto& m, auto& e, auto i) noexcept
 }
 
 template <typename U>
-constexpr void shift_right(auto& m, auto i) noexcept
+constexpr void shift_right(auto& m, auto const& i) noexcept
 {
-  using I = decltype(i);
+  using I = std::remove_cvref_t<decltype(i)>;
   using T = std::remove_reference_t<decltype(m)>;
 
-  while (i && m)
+  if (i)
   {
-    auto const e0(std::min(i, intt::coeff<I(maxpow10e<U, I>() + 1)>()));
-
-    i -= e0;
-    m /= pwrs<T(10), maxpow10e<U, I>() + 1>[e0];
+    m /= pwrs<T(10), maxpow10e<U, I>() + 1>[
+        std::min(i, intt::coeff<I(maxpow10e<U, I>() + 1)>())
+      ];
   }
 }
 
