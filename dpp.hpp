@@ -308,7 +308,7 @@ public:
   }
 
   template <std::floating_point U>
-  explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
+  constexpr explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
   {
     if (isnan(*this))
     {
