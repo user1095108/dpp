@@ -246,7 +246,7 @@ public:
       for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
 
       //
-      v_.e = (v_.m = m) ? exp_type(e) : exp_type{};
+      v_.e = (v_.m = m) ? E(e) : E{};
     }
   }
 
