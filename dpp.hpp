@@ -68,8 +68,7 @@ consteval auto pow(auto&& x, auto&& e) noexcept
 {
   std::remove_cvref_t<decltype(x)> r(1);
 
-  pow(
-    std::forward<decltype(x)>(x),
+  pow(std::forward<decltype(x)>(x),
     std::forward<decltype(e)>(e),
     [&](auto&& x) noexcept { r *= x; }
   );
@@ -338,14 +337,16 @@ public:
       using I = int_t;
 
       auto m(v_.m);
+      auto e1(-I(e));
 
-      for (I e(v_.e); e && m;)
+      do
       {
-        I const e0(-std::max(e, intt::coeff<I(-detail::maxpow10e<T,I>())>()));
+        I const e0(std::min(e1, intt::coeff<detail::maxpow10e<T, I>()>()));
 
-        e += e0;
+        e1 -= e0;
         m /= detail::pwrs<T(10), detail::maxpow10e<T, I>()>[e0];
       }
+      while (e1 && m);
 
       return m;
     }
