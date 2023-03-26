@@ -336,8 +336,8 @@ public:
     {
       using I = int_t;
 
-      auto m(v_.m);
       auto e1(-I(e));
+      auto m(v_.m);
 
       do
       {
