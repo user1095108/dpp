@@ -335,7 +335,7 @@ public:
     {
       using I = int_t;
 
-      auto e1(-I(e));
+      I e1(-I(e));
       auto m(v_.m);
 
       do
