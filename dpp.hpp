@@ -51,8 +51,7 @@ static constexpr std::size_t sig_bit_size_v(
 template <typename U>
 static constexpr U min_v(is_signed_v<U> ? ~U{} << (bit_size_v<U> - 1) : U{});
 
-template <typename U>
-static constexpr U max_v(~min_v<U>);
+template <typename U> static constexpr U max_v(~min_v<U>);
 
 template <typename U, typename E>
 consteval auto maxpow10e() noexcept
