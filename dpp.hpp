@@ -405,7 +405,7 @@ public:
     return isnan(*this) ?
       dpp{nan{}} :
       intt::coeff<mmin>() == v_.m ?
-        dpp(intt::coeff<-doubled_t(mmin)>(), v_.e) :
+        dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), v_.e) :
         dpp(-v_.m, v_.e, direct{});
   }
 
@@ -457,7 +457,7 @@ public:
     else if (auto const oe(o.v_.e); !m)
     { // prevent overflow
       return intt::coeff<mmin>() == om ?
-        dpp(intt::coeff<-doubled_t(mmin)>(), oe) :
+        dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), oe) :
         dpp(-om, oe, direct{});
     }
     else
