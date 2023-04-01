@@ -1,6 +1,5 @@
 // https://github.com/vpiotr/decimal_for_cpp/issues/34
 #include <iostream>
-
 #include <iomanip>
 
 #include "../dpp.hpp"
