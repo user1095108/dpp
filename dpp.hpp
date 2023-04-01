@@ -327,10 +327,9 @@ public:
     }
   }
 
-  // this function is unsafe, take a look at to_integral() for safety
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
-  {
+  { // this function is unsafe, take a look at to_integral() for safety
     if (auto const e(v_.e); e < E{})
     {
       using I = int_t;
@@ -809,50 +808,6 @@ constexpr auto to_decimal(auto const& s) noexcept ->
   decltype(std::cbegin(s), std::cend(s), T())
 {
   return to_decimal<T>(std::cbegin(s), std::cend(s));
-}
-
-template <typename U = std::intmax_t, typename T, typename E>
-constexpr auto to_integral(dpp<T, E> const& a) noexcept
-{
-  if (isnan(a))
-  {
-    return std::pair(U{}, true);
-  }
-  else
-  {
-    T m;
-
-    if (auto const e(a.exponent()); e <= E{})
-    {
-      m = T(a);
-
-      if ((m < intt::coeff<detail::min_v<U>>()) ||
-        (m > intt::coeff<detail::max_v<U>>()))
-      {
-        return std::pair(U{}, true);
-      }
-    }
-    else
-    {
-      m = a.mantissa();
-
-      do
-      {
-        if ((m >= intt::coeff<detail::min_v<U> / 10>()) &&
-          (m <= intt::coeff<detail::max_v<U> / 10>()))
-        {
-          m *= 10;
-        }
-        else
-        {
-          return std::pair(U{}, true);
-        }
-      }
-      while (--e);
-    }
-
-    return std::pair(U(m), false);
-  }
 }
 
 template <typename T, typename E>

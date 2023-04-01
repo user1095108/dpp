@@ -9,11 +9,9 @@
 #include <unistd.h> // for STDOUT_FILENO
 #endif
 
-#include <cassert>
-
 #include <iostream>
 
-#include "dpp.hpp"
+#include "../dpp.hpp"
 
 using namespace dpp::literals;
 

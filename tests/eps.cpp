@@ -2,17 +2,14 @@
 #include <iostream>
 #include <iomanip>
 
-#include "dpp.hpp"
+#include "../dpp.hpp"
 
 template <typename T>
 auto eps() noexcept
 {
   T e(1);
 
-  while ((1 + e / 2) != 1)
-  {
-    e /= 2;
-  }
+  while ((1 + e / 2) != 1) e /= 2;
 
   return e;
 }

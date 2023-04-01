@@ -3,7 +3,7 @@
 
 #include <iomanip>
 
-#include "dpp.hpp"
+#include "../dpp.hpp"
 
 template <typename T>
 void computeMullersIter(int iteration)
