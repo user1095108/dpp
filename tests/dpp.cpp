@@ -3,7 +3,6 @@
 #endif
 
 #include <iostream>
-#include <iomanip>
 
 #include "../sqrt.hpp"
 
