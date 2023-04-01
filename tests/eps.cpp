@@ -1,6 +1,6 @@
 //https://en.wikipedia.org/wiki/Machine_epsilon#Approximation
-#include <iomanip>
 #include <iostream>
+#include <iomanip>
 
 #include "../dpp.hpp"
 
