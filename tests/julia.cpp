@@ -7,11 +7,9 @@
 #include <unistd.h> // for STDOUT_FILENO
 #endif
 
-#include <cstdlib>
-
 #include <iostream>
 
-#include "dpp.hpp"
+#include "../dpp.hpp"
 
 using namespace dpp::literals;
 
