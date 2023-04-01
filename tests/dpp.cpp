@@ -2,6 +2,7 @@
 #include <decimal/decimal>
 #endif
 
+#include <iomanip>
 #include <iostream>
 
 #include "../sqrt.hpp"
