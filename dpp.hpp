@@ -173,6 +173,13 @@ template <typename T, typename E>
 class dpp
 {
 public:
+  using mantissa_type = T;
+
+  static constexpr auto mmin{detail::min_v<T>};
+  static constexpr auto mmax{detail::max_v<T>};
+
+  using doubled_t = detail::double_<T>;
+
   using exp_type = E;
 
   static constexpr auto emin{detail::min_v<E>};
@@ -181,21 +188,10 @@ public:
   // int type wide enough to deal with exponents
   using int_t = detail::double_<E>;
 
-  using mantissa_type = T;
-
-  static constexpr auto mmin{detail::min_v<T>};
-  static constexpr auto mmax{detail::max_v<T>};
-
-  using doubled_t = detail::double_<T>;
-
   static constexpr auto dp__{detail::maxpow10e<doubled_t, int_t>()};
 
 public:
-  struct
-  {
-    mantissa_type m;
-    exp_type e;
-  } v_;
+  struct { T m; E e; } v_;
 
 public:
   dpp() = default;
