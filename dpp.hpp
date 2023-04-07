@@ -203,11 +203,11 @@ public:
   constexpr dpp(U m, int_t e) noexcept
   {
     // reduction of the exponent is a side effect of +- ops
-    if (e > intt::coeff<emax>())
+    if (e > intt::coeff<emax>()) [[unlikely]]
     {
       *this = nan{};
     }
-    else
+    else [[likely]]
     {
       if constexpr(detail::is_signed_v<U> &&
         (detail::bit_size_v<U> > detail::bit_size_v<T>))
@@ -254,7 +254,7 @@ public:
 
   constexpr dpp(std::floating_point auto a) noexcept
   {
-    if (std::isfinite(a))
+    if (std::isfinite(a)) [[likely]]
     {
       enum
       {
@@ -280,7 +280,7 @@ public:
 
       *this = dpp(mantissa_type(a), e10);
     }
-    else
+    else [[unlikely]]
     {
       *this = nan{};
     }
@@ -303,7 +303,7 @@ public:
   template <std::floating_point U>
   constexpr explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
   {
-    if (isnan(*this))
+    if (isnan(*this)) [[unlikely]]
     {
       return NAN;
     }
