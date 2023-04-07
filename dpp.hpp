@@ -685,9 +685,8 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
 
   auto const m(a.mantissa());
 
-  return !m || isnan(a) ?
-    dpp<T, E>{nan{}} :
-    dpp<T, E>{
+  if (!m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
+    [[likely]] return dpp<T, E>{
       intt::coeff<detail::pow(doubled_t(10), dpp<T, E>::dp__)>() / m,
       intt::coeff<-dpp<T, E>::dp__>() - a.exponent()
     };
@@ -698,7 +697,7 @@ template <typename T>
 constexpr T to_decimal(std::input_iterator auto i,
   decltype(i) const end) noexcept
 {
-  if (i == end)
+  if (i == end) [[unlikely]]
   {
     return nan{};
   }
@@ -708,7 +707,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     switch (*i)
     {
-      case '0': case '1': case '2': case '3': case '4':
+      [[likely]] case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
       case '.':
         break;
@@ -721,7 +720,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         i = std::next(i);
         break;
 
-      default:
+      [[unlikely]] default:
         return nan{};
     }
 
@@ -748,7 +747,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     {
       switch (*i)
       {
-        case '0': case '1': case '2': case '3': case '4':
+        [[likely]] case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
           if (scandigit(*i - '0')) break; else continue;
 
@@ -759,7 +758,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         case '\0':
           break;
 
-        default:
+        [[unlikely]] default:
           return nan{};
       }
 
@@ -773,7 +772,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     {
       switch (*i)
       {
-        case '0': case '1': case '2': case '3': case '4':
+        [[likely]] case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
           if ((intt::coeff<T::emin>() == e) || scandigit(*i - '0')) break;
           else { --e; continue; }
@@ -781,7 +780,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         case '\0':
           break;
 
-        default:
+        [[unlikely]] default:
           return nan{};
       }
 
@@ -806,23 +805,23 @@ constexpr auto to_decimal(auto const& s) noexcept ->
 template <typename T, typename E>
 std::string to_string(dpp<T, E> const& a)
 {
-  if (isnan(a))
+  if (isnan(a)) [[unlikely]]
   {
     return {"nan", 3};
   }
-  else
+  else [[likely]]
   {
     auto m(a.mantissa());
     typename dpp<T, E>::int_t e;
 
-    if (m)
+    if (m) [[likely]]
     {
       if ((e = a.exponent()) < E{})
       {
         for (; !(m % 10); m /= 10, ++e);
       }
     }
-    else
+    else [[unlikely]]
     {
       e = {};
     }
@@ -904,15 +903,15 @@ struct hash<dpp::dpp<T, E>>
     T m;
     int_t e(a.exponent());
 
-    if (dpp::isnan(a))
+    if (dpp::isnan(a)) [[unlikely]]
     { // unique nan
       m = {};
     }
-    else if ((m = a.mantissa()))
+    else if ((m = a.mantissa())) [[likely]]
     { // unique everything
       for (; !(m % 10); m /= 10, ++e); // slash zeros
     }
-    else
+    else [[unlikely]]
     { // unique zero
       e = {};
     }
