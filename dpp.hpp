@@ -701,7 +701,7 @@ constexpr T to_decimal(std::input_iterator auto i,
   {
     return nan{};
   }
-  else
+  else [[likely]]
   {
     bool neg{};
 
