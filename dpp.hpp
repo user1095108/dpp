@@ -82,7 +82,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   {
     if (e % 2) f(x);
 
-    if (e /= 2) x *= x; else return;
+    if (e /= 2) [[likely]] x *= x; else [[unlikely]] return;
   }
 }
 
@@ -93,7 +93,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   {
     if ((e % 2) && !f(x)) break;
 
-    if (e /= 2) x *= x; else return;
+    if (e /= 2) [[likely]] x *= x; else [[unlikely]] return;
   }
 }
 
@@ -397,28 +397,27 @@ public:
   constexpr auto operator-() const noexcept
   {
     // we need to do it like this, as negating the mantissa can overflow
-    return isnan(*this) ?
-      dpp{nan{}} :
-      intt::coeff<mmin>() == v_.m ?
-        dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), v_.e) :
-        dpp(-v_.m, v_.e, direct{});
+    if (isnan(*this)) [[unlikely]] return dpp{nan{}}; else
+      [[likely]] if (intt::coeff<mmin>() == v_.m) [[unlikely]]
+        return dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), v_.e); else
+        [[likely]] return dpp(-v_.m, v_.e, direct{});
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o))
+    if (isnan(*this) || isnan(o)) [[unlikely]]
     {
       return nan{};
     }
-    else if (auto const m(v_.m); !m)
+    else if (auto const m(v_.m); !m) [[unlikely]]
     {
       return o;
     }
-    else if (auto const om(o.v_.m); !om)
+    else if (auto const om(o.v_.m); !om) [[unlikely]]
     {
       return *this;
     }
-    else
+    else [[likely]]
     {
       doubled_t ma(m), mb(om);
 
@@ -441,21 +440,21 @@ public:
 
   constexpr dpp operator-(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o))
+    if (isnan(*this) || isnan(o)) [[unlikely]]
     {
       return nan{};
     }
-    else if (auto const m(v_.m), om(o.v_.m); !om)
+    else if (auto const m(v_.m), om(o.v_.m); !om) [[unlikely]]
     {
       return *this;
     }
-    else if (auto const oe(o.v_.e); !m)
+    else if (auto const oe(o.v_.e); !m) [[unlikely]]
     { // prevent overflow
       return intt::coeff<mmin>() == om ?
         dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), oe) :
         dpp(-om, oe, direct{});
     }
-    else
+    else [[likely]]
     {
       doubled_t ma(m), mb(om);
 
@@ -478,18 +477,17 @@ public:
 
   constexpr dpp operator*(dpp const& o) const noexcept
   {
-    return isnan(*this) || isnan(o) ?
-      nan{} :
-      dpp(doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e);
+    if (isnan(*this) || isnan(o)) [[unlikely]] return nan{}; else
+      [[likely]] return dpp(doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e);
   }
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    if (auto const om(o.v_.m); !om || isnan(*this) || isnan(o))
+    if (auto const om(o.v_.m); !om || isnan(*this) || isnan(o)) [[unlikely]]
     {
       return nan{};
     }
-    else
+    else [[likely]]
     {
       using U = doubled_t;
 
@@ -516,15 +514,15 @@ public:
   //
   constexpr std::partial_ordering operator<=>(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o))
+    if (isnan(*this) || isnan(o)) [[unlikely]]
     {
       return std::partial_ordering::unordered;
     }
-    else if (auto const m(v_.m), om(o.v_.m); !m || !om)
+    else if (auto const m(v_.m), om(o.v_.m); !m || !om) [[unlikely]]
     {
       return m <=> om;
     }
-    else
+    else [[likely]]
     {
       doubled_t ma(m), mb(om);
 
@@ -649,9 +647,8 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return isnan(a) || (a.exponent() >= E{}) ?
-    a :
-    dpp<T, E>(T(a), {}, direct{});
+  if (isnan(a) || (a.exponent() >= E{})) [[unlikely]] return a; else
+    [[likely]] return dpp<T, E>(T(a), {}, direct{});
 }
 
 template <typename T, typename E>
