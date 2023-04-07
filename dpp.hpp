@@ -307,7 +307,7 @@ public:
     {
       return NAN;
     }
-    else
+    else [[likely]]
     {
       int const e(
         std::ceil(int(v_.e) * 3.32192809488736234787031942948939017586483139f)
