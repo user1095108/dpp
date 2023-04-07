@@ -647,8 +647,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  if (isnan(a) || (a.exponent() >= E{})) [[unlikely]] return a; else
-    [[likely]] return dpp<T, E>(T(a), {}, direct{});
+  return (a.exponent() >= E{}) || isnan(a) ? a : dpp<T, E>(T(a),{}, direct{});
 }
 
 template <typename T, typename E>
