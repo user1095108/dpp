@@ -423,17 +423,15 @@ public:
 
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::shift_left<T>(mb, eb, eb - ea); // reduce eb
-        detail::shift_right<T>(ma, eb - ea); // increase ea
-
-        return {ma + mb, eb};
+        return detail::shift_left<T>(mb, eb, eb - ea),
+          detail::shift_right<T>(ma, eb - ea),
+          dpp{ma + mb, eb};
       }
       else
       {
-        detail::shift_left<T>(ma, ea, ea - eb);
-        detail::shift_right<T>(mb, ea - eb);
-
-        return {ma + mb, ea};
+        return detail::shift_left<T>(ma, ea, ea - eb),
+          detail::shift_right<T>(mb, ea - eb),
+          dpp{ma + mb, ea};
       }
     }
   }
@@ -460,17 +458,15 @@ public:
 
       if (int_t ea(v_.e), eb(oe); ea < eb)
       {
-        detail::shift_left<T>(mb, eb, eb - ea); // reduce eb
-        detail::shift_right<T>(ma, eb - ea); // increase ea
-
-        return {ma - mb, eb};
+        return detail::shift_left<T>(mb, eb, eb - ea),
+          detail::shift_right<T>(ma, eb - ea),
+          dpp{ma - mb, eb};
       }
       else
       {
-        detail::shift_left<T>(ma, ea, ea - eb);
-        detail::shift_right<T>(mb, ea - eb);
-
-        return {ma - mb, ea};
+        return detail::shift_left<T>(ma, ea, ea - eb),
+          detail::shift_right<T>(mb, ea - eb),
+          dpp{ma - mb, ea};
       }
     }
   }
