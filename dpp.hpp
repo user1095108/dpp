@@ -121,13 +121,9 @@ constexpr void big_shift(auto& ma, auto& ea, decltype(ma) mb,
   }
 
   if (ma < T{})
-  {
     for (; i && (ma >= intt::coeff<min_v<T> / 10>()); --i, --ea, ma *= T(10));
-  }
   else
-  {
     for (; i && (ma <= intt::coeff<max_v<T> / 10>()); --i, --ea, ma *= T(10));
-  }
 
   if (i)
   {
