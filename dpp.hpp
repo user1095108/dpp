@@ -133,7 +133,6 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   }
 }
 
-
 template <typename U>
 using double_ = std::conditional_t<
   std::is_same_v<U, std::int8_t>,
