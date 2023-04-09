@@ -106,44 +106,37 @@ static constexpr auto pwrs{
 };
 
 template <typename U>
-constexpr auto&& shift_left(auto& m, auto& e, auto&& i) noexcept
-{ // we need to be mindful of overflow, since we are shifting left
-  using I = std::remove_cvref_t<decltype(e)>;
-  using T = std::remove_reference_t<decltype(m)>;
+constexpr void big_shift(auto& ma, auto& ea, decltype(ma) mb,
+  std::remove_cvref_t<decltype(ea)> i) noexcept
+{
+  using I = std::remove_cvref_t<decltype(ea)>;
+  using T = std::remove_reference_t<decltype(ma)>;
 
   {
     auto const e0(std::min(i, intt::coeff<maxpow10e<U, I>()>()));
 
     i -= e0;
-    e -= e0;
-    m *= pwrs<T(10), maxpow10e<U, I>() + 1>[e0];
+    ea -= e0;
+    ma *= pwrs<T(10), maxpow10e<U, I>() + 1>[e0];
   }
 
-  if (m < T{})
+  if (ma < T{})
   {
-    for (; i && (m >= intt::coeff<min_v<T> / 10>()); --i, --e, m *= T(10));
+    for (; i && (ma >= intt::coeff<min_v<T> / 10>()); --i, --ea, ma *= T(10));
   }
   else
   {
-    for (; i && (m <= intt::coeff<max_v<T> / 10>()); --i, --e, m *= T(10));
+    for (; i && (ma <= intt::coeff<max_v<T> / 10>()); --i, --ea, ma *= T(10));
   }
-
-  return i;
-}
-
-template <typename U>
-constexpr void shift_right(auto& m, auto const& i) noexcept
-{
-  using I = std::remove_cvref_t<decltype(i)>;
-  using T = std::remove_reference_t<decltype(m)>;
 
   if (i)
   {
-    m /= pwrs<T(10), maxpow10e<U, I>() + 1>[
+    mb /= pwrs<T(10), maxpow10e<U, I>() + 1>[
         std::min(i, intt::coeff<I(maxpow10e<U, I>() + 1)>())
       ];
   }
 }
+
 
 template <typename U>
 using double_ = std::conditional_t<
@@ -425,13 +418,13 @@ public:
 
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::shift_right<T>(ma, detail::shift_left<T>(mb, eb, eb - ea));
+        detail::big_shift<T>(mb, eb, ma, eb - ea);
 
         return {ma + mb, eb};
       }
       else
       {
-        detail::shift_right<T>(mb, detail::shift_left<T>(ma, ea, ea - eb));
+        detail::big_shift<T>(ma, ea, mb, ea - eb);
 
         return {ma + mb, ea};
       }
@@ -460,13 +453,13 @@ public:
 
       if (int_t ea(v_.e), eb(oe); ea < eb)
       {
-        detail::shift_right<T>(ma, detail::shift_left<T>(mb, eb, eb - ea));
+        detail::big_shift<T>(mb, eb, ma, eb - ea);
 
         return {ma - mb, eb};
       }
       else
       {
-        detail::shift_right<T>(mb, detail::shift_left<T>(ma, ea, ea - eb));
+        detail::big_shift<T>(ma, ea, mb, ea - eb);
 
         return {ma - mb, ea};
       }
@@ -528,8 +521,8 @@ public:
         int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
 
         ea < eb ?
-          detail::shift_right<T>(ma, detail::shift_left<T>(mb, eb, eb - ea)) :
-          detail::shift_right<T>(mb, detail::shift_left<T>(ma, ea, ea - eb));
+          detail::big_shift<T>(mb, eb, ma, eb - ea) :
+          detail::big_shift<T>(ma, ea, mb, ea - eb);
       }
 
       return ma <=> mb;
