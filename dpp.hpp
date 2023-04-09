@@ -106,7 +106,7 @@ static constexpr auto pwrs{
 };
 
 template <typename U>
-constexpr void shift_left(auto& m, auto& e, auto i) noexcept
+constexpr auto&& shift_left(auto& m, auto& e, auto&& i) noexcept
 { // we need to be mindful of overflow, since we are shifting left
   using I = decltype(i);
   using T = std::remove_reference_t<decltype(m)>;
@@ -127,6 +127,8 @@ constexpr void shift_left(auto& m, auto& e, auto i) noexcept
   {
     for (; i && (m <= intt::coeff<max_v<T> / 10>()); --i, --e, m *= T(10));
   }
+
+  return i;
 }
 
 template <typename U>
@@ -423,15 +425,15 @@ public:
 
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        return detail::shift_left<T>(mb, eb, eb - ea),
-          detail::shift_right<T>(ma, eb - ea),
-          dpp{ma + mb, eb};
+        detail::shift_right<T>(ma, detail::shift_left<T>(mb, eb, eb - ea));
+
+        return {ma + mb, eb};
       }
       else
       {
-        return detail::shift_left<T>(ma, ea, ea - eb),
-          detail::shift_right<T>(mb, ea - eb),
-          dpp{ma + mb, ea};
+        detail::shift_right<T>(mb, detail::shift_left<T>(ma, ea, ea - eb));
+
+        return {ma + mb, ea};
       }
     }
   }
@@ -458,15 +460,15 @@ public:
 
       if (int_t ea(v_.e), eb(oe); ea < eb)
       {
-        return detail::shift_left<T>(mb, eb, eb - ea),
-          detail::shift_right<T>(ma, eb - ea),
-          dpp{ma - mb, eb};
+        detail::shift_right<T>(ma, detail::shift_left<T>(mb, eb, eb - ea));
+
+        return {ma - mb, eb};
       }
       else
       {
-        return detail::shift_left<T>(ma, ea, ea - eb),
-          detail::shift_right<T>(mb, ea - eb),
-          dpp{ma - mb, ea};
+        detail::shift_right<T>(mb, detail::shift_left<T>(ma, ea, ea - eb));
+
+        return {ma - mb, ea};
       }
     }
   }
@@ -526,10 +528,8 @@ public:
         int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
 
         ea < eb ?
-          detail::shift_left<T>(mb, eb, eb - ea),
-          detail::shift_right<T>(ma, eb - ea) :
-          (detail::shift_left<T>(ma, ea, ea - eb),
-          detail::shift_right<T>(mb, ea - eb));
+          detail::shift_right<T>(ma, detail::shift_left<T>(mb, eb, eb - ea)) :
+          detail::shift_right<T>(mb, detail::shift_left<T>(ma, ea, ea - eb));
       }
 
       return ma <=> mb;
