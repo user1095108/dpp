@@ -106,7 +106,7 @@ static constexpr auto pwrs{
 };
 
 template <typename U>
-constexpr void big_shift(auto& ma, auto& ea, decltype(ma) mb,
+constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_cvref_t<decltype(ea)> i) noexcept
 {
   using I = std::remove_cvref_t<decltype(ea)>;
@@ -414,13 +414,13 @@ public:
 
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
-        detail::big_shift<T>(mb, eb, ma, eb - ea);
+        detail::align<T>(mb, eb, ma, eb - ea);
 
         return {ma + mb, eb};
       }
       else
       {
-        detail::big_shift<T>(ma, ea, mb, ea - eb);
+        detail::align<T>(ma, ea, mb, ea - eb);
 
         return {ma + mb, ea};
       }
@@ -449,13 +449,13 @@ public:
 
       if (int_t ea(v_.e), eb(oe); ea < eb)
       {
-        detail::big_shift<T>(mb, eb, ma, eb - ea);
+        detail::align<T>(mb, eb, ma, eb - ea);
 
         return {ma - mb, eb};
       }
       else
       {
-        detail::big_shift<T>(ma, ea, mb, ea - eb);
+        detail::align<T>(ma, ea, mb, ea - eb);
 
         return {ma - mb, ea};
       }
@@ -517,8 +517,8 @@ public:
         int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
 
         ea < eb ?
-          detail::big_shift<T>(mb, eb, ma, eb - ea) :
-          detail::big_shift<T>(ma, ea, mb, ea - eb);
+          detail::align<T>(mb, eb, ma, eb - ea) :
+          detail::align<T>(ma, ea, mb, ea - eb);
       }
 
       return ma <=> mb;
