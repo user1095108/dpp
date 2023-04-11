@@ -1,6 +1,6 @@
 ![screenshot.png](screenshot.png?raw=true)
 # dpp
-This is an easily understandable arbitrary-precision decimal floating-point library for non-critical tasks and testing. The library does not adhere to any standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
+This is an intuitive arbitrary-precision decimal floating-point number library for non-critical tasks and testing. The library does not adhere to any standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
 
 # build instructions
     git submodule update --init
