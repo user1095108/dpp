@@ -9,5 +9,6 @@ This is an intuitive arbitrary-precision **decimal** floating-point number libra
 # resources
 * [Boost.Multiprecision](https://github.com/boostorg/multiprecision)
 * [DEC64](https://github.com/douglascrockford/DEC64)
+* [General Decimal Arithmetic](https://speleotrove.com/decimal)
 * [decimal_for_cpp](https://github.com/vpiotr/decimal_for_cpp)
 * [libdecnumber](https://github.com/gcc-mirror/gcc/tree/master/libdecnumber)
