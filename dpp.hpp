@@ -700,7 +700,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         [[fallthrough]];
 
       case '+':
-        i = std::next(i);
+        ++i;
         break;
 
       [[unlikely]] default:
@@ -726,7 +726,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       }
     );
 
-    for (; end != i; i = std::next(i))
+    for (; end != i; ++i)
     {
       switch (*i)
       {
@@ -735,7 +735,7 @@ constexpr T to_decimal(std::input_iterator auto i,
           if (scandigit(*i - '0')) break; else continue;
 
         case '.':
-          i = std::next(i);
+          ++i;
           break;
 
         case '\0':
@@ -751,7 +751,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     //
     typename T::int_t e{};
 
-    for (; end != i; i = std::next(i))
+    for (; end != i; ++i)
     {
       switch (*i)
       {
