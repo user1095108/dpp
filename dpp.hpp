@@ -226,7 +226,7 @@ public:
     {
       v_.e = (v_.m = m) ? E(e) : E{};
     }
-    else
+    else [[unlikely]]
     {
       *this = nan{};
     }
