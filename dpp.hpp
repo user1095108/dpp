@@ -192,45 +192,43 @@ public:
   template <detail::integral U>
   constexpr dpp(U m, int_t e) noexcept
   {
-    // reduction of the exponent is a side effect of +- ops
-    if (e > intt::coeff<emax>()) [[unlikely]]
+    if constexpr(detail::is_signed_v<U> &&
+      (detail::bit_size_v<U> > detail::bit_size_v<T>))
+    {
+      if (m < intt::coeff<U(mmin)>())
+      {
+        for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
+
+        m = (m - 5) / 10;
+      }
+      else if (m > intt::coeff<U(mmax)>())
+      {
+        for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+
+        m = (m + 5) / 10;
+      }
+    }
+    else if constexpr(std::is_unsigned_v<U> &&
+      (detail::bit_size_v<U> >= detail::bit_size_v<T>))
+    {
+      if ((m > T{}) && (m > intt::coeff<U(mmax)>()))
+      {
+        for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+
+        m = (m + 5) / 10;
+      }
+    }
+
+    //
+    for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
+
+    if (e <= intt::coeff<emax>()) [[likely]]
+    {
+      v_.e = (v_.m = m) ? E(e) : E{};
+    }
+    else
     {
       *this = nan{};
-    }
-    else [[likely]]
-    {
-      if constexpr(detail::is_signed_v<U> &&
-        (detail::bit_size_v<U> > detail::bit_size_v<T>))
-      {
-        if (m < intt::coeff<U(mmin)>())
-        {
-          for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
-
-          m = (m - 5) / 10;
-        }
-        else if (m > intt::coeff<U(mmax)>())
-        {
-          for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
-
-          m = (m + 5) / 10;
-        }
-      }
-      else if constexpr(std::is_unsigned_v<U> &&
-        (detail::bit_size_v<U> >= detail::bit_size_v<T>))
-      {
-        if ((m > T{}) && (m > intt::coeff<U(mmax)>()))
-        {
-          for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
-
-          m = (m + 5) / 10;
-        }
-      }
-
-      //
-      for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
-
-      //
-      v_.e = (v_.m = m) ? E(e) : E{};
     }
   }
 
