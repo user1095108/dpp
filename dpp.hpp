@@ -220,10 +220,10 @@ public:
     }
 
     //
-    for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
-
     if (e <= intt::coeff<emax>()) [[likely]]
     {
+      for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
+
       v_.e = (v_.m = m) ? E(e) : E{};
     }
     else
