@@ -134,7 +134,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 }
 
 template <typename U>
-using double_ = std::conditional_t<
+using double_t = std::conditional_t<
   std::is_same_v<U, std::int8_t>,
   std::int16_t,
   std::conditional_t<
@@ -148,7 +148,7 @@ using double_ = std::conditional_t<
         DPP_INT128T,
         std::conditional_t<
           intt::is_intt_v<U>,
-          typename intt::detail::double_<U>::type,
+          intt::detail::double_t<U>,
           void
         >
       >
@@ -168,7 +168,7 @@ public:
   static constexpr auto mmin{detail::min_v<T>};
   static constexpr auto mmax{detail::max_v<T>};
 
-  using doubled_t = detail::double_<T>;
+  using doubled_t = detail::double_t<T>;
 
   using exp_type = E;
 
@@ -176,7 +176,7 @@ public:
   static constexpr auto emax{detail::max_v<E>};
 
   // int type wide enough to deal with exponents
-  using int_t = detail::double_<E>;
+  using int_t = detail::double_t<E>;
 
   static constexpr auto dp__{detail::maxpow10e<doubled_t, int_t>()};
 
