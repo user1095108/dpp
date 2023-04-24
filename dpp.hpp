@@ -175,8 +175,9 @@ public:
   static constexpr auto emin{detail::min_v<E>};
   static constexpr auto emax{detail::max_v<E>};
 
-  // int type wide enough to deal with exponents
-  using int_t = detail::double_t<E>;
+  using int_t = std::conditional_t<
+    detail::bit_size_v<E> < detail::bit_size_v<int>, int, detail::double_t<E>
+  >; // int type wide enough to deal with exponents
 
   static constexpr auto dp__{detail::maxpow10e<doubled_t, int_t>()};
 
