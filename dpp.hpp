@@ -710,56 +710,34 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     //
     typename T::mantissa_type r{};
-
-    auto const scandigit([&](decltype(r) const d) noexcept
-      {
-        if (r >= intt::coeff<T::mmin / 10>())
-        {
-          if (auto const t(10 * r); t >= intt::coeff<T::mmin>() + d)
-          {
-            r = t - d;
-
-            return false;
-          }
-        }
-
-        return true;
-      }
-    );
-
-    for (; end != i; ++i)
-    {
-      switch (*i)
-      {
-        [[likely]] case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (scandigit(*i - '0')) break; else continue;
-
-        case '.':
-          ++i;
-          break;
-
-        case '\0':
-          break;
-
-        [[unlikely]] default:
-          return nan{};
-      }
-
-      break;
-    }
-
-    //
     typename T::int_t e{};
 
-    for (; end != i; ++i)
+    for (bool decp{}; end != i; ++i)
     {
       switch (*i)
       {
         [[likely]] case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if ((intt::coeff<T::emin>() == e) || scandigit(*i - '0')) break;
-          else { --e; continue; }
+          if (intt::coeff<T::emin>() == e) [[unlikely]] break; else
+          {
+            if (r >= intt::coeff<T::mmin / 10>())
+            {
+              if (decltype(r) const t(10 * r), d(*i - '0');
+                t >= intt::coeff<T::mmin>() + d)
+              {
+                r = t - d;
+                e -= decp;
+
+                continue;
+              }
+            }
+          }
+
+          break;
+
+        case '.':
+          if (decp) return nan{}; else decp = true;
+          continue;
 
         case '\0':
           break;
