@@ -800,10 +800,7 @@ std::string to_string(dpp<T, E> const& a)
 
     if (m) [[likely]]
     {
-      if ((e = a.exponent()) < E{})
-      {
-        for (; !(m % 10); m /= 10, ++e);
-      }
+      if ((e = a.exponent()) < E{}) for (; !(m % 10); m /= 10, ++e);
     }
     else [[unlikely]]
     {
