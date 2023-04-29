@@ -712,7 +712,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     typename T::mantissa_type r{};
     typename T::int_t e{};
 
-    for (bool decp{}; end != i; ++i)
+    for (bool dcp{}; end != i; ++i)
     {
       switch (*i)
       {
@@ -726,7 +726,7 @@ constexpr T to_decimal(std::input_iterator auto i,
                 t >= intt::coeff<T::mmin>() + d) [[likely]]
               {
                 r = t - d;
-                e -= decp;
+                e -= dcp;
 
                 continue;
               }
@@ -736,7 +736,7 @@ constexpr T to_decimal(std::input_iterator auto i,
           break;
 
         case '.':
-          if (decp) [[unlikely]] return nan{}; else [[likely]]{ decp = true; }
+          if (dcp) [[unlikely]] return nan{}; else [[likely]] { dcp = true; }
           continue;
 
         case '\0':
