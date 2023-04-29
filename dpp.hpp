@@ -720,10 +720,10 @@ constexpr T to_decimal(std::input_iterator auto i,
         case '5': case '6': case '7': case '8': case '9':
           if (intt::coeff<T::emin>() == e) [[unlikely]] break; else
           {
-            if (r >= intt::coeff<T::mmin / 10>())
+            if (r >= intt::coeff<T::mmin / 10>()) [[likely]]
             {
               if (decltype(r) const t(10 * r), d(*i - '0');
-                t >= intt::coeff<T::mmin>() + d)
+                t >= intt::coeff<T::mmin>() + d) [[likely]]
               {
                 r = t - d;
                 e -= decp;
@@ -736,7 +736,7 @@ constexpr T to_decimal(std::input_iterator auto i,
           break;
 
         case '.':
-          if (decp) return nan{}; else decp = true;
+          if (decp) [[unlikely]] return nan{}; else [[likely]]{ decp = true; }
           continue;
 
         case '\0':
