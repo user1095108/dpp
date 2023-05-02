@@ -493,12 +493,12 @@ public:
 
         if (m < 0)
         {
-          for (auto um(std::countl_one(M(m))); uvm - um > 0; m /= 10, ++e,
+          for (auto um(std::countl_one(M(m))); uvm > um; m /= 10, ++e,
             um = std::countl_one(M(m)));
         }
         else
         {
-          for (auto um(std::countl_zero(M(m))); uvm - um > 0; m /= 10, ++e,
+          for (auto um(std::countl_zero(M(m))); uvm > um; m /= 10, ++e,
             um = std::countl_zero(M(m)));
         }
       }
