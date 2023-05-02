@@ -491,12 +491,15 @@ public:
         int const uvm((detail::bit_size_v<V> + 1) -
           (v_.m < 0 ? std::countl_one(V(v_.m)) : std::countl_zero(V(v_.m))));
 
-        for (auto um(m < 0 ? std::countl_one(M(m)) : std::countl_zero(M(m)));
-          uvm - um > 0;
-          um = m < 0 ? std::countl_one(M(m)) : std::countl_zero(M(m)))
+        if (m < 0)
         {
-          m /= 10;
-          ++e;
+          for (auto um(std::countl_one(M(m))); uvm - um > 0; m /= 10, ++e,
+            um = std::countl_one(M(m)));
+        }
+        else
+        {
+          for (auto um(std::countl_zero(M(m))); uvm - um > 0; m /= 10, ++e,
+            um = std::countl_zero(M(m)));
         }
       }
       else
