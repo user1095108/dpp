@@ -6,7 +6,7 @@
 
 #include "intt/intt.hpp"
 
-#if defined(_MSC_VER)
+#if !defined(__SIZEOF_INT128__)
 # define DPP_INT128T intt::intt<std::uint64_t, 2>
 #else
 # define DPP_INT128T __int128
@@ -481,17 +481,38 @@ public:
       int_t e(intt::coeff<-dp__>() + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow(U(10), dp__)>() / om);
 
-      if (m < intt::coeff<U(mmin)>())
+      if constexpr(!intt::is_intt_v<decltype(m)> &&
+        !std::is_same_v<decltype(m), DPP_INT128T> &&
+        !intt::is_intt_v<decltype(v_.m)>)
       {
-        for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
+        using M = std::make_unsigned_t<decltype(m)>;
+        using V = std::make_unsigned_t<decltype(v_.m)>;
 
-        m = (m - 5) / 10;
+        int const uvm((detail::bit_size_v<V> + 1) -
+          (v_.m < 0 ? std::countl_one(V(v_.m)) : std::countl_zero(V(v_.m))));
+
+        for (auto um(m < 0 ? std::countl_one(M(m)) : std::countl_zero(M(m)));
+          uvm - um > 0;
+          um = m < 0 ? std::countl_one(M(m)) : std::countl_zero(M(m)))
+        {
+          m /= 10;
+          ++e;
+        }
       }
-      else if (m > intt::coeff<U(mmax)>())
+      else
       {
-        for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+        if (m < intt::coeff<U(mmin)>())
+        {
+          for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
 
-        m = (m + 5) / 10;
+          m = (m - 5) / 10;
+        }
+        else if (m > intt::coeff<U(mmax)>())
+        {
+          for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+
+          m = (m + 5) / 10;
+        }
       }
 
       return dpp(m * v_.m, e);
