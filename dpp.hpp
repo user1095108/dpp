@@ -482,7 +482,9 @@ public:
       auto m(intt::coeff<detail::pow(U(10), dp__)>() / om);
 
       if constexpr(!intt::is_intt_v<decltype(m)> &&
+#if defined(__STRICT_ANSI__) && defined (__SIZEOF_INT128__)
         !std::is_same_v<decltype(m), DPP_INT128T> &&
+#endif
         !intt::is_intt_v<decltype(v_.m)>)
       {
         using M = std::make_unsigned_t<decltype(m)>;
