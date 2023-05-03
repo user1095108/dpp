@@ -325,7 +325,7 @@ public:
     {
       using I = int_t;
 
-      I e1(-e);
+      I e1(-I(e));
       auto m(v_.m);
 
       do
@@ -480,7 +480,7 @@ public:
     }
     else [[likely]]
     {
-      auto e(intt::coeff<int_t(-dp__)>() + v_.e - o.v_.e);
+      auto e(intt::coeff<int_t(-int_t(dp__))>() + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow(doubled_t(10), dp__)>() / om);
 
       auto const uvm((detail::bit_size_v<T> + 1) -
@@ -674,7 +674,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
   if (!m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
       intt::coeff<detail::pow(doubled_t(10), dpp<T, E>::dp__)>() / m,
-      intt::coeff<int_t(-dpp<T, E>::dp__)>() - a.exponent()
+      intt::coeff<int_t(-int_t(dpp<T, E>::dp__))>() - a.exponent()
     };
 }
 
