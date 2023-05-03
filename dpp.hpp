@@ -476,41 +476,14 @@ public:
     }
     else [[likely]]
     {
-      using U = doubled_t;
-
       int_t e(intt::coeff<-dp__>() + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow(U(10), dp__)>() / om);
+      auto m(intt::coeff<detail::pow(doubled_t(10), dp__)>() / om);
 
-      if constexpr(!intt::is_intt_v<decltype(m)> &&
-#if defined(__STRICT_ANSI__) && defined (__SIZEOF_INT128__)
-        !std::is_same_v<decltype(m), DPP_INT128T> &&
-#endif
-        !intt::is_intt_v<decltype(v_.m)>)
-      {
-        using M = std::make_unsigned_t<decltype(m)>;
-        using V = std::make_unsigned_t<decltype(v_.m)>;
+      auto const uvm((detail::bit_size_v<T> + 1) -
+        intt::clz(v_.m < 0 ? ~v_.m : v_.m));
 
-        unsigned const uvm((detail::bit_size_v<V> + 1) -
-          std::countl_zero(V(v_.m < 0 ? ~v_.m : v_.m)));
-
-        for (unsigned um(std::countl_zero(M(m < 0 ? ~m : m))); uvm > um;
-          m /= 10, ++e, um = std::countl_zero(M(m < 0 ? ~m : m)));
-      }
-      else
-      {
-        if (m < intt::coeff<U(mmin)>())
-        {
-          for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
-
-          m = (m - 5) / 10;
-        }
-        else if (m > intt::coeff<U(mmax)>())
-        {
-          for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
-
-          m = (m + 5) / 10;
-        }
-      }
+      for (auto um(intt::clz(m < 0 ? ~m : m)); uvm > um;
+        m /= 10, ++e, um = intt::clz(m < 0 ? ~m : m));
 
       return dpp(m * v_.m, e);
     }
