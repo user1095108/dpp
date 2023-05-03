@@ -480,10 +480,10 @@ public:
       auto m(intt::coeff<detail::pow(doubled_t(10), dp__)>() / om);
 
       auto const uvm((detail::bit_size_v<T> + 1) -
-        intt::clz(v_.m < 0 ? ~v_.m : v_.m));
+        intt::clz(intt::is_neg(v_.m) ? ~v_.m : v_.m));
 
-      for (auto um(intt::clz(m < 0 ? ~m : m)); uvm > um;
-        m /= 10, ++e, um = intt::clz(m < 0 ? ~m : m));
+      for (auto um(intt::clz(intt::is_neg(m) ? ~m : m)); uvm > um;
+        m /= 10, ++e, um = intt::clz(intt::is_neg(m) ? ~m : m));
 
       return dpp(m * v_.m, e);
     }
