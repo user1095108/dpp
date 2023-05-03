@@ -491,14 +491,10 @@ public:
         using V = std::make_unsigned_t<decltype(v_.m)>;
 
         unsigned const uvm((detail::bit_size_v<V> + 1) -
-          (v_.m < 0 ? std::countl_one(V(v_.m)) : std::countl_zero(V(v_.m))));
+          std::countl_zero(V(v_.m < 0 ? ~v_.m : v_.m)));
 
-        if (m < 0)
-          for (unsigned um(std::countl_one(M(m))); uvm > um; m /= 10, ++e,
-            um = std::countl_one(M(m)));
-        else
-          for (unsigned um(std::countl_zero(M(m))); uvm > um; m /= 10, ++e,
-            um = std::countl_zero(M(m)));
+        for (unsigned um(std::countl_zero(M(m < 0 ? ~m : m))); uvm > um;
+          m /= 10, ++e, um = std::countl_zero(M(m < 0 ? ~m : m)));
       }
       else
       {
