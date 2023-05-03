@@ -476,7 +476,7 @@ public:
     }
     else [[likely]]
     {
-      int_t e(intt::coeff<-dp__>() + v_.e - o.v_.e);
+      int_t e(intt::coeff<int_t(-int_t(dp__))>() + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow(doubled_t(10), dp__)>() / om);
 
       auto const uvm((detail::bit_size_v<T> + 1) -
@@ -516,6 +516,7 @@ public:
     }
   }
 
+  //
   friend auto& operator<<(std::ostream& os, dpp const& p)
   {
     return os << to_string(p);
@@ -662,13 +663,14 @@ template <typename T, typename E>
 constexpr auto inv(dpp<T, E> const& a) noexcept
 {
   using doubled_t = typename dpp<T, E>::doubled_t;
+  using int_t = typename dpp<T, E>::int_t;
 
   auto const m(a.mantissa());
 
   if (!m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
       intt::coeff<detail::pow(doubled_t(10), dpp<T, E>::dp__)>() / m,
-      intt::coeff<-dpp<T, E>::dp__>() - a.exponent()
+      intt::coeff<int_t(-int_t(dpp<T, E>::dp__))>() - a.exponent()
     };
 }
 
