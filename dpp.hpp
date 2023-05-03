@@ -486,8 +486,12 @@ public:
       auto const uvm((detail::bit_size_v<T> + 1) -
         intt::clz(intt::is_neg(v_.m) ? T(~v_.m) : v_.m));
 
-      for (auto um(intt::clz(intt::is_neg(m) ? ~m : m)); uvm > um;
-        m /= 10, ++e, um = intt::clz(intt::is_neg(m) ? ~m : m));
+      if (intt::is_neg(m))
+        for (auto um(intt::clz(~m)); uvm > um; m /= 10, ++e,
+          um = intt::clz(~m));
+      else
+        for (auto um(intt::clz(m)); uvm > um; m /= 10, ++e,
+          um = intt::clz(m));
 
       return dpp(m * v_.m, e);
     }
