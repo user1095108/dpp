@@ -168,7 +168,11 @@ public:
   static constexpr auto mmin{detail::min_v<T>};
   static constexpr auto mmax{detail::max_v<T>};
 
-  using doubled_t = detail::double_t<T>;
+  using doubled_t = std::conditional_t<
+    detail::bit_size_v<detail::double_t<T>> <= detail::bit_size_v<int>,
+    int,
+    detail::double_t<T>
+  >;
 
   using exp_type = E;
 
@@ -482,8 +486,8 @@ public:
       auto const uvm((detail::bit_size_v<T> + 1) -
         intt::clz(intt::is_neg(v_.m) ? T(~v_.m) : v_.m));
 
-      for (auto um(intt::clz(intt::is_neg(m) ? doubled_t(~m) : m)); uvm > um;
-        m /= 10, ++e, um = intt::clz(intt::is_neg(m) ? doubled_t(~m) : m));
+      for (auto um(intt::clz(intt::is_neg(m) ? ~m : m)); uvm > um;
+        m /= 10, ++e, um = intt::clz(intt::is_neg(m) ? ~m : m));
 
       return dpp(m * v_.m, e);
     }
