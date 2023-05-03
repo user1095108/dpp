@@ -516,6 +516,11 @@ public:
     }
   }
 
+  friend auto& operator<<(std::ostream& os, dpp const& p)
+  {
+    return os << to_string(p);
+  }
+
   //
   static constexpr dpp min() noexcept
   {
@@ -803,12 +808,6 @@ std::string to_string(dpp<T, E> const& a)
     //
     return r;
   }
-}
-
-template <typename T, typename E>
-inline auto& operator<<(std::ostream& os, dpp<T, E> const& p)
-{
-  return os << to_string(p);
 }
 
 //////////////////////////////////////////////////////////////////////////////
