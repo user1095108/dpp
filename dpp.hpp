@@ -484,7 +484,7 @@ public:
 
       constexpr auto e0(detail::maxpow10e<T, int_t>());
 
-      auto e(int_t(v_.e) - o.v_.e - e0);
+      auto e(intt::coeff<int_t(-e0)>() + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow(U(10), e0)>() * v_.m);
 
       if (intt::is_neg(m))
