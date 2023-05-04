@@ -480,15 +480,17 @@ public:
     }
     else if (v_.m) [[likely]]
     {
+      using U = doubled_t;
+
       constexpr auto e0(detail::maxpow10e<T, int_t>());
 
       auto e(int_t(v_.e) - o.v_.e - e0);
-      auto m(intt::coeff<detail::pow(doubled_t(10), e0)>() * v_.m);
+      auto m(intt::coeff<detail::pow(U(10), e0)>() * v_.m);
 
       if (intt::is_neg(m))
-        for (; m >= intt::coeff<mmin / 10>(); m *= T(10), --e);
+        for (; m >= intt::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
       else
-        for (; m <= intt::coeff<mmax / 10>(); m *= T(10), --e);
+        for (; m <= intt::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
 
       return dpp(m / o.v_.m, e);
     }
