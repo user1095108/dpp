@@ -16,6 +16,7 @@ int main()
   test<dpp::inv(3_d32)>();
   test<dpp::inv(6_d32)>();
   test<dpp::inv(11_d32)>();
+  test<20_d64 / 3>();
   test<.123_d32>();
   test<0._d32>();
   test<.0_d64>();
