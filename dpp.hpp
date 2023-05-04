@@ -483,7 +483,7 @@ public:
       auto e(intt::coeff<int_t(-dp__)>() + v_.e - o.v_.e);
       auto m(intt::coeff<detail::pow(doubled_t(10), dp__)>() / om);
 
-      auto const uvm((detail::bit_size_v<T> + 1) -
+      auto const uvm(intt::coeff<detail::bit_size_v<T> + 1>() -
         intt::clz(intt::is_neg(v_.m) ? T(~v_.m) : v_.m));
 
       if (intt::is_neg(m))
