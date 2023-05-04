@@ -474,26 +474,27 @@ public:
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    if (auto const om(o.v_.m); !om || isnan(*this) || isnan(o)) [[unlikely]]
+    if (!o.v_.m || isnan(*this) || isnan(o)) [[unlikely]]
     {
       return nan{};
     }
-    else [[likely]]
+    else if (v_.m) [[likely]]
     {
-      auto e(intt::coeff<int_t(-dp__)>() + v_.e - o.v_.e);
-      auto m(intt::coeff<detail::pow(doubled_t(10), dp__)>() / om);
+      constexpr auto e0(detail::maxpow10e<T, int_t>());
 
-      auto const uvm(intt::coeff<detail::bit_size_v<T> + 1>() -
-        intt::clz(intt::is_neg(v_.m) ? T(~v_.m) : v_.m));
+      auto e(int_t(v_.e) - o.v_.e - e0);
+      auto m(intt::coeff<detail::pow(doubled_t(10), e0)>() * v_.m);
 
       if (intt::is_neg(m))
-        for (auto um(intt::clz(~m)); uvm > um; m /= 10, ++e,
-          um = intt::clz(~m));
+        for (; m >= intt::coeff<mmin / 10>(); m *= T(10), --e);
       else
-        for (auto um(intt::clz(m)); uvm > um; m /= 10, ++e,
-          um = intt::clz(m));
+        for (; m <= intt::coeff<mmax / 10>(); m *= T(10), --e);
 
-      return dpp(m * v_.m, e);
+      return dpp(m / o.v_.m, e);
+    }
+    else
+    {
+      return {};
     }
   }
 
