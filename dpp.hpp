@@ -6,11 +6,11 @@
 
 #include "intt/intt.hpp"
 
-#if !defined(__SIZEOF_INT128__)
-# define DPP_INT128T intt::intt<std::uint64_t, 2>
-#else
+#if defined(__SIZEOF_INT128__)
 # define DPP_INT128T __int128
-#endif
+#else
+# define DPP_INT128T intt::intt<std::uint64_t, 2>
+#endif // __SIZEOF_INT128__
 
 namespace dpp
 {
