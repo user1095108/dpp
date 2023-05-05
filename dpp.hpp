@@ -120,7 +120,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     ma *= pwrs<T(10), maxpow10e<U, I>() + 1>[e0];
   }
 
-  if (ma < T{})
+  if (intt::is_neg(ma))
     for (; i && (ma >= intt::coeff<min_v<T> / 10>()); --i, --ea, ma *= T(10));
   else
     for (; i && (ma <= intt::coeff<max_v<T> / 10>()); --i, --ea, ma *= T(10));
@@ -321,7 +321,7 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   { // this function is unsafe, take a look at to_integral() for safety
-    if (auto const e(v_.e); e < E{})
+    if (auto const e(v_.e); intt::is_neg(e))
     {
       using I = int_t;
 
@@ -545,8 +545,8 @@ public:
   }
 
   //
-  constexpr auto exponent() const noexcept { return v_.e; }
-  constexpr auto mantissa() const noexcept { return v_.m; }
+  constexpr auto& exponent() const noexcept { return v_.e; }
+  constexpr auto& mantissa() const noexcept { return v_.m; }
 };
 
 using d256 = dpp<intt::intt<std::uint64_t, 4>, std::int32_t>;
@@ -633,14 +633,15 @@ constexpr auto isnan(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto abs(dpp<T, E> const& a) noexcept
 {
-  return a.mantissa() < T{} ? -a : a;
+  return intt::is_neg(a.mantissa()) ? -a : a;
 }
 
 //
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return (a.exponent() >= E{}) || isnan(a) ? a : dpp<T, E>(T(a),{}, direct{});
+  return !intt::is_neg(a.exponent()) || isnan(a) ?
+    a : dpp<T, E>(T(a),{}, direct{});
 }
 
 template <typename T, typename E>
@@ -664,8 +665,8 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 {
   dpp<T, E> const c(5, -1, direct{});
 
-  return a.exponent() < E{} ?
-    trunc(a.mantissa() < T{} ? a - c : a + c) :
+  return intt::is_neg(a.exponent()) ?
+    trunc(intt::is_neg(a.mantissa()) ? a - c : a + c) :
     a;
 }
 
@@ -787,7 +788,7 @@ std::string to_string(dpp<T, E> const& a)
 
     if (m) [[likely]]
     {
-      if ((e = a.exponent()) < E{}) for (; !(m % 10); m /= 10, ++e);
+      if (intt::is_neg(e = a.exponent())) for (; !(m % 10); m /= 10, ++e);
     }
     else [[unlikely]]
     {
@@ -800,9 +801,9 @@ std::string to_string(dpp<T, E> const& a)
 
     auto r(to_string(m));
 
-    if (e < E{})
+    if (intt::is_neg(e))
     {
-      auto const neg(m < T{});
+      auto const neg(intt::is_neg(m));
 
       if (decltype(e) const n(r.size() - neg + e); n > 0)
       {
