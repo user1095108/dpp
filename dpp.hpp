@@ -677,12 +677,10 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
 
   constexpr auto dp__{detail::maxpow10e<U, int_t>()};
 
-  auto const m(a.mantissa());
-
-  if (!m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
+  if (!a.v_.m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
-      intt::coeff<detail::pow(U(10), dp__)>() / m,
-      intt::coeff<int_t(-dp__)>() - a.exponent()
+      intt::coeff<detail::pow(U(10), dp__)>() / a.v_.m,
+      intt::coeff<int_t(-dp__)>() - a.v_.e
     };
 }
 
