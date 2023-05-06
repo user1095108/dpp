@@ -402,17 +402,17 @@ public:
     {
       return nan{};
     }
-    else if (auto const m(v_.m); !m) [[unlikely]]
+    else if (!v_.m) [[unlikely]]
     {
       return o;
     }
-    else if (auto const om(o.v_.m); !om) [[unlikely]]
+    else if (!o.v_.m) [[unlikely]]
     {
       return *this;
     }
     else [[likely]]
     {
-      doubled_t ma(m), mb(om);
+      doubled_t ma(v_.m), mb(o.v_.m);
 
       if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
@@ -435,21 +435,21 @@ public:
     {
       return nan{};
     }
-    else if (auto const m(v_.m), om(o.v_.m); !om) [[unlikely]]
+    else if (!o.v_.m) [[unlikely]]
     {
       return *this;
     }
-    else if (auto const oe(o.v_.e); !m) [[unlikely]]
+    else if (!v_.m) [[unlikely]]
     { // prevent overflow
-      return intt::coeff<mmin>() == om ?
-        dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), oe) :
-        dpp(-om, oe, direct{});
+      return intt::coeff<mmin>() == o.v_.m ?
+        dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), o.v_.e) :
+        dpp(-o.v_.m, o.v_.e, direct{});
     }
     else [[likely]]
     {
-      doubled_t ma(m), mb(om);
+      doubled_t ma(v_.m), mb(o.v_.m);
 
-      if (int_t ea(v_.e), eb(oe); ea < eb)
+      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
       {
         detail::align<T>(mb, eb, ma, eb - ea);
 
@@ -505,13 +505,13 @@ public:
     {
       return std::partial_ordering::unordered;
     }
-    else if (auto const m(v_.m), om(o.v_.m); !m || !om) [[unlikely]]
+    else if (!v_.m || !o.v_.m) [[unlikely]]
     {
-      return m <=> om;
+      return v_.m <=> o.v_.m;
     }
     else [[likely]]
     {
-      doubled_t ma(m), mb(om);
+      doubled_t ma(v_.m), mb(o.v_.m);
 
       {
         int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
