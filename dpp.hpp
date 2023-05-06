@@ -325,7 +325,7 @@ public:
     {
       using I = int_t;
 
-      I e1(-I(v_.e));
+      I e1(-I(v_.e)); // overflow prevention
       auto m(v_.m);
 
       do
