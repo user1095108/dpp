@@ -110,7 +110,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_cvref_t<decltype(ea)> i) noexcept
 {
   using I = std::remove_cvref_t<decltype(ea)>;
-  using T = std::remove_reference_t<decltype(ma)>;
+  using T = std::remove_cvref_t<decltype(ma)>;
 
   {
     auto const e0(std::min(i, intt::coeff<maxpow10e<U, I>()>()));
@@ -128,7 +128,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   if (i)
   {
     mb /= pwrs<T(10), maxpow10e<U, I>() + 1>[
-        std::min(i, intt::coeff<I(maxpow10e<U, I>() + 1)>())
+        std::min(i, intt::coeff<maxpow10e<U, I>() + 1>())
       ];
   }
 }
@@ -321,11 +321,11 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   { // this function is unsafe, take a look at to_integral() for safety
-    if (auto const e(v_.e); intt::is_neg(e))
+    if (intt::is_neg(v_.e))
     {
       using I = int_t;
 
-      I e1(-I(e));
+      I e1(-I(v_.e));
       auto m(v_.m);
 
       do
@@ -343,7 +343,7 @@ public:
     {
       U m(v_.m);
 
-      detail::pow(U(10), e, [&](auto&& x) noexcept { m *= x; });
+      detail::pow(U(10), v_.e, [&](auto&& x) noexcept { m *= x; });
 
       return m;
     }
@@ -641,7 +641,7 @@ template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
   return !intt::is_neg(a.exponent()) || isnan(a) ?
-    a : dpp<T, E>(T(a),{}, direct{});
+    a : dpp<T, E>(T(a), {}, direct{});
 }
 
 template <typename T, typename E>
