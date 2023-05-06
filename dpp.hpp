@@ -675,12 +675,12 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
   using U = typename dpp<T, E>::doubled_t;
   using int_t = typename dpp<T, E>::int_t;
 
-  constexpr auto dp__{detail::maxpow10e<U, int_t>()};
+  constexpr auto e0{detail::maxpow10e<U, int_t>()};
 
   if (!a.v_.m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
-      intt::coeff<detail::pow(U(10), dp__)>() / a.v_.m,
-      intt::coeff<int_t(-dp__)>() - a.v_.e
+      intt::coeff<detail::pow(U(10), e0)>() / a.v_.m,
+      intt::coeff<int_t(-e0)>() - a.v_.e
     };
 }
 
