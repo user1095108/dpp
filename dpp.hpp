@@ -185,8 +185,6 @@ public:
     detail::double_t<E>
   >; // int type wide enough to deal with exponents
 
-  static constexpr auto dp__{detail::maxpow10e<doubled_t, int_t>()};
-
 public:
   struct { T m; E e; } v_;
 
@@ -674,15 +672,17 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto inv(dpp<T, E> const& a) noexcept
 {
-  using doubled_t = typename dpp<T, E>::doubled_t;
+  using U = typename dpp<T, E>::doubled_t;
   using int_t = typename dpp<T, E>::int_t;
+
+  constexpr auto dp__{detail::maxpow10e<U, int_t>()};
 
   auto const m(a.mantissa());
 
   if (!m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
-      intt::coeff<detail::pow(doubled_t(10), dpp<T, E>::dp__)>() / m,
-      intt::coeff<int_t(-dpp<T, E>::dp__)>() - a.exponent()
+      intt::coeff<detail::pow(U(10), dp__)>() / m,
+      intt::coeff<int_t(-dp__)>() - a.exponent()
     };
 }
 
