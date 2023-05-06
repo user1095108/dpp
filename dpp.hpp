@@ -671,7 +671,7 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 //
 template <typename T, typename E>
 constexpr auto inv(dpp<T, E> const& a) noexcept
-{
+{ // multiplicative inverse or reciprocal
   using U = typename dpp<T, E>::doubled_t;
   using int_t = typename dpp<T, E>::int_t;
 
