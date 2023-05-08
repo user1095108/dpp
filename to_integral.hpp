@@ -30,7 +30,7 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
     }
     else
     {
-      m = a.mantissa();
+      m = a.sig();
 
       do
       {

@@ -79,7 +79,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
     using V = intt::intt<U, 2>;
 
     return detail::sqrt<T, E>(
-        V(intt::direct{}, U(a.mantissa())), a.exponent()
+        V(intt::direct{}, U(a.sig())), a.exponent()
       );
   }
   else
@@ -88,7 +88,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
     using V = intt::intt<D, 1>;
 
     return detail::sqrt<T, E>(
-        V(intt::direct{}, D(a.mantissa())), a.exponent()
+        V(intt::direct{}, D(a.sig())), a.exponent()
       );
   }
 }
@@ -100,7 +100,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   using V = intt::intt<U, 2 * T::size()>;
 
   return detail::sqrt<T, E>(
-      V(a.mantissa(), intt::direct{}), a.exponent()
+      V(a.sig(), intt::direct{}), a.exponent()
     );
 }
 

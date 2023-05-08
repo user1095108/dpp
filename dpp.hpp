@@ -163,7 +163,7 @@ template <typename T, typename E>
 class dpp
 {
 public:
-  using mantissa_type = T;
+  using sig_type = T;
 
   static constexpr auto mmin{detail::min_v<T>};
   static constexpr auto mmax{detail::max_v<T>};
@@ -241,7 +241,7 @@ public:
 
   template <typename U, typename V>
   constexpr dpp(dpp<U, V> const& o) noexcept:
-    dpp(o.mantissa(), o.exponent())
+    dpp(o.sig(), o.exponent())
   {
   }
 
@@ -253,7 +253,7 @@ public:
       {
         bits = std::min(
             detail::sig_bit_size_v<decltype(a)>,
-            detail::bit_size_v<mantissa_type> - 1
+            detail::bit_size_v<sig_type> - 1
           )
       };
 
@@ -271,7 +271,7 @@ public:
         detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a *= x;}) :
         detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a /= x;});
 
-      *this = dpp(mantissa_type(a), e10);
+      *this = dpp(sig_type(a), e10);
     }
     else [[unlikely]]
     {
@@ -280,7 +280,7 @@ public:
   }
 
   //
-  constexpr dpp(mantissa_type const m, exp_type const e, direct) noexcept:
+  constexpr dpp(sig_type const m, exp_type const e, direct) noexcept:
     v_{.m = m, .e = e}
   {
   }
@@ -312,7 +312,7 @@ public:
         detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a *= x;}):
         detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a /= x;});
 
-      return std::ldexp(U(mantissa_type(a)), e);
+      return std::ldexp(U(sig_type(a)), e);
     }
   }
 
@@ -389,7 +389,7 @@ public:
 
   constexpr auto operator-() const noexcept
   {
-    // we need to do it like this, as negating the mantissa can overflow
+    // we need to do it like this, as negating the sig can overflow
     if (isnan(*this)) [[unlikely]] return dpp{nan{}}; else
       [[likely]] if (intt::coeff<mmin>() == v_.m) [[unlikely]]
         return dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), v_.e); else
@@ -544,7 +544,7 @@ public:
 
   //
   constexpr auto& exponent() const noexcept { return v_.e; }
-  constexpr auto& mantissa() const noexcept { return v_.m; }
+  constexpr auto& sig() const noexcept { return v_.m; }
 };
 
 using d256 = dpp<intt::intt<std::uint64_t, 4>, std::int32_t>;
@@ -631,7 +631,7 @@ constexpr auto isnan(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto abs(dpp<T, E> const& a) noexcept
 {
-  return intt::is_neg(a.mantissa()) ? -a : a;
+  return intt::is_neg(a.sig()) ? -a : a;
 }
 
 //
@@ -664,7 +664,7 @@ constexpr auto round(dpp<T, E> const& a) noexcept
   dpp<T, E> const c(5, -1, direct{});
 
   return intt::is_neg(a.exponent()) ?
-    trunc(intt::is_neg(a.mantissa()) ? a - c : a + c) :
+    trunc(intt::is_neg(a.sig()) ? a - c : a + c) :
     a;
 }
 
@@ -717,7 +717,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     //
-    typename T::mantissa_type r{};
+    typename T::sig_type r{};
     typename T::int_t e{};
 
     for (bool dcp{}; end != i; ++i)
@@ -781,7 +781,7 @@ std::string to_string(dpp<T, E> const& a)
   }
   else [[likely]]
   {
-    auto m(a.mantissa());
+    auto m(a.sig());
     typename dpp<T, E>::int_t e;
 
     if (m) [[likely]]
@@ -869,7 +869,7 @@ struct hash<dpp::dpp<T, E>>
     { // unique nan
       m = {};
     }
-    else if ((m = a.mantissa())) [[likely]]
+    else if ((m = a.sig())) [[likely]]
     { // unique everything
       for (; !(m % 10); m /= 10, ++e); // slash zeros
     }
