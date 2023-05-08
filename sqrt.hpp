@@ -72,9 +72,10 @@ constexpr auto sqrt(intt::intt_concept auto m,
 template <std::integral T, typename E>
 constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
-  if constexpr(std::is_same_v<T, std::int64_t>)
+  using U = std::make_unsigned_t<T>;
+
+  if constexpr(std::is_same_v<U, std::uint64_t>)
   {
-    using U = std::make_unsigned_t<T>;
     using V = intt::intt<U, 2>;
 
     return detail::sqrt<T, E>(
