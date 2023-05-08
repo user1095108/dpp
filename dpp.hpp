@@ -830,8 +830,7 @@ namespace literals
 template <char ...c>\
 constexpr auto operator "" _d ## ID() noexcept\
 {\
-  char const d[]{c...};\
-  return to_decimal<d ## ID>(d);\
+  return to_decimal<d ## ID>(std::initializer_list<char>{c...});\
 }
 
 DPP_LITERAL__(16)
