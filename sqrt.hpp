@@ -74,7 +74,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = std::make_unsigned_t<T>;
 
-  if constexpr(std::is_same_v<U, std::uint64_t>)
+  if constexpr(std::is_same_v<U, std::uintmax_t>)
   {
     using V = intt::intt<U, 2>;
 
