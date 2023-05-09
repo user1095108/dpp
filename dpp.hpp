@@ -413,19 +413,13 @@ public:
     else [[likely]]
     {
       doubled_t ma(v_.m), mb(o.v_.m);
+      int_t ea(v_.e), eb(o.v_.e);
 
-      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
-      {
-        detail::align<T>(mb, eb, ma, eb - ea);
-
-        return {ma + mb, eb};
-      }
-      else
-      {
-        detail::align<T>(ma, ea, mb, ea - eb);
-
-        return {ma + mb, ea};
-      }
+      return ea < eb ?
+        (detail::align<T>(mb, eb, ma, eb - ea),
+        dpp(ma + mb, eb)) :
+        (detail::align<T>(ma, ea, mb, ea - eb),
+        dpp(ma + mb, ea));
     }
   }
 
@@ -448,19 +442,13 @@ public:
     else [[likely]]
     {
       doubled_t ma(v_.m), mb(o.v_.m);
+      int_t ea(v_.e), eb(o.v_.e);
 
-      if (int_t ea(v_.e), eb(o.v_.e); ea < eb)
-      {
-        detail::align<T>(mb, eb, ma, eb - ea);
-
-        return {ma - mb, eb};
-      }
-      else
-      {
-        detail::align<T>(ma, ea, mb, ea - eb);
-
-        return {ma - mb, ea};
-      }
+      return ea < eb ?
+        (detail::align<T>(mb, eb, ma, eb - ea),
+        dpp(ma - mb, eb)) :
+        (detail::align<T>(ma, ea, mb, ea - eb),
+        dpp(ma - mb, ea));
     }
   }
 
