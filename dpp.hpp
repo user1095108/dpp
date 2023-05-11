@@ -527,7 +527,7 @@ public:
   {
     constexpr auto e0{detail::maxpow10e<T, int_t>()};
 
-    return intt::coeff<dpp{T(1), -e0, direct{}}>();
+    return intt::coeff<dpp{doubled_t(1), -e0}>();
   }
 
   static constexpr dpp min() noexcept
