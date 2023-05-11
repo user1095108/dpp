@@ -2,6 +2,7 @@
 # define DPP_HPP
 # pragma once
 
+#include <float.h>
 #include <compare> // std::partial_ordering
 
 #include "intt/intt.hpp"
@@ -45,7 +46,9 @@ static constexpr std::size_t bit_size_v(CHAR_BIT * sizeof(U));
 
 template <typename U>
 static constexpr std::size_t sig_bit_size_v(
-  std::is_same_v<U, float> ? 24 : std::is_same_v<U, double> ? 53 : 64
+  std::is_same_v<U, float> ? FLT_MANT_DIG :
+  std::is_same_v<U, double> ? DBL_MANT_DIG :
+  LDBL_MANT_DIG
 );
 
 template <typename U>
@@ -520,6 +523,13 @@ public:
   }
 
   //
+  static constexpr dpp eps() noexcept
+  {
+    constexpr auto e0{detail::maxpow10e<T, int_t>()};
+
+    return intt::coeff<dpp{T(1), -e0, direct{}}>();
+  }
+
   static constexpr dpp min() noexcept
   {
     return intt::coeff<dpp{mmin, emax, direct{}}>();
