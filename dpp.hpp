@@ -523,9 +523,11 @@ public:
   }
 
   //
+#if !defined(__clang__)
   static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
   static constexpr dpp max{mmax, emax, direct{}};
   static constexpr dpp min{mmin, emax, direct{}};
+#endif
 
   //
   constexpr auto& exponent() const noexcept { return v_.e; }
