@@ -523,22 +523,10 @@ public:
   }
 
   //
-  static constexpr dpp eps() noexcept
-  {
-    constexpr auto e0{detail::maxpow10e<T, int_t>()};
-
-    return intt::coeff<dpp{doubled_t(1), -e0}>();
-  }
-
-  static constexpr dpp min() noexcept
-  {
-    return intt::coeff<dpp{mmin, emax, direct{}}>();
-  }
-
-  static constexpr dpp max() noexcept
-  {
-    return intt::coeff<dpp{mmax, emax, direct{}}>();
-  }
+  static constexpr dpp eps{intt::coeff<
+    dpp{doubled_t(1), -detail::maxpow10e<T, int_t>()}>()};
+  static constexpr dpp max{intt::coeff<dpp{mmax, emax, direct{}}>()};
+  static constexpr dpp min{intt::coeff<dpp{mmin, emax, direct{}}>()};
 
   //
   constexpr auto& exponent() const noexcept { return v_.e; }
