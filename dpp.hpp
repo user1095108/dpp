@@ -172,8 +172,9 @@ public:
   static constexpr auto mmax{detail::max_v<T>};
 
   using doubled_t = std::conditional_t<
-    detail::bit_size_v<detail::double_t<T>> <= detail::bit_size_v<int>,
-    int,
+    detail::bit_size_v<detail::double_t<T>> <=
+      detail::bit_size_v<std::intmax_t>,
+    std::intmax_t,
     detail::double_t<T>
   >;
 
@@ -457,8 +458,10 @@ public:
 
   constexpr dpp operator*(dpp const& o) const noexcept
   {
+    using U = doubled_t;
+
     if (isnan(*this) || isnan(o)) [[unlikely]] return nan{}; else
-      [[likely]] return dpp(doubled_t(v_.m) * o.v_.m, int_t(v_.e) + o.v_.e);
+      [[likely]] return dpp(U(v_.m) * U(o.v_.m), int_t(v_.e) + int_t(o.v_.e));
   }
 
   constexpr dpp operator/(dpp const& o) const noexcept
@@ -473,15 +476,15 @@ public:
 
       constexpr auto e0(detail::maxpow10e<T, int_t>());
 
-      auto e(intt::coeff<int_t(-e0)>() + v_.e - o.v_.e);
-      auto m(v_.m * intt::coeff<detail::pow(U(10), e0)>());
+      auto e(intt::coeff<int_t(-e0)>() + int_t(v_.e) - int_t(o.v_.e));
+      auto m(intt::coeff<detail::pow(U(10), e0)>() * U(v_.m));
 
       if (intt::is_neg(m))
         for (; m >= intt::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
       else
         for (; m <= intt::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
 
-      return dpp(m / o.v_.m, e);
+      return dpp(m / U(o.v_.m), e);
     }
     else
     {
