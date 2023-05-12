@@ -523,10 +523,9 @@ public:
   }
 
   //
-  static constexpr auto eps{intt::coeff<
-    dpp{doubled_t(1), -detail::maxpow10e<T, int_t>()}>()};
-  static constexpr auto max{intt::coeff<dpp{mmax, emax, direct{}}>()};
-  static constexpr auto min{intt::coeff<dpp{mmin, emax, direct{}}>()};
+  static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
+  static constexpr dpp max{mmax, emax, direct{}};
+  static constexpr dpp min{mmin, emax, direct{}};
 
   //
   constexpr auto& exponent() const noexcept { return v_.e; }
