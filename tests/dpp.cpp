@@ -113,7 +113,7 @@ constexpr auto ssqrt(T const S) noexcept
   return (xo + xn) / T(2);
 }
 
-void comp_euler32() noexcept
+void comp_euler64() noexcept
 {
   auto const f([](auto const& y, auto const&) noexcept
     {
@@ -122,14 +122,14 @@ void comp_euler32() noexcept
   );
 
   std::cout << 
-    euler(1.f, 0.f, 1.f, .000001f, f) << " " <<
+    euler(1., 0., 1., .000001, f) << " " <<
 #if defined(__DECIMAL_BID_FORMAT__)
-    to_string(euler(std::decimal::decimal32(1),
-      std::decimal::decimal32(0),
-      std::decimal::decimal32(1),
-      std::decimal::decimal32(0.000001), f)) << " " <<
+    to_string(euler(std::decimal::decimal64(1),
+      std::decimal::decimal64(0),
+      std::decimal::decimal64(1),
+      std::decimal::decimal64(0.000001), f)) << " " <<
 #endif
-    euler(1_d32, 0_d32, 1_d32, 0.000001_d32, f) << std::endl;
+    euler(1_d64, 0_d64, 1_d64, 0.000001_d64, f) << std::endl;
 }
 
 void comp_sqrt32(unsigned const s) noexcept
@@ -202,7 +202,7 @@ int main()
 
   //
   std::cout << std::endl;
-  comp_euler32();
+  comp_euler64();
 
   //
   std::cout << std::endl;
