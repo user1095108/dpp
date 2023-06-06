@@ -245,7 +245,7 @@ public:
 
   template <typename U, typename V>
   constexpr dpp(dpp<U, V> const& o) noexcept:
-    dpp(o.sig(), o.exponent())
+    dpp(o.sig(), o.exp())
   {
   }
 
@@ -533,7 +533,7 @@ public:
 #endif
 
   //
-  constexpr auto& exponent() const noexcept { return v_.e; }
+  constexpr auto& exp() const noexcept { return v_.e; }
   constexpr auto& sig() const noexcept { return v_.m; }
 };
 
@@ -614,7 +614,7 @@ DPP_RIGHT_CONVERSION__(<=>)
 template <typename T, typename E>
 constexpr auto isnan(dpp<T, E> const& a) noexcept
 {
-  return intt::coeff<dpp<T, E>::emin>() == a.exponent();
+  return intt::coeff<dpp<T, E>::emin>() == a.exp();
 }
 
 //
@@ -628,8 +628,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return !intt::is_neg(a.exponent()) || isnan(a) ?
-    a : dpp<T, E>(T(a), {}, direct{});
+  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(T(a),{},direct{});
 }
 
 template <typename T, typename E>
@@ -653,7 +652,7 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 {
   dpp<T, E> const c(5, -1, direct{});
 
-  return intt::is_neg(a.exponent()) ?
+  return intt::is_neg(a.exp()) ?
     trunc(intt::is_neg(a.sig()) ? a - c : a + c) :
     a;
 }
@@ -776,7 +775,7 @@ std::string to_string(dpp<T, E> const& a)
 
     if (m) [[likely]]
     {
-      if (intt::is_neg(e = a.exponent())) for (; !(m % 10); m /= 10, ++e);
+      if (intt::is_neg(e = a.exp())) for (; !(m % 10); m /= 10, ++e);
     }
     else [[unlikely]]
     {
@@ -852,7 +851,7 @@ struct hash<dpp::dpp<T, E>>
     )
   {
     T m;
-    int_t e(a.exponent());
+    int_t e(a.exp());
 
     if (dpp::isnan(a)) [[unlikely]]
     { // unique nan
