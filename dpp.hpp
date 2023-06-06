@@ -3,7 +3,6 @@
 # pragma once
 
 #include <float.h>
-#include <compare> // std::partial_ordering
 
 #include "intt/intt.hpp"
 
