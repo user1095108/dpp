@@ -42,9 +42,6 @@ static constexpr auto is_signed_v(
 );
 
 template <typename U>
-static constexpr std::size_t bit_size_v(CHAR_BIT * sizeof(U));
-
-template <typename U>
 static constexpr std::size_t sig_bit_size_v(
   std::is_same_v<U, float> ? FLT_MANT_DIG :
   std::is_same_v<U, double> ? DBL_MANT_DIG :
@@ -52,7 +49,9 @@ static constexpr std::size_t sig_bit_size_v(
 );
 
 template <typename U>
-static constexpr U min_v(is_signed_v<U> ? ~U{} << (bit_size_v<U> - 1) : U{});
+static constexpr U min_v(
+  is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{}
+);
 
 template <typename U> static constexpr U max_v(~min_v<U>);
 
@@ -172,8 +171,7 @@ public:
   static constexpr auto mmax{detail::max_v<T>};
 
   using doubled_t = std::conditional_t<
-    detail::bit_size_v<detail::double_t<T>> <=
-      detail::bit_size_v<std::intmax_t>,
+    ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::intmax_t>,
     std::intmax_t,
     detail::double_t<T>
   >;
@@ -184,7 +182,7 @@ public:
   static constexpr auto emax{detail::max_v<E>};
 
   using int_t = std::conditional_t<
-    detail::bit_size_v<detail::double_t<E>> <= detail::bit_size_v<int>,
+    ar::bit_size_v<detail::double_t<E>> <= ar::bit_size_v<int>,
     int,
     detail::double_t<E>
   >; // int type wide enough to deal with exponents
@@ -202,7 +200,7 @@ public:
   constexpr dpp(U m, int_t e) noexcept
   {
     if constexpr(detail::is_signed_v<U> &&
-      (detail::bit_size_v<U> > detail::bit_size_v<T>))
+      (ar::bit_size_v<U> > ar::bit_size_v<T>))
     {
       if (m < intt::coeff<U(mmin)>())
       {
@@ -218,7 +216,7 @@ public:
       }
     }
     else if constexpr(std::is_unsigned_v<U> &&
-      (detail::bit_size_v<U> >= detail::bit_size_v<T>))
+      (ar::bit_size_v<U> >= ar::bit_size_v<T>))
     {
       if ((m > T{}) && (m > intt::coeff<U(mmax)>()))
       {
@@ -257,7 +255,7 @@ public:
       {
         bits = std::min(
             detail::sig_bit_size_v<decltype(a)>,
-            detail::bit_size_v<sig_type> - 1
+            ar::bit_size_v<sig_type> - 1
           )
       };
 
@@ -551,7 +549,7 @@ using d16 = dpp<std::int16_t, std::int8_t>;
 template <typename A, typename B, typename C, typename D>\
 constexpr auto operator OP (dpp<A, B> const& a, dpp<C, D> const& b) noexcept\
 {\
-  if constexpr(detail::bit_size_v<A> < detail::bit_size_v<C>)\
+  if constexpr(ar::bit_size_v<A> < ar::bit_size_v<C>)\
     return dpp<C, D>(a) OP b;\
   else\
     return a OP dpp<A, B>(b);\
