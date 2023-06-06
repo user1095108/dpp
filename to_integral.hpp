@@ -18,7 +18,7 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
   {
     T m;
 
-    if (auto const e(a.exponent()); e <= E{})
+    if (auto e(a.exp()); e <= E{})
     {
       m = T(a);
 
