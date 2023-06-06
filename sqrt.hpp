@@ -44,7 +44,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
   do
   {
     if (auto const tmp(intt::hwmul(m, 10));
-      (e % 2) || (intt::ucompare(tmp, intt::coeff<V::max() / 5>()) <= 0))
+      (e % 2) || (ar::ucmp(tmp.v_, intt::coeff<V::max() / 5>().v_) <= 0))
     {
       --e;
       m = tmp;
@@ -54,7 +54,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
       break;
     }
   }
-  while (intt::ucompare(m, intt::coeff<V::max() / 5>()) <= 0);
+  while (ar::ucmp(m.v_, intt::coeff<V::max() / 5>().v_) <= 0);
 
   //
   if constexpr(V::words > 1)
