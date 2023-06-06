@@ -241,10 +241,7 @@ public:
   constexpr dpp(detail::integral auto const m) noexcept: dpp(m, {}) { }
 
   template <typename U, typename V>
-  constexpr dpp(dpp<U, V> const& o) noexcept:
-    dpp(o.sig(), o.exp())
-  {
-  }
+  constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
 
   constexpr dpp(std::floating_point auto a) noexcept
   {
