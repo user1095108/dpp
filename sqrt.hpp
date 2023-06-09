@@ -57,13 +57,13 @@ constexpr auto sqrt(intt::intt_concept auto m,
   while (ar::ucmp(m.v_, intt::coeff<V::max() / 5>().v_) <= 0);
 
   //
-  if constexpr(V::words > 1)
+  if constexpr(ar::seqsqrt(m.v_); V::words > 1)
   {
-    return dpp<T, E>(intt::isqrt(m), e / 2);
+    return dpp<T, E>(m, e / 2);
   }
   else
   {
-    return dpp<T, E>(typename V::value_type(intt::isqrt(m)), e / 2);
+    return dpp<T, E>(typename V::value_type(m), e / 2);
   }
 }
 
