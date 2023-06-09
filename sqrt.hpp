@@ -59,11 +59,11 @@ constexpr auto sqrt(intt::intt_concept auto m,
   //
   if constexpr(V::words > 1)
   {
-    return dpp<T, E>(intt::seqsqrt(m), e / 2);
+    return dpp<T, E>(intt::isqrt(m), e / 2);
   }
   else
   {
-    return dpp<T, E>(typename V::value_type(intt::seqsqrt(m)), e / 2);
+    return dpp<T, E>(typename V::value_type(intt::isqrt(m)), e / 2);
   }
 }
 
