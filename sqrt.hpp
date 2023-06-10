@@ -30,7 +30,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
     m *= intt::coeff<pow(V(10), e0)>();
   }
   else
-  {
+  { // V::words == 1, T is doubled, so we can do the mul
     using U = std::make_unsigned_t<T>;
 
     constexpr int_t e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
@@ -62,7 +62,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
   }
   else
   {
-    return dpp<T, E>(typename V::value_type(m), e / 2);
+    return dpp<T, E>(m[0], e / 2);
   }
 }
 
