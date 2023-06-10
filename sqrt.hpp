@@ -30,7 +30,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
     m *= intt::coeff<pow(V(10), e0)>();
   }
   else
-  { // V::words == 1, T is doubled, so we can do the mul
+  { // V::words == 1, m is doubled
     using U = std::make_unsigned_t<T>;
 
     constexpr int_t e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
@@ -41,7 +41,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
 
   //
   do
-  {
+  { // 2 * V::max / 10 = V::max() / 5
     if (auto const tmp(intt::hwmul(m, 10)); (e & decltype(e)(1)) ||
       (ar::ucmp(tmp.v_, intt::coeff<V::max() / 5>().v_) <= 0))
     {
