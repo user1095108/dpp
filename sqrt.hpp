@@ -21,7 +21,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
   {
     constexpr int_t e0(
       intt::coeff<
-        (1 * V::words / 2) *
+        (V::words - 1) *
         maxpow10e<typename V::value_type, decltype(e)>() - 1
       >()
     );
@@ -31,7 +31,6 @@ constexpr auto sqrt(intt::intt_concept auto m,
   }
   else
   {
-    static_assert(1 == V::words);
     using U = std::make_unsigned_t<T>;
 
     constexpr int_t e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
