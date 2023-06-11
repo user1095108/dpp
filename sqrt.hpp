@@ -81,7 +81,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   }
   else
   {
-    using D = typename intt::intt<U, 1>::D;
+    using D = ar::D<U>;
     using V = intt::intt<D, 1>;
 
     return detail::sqrt<T, E>(V(intt::direct{}, D(a.sig())), a.exp());
