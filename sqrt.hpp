@@ -20,23 +20,23 @@ constexpr auto sqrt(intt::intt_concept auto m,
   if constexpr(V::words > 1)
   {
     constexpr int_t e0(
-      intt::coeff<
+      ar::coeff<
         (V::words - 1) *
         maxpow10e<typename V::value_type, decltype(e)>() - 1
       >()
     );
 
     e -= e0;
-    m *= intt::coeff<pow(V(10), e0)>();
+    m *= ar::coeff<pow(V(10), e0)>();
   }
   else
   { // V::words == 1, m is doubled
     using U = std::make_unsigned_t<T>;
 
-    constexpr int_t e0(intt::coeff<maxpow10e<U, decltype(e)>() - 1>());
+    constexpr int_t e0(ar::coeff<maxpow10e<U, decltype(e)>() - 1>());
 
     e -= e0;
-    m *= intt::coeff<pow(V(10), e0)>();
+    m *= ar::coeff<pow(V(10), e0)>();
   }
 
   //
@@ -46,7 +46,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
     ar::hwmul(m.v_, 10, tmp);
 
     if ((e & decltype(e)(1)) ||
-      (ar::ucmp(tmp, intt::coeff<V::max() / 5>().v_) <= 0))
+      (ar::ucmp(tmp, ar::coeff<V::max() / 5>().v_) <= 0))
     {
       --e;
       ar::copy(m.v_, tmp);
@@ -56,7 +56,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
       break;
     }
   }
-  while (ar::ucmp(m.v_, intt::coeff<V::max() / 5>().v_) <= 0);
+  while (ar::ucmp(m.v_, ar::coeff<V::max() / 5>().v_) <= 0);
 
   //
   if constexpr(ar::seqsqrt(m.v_); V::words > 1)

@@ -59,7 +59,7 @@ consteval auto maxpow10e() noexcept
 {
   E e{};
 
-  for (U x(1); x <= intt::coeff<detail::max_v<U> / U(10)>(); x *= U(10), ++e);
+  for (U x(1); x <= ar::coeff<detail::max_v<U> / U(10)>(); x *= U(10), ++e);
 
   return e;
 }
@@ -114,7 +114,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   using T = std::remove_cvref_t<decltype(ma)>;
 
   {
-    auto const e0(std::min(i, intt::coeff<maxpow10e<U, I>()>()));
+    auto const e0(std::min(i, ar::coeff<maxpow10e<U, I>()>()));
 
     i -= e0;
     ea -= e0;
@@ -122,14 +122,14 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   }
 
   if (intt::is_neg(ma))
-    for (; i && (ma >= intt::coeff<min_v<T> / 10>()); --i, --ea, ma *= T(10));
+    for (; i && (ma >= ar::coeff<min_v<T> / 10>()); --i, --ea, ma *= T(10));
   else
-    for (; i && (ma <= intt::coeff<max_v<T> / 10>()); --i, --ea, ma *= T(10));
+    for (; i && (ma <= ar::coeff<max_v<T> / 10>()); --i, --ea, ma *= T(10));
 
   if (i)
   {
     mb /= pwrs<T(10), maxpow10e<U, I>() + 1>[
-        std::min(i, intt::coeff<maxpow10e<U, I>() + 1>())
+        std::min(i, ar::coeff<maxpow10e<U, I>() + 1>())
       ];
   }
 }
@@ -201,15 +201,15 @@ public:
     if constexpr(detail::is_signed_v<U> &&
       (ar::bit_size_v<U> > ar::bit_size_v<T>))
     {
-      if (m < intt::coeff<U(mmin)>())
+      if (m < ar::coeff<U(mmin)>())
       {
-        for (++e; m < intt::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
+        for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
 
         m = (m - 5) / 10;
       }
-      else if (m > intt::coeff<U(mmax)>())
+      else if (m > ar::coeff<U(mmax)>())
       {
-        for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+        for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
 
         m = (m + 5) / 10;
       }
@@ -217,18 +217,18 @@ public:
     else if constexpr(std::is_unsigned_v<U> &&
       (ar::bit_size_v<U> >= ar::bit_size_v<T>))
     {
-      if ((m > T{}) && (m > intt::coeff<U(mmax)>()))
+      if ((m > T{}) && (m > ar::coeff<U(mmax)>()))
       {
-        for (++e; m > intt::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+        for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
 
         m = (m + 5) / 10;
       }
     }
 
     //
-    for (; (e <= intt::coeff<emin>()) && m; m /= 10, ++e);
+    for (; (e <= ar::coeff<emin>()) && m; m /= 10, ++e);
 
-    if (e <= intt::coeff<emax>()) [[likely]]
+    if (e <= ar::coeff<emax>()) [[likely]]
     {
       v_.e = (v_.m = m) ? E(e) : E{};
     }
@@ -283,7 +283,7 @@ public:
   {
   }
 
-  constexpr dpp(nan) noexcept: v_{.m = {}, .e = intt::coeff<emin>()} { }
+  constexpr dpp(nan) noexcept: v_{.m = {}, .e = ar::coeff<emin>()} { }
 
   //
   constexpr explicit operator bool() const noexcept
@@ -326,7 +326,7 @@ public:
 
       do
       {
-        I const e0(std::min(e1, intt::coeff<detail::maxpow10e<T, I>()>()));
+        I const e0(std::min(e1, ar::coeff<detail::maxpow10e<T, I>()>()));
 
         e1 -= e0;
         m /= detail::pwrs<T(10), detail::maxpow10e<T, I>()>[e0];
@@ -364,12 +364,12 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    return *this += intt::coeff<dpp{1, {}, direct{}}>();
+    return *this += ar::coeff<dpp{1, {}, direct{}}>();
   }
 
   constexpr auto& operator--() noexcept
   {
-    return *this -= intt::coeff<dpp{1, {}, direct{}}>();
+    return *this -= ar::coeff<dpp{1, {}, direct{}}>();
   }
 
   constexpr auto operator++(int) noexcept
@@ -389,8 +389,8 @@ public:
   {
     // we need to do it like this, as negating the sig can overflow
     if (isnan(*this)) [[unlikely]] return dpp{nan{}}; else
-      [[likely]] if (intt::coeff<mmin>() == v_.m) [[unlikely]]
-        return dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), v_.e); else
+      [[likely]] if (ar::coeff<mmin>() == v_.m) [[unlikely]]
+        return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), v_.e); else
         [[likely]] return dpp(-v_.m, v_.e, direct{});
   }
 
@@ -433,8 +433,8 @@ public:
     }
     else if (!v_.m) [[unlikely]]
     { // prevent overflow
-      return intt::coeff<mmin>() == o.v_.m ?
-        dpp(intt::coeff<doubled_t(-doubled_t(mmin))>(), o.v_.e) :
+      return ar::coeff<mmin>() == o.v_.m ?
+        dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), o.v_.e) :
         dpp(-o.v_.m, o.v_.e, direct{});
     }
     else [[likely]]
@@ -470,13 +470,13 @@ public:
 
       constexpr auto e0(detail::maxpow10e<T, int_t>());
 
-      auto e(intt::coeff<int_t(-e0)>() + int_t(v_.e) - int_t(o.v_.e));
-      auto m(intt::coeff<detail::pow(U(10), e0)>() * U(v_.m));
+      auto e(ar::coeff<int_t(-e0)>() + int_t(v_.e) - int_t(o.v_.e));
+      auto m(ar::coeff<detail::pow(U(10), e0)>() * U(v_.m));
 
       if (intt::is_neg(m))
-        for (; m >= intt::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+        for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
       else
-        for (; m <= intt::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+        for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
 
       return dpp(m / U(o.v_.m), e);
     }
@@ -608,7 +608,7 @@ DPP_RIGHT_CONVERSION__(<=>)
 template <typename T, typename E>
 constexpr auto isnan(dpp<T, E> const& a) noexcept
 {
-  return intt::coeff<dpp<T, E>::emin>() == a.exp();
+  return ar::coeff<dpp<T, E>::emin>() == a.exp();
 }
 
 //
@@ -662,8 +662,8 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
 
   if (!a.v_.m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
-      intt::coeff<detail::pow(U(10), e0)>() / U(a.v_.m),
-      intt::coeff<int_t(-e0)>() - int_t(a.v_.e)
+      ar::coeff<detail::pow(U(10), e0)>() / U(a.v_.m),
+      ar::coeff<int_t(-e0)>() - int_t(a.v_.e)
     };
 }
 
@@ -709,12 +709,12 @@ constexpr T to_decimal(std::input_iterator auto i,
       {
         [[likely]] case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (intt::coeff<T::emin>() == e) [[unlikely]] break; else [[likely]]
+          if (ar::coeff<T::emin>() == e) [[unlikely]] break; else [[likely]]
           {
-            if (r >= intt::coeff<T::mmin / 10>()) [[likely]]
+            if (r >= ar::coeff<T::mmin / 10>()) [[likely]]
             {
               if (decltype(r) const t(10 * r), d(*i - '0');
-                t >= intt::coeff<T::mmin>() + d) [[likely]]
+                t >= ar::coeff<T::mmin>() + d) [[likely]]
               {
                 r = t - d;
                 e -= dcp;
@@ -742,7 +742,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     //
     return {
-      neg ? r : intt::coeff<T::mmin>() == r ? intt::coeff<T::mmax>() : -r,
+      neg ? r : ar::coeff<T::mmin>() == r ? ar::coeff<T::mmax>() : -r,
       e
     };
   }
