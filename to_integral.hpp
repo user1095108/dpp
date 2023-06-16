@@ -22,8 +22,8 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
     {
       m = T(a);
 
-      if ((m < intt::coeff<detail::min_v<U>>()) ||
-        (m > intt::coeff<detail::max_v<U>>()))
+      if ((m < ar::coeff<detail::min_v<U>>()) ||
+        (m > ar::coeff<detail::max_v<U>>()))
       {
         return std::pair(U{}, true);
       }
@@ -34,8 +34,8 @@ constexpr auto to_integral(dpp<T, E> const& a) noexcept
 
       do
       {
-        if ((m >= intt::coeff<detail::min_v<U> / 10>()) &&
-          (m <= intt::coeff<detail::max_v<U> / 10>()))
+        if ((m >= ar::coeff<detail::min_v<U> / 10>()) &&
+          (m <= ar::coeff<detail::max_v<U> / 10>()))
         {
           m *= 10;
         }
