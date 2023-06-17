@@ -863,7 +863,7 @@ struct hash<dpp::dpp<T, E>>
     //
     auto const s(std::hash<decltype(m)>()(m));
 
-    return s ^ (std::hash<decltype(e)>()(e) + intt::magic::ISR +
+    return s ^ (std::hash<decltype(e)>()(e) + intt::consts::ISR +
       (s << 6) + (s >> 2));
   }
 };
