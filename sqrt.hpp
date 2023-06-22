@@ -42,10 +42,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
   //
   do
   { // 2 * V::max / 10 = V::max() / 5
-    decltype(m.v_) tmp{};
-    ar::hwmul(m.v_, 10, tmp);
-
-    if ((e & decltype(e)(1)) ||
+    if (auto const tmp(ar::hwmul(m.v_, 10)); (e & decltype(e)(1)) ||
       (ar::ucmp(tmp, ar::coeff<V::max() / 5>().v_) <= 0))
     {
       --e;
