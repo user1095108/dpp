@@ -62,7 +62,7 @@ constexpr auto sqrt(intt::intt_concept auto m,
   }
   else
   {
-    return dpp<T, E>(*m.v_, e / 2);
+    return dpp<T, E>(m.v_.front(), e / 2);
   }
 }
 
