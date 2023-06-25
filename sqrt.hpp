@@ -11,7 +11,7 @@ namespace detail
 {
 
 template <typename T, typename E>
-constexpr auto sqrt(intt::intt_concept auto m,
+constexpr auto sqrt(intt::intt_c auto m,
   typename dpp<T, E>::int_t e) noexcept
 {
   using V = decltype(m);
@@ -88,7 +88,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   }
 }
 
-template <intt::intt_concept T, typename E>
+template <intt::intt_c T, typename E>
 constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = std::make_unsigned_t<typename T::value_type>;
