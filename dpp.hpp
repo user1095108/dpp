@@ -742,9 +742,9 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     //
     return {
-      neg ? r : ar::coeff<T::mmin>() == r ? ar::coeff<T::mmax>() : -r,
-      e
-    };
+        neg ? r : ar::coeff<T::mmin>() == r ? ar::coeff<T::mmax>() : -r,
+        e
+      };
   }
 }
 
