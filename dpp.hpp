@@ -480,7 +480,7 @@ public:
 
       return dpp(m / U(o.v_.m), e);
     }
-    else
+    else [[unlikely]]
     {
       return {};
     }
