@@ -77,7 +77,7 @@ consteval auto pow(auto&& x, auto&& e) noexcept
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
-  requires(std::is_same_v<void, decltype(f(x))>)
+  requires(std::same_as<void, decltype(f(x))>)
 {
   for (;;)
   {
@@ -88,7 +88,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
-  requires(std::is_same_v<bool, decltype(f(x))>)
+  requires(std::same_as<bool, decltype(f(x))>)
 {
   for (;;)
   {
