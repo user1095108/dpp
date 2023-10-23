@@ -750,9 +750,9 @@ constexpr T to_decimal(std::input_iterator auto i,
 
 template <typename T>
 constexpr auto to_decimal(auto const& s) noexcept ->
-  decltype(std::cbegin(s), std::cend(s), T())
+  decltype(std::begin(s), std::end(s), T())
 {
-  return to_decimal<T>(std::cbegin(s), std::cend(s));
+  return to_decimal<T>(std::begin(s), std::end(s));
 }
 
 template <typename T, typename E>
