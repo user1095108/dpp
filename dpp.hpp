@@ -66,7 +66,7 @@ consteval auto maxpow10e() noexcept
 
 consteval auto pow(auto&& x, auto&& e) noexcept
 {
-  std::remove_cvref_t<decltype(x)> r(1);
+  auto r(std::remove_cvref_t<decltype(x)>(1));
 
   pow(std::forward<decltype(x)>(x),
     std::forward<decltype(e)>(e),
@@ -136,26 +136,26 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
 template <typename U>
 using double_t = std::conditional_t<
-  std::is_same_v<U, std::int8_t>,
-  std::int16_t,
-  std::conditional_t<
-    std::is_same_v<U, std::int16_t>,
-    std::int32_t,
+    std::is_same_v<U, std::int8_t>,
+    std::int16_t,
     std::conditional_t<
-      std::is_same_v<U, std::int32_t>,
-      std::int64_t,
+      std::is_same_v<U, std::int16_t>,
+      std::int32_t,
       std::conditional_t<
-        std::is_same_v<U, std::int64_t>,
-        DPP_INT128T,
+        std::is_same_v<U, std::int32_t>,
+        std::int64_t,
         std::conditional_t<
-          intt::is_intt_v<U>,
-          intt::detail::double_t<U>,
-          void
+          std::is_same_v<U, std::int64_t>,
+          DPP_INT128T,
+          std::conditional_t<
+            intt::is_intt_v<U>,
+            intt::detail::double_t<U>,
+            void
+          >
         >
       >
     >
-  >
->;
+  >;
 
 }
 
@@ -170,10 +170,10 @@ public:
   static constexpr auto mmax{detail::max_v<T>};
 
   using doubled_t = std::conditional_t<
-    ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::intmax_t>,
-    std::intmax_t,
-    detail::double_t<T>
-  >;
+      ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::intmax_t>,
+      std::intmax_t,
+      detail::double_t<T>
+    >;
 
   using exp_type = E;
 
@@ -181,10 +181,10 @@ public:
   static constexpr auto emax{detail::max_v<E>};
 
   using int_t = std::conditional_t<
-    ar::bit_size_v<detail::double_t<E>> <= ar::bit_size_v<int>,
-    int,
-    detail::double_t<E>
-  >; // int type wide enough to deal with exponents
+      ar::bit_size_v<detail::double_t<E>> <= ar::bit_size_v<int>,
+      int,
+      detail::double_t<E>
+    >; // int type wide enough to deal with exponents
 
 public:
   struct { T m; E e; } v_;
@@ -839,10 +839,8 @@ struct hash<dpp::dpp<T, E>>
   using int_t = typename dpp::dpp<T, E>::int_t;
 
   constexpr auto operator()(dpp::dpp<T, E> const& a)
-    noexcept(
-      noexcept(std::hash<T>()(std::declval<T>())) &&
-      noexcept(std::hash<int_t>()(std::declval<int_t>()))
-    )
+    noexcept(noexcept(std::hash<T>()(std::declval<T>()),
+      std::hash<int_t>()(std::declval<int_t>())))
   {
     T m;
     int_t e(a.exp());
