@@ -662,9 +662,9 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
 
   if (!a.v_.m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
-      ar::coeff<detail::pow(U(10), e0)>() / U(a.v_.m),
-      ar::coeff<int_t(-e0)>() - int_t(a.v_.e)
-    };
+        ar::coeff<detail::pow(U(10), e0)>() / U(a.v_.m),
+        ar::coeff<int_t(-e0)>() - int_t(a.v_.e)
+      };
 }
 
 // conversions
