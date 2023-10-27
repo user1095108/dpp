@@ -217,7 +217,7 @@ public:
     else if constexpr(std::is_unsigned_v<U> &&
       (ar::bit_size_v<U> >= ar::bit_size_v<T>))
     {
-      if ((m > T{}) && (m > ar::coeff<U(mmax)>()))
+      if (m > ar::coeff<U(mmax)>())
       {
         for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
 
