@@ -187,7 +187,7 @@ public:
     >; // int type wide enough to deal with exponents
 
 public:
-  struct { T m; E e; } v_;
+  T m_; E e_;
 
 public:
   dpp() = default;
@@ -230,7 +230,7 @@ public:
 
     if (e <= ar::coeff<emax>()) [[likely]]
     {
-      v_.e = (v_.m = m) ? E(e) : E{};
+      e_ = (m_ = m) ? E(e) : E{};
     }
     else [[unlikely]]
     {
@@ -279,20 +279,20 @@ public:
 
   //
   constexpr dpp(sig_type const m, exp_type const e, direct) noexcept:
-    v_{.m = m, .e = e}
+    m_(m), e_(e)
   {
   }
 
-  constexpr dpp(nan) noexcept: v_{.m = {}, .e = ar::coeff<emin>()} { }
+  constexpr dpp(nan) noexcept: m_{}, e_(ar::coeff<emin>()) { }
 
   //
   constexpr explicit operator bool() const noexcept
   {
-    return v_.m || isnan(*this);
+    return m_ || isnan(*this);
   }
 
   template <std::floating_point U>
-  constexpr explicit (sizeof(U) != sizeof(v_.m)) operator U() const noexcept
+  constexpr explicit (sizeof(U) != sizeof(m_)) operator U() const noexcept
   {
     if (isnan(*this)) [[unlikely]]
     {
@@ -301,7 +301,7 @@ public:
     else [[likely]]
     {
       int const e(
-        std::ceil(int(v_.e) * 3.32192809488736234787031942948939017586483139f)
+        std::ceil(int(e_) * 3.32192809488736234787031942948939017586483139f)
       );
 
       auto a(*this);
@@ -317,12 +317,12 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   { // this function is unsafe, take a look at to_integral() for safety
-    if (intt::is_neg(v_.e))
+    if (intt::is_neg(e_))
     {
       using I = int_t;
 
-      I e1(-I(v_.e)); // overflow prevention
-      auto m(v_.m);
+      I e1(-I(e_)); // overflow prevention
+      auto m(m_);
 
       do
       {
@@ -337,9 +337,9 @@ public:
     }
     else
     {
-      U m(v_.m);
+      U m(m_);
 
-      detail::pow(U(10), v_.e, [&](auto&& x) noexcept { m *= x; });
+      detail::pow(U(10), e_, [&](auto&& x) noexcept { m *= x; });
 
       return m;
     }
@@ -389,9 +389,9 @@ public:
   {
     // we need to do it like this, as negating the sig can overflow
     if (isnan(*this)) [[unlikely]] return dpp{nan{}}; else
-      [[likely]] if (ar::coeff<mmin>() == v_.m) [[unlikely]]
-        return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), v_.e); else
-        [[likely]] return dpp(-v_.m, v_.e, direct{});
+      [[likely]] if (ar::coeff<mmin>() == m_) [[unlikely]]
+        return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), e_); else
+        [[likely]] return dpp(-m_, e_, direct{});
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
@@ -400,18 +400,18 @@ public:
     {
       return nan{};
     }
-    else if (!v_.m) [[unlikely]]
+    else if (!m_) [[unlikely]]
     {
       return o;
     }
-    else if (!o.v_.m) [[unlikely]]
+    else if (!o.m_) [[unlikely]]
     {
       return *this;
     }
     else [[likely]]
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
-      int_t ea(v_.e), eb(o.v_.e);
+      doubled_t ma(m_), mb(o.m_);
+      int_t ea(e_), eb(o.e_);
 
       return ea < eb ?
         (detail::align<T>(mb, eb, ma, eb - ea),
@@ -427,20 +427,20 @@ public:
     {
       return nan{};
     }
-    else if (!o.v_.m) [[unlikely]]
+    else if (!o.m_) [[unlikely]]
     {
       return *this;
     }
-    else if (!v_.m) [[unlikely]]
+    else if (!m_) [[unlikely]]
     { // prevent overflow
-      return ar::coeff<mmin>() == o.v_.m ?
-        dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), o.v_.e) :
-        dpp(-o.v_.m, o.v_.e, direct{});
+      return ar::coeff<mmin>() == o.m_ ?
+        dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), o.e_) :
+        dpp(-o.m_, o.e_, direct{});
     }
     else [[likely]]
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
-      int_t ea(v_.e), eb(o.v_.e);
+      doubled_t ma(m_), mb(o.m_);
+      int_t ea(e_), eb(o.e_);
 
       return ea < eb ?
         (detail::align<T>(mb, eb, ma, eb - ea),
@@ -455,30 +455,30 @@ public:
     using U = doubled_t;
 
     if (isnan(*this) || isnan(o)) [[unlikely]] return nan{}; else
-      [[likely]] return dpp(U(v_.m) * U(o.v_.m), int_t(v_.e) + int_t(o.v_.e));
+      [[likely]] return dpp(U(m_) * U(o.m_), int_t(e_) + int_t(o.e_));
   }
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    if (!o.v_.m || isnan(*this) || isnan(o)) [[unlikely]]
+    if (!o.m_ || isnan(*this) || isnan(o)) [[unlikely]]
     {
       return nan{};
     }
-    else if (v_.m) [[likely]]
+    else if (m_) [[likely]]
     {
       using U = doubled_t;
 
       constexpr auto e0(detail::maxpow10e<T, int_t>());
 
-      auto e(ar::coeff<int_t(-e0)>() + int_t(v_.e) - int_t(o.v_.e));
-      auto m(ar::coeff<detail::pow(U(10), e0)>() * U(v_.m));
+      auto e(ar::coeff<int_t(-e0)>() + int_t(e_) - int_t(o.e_));
+      auto m(ar::coeff<detail::pow(U(10), e0)>() * U(m_));
 
       if (intt::is_neg(m))
         for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
       else
         for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
 
-      return dpp(m / U(o.v_.m), e);
+      return dpp(m / U(o.m_), e);
     }
     else [[unlikely]]
     {
@@ -493,16 +493,16 @@ public:
     {
       return std::partial_ordering::unordered;
     }
-    else if (!v_.m || !o.v_.m) [[unlikely]]
+    else if (!m_ || !o.m_) [[unlikely]]
     {
-      return v_.m <=> o.v_.m;
+      return m_ <=> o.m_;
     }
     else [[likely]]
     {
-      doubled_t ma(v_.m), mb(o.v_.m);
+      doubled_t ma(m_), mb(o.m_);
 
       {
-        int_t ea(v_.e), eb(o.v_.e); // important to prevent overflow
+        int_t ea(e_), eb(o.e_); // important to prevent overflow
 
         ea < eb ?
           detail::align<T>(mb, eb, ma, eb - ea) :
@@ -527,8 +527,8 @@ public:
 #endif
 
   //
-  constexpr auto& exp() const noexcept { return v_.e; }
-  constexpr auto& sig() const noexcept { return v_.m; }
+  constexpr auto& exp() const noexcept { return e_; }
+  constexpr auto& sig() const noexcept { return m_; }
 };
 
 using d256 = dpp<intt::intt<std::uint64_t, 4>, std::int32_t>;
@@ -660,10 +660,10 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
 
   constexpr auto e0{detail::maxpow10e<U, int_t>()};
 
-  if (!a.v_.m || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
+  if (!a.m_ || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
     [[likely]] return dpp<T, E>{
-        ar::coeff<detail::pow(U(10), e0)>() / U(a.v_.m),
-        ar::coeff<int_t(-e0)>() - int_t(a.v_.e)
+        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
+        ar::coeff<int_t(-e0)>() - int_t(a.e_)
       };
 }
 
