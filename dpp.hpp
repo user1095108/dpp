@@ -15,8 +15,11 @@
 namespace dpp
 {
 
-struct direct{};
-struct nan{};
+struct direct_t { explicit direct_t() = default; };
+constexpr direct_t direct{};
+
+struct nan_t { explicit nan_t() = default; };
+constexpr nan_t nan{};
 
 namespace detail
 {
@@ -234,7 +237,7 @@ public:
     }
     else [[unlikely]]
     {
-      *this = nan{};
+      *this = nan;
     }
   }
 
@@ -273,17 +276,17 @@ public:
     }
     else [[unlikely]]
     {
-      *this = nan{};
+      *this = nan;
     }
   }
 
   //
-  constexpr dpp(sig_type const m, exp_type const e, direct) noexcept:
+  constexpr dpp(sig_type const m, exp_type const e, direct_t) noexcept:
     m_(m), e_(e)
   {
   }
 
-  constexpr dpp(nan) noexcept: m_{}, e_(ar::coeff<emin>()) { }
+  constexpr dpp(nan_t) noexcept: m_{}, e_(ar::coeff<emin>()) { }
 
   //
   constexpr explicit operator bool() const noexcept
@@ -307,8 +310,8 @@ public:
       auto a(*this);
 
       e <= 0 ?
-        detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a *= x;}):
-        detail::pow(dpp(2, {}, direct{}), e, [&](auto&& x)noexcept {a /= x;});
+        detail::pow(dpp(2, {}, direct), e, [&](auto&& x) noexcept {a *= x;}):
+        detail::pow(dpp(2, {}, direct), e, [&](auto&& x) noexcept {a /= x;});
 
       return std::ldexp(U(sig_type(a)), e);
     }
@@ -364,12 +367,12 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    return *this += ar::coeff<dpp{1, {}, direct{}}>();
+    return *this += ar::coeff<dpp{1, {}, direct}>();
   }
 
   constexpr auto& operator--() noexcept
   {
-    return *this -= ar::coeff<dpp{1, {}, direct{}}>();
+    return *this -= ar::coeff<dpp{1, {}, direct}>();
   }
 
   constexpr auto operator++(int) noexcept
@@ -388,17 +391,17 @@ public:
   constexpr auto operator-() const noexcept
   {
     // we need to do it like this, as negating the sig can overflow
-    if (isnan(*this)) [[unlikely]] return dpp{nan{}}; else
+    if (isnan(*this)) [[unlikely]] return dpp{nan}; else
       [[likely]] if (ar::coeff<mmin>() == m_) [[unlikely]]
         return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), e_); else
-        [[likely]] return dpp(-m_, e_, direct{});
+        [[likely]] return dpp(-m_, e_, direct);
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
     {
-      return nan{};
+      return nan;
     }
     else if (!m_) [[unlikely]]
     {
@@ -425,7 +428,7 @@ public:
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
     {
-      return nan{};
+      return nan;
     }
     else if (!o.m_) [[unlikely]]
     {
@@ -435,7 +438,7 @@ public:
     { // prevent overflow
       return ar::coeff<mmin>() == o.m_ ?
         dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), o.e_) :
-        dpp(-o.m_, o.e_, direct{});
+        dpp(-o.m_, o.e_, direct);
     }
     else [[likely]]
     {
@@ -454,7 +457,7 @@ public:
   {
     using U = doubled_t;
 
-    if (isnan(*this) || isnan(o)) [[unlikely]] return nan{}; else
+    if (isnan(*this) || isnan(o)) [[unlikely]] return nan; else
       [[likely]] return dpp(U(m_) * U(o.m_), int_t(e_) + int_t(o.e_));
   }
 
@@ -462,7 +465,7 @@ public:
   {
     if (!o.m_ || isnan(*this) || isnan(o)) [[unlikely]]
     {
-      return nan{};
+      return nan;
     }
     else if (m_) [[likely]]
     {
@@ -522,8 +525,9 @@ public:
   //
 #if !defined(__clang__)
   static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
-  static constexpr dpp max{mmax, emax, direct{}};
-  static constexpr dpp min{mmin, emax, direct{}};
+  static constexpr dpp max{mmax, emax, direct};
+  static constexpr dpp min{mmin, emax, direct};
+  static constexpr dpp nan{::dpp::nan};
 #endif
 
   //
@@ -622,7 +626,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(T(a),{},direct{});
+  return !intt::is_neg(a.exp())||isnan(a) ? a : dpp<T, E>(T(a), {}, direct);
 }
 
 template <typename T, typename E>
@@ -644,7 +648,7 @@ constexpr auto floor(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto round(dpp<T, E> const& a) noexcept
 {
-  dpp<T, E> const c(5, -1, direct{});
+  dpp<T, E> const c(5, -1, direct);
 
   return intt::is_neg(a.exp()) ?
     trunc(intt::is_neg(a.sig()) ? a - c : a + c) :
@@ -660,7 +664,7 @@ constexpr auto inv(dpp<T, E> const& a) noexcept
 
   constexpr auto e0{detail::maxpow10e<U, int_t>()};
 
-  if (!a.m_ || isnan(a)) [[unlikely]] return dpp<T, E>{nan{}}; else
+  if (!a.m_ || isnan(a)) [[unlikely]] return dpp<T, E>::nan; else
     [[likely]] return dpp<T, E>{
         ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
         ar::coeff<int_t(-e0)>() - int_t(a.e_)
@@ -674,7 +678,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 {
   if (i == end) [[unlikely]]
   {
-    return nan{};
+    return nan;
   }
   else [[likely]]
   {
@@ -696,7 +700,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         break;
 
       [[unlikely]] default:
-        return nan{};
+        return nan;
     }
 
     //
@@ -727,14 +731,14 @@ constexpr T to_decimal(std::input_iterator auto i,
           break;
 
         case '.':
-          if (dcp) [[unlikely]] return nan{}; else [[likely]]
+          if (dcp) [[unlikely]] return nan; else [[likely]]
             { dcp = true; continue; }
 
         case '\0':
           break;
 
         [[unlikely]] default:
-          return nan{};
+          return nan;
       }
 
       break;
