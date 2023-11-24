@@ -386,12 +386,12 @@ public:
   }
 
   // arithmetic
-  constexpr auto operator+() const noexcept { return *this; }
+  constexpr dpp operator+() const noexcept { return *this; }
 
-  constexpr auto operator-() const noexcept
+  constexpr dpp operator-() const noexcept
   {
     // we need to do it like this, as negating the sig can overflow
-    if (isnan(*this)) [[unlikely]] return dpp{nan}; else
+    if (isnan(*this)) [[unlikely]] return nan; else
       [[likely]] if (ar::coeff<mmin>() == m_) [[unlikely]]
         return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), e_); else
         [[likely]] return dpp(-m_, e_, direct);
@@ -626,7 +626,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return !intt::is_neg(a.exp())||isnan(a) ? a : dpp<T, E>(T(a), {}, direct);
+  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(T(a), {}, direct);
 }
 
 template <typename T, typename E>
@@ -657,14 +657,14 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 
 //
 template <typename T, typename E>
-constexpr auto inv(dpp<T, E> const& a) noexcept
+constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
 { // multiplicative inverse or reciprocal
   using U = typename dpp<T, E>::doubled_t;
   using int_t = typename dpp<T, E>::int_t;
 
   constexpr auto e0{detail::maxpow10e<U, int_t>()};
 
-  if (!a.m_ || isnan(a)) [[unlikely]] return dpp<T, E>::nan; else
+  if (!a.m_ || isnan(a)) [[unlikely]] return nan; else
     [[likely]] return dpp<T, E>{
         ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
         ar::coeff<int_t(-e0)>() - int_t(a.e_)
