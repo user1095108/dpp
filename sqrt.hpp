@@ -77,14 +77,14 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   {
     using V = intt::intt<U, 2>;
 
-    return detail::sqrt<T, E>(V(intt::direct{}, U(a.sig())), a.exp());
+    return detail::sqrt<T, E>(V(intt::direct, U(a.sig())), a.exp());
   }
   else
   {
     using D = ar::D<U>;
     using V = intt::intt<D, 1>;
 
-    return detail::sqrt<T, E>(V(intt::direct{}, D(a.sig())), a.exp());
+    return detail::sqrt<T, E>(V(intt::direct, D(a.sig())), a.exp());
   }
 }
 
@@ -94,7 +94,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
   using U = std::make_unsigned_t<typename T::value_type>;
   using V = intt::intt<U, 2 * T::size()>;
 
-  return detail::sqrt<T, E>(V(a.sig(), intt::direct{}), a.exp());
+  return detail::sqrt<T, E>(V(a.sig(), intt::direct), a.exp());
 }
 
 }
