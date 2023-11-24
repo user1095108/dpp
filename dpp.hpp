@@ -527,7 +527,7 @@ public:
   static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
   static constexpr dpp max{mmax, emax, direct};
   static constexpr dpp min{mmin, emax, direct};
-  static constexpr dpp nan{::dpp::nan};
+  static constexpr dpp nan{nan_t{}};
 #endif
 
   //
