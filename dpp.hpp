@@ -281,7 +281,7 @@ public:
   }
 
   //
-  constexpr dpp(sig_type const m, exp_type const e, direct_t) noexcept:
+  constexpr dpp(direct_t, sig_type const m, exp_type const e) noexcept:
     m_(m), e_(e)
   {
   }
@@ -310,8 +310,8 @@ public:
       auto a(*this);
 
       e <= 0 ?
-        detail::pow(dpp(2, {}, direct), e, [&](auto&& x) noexcept {a *= x;}):
-        detail::pow(dpp(2, {}, direct), e, [&](auto&& x) noexcept {a /= x;});
+        detail::pow(dpp(direct, 2, {}), e, [&](auto&& x) noexcept {a *= x;}):
+        detail::pow(dpp(direct, 2, {}), e, [&](auto&& x) noexcept {a /= x;});
 
       return std::ldexp(U(sig_type(a)), e);
     }
@@ -367,12 +367,12 @@ public:
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    return *this += ar::coeff<dpp{1, {}, direct}>();
+    return *this += ar::coeff<dpp{direct, 1, {}}>();
   }
 
   constexpr auto& operator--() noexcept
   {
-    return *this -= ar::coeff<dpp{1, {}, direct}>();
+    return *this -= ar::coeff<dpp{direct, 1, {}}>();
   }
 
   constexpr auto operator++(int) noexcept
@@ -394,7 +394,7 @@ public:
     if (isnan(*this)) [[unlikely]] return nan; else
       [[likely]] if (ar::coeff<mmin>() == m_) [[unlikely]]
         return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), e_); else
-        [[likely]] return dpp(-m_, e_, direct);
+        [[likely]] return dpp(direct, -m_, e_);
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
@@ -438,7 +438,7 @@ public:
     { // prevent overflow
       return ar::coeff<mmin>() == o.m_ ?
         dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), o.e_) :
-        dpp(-o.m_, o.e_, direct);
+        dpp(direct, -o.m_, o.e_);
     }
     else [[likely]]
     {
@@ -525,8 +525,8 @@ public:
   //
 #if !defined(__clang__)
   static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
-  static constexpr dpp max{mmax, emax, direct};
-  static constexpr dpp min{mmin, emax, direct};
+  static constexpr dpp max{direct, mmax, emax};
+  static constexpr dpp min{direct, mmin, emax};
   static constexpr dpp nan{nan_t{}};
 #endif
 
@@ -626,7 +626,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(T(a), {}, direct);
+  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(direct, T(a), {});
 }
 
 template <typename T, typename E>
@@ -648,7 +648,7 @@ constexpr auto floor(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto round(dpp<T, E> const& a) noexcept
 {
-  dpp<T, E> const c(5, -1, direct);
+  dpp<T, E> const c(direct, 5, -1);
 
   return intt::is_neg(a.exp()) ?
     trunc(intt::is_neg(a.sig()) ? a - c : a + c) :
