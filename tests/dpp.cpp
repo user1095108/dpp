@@ -244,7 +244,8 @@ int main()
   std::cout << dpp::round(b) << std::endl;
 
   //
-  std::cout << (dpp::d32(dpp::nan{}) != dpp::d64(dpp::nan{})) << std::endl;
+  std::cout << (dpp::d32(dpp::nan) != dpp::d64(dpp::nan)) << std::endl;
+  std::cout << std::sin(dpp::d32(M_PI)) << std::endl;
 
   //
   return a <=> b > 0;
