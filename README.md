@@ -1,11 +1,12 @@
 ![screenshot.png](screenshot.png?raw=true)
 # dpp
 This is an intuitive arbitrary-precision **decimal** floating-point number library for non-critical tasks and testing. The library does not adhere to any standard, but was inspired by [DEC64](https://github.com/douglascrockford/DEC64).
-
 # build instructions
     git submodule update --init
     g++ -std=c++2a -Ofast -s mandelbrot.cpp -o m
     em++ -std=c++20 -O3 -s eps.cpp -o e.js
+# elementary functions
+`dpp` is compatible with the [STL](https://en.wikipedia.org/wiki/Standard_Template_Library) and you can use the standard math library implementations of elementary functions (e.g. `std::cos(0_d32)`, ...), or, preferrably, write your own.
 # resources
 * [Boost.Multiprecision](https://github.com/boostorg/multiprecision)
 * [DEC64](https://github.com/douglascrockford/DEC64)
