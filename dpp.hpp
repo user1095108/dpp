@@ -37,7 +37,7 @@ concept integral =
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
-static constexpr auto is_signed_v(
+constexpr auto is_signed_v(
   std::is_signed_v<U> ||
   intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>
@@ -100,7 +100,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
 }
 
 template <auto X, std::size_t E>
-static constexpr auto pwrs{
+constexpr auto pwrs{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
     return std::array<decltype(X), E + 1>{pow(X, I)...};
