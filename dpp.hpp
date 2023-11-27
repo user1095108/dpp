@@ -44,18 +44,16 @@ static constexpr auto is_signed_v(
 );
 
 template <typename U>
-static constexpr std::size_t sig_bit_size_v(
+constexpr std::size_t sig_bit_size_v(
   std::is_same_v<U, float> ? FLT_MANT_DIG :
   std::is_same_v<U, double> ? DBL_MANT_DIG :
   LDBL_MANT_DIG
 );
 
 template <typename U>
-static constexpr U min_v(
-  is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{}
-);
+constexpr U min_v(is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{});
 
-template <typename U> static constexpr U max_v(~min_v<U>);
+template <typename U> constexpr U max_v(~min_v<U>);
 
 template <typename U, typename E>
 consteval auto maxpow10e() noexcept
