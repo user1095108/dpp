@@ -16,10 +16,10 @@ namespace dpp
 {
 
 struct direct_t { explicit direct_t() = default; };
-constexpr direct_t direct{};
+inline constexpr direct_t direct{};
 
 struct nan_t { explicit nan_t() = default; };
-constexpr nan_t nan{};
+inline constexpr nan_t nan{};
 
 namespace detail
 {
@@ -37,23 +37,24 @@ concept integral =
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
-constexpr auto is_signed_v(
+inline constexpr auto is_signed_v(
   std::is_signed_v<U> ||
   intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>
 );
 
 template <typename U>
-constexpr std::size_t sig_bit_size_v(
+inline constexpr std::size_t sig_bit_size_v(
   std::is_same_v<U, float> ? FLT_MANT_DIG :
   std::is_same_v<U, double> ? DBL_MANT_DIG :
   LDBL_MANT_DIG
 );
 
 template <typename U>
-constexpr U min_v(is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{});
+inline constexpr U min_v(
+  is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{});
 
-template <typename U> constexpr U max_v(~min_v<U>);
+template <typename U> inline constexpr U max_v(~min_v<U>);
 
 template <typename U, typename E>
 consteval auto maxpow10e() noexcept
@@ -100,7 +101,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
 }
 
 template <auto X, std::size_t E>
-constexpr auto pwrs{
+inline constexpr auto pwrs{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
     return std::array<decltype(X), E + 1>{pow(X, I)...};
