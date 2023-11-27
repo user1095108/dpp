@@ -12,7 +12,7 @@ void test()
 
 int main()
 {
-  test<dpp::d32::nan>();
+  test<dpp::d32{dpp::nan}>();
   test<dpp::inv(3_d32)>();
   test<dpp::inv(6_d32)>();
   test<dpp::inv(11_d32)>();
