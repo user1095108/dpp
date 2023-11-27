@@ -417,10 +417,8 @@ public:
       int_t ea(e_), eb(o.e_);
 
       return ea < eb ?
-        (detail::align<T>(mb, eb, ma, eb - ea),
-        dpp(ma + mb, eb)) :
-        (detail::align<T>(ma, ea, mb, ea - eb),
-        dpp(ma + mb, ea));
+        (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma + mb, eb)) :
+        (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma + mb, ea));
     }
   }
 
