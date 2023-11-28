@@ -91,10 +91,10 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
 template <intt::intt_c T, typename E>
 constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
-  using U = std::make_unsigned_t<typename T::value_type>;
+  using U = typename T::value_type;
   using V = intt::intt<U, 2 * T::size()>;
 
-  return detail::sqrt<T, E>(V(a.sig(), intt::direct), a.exp());
+  return detail::sqrt<T, E>(V(intt::direct, a.sig()), a.exp());
 }
 
 }
