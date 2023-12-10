@@ -27,13 +27,13 @@ namespace detail
 template <typename U>
 concept arithmetic =
   std::is_arithmetic_v<U> ||
-  intt::is_intt_c<U> ||
+  intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
 concept integral =
   std::integral<U> ||
-  intt::is_intt_c<U> ||
+  intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
 template <typename U>
