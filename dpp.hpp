@@ -285,7 +285,10 @@ public:
   {
   }
 
-  constexpr dpp(nan_t) noexcept: m_{}, e_(ar::coeff<emin>()) { }
+  constexpr dpp(nan_t) noexcept: e_(ar::coeff<emin>())
+  {
+    if (std::is_constant_evaluated()) m_ = {};
+  }
 
   //
   constexpr explicit operator bool() const noexcept
