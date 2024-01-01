@@ -464,7 +464,7 @@ public:
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    if (!o.m_ || isnan(*this) || isnan(o)) [[unlikely]]
+    if (isnan(*this) || isnan(o) || !o.m_) [[unlikely]]
     {
       return nan;
     }
@@ -664,7 +664,7 @@ constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
 
   constexpr auto e0{detail::maxpow10e<U, int_t>()};
 
-  if (!a.m_ || isnan(a)) [[unlikely]] return nan; else
+  if (isnan(a) || !a.m_) [[unlikely]] return nan; else
     [[likely]] return dpp<T, E>{
         ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
         ar::coeff<int_t(-e0)>() - int_t(a.e_)
