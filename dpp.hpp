@@ -528,7 +528,6 @@ public:
   static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
   static constexpr dpp max{direct, mmax, emax};
   static constexpr dpp min{direct, mmin, emax};
-  static constexpr dpp nan{nan_t{}};
 #endif
 
   //
