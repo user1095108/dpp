@@ -293,7 +293,7 @@ public:
   //
   constexpr explicit operator bool() const noexcept
   {
-    return m_ || isnan(*this);
+    return isnan(*this) || m_;
   }
 
   template <std::floating_point U>
