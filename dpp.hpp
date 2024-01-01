@@ -347,6 +347,9 @@ public:
     }
   }
 
+  // comparison
+  bool operator==(nan_t) const noexcept { return isnan(*this); }
+
   // assignment
   dpp& operator=(dpp const&) = default;
   dpp& operator=(dpp&&) = default;
