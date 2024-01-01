@@ -350,9 +350,6 @@ public:
     }
   }
 
-  // comparison
-  bool operator==(nan_t) const noexcept { return isnan(*this); }
-
   // assignment
   dpp& operator=(dpp const&) = default;
   dpp& operator=(dpp&&) = default;
@@ -560,6 +557,19 @@ DPP_TYPE_PROMOTION__(-)
 DPP_TYPE_PROMOTION__(*)
 DPP_TYPE_PROMOTION__(/)
 DPP_TYPE_PROMOTION__(<=>)
+
+// comparisons
+template <typename A, typename B>
+constexpr bool operator==(dpp<A, B> const& a, nan_t) noexcept
+{
+  return isnan(a);
+}
+
+template <typename A, typename B>
+constexpr bool operator==(nan_t, dpp<A, B> const& a) noexcept
+{
+  return isnan(a);
+}
 
 template <typename A, typename B, typename C, typename D>
 constexpr bool operator==(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
