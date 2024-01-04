@@ -20,10 +20,8 @@ constexpr auto sqrt(intt::is_intt_c auto m,
   if constexpr(V::words > 1)
   {
     constexpr int_t e0(
-      ar::coeff<
-        (V::words - 1) *
-        maxpow10e<typename V::value_type, decltype(e)>() - 1
-      >()
+      ar::coeff<(V::words - 1) *
+        maxpow10e<typename V::value_type, decltype(e)>() - 1>()
     );
 
     e -= e0;
