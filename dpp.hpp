@@ -228,10 +228,10 @@ public:
     }
 
     //
-    for (; (e <= ar::coeff<emin>()) && m; m /= 10, ++e);
-
     if (e <= ar::coeff<emax>()) [[likely]]
     {
+      for (; (e <= ar::coeff<emin>()) && m; m /= 10, ++e);
+
       e_ = (m_ = m) ? E(e) : E{};
     }
     else [[unlikely]]
