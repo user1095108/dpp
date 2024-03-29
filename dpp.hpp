@@ -166,23 +166,23 @@ template <typename T, typename E>
 class dpp
 {
 public:
-  using sig_type = T;
+  using sig_t = T;
 
   static constexpr auto mmin{detail::min_v<T>};
   static constexpr auto mmax{detail::max_v<T>};
 
-  using doubled_t = std::conditional_t<
+  using sig2_t = std::conditional_t<
       ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::intmax_t>,
       std::intmax_t,
       detail::double_t<T>
     >;
 
-  using exp_type = E;
+  using exp_t = E;
 
   static constexpr auto emin{detail::min_v<E>};
   static constexpr auto emax{detail::max_v<E>};
 
-  using int_t = std::conditional_t<
+  using exp2_t = std::conditional_t<
       ar::bit_size_v<detail::double_t<E>> <= ar::bit_size_v<int>,
       int,
       detail::double_t<E>
@@ -198,7 +198,7 @@ public:
   dpp(dpp&&) = default;
 
   template <detail::integral U>
-  constexpr dpp(U m, int_t e) noexcept
+  constexpr dpp(U m, exp2_t e) noexcept
   {
     if constexpr(detail::is_signed_v<U> &&
       (ar::bit_size_v<U> > ar::bit_size_v<T>))
@@ -253,7 +253,7 @@ public:
       {
         bits = std::min(
             detail::sig_bit_size_v<decltype(a)>,
-            ar::bit_size_v<sig_type> - 1
+            ar::bit_size_v<sig_t> - 1
           )
       };
 
@@ -271,7 +271,7 @@ public:
         detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a *= x;}) :
         detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a /= x;});
 
-      *this = dpp(sig_type(a), e10);
+      *this = dpp(sig_t(a), e10);
     }
     else [[unlikely]]
     {
@@ -280,7 +280,7 @@ public:
   }
 
   //
-  constexpr dpp(direct_t, sig_type const m, exp_type const e) noexcept:
+  constexpr dpp(direct_t, sig_t const m, exp_t const e) noexcept:
     m_(m), e_(e)
   {
   }
@@ -315,7 +315,7 @@ public:
         detail::pow(dpp(direct, 2, {}), e, [&](auto&& x) noexcept {a *= x;}):
         detail::pow(dpp(direct, 2, {}), e, [&](auto&& x) noexcept {a /= x;});
 
-      return std::ldexp(U(sig_type(a)), e);
+      return std::ldexp(U(sig_t(a)), e);
     }
   }
 
@@ -324,17 +324,16 @@ public:
   { // this function is unsafe, take a look at to_integral() for safety
     if (intt::is_neg(e_))
     {
-      using I = int_t;
-
-      I e1(-I(e_)); // overflow prevention
+      exp2_t e1(-exp2_t(e_)); // overflow prevention
       auto m(m_);
 
       do
       {
-        I const e0(std::min(e1, ar::coeff<detail::maxpow10e<T, I>()>()));
+        auto const e0(std::min(
+          e1, ar::coeff<detail::maxpow10e<T, exp2_t>()>()));
 
         e1 -= e0;
-        m /= detail::pwrs<T(10), detail::maxpow10e<T, I>()>[e0];
+        m /= detail::pwrs<T(10), detail::maxpow10e<T, exp2_t>()>[e0];
       }
       while (e1 && m);
 
@@ -395,7 +394,7 @@ public:
     // we need to do it like this, as negating the sig can overflow
     if (isnan(*this)) [[unlikely]] return nan; else
       [[likely]] if (ar::coeff<mmin>() == m_) [[unlikely]]
-        return dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), e_); else
+        return dpp(ar::coeff<sig2_t(-sig2_t(mmin))>(), e_); else
         [[likely]] return dpp(direct, -m_, e_);
   }
 
@@ -415,8 +414,8 @@ public:
     }
     else [[likely]]
     {
-      doubled_t ma(m_), mb(o.m_);
-      int_t ea(e_), eb(o.e_);
+      sig2_t ma(m_), mb(o.m_);
+      exp2_t ea(e_), eb(o.e_);
 
       return ea < eb ?
         (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma + mb, eb)) :
@@ -437,13 +436,13 @@ public:
     else if (!m_) [[unlikely]]
     { // prevent overflow
       return ar::coeff<mmin>() == o.m_ ?
-        dpp(ar::coeff<doubled_t(-doubled_t(mmin))>(), o.e_) :
+        dpp(ar::coeff<sig2_t(-sig2_t(mmin))>(), o.e_) :
         dpp(direct, -o.m_, o.e_);
     }
     else [[likely]]
     {
-      doubled_t ma(m_), mb(o.m_);
-      int_t ea(e_), eb(o.e_);
+      sig2_t ma(m_), mb(o.m_);
+      exp2_t ea(e_), eb(o.e_);
 
       return ea < eb ?
         (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma - mb, eb)) :
@@ -453,10 +452,8 @@ public:
 
   constexpr dpp operator*(dpp const& o) const noexcept
   {
-    using U = doubled_t;
-
-    if (isnan(*this) || isnan(o)) [[unlikely]] return nan; else
-      [[likely]] return dpp(U(m_) * U(o.m_), int_t(e_) + int_t(o.e_));
+    if (isnan(*this) || isnan(o)) [[unlikely]] return nan; else [[likely]]
+      return dpp(sig2_t(m_) * sig2_t(o.m_), exp2_t(e_) + exp2_t(o.e_));
   }
 
   constexpr dpp operator/(dpp const& o) const noexcept
@@ -467,19 +464,19 @@ public:
     }
     else if (m_) [[likely]]
     {
-      using U = doubled_t;
+      using U = sig2_t;
 
-      constexpr auto e0(detail::maxpow10e<T, int_t>());
+      constexpr auto e0(detail::maxpow10e<T, exp2_t>());
 
-      auto e(ar::coeff<int_t(-e0)>() + int_t(e_) - int_t(o.e_));
-      auto m(ar::coeff<detail::pow(U(10), e0)>() * U(m_));
+      auto e(ar::coeff<exp2_t(-e0)>() + exp2_t(e_) - exp2_t(o.e_));
+      auto m(ar::coeff<detail::pow(sig2_t(10), e0)>() * sig2_t(m_));
 
       if (intt::is_neg(m))
         for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
       else
         for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
 
-      return dpp(m / U(o.m_), e);
+      return dpp(m / sig2_t(o.m_), e);
     }
     else [[unlikely]]
     {
@@ -500,10 +497,10 @@ public:
     }
     else [[likely]]
     {
-      doubled_t ma(m_), mb(o.m_);
+      sig2_t ma(m_), mb(o.m_);
 
       {
-        int_t ea(e_), eb(o.e_); // important to prevent overflow
+        exp2_t ea(e_), eb(o.e_); // important to prevent overflow
 
         ea < eb ?
           detail::align<T>(mb, eb, ma, eb - ea) :
@@ -522,7 +519,7 @@ public:
 
   //
 #if !defined(__clang__)
-  static constexpr dpp eps{doubled_t(1), -detail::maxpow10e<T, int_t>()};
+  static constexpr dpp eps{sig2_t(1), -detail::maxpow10e<T, exp2_t>()};
   static constexpr dpp max{direct, mmax, emax};
   static constexpr dpp min{direct, mmin, emax};
 #endif
@@ -669,15 +666,15 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
 { // multiplicative inverse or reciprocal
-  using U = typename dpp<T, E>::doubled_t;
-  using int_t = typename dpp<T, E>::int_t;
+  using sig2_t = typename dpp<T, E>::sig2_t;
+  using exp2_t = typename dpp<T, E>::exp2_t;
 
-  constexpr auto e0{detail::maxpow10e<U, int_t>()};
+  constexpr auto e0{detail::maxpow10e<sig2_t, exp2_t>()};
 
   if (isnan(a) || !a.m_) [[unlikely]] return nan; else
     [[likely]] return dpp<T, E>{
-        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
-        ar::coeff<int_t(-e0)>() - int_t(a.e_)
+        ar::coeff<detail::pow(sig2_t(10), e0)>() / sig2_t(a.m_),
+        ar::coeff<exp2_t(-e0)>() - exp2_t(a.e_)
       };
 }
 
@@ -714,8 +711,8 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     //
-    typename T::sig_type r{};
-    typename T::int_t e{};
+    typename T::sig_t r{};
+    typename T::exp2_t e{};
 
     for (bool dcp{}; end != i; ++i)
     {
@@ -779,7 +776,7 @@ std::string to_string(dpp<T, E> const& a)
   else [[likely]]
   {
     auto m(a.sig());
-    typename dpp<T, E>::int_t e;
+    typename dpp<T, E>::exp2_t e;
 
     if (m) [[likely]]
     {
@@ -850,14 +847,14 @@ namespace std
 template <typename T, typename E>
 struct hash<dpp::dpp<T, E>>
 {
-  using int_t = typename dpp::dpp<T, E>::int_t;
+  using exp2_t = typename dpp::dpp<T, E>::exp2_t;
 
   constexpr auto operator()(dpp::dpp<T, E> const& a)
     noexcept(noexcept(std::hash<T>()(std::declval<T>()),
-      std::hash<int_t>()(std::declval<int_t>())))
+      std::hash<exp2_t>()(std::declval<exp2_t>())))
   {
     T m;
-    int_t e(a.exp());
+    exp2_t e(a.exp());
 
     if (dpp::isnan(a)) [[unlikely]]
     { // unique nan

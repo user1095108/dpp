@@ -12,17 +12,15 @@ namespace detail
 
 template <typename T, typename E>
 constexpr auto sqrt(intt::is_intt_c auto m,
-  typename dpp<T, E>::int_t e) noexcept
+  typename dpp<T, E>::exp2_t e) noexcept
 {
   using V = decltype(m);
-  using int_t = decltype(e);
+  using exp2_t = decltype(e);
 
   if constexpr(V::words > 1)
   {
-    constexpr int_t e0(
-      ar::coeff<(V::words - 1) *
-        maxpow10e<typename V::value_type, decltype(e)>() - 1>()
-    );
+    constexpr exp2_t e0(ar::coeff<(V::words - 1) *
+      maxpow10e<typename V::value_type, decltype(e)>() - 1>());
 
     e -= e0;
     m *= ar::coeff<pow(V(10), e0)>();
@@ -31,7 +29,7 @@ constexpr auto sqrt(intt::is_intt_c auto m,
   { // V::words == 1, m is doubled
     using U = std::make_unsigned_t<T>;
 
-    constexpr int_t e0(ar::coeff<maxpow10e<U, decltype(e)>() - 1>());
+    constexpr exp2_t e0(ar::coeff<maxpow10e<U, decltype(e)>() - 1>());
 
     e -= e0;
     m *= ar::coeff<pow(V(10), e0)>();
