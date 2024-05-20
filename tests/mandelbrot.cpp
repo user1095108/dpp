@@ -25,7 +25,9 @@ constexpr auto mandelbrot(D const cr, D const ci) noexcept
 {
   auto zr(cr), zi(ci);
 
-  for (auto j{1u}; max_iter != j; ++j)
+  unsigned j{};
+
+  for (; max_iter != j; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -34,11 +36,11 @@ constexpr auto mandelbrot(D const cr, D const ci) noexcept
     }
     else
     {
-      return j;
+      break;
     }
   }
 
-  return max_iter;
+  return j;
 }
 
 int main() noexcept
