@@ -21,7 +21,9 @@ constexpr auto max_iter = 100u;
 
 constexpr auto julia(D zr, D zi, D const cr, D const ci) noexcept
 {
-  for (auto j{1u}; max_iter != j; ++j)
+  unsigned j{};
+
+  for (; max_iter != j; ++j)
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
@@ -30,11 +32,11 @@ constexpr auto julia(D zr, D zi, D const cr, D const ci) noexcept
     }
     else
     {
-      return j;
+      break;
     }
   }
 
-  return max_iter;
+  return j;
 }
 
 int main(int const argc, char* argv[]) noexcept
