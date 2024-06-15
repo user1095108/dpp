@@ -42,11 +42,10 @@ inline constexpr auto is_signed_v(
   intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>);
 
-template <typename U>
+template <std::floating_point U>
 inline constexpr std::size_t sig_bit_size_v(
   std::is_same_v<U, float> ? FLT_MANT_DIG :
-  std::is_same_v<U, double> ? DBL_MANT_DIG :
-  LDBL_MANT_DIG);
+  std::is_same_v<U, double> ? DBL_MANT_DIG : LDBL_MANT_DIG);
 
 template <typename U>
 inline constexpr U min_v(
