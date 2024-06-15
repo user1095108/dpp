@@ -527,6 +527,8 @@ public:
   constexpr auto& sig() const noexcept { return m_; }
 };
 
+using d1024 = dpp<intt::intt<std::uint64_t, 16>, std::int32_t>;
+using d512 = dpp<intt::intt<std::uint64_t, 8>, std::int32_t>;
 using d256 = dpp<intt::intt<std::uint64_t, 4>, std::int32_t>;
 using d128 = dpp<intt::intt<std::uint64_t, 2>, std::int32_t>;
 using d96 = dpp<intt::intt<std::uint32_t, 3>, std::int16_t>;
@@ -825,14 +827,9 @@ constexpr auto operator "" _d ## ID() noexcept\
   return to_decimal<d ## ID>(std::initializer_list<char>{c...});\
 }
 
-DPP_LITERAL__(16)
-DPP_LITERAL__(24)
-DPP_LITERAL__(32)
-DPP_LITERAL__(48)
-DPP_LITERAL__(64)
-DPP_LITERAL__(96)
-DPP_LITERAL__(128)
-DPP_LITERAL__(256)
+DPP_LITERAL__(16) DPP_LITERAL__(24) DPP_LITERAL__(32) DPP_LITERAL__(48)
+DPP_LITERAL__(64) DPP_LITERAL__(96) DPP_LITERAL__(128) DPP_LITERAL__(256)
+DPP_LITERAL__(512) DPP_LITERAL__(1024)
 
 }
 
