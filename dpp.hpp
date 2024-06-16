@@ -302,17 +302,17 @@ public:
     }
     else [[likely]]
     {
-      int const e(
+      int const e2(
         std::ceil(int(e_) * 3.32192809488736234787031942948939017586483139f)
       );
 
       auto a(*this);
 
-      e <= 0 ?
-        detail::pow(dpp(direct, 2, {}), e, [&](auto&& x) noexcept {a *= x;}):
-        detail::pow(dpp(direct, 2, {}), e, [&](auto&& x) noexcept {a /= x;});
+      e2 <= 0 ?
+        detail::pow(dpp(direct, 2, {}), e2, [&](auto&& x) noexcept {a *= x;}):
+        detail::pow(dpp(direct, 2, {}), e2, [&](auto&& x) noexcept {a /= x;});
 
-      return std::ldexp(U(sig_t(a)), e);
+      return std::ldexp(U(sig_t(a)), e2);
     }
   }
 
