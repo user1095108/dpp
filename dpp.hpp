@@ -155,7 +155,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       if ((i >= std::get<0>(*j)) && (ma >= std::get<1>(*j)))
         i -= std::get<0>(*j), ea -= std::get<0>(*j), ma *= std::get<2>(*j);
     }
-  else if (i)
+  else
     for (auto j(std::cbegin(maxaligns<U, I, maxpow10e<T, I>()>));
       i && (std::cend(maxaligns<U, I, maxpow10e<T, I>()>) != j); ++j)
     {
