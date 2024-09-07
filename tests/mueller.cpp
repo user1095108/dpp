@@ -33,5 +33,5 @@ int main()
     std::cout << "dpp::d64" << std::endl;
     computeMullersIter<dpp::d64>(30);
     std::cout << "dpp::d512" << std::endl;
-    computeMullersIter<dpp::d512>(30);
+    computeMullersIter<dpp::d256>(30);
 }
