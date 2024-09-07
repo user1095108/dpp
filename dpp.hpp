@@ -105,30 +105,30 @@ inline constexpr auto pwrs{
   }(std::make_index_sequence<E + 1>())
 };
 
-template <typename U>
+template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_cvref_t<decltype(ea)> i) noexcept
 {
+  using U = std::remove_cvref_t<decltype(ma)>;
   using I = std::remove_cvref_t<decltype(ea)>;
-  using T = std::remove_cvref_t<decltype(ma)>;
 
   {
-    auto const e0(std::min(i, ar::coeff<maxpow10e<U, I>()>()));
+    auto const e0(std::min(i, ar::coeff<maxpow10e<T, I>()>()));
 
     i -= e0;
     ea -= e0;
-    ma *= pwrs<T(10), maxpow10e<U, I>() + 1>[e0];
+    ma *= pwrs<U(10), maxpow10e<T, I>() + 1>[e0];
   }
 
   if (intt::is_neg(ma))
-    for (; i && (ma >= ar::coeff<min_v<T> / 10>()); --i, --ea, ma *= T(10));
+    for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= U(10));
   else
-    for (; i && (ma <= ar::coeff<max_v<T> / 10>()); --i, --ea, ma *= T(10));
+    for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= U(10));
 
   if (i)
   {
-    mb /= pwrs<T(10), maxpow10e<U, I>() + 1>[
-        std::min(i, ar::coeff<maxpow10e<U, I>() + 1>())
+    mb /= pwrs<U(10), maxpow10e<T, I>() + 1>[
+        std::min(i, ar::coeff<maxpow10e<T, I>() + 1>())
       ];
   }
 }
