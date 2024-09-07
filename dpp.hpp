@@ -109,11 +109,10 @@ template <typename U, typename I, std::size_t E>
 inline constexpr auto maxaligns{
   []<auto ...Is>(std::index_sequence<Is...>) noexcept
   {
-    return std::array<std::tuple<I, U, U>, E>{
-      std::tuple(
+    return std::array<std::pair<I, U>, E>{
+      std::pair(
         I(sizeof...(Is) - Is),
-        max_v<U> / pow(U(10), I(sizeof...(Is) - Is)),
-        pow(U(10), I(sizeof...(Is) - Is))
+        max_v<U> / pow(U(10), I(sizeof...(Is) - Is))
       )...
     };
   }(std::make_index_sequence<E>())
@@ -123,11 +122,10 @@ template <typename U, typename I, std::size_t E>
 inline constexpr auto minaligns{
   []<auto ...Is>(std::index_sequence<Is...>) noexcept
   {
-    return std::array<std::tuple<I, U, U>, E>{
-      std::tuple(
+    return std::array<std::pair<I, U>, E>{
+      std::pair(
         I(sizeof...(Is) - Is),
-        min_v<U> / pow(U(10), I(sizeof...(Is) - Is)),
-        pow(U(10), I(sizeof...(Is) - Is))
+        min_v<U> / pow(U(10), I(sizeof...(Is) - Is))
       )...
     };
   }(std::make_index_sequence<E>())
@@ -153,14 +151,16 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       i && (std::cend(minaligns<U, I, maxpow10e<T, I>()>) != j); ++j)
     {
       if ((i >= std::get<0>(*j)) && (ma >= std::get<1>(*j)))
-        i -= std::get<0>(*j), ea -= std::get<0>(*j), ma *= std::get<2>(*j);
+        i -= std::get<0>(*j), ea -= std::get<0>(*j),
+        ma *= pwrs<U(10), maxpow10e<T, I>() + 1>[std::get<0>(*j)];
     }
   else
     for (auto j(std::cbegin(maxaligns<U, I, maxpow10e<T, I>()>));
       i && (std::cend(maxaligns<U, I, maxpow10e<T, I>()>) != j); ++j)
     {
       if ((i >= std::get<0>(*j)) && (ma <= std::get<1>(*j)))
-        i -= std::get<0>(*j), ea -= std::get<0>(*j), ma *= std::get<2>(*j);
+        i -= std::get<0>(*j), ea -= std::get<0>(*j),
+        ma *= pwrs<U(10), maxpow10e<T, I>() + 1>[std::get<0>(*j)];
     }
 
   if (i)
