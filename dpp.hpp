@@ -97,8 +97,8 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-consteval auto log(auto b, auto x, decltype(x) e = {}) noexcept ->
-  decltype(e)
+consteval auto log(auto const b, decltype(b) x, decltype(x) e = {}) noexcept
+  -> decltype(e)
 {
   return pow(b, e) >= x ? e : log(b, x, e + 1);
 }
@@ -121,7 +121,7 @@ inline constexpr auto maxaligns{
         max_v<U> / pow(U(10), pow(I(2), I(sizeof...(Is) - Is)))
       )...
     };
-  }(std::make_index_sequence<log(U(2), E) - 1>())
+  }(std::make_index_sequence<log(I(2), E) - 1>())
 };
 
 template <typename U, typename I, std::size_t E>
@@ -134,7 +134,7 @@ inline constexpr auto minaligns{
         min_v<U> / pow(U(10), pow(I(2), I(sizeof...(Is) - Is)))
       )...
     };
-  }(std::make_index_sequence<log(U(2), E) - 1>())
+  }(std::make_index_sequence<log(I(2), E) - 1>())
 };
 
 template <typename T>
