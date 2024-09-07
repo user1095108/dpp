@@ -126,11 +126,9 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= U(10));
 
   if (i)
-  {
     mb /= pwrs<U(10), maxpow10e<T, I>() + 1>[
         std::min(i, ar::coeff<maxpow10e<T, I>() + 1>())
       ];
-  }
 }
 
 template <typename U>
