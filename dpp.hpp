@@ -63,9 +63,9 @@ consteval auto maxpow10e() noexcept
   return e;
 }
 
-consteval auto pow(auto&& x, auto&& e) noexcept
+consteval auto pow(auto x, auto e) noexcept
 {
-  std::remove_cvref_t<decltype(x)> r(1);
+  decltype(x) r(1);
 
   pow(std::forward<decltype(x)>(x),
     std::forward<decltype(e)>(e),
