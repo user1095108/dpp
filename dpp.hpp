@@ -105,6 +105,34 @@ inline constexpr auto pwrs{
   }(std::make_index_sequence<E + 1>())
 };
 
+template <typename U, typename I, std::size_t E>
+inline constexpr auto maxaligns{
+  []<auto ...Is>(std::index_sequence<Is...>) noexcept
+  {
+    return std::array<std::tuple<I, U, U>, E>{
+      std::tuple(
+        I(sizeof...(Is) - Is),
+        max_v<U> / pow(U(10), I(sizeof...(Is) - Is)),
+        pow(U(10), I(sizeof...(Is) - Is))
+      )...
+    };
+  }(std::make_index_sequence<E>())
+};
+
+template <typename U, typename I, std::size_t E>
+inline constexpr auto minaligns{
+  []<auto ...Is>(std::index_sequence<Is...>) noexcept
+  {
+    return std::array<std::tuple<I, U, U>, E>{
+      std::tuple(
+        I(sizeof...(Is) - Is),
+        min_v<U> / pow(U(10), I(sizeof...(Is) - Is)),
+        pow(U(10), I(sizeof...(Is) - Is))
+      )...
+    };
+  }(std::make_index_sequence<E>())
+};
+
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_cvref_t<decltype(ea)> i) noexcept
@@ -121,9 +149,19 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   }
 
   if (intt::is_neg(ma))
-    for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= U(10));
-  else
-    for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= U(10));
+    for (auto j(std::cbegin(minaligns<U, I, maxpow10e<T, I>()>));
+      std::cend(minaligns<U, I, maxpow10e<T, I>()>) != j; ++j)
+    {
+      if ((i >= std::get<0>(*j)) && (ma >= std::get<1>(*j)))
+        i -= std::get<0>(*j), ea -= std::get<0>(*j), ma *= std::get<2>(*j);
+    }
+  else if (i)
+    for (auto j(std::cbegin(maxaligns<U, I, maxpow10e<T, I>()>));
+      std::cend(maxaligns<U, I, maxpow10e<T, I>()>) != j; ++j)
+    {
+      if ((i >= std::get<0>(*j)) && (ma <= std::get<1>(*j)))
+        i -= std::get<0>(*j), ea -= std::get<0>(*j), ma *= std::get<2>(*j);
+    }
 
   if (i)
     mb /= pwrs<U(10), maxpow10e<T, I>() + 1>[
