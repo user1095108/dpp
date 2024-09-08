@@ -97,12 +97,6 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-consteval auto log(auto const b, decltype(b) x, decltype(x) e = {}) noexcept
-  -> decltype(e)
-{
-  return pow(b, e) >= x ? e : log(b, x, e + 1);
-}
-
 template <auto X, std::size_t E>
 inline constexpr auto pwrs{
   []<auto ...I>(std::index_sequence<I...>) noexcept
@@ -110,6 +104,12 @@ inline constexpr auto pwrs{
     return std::array<decltype(X), E + 1>{pow(X, I)...};
   }(std::make_index_sequence<E + 1>())
 };
+
+template <auto B>
+consteval auto log(decltype(B) x, decltype(x) e = {}) noexcept -> decltype(e)
+{
+  return pow(B, e) > x ? e : log<B>(x, e + 1);
+}
 
 template <typename U, typename I, std::size_t E>
 inline constexpr auto maxaligns{
@@ -121,7 +121,7 @@ inline constexpr auto maxaligns{
         max_v<U> / pow(U(10), pow(I(2), I(sizeof...(Is) - Is)))
       )...
     };
-  }(std::make_index_sequence<log(I(2), E) - 1>())
+  }(std::make_index_sequence<log<I(2)>(E) - 1>())
 };
 
 template <typename U, typename I, std::size_t E>
@@ -134,7 +134,7 @@ inline constexpr auto minaligns{
         min_v<U> / pow(U(10), pow(I(2), I(sizeof...(Is) - Is)))
       )...
     };
-  }(std::make_index_sequence<log(I(2), E) - 1>())
+  }(std::make_index_sequence<log<I(2)>(E) - 1>())
 };
 
 template <typename T>
