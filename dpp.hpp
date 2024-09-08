@@ -85,7 +85,7 @@ consteval E log(decltype(B) x) noexcept
 template <typename U, typename E>
 consteval auto maxpow10e() noexcept
 {
-  return log<U(10), E>(detail::max_v<U>);
+  return log<U(10), E>(max_v<U>);
 }
 
 consteval auto pow(auto x, auto e) noexcept
