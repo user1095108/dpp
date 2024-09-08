@@ -138,7 +138,7 @@ template <typename U, auto E>
 inline constexpr auto maxaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, E>{
+    return std::array<std::pair<decltype(E), U>, log<U(2), decltype(E)>(E)>{
       std::pair(
         pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)),
         max_v<U> /
@@ -152,7 +152,7 @@ template <typename U, auto E>
 inline constexpr auto minaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, E>{
+    return std::array<std::pair<decltype(E), U>, log<U(2), decltype(E)>(E)>{
       std::pair(
         pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)),
         min_v<U> /
