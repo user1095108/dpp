@@ -76,14 +76,20 @@ inline constexpr U min_v(
 
 template <typename U> inline constexpr U max_v(~min_v<U>);
 
-template <typename U, typename E>
-consteval auto maxpow10e() noexcept
+template <auto B, typename E = std::size_t>
+consteval E log(decltype(B) const x) noexcept
 {
   E e{};
 
-  for (U x(1); x <= ar::coeff<detail::max_v<U> / U(10)>(); x *= U(10), ++e);
+  for (decltype(B) y(1); y <= x / B; y *= B, ++e);
 
   return e;
+}
+
+template <typename U, typename E>
+consteval auto maxpow10e() noexcept
+{
+  return log<U(10), E>(detail::max_v<U>);
 }
 
 consteval auto pow(auto x, auto e) noexcept
@@ -127,12 +133,6 @@ inline constexpr auto pwrs{
     return std::array<decltype(X), E + 1>{pow(X, I)...};
   }(std::make_index_sequence<E + 1>())
 };
-
-template <auto B, typename E = std::size_t>
-consteval E log(decltype(B) const x, E const e = {}) noexcept
-{
-  return pow(B, e) > x ? e - 1 : log<B, E>(x, e + 1);
-}
 
 template <typename U, auto E>
 inline constexpr auto maxaligns{
