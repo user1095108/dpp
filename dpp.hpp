@@ -77,9 +77,9 @@ inline constexpr U min_v(
 template <typename U> inline constexpr U max_v(~min_v<U>);
 
 template <auto B, typename E = std::size_t>
-consteval E log(decltype(B) const x) noexcept
+consteval E log(decltype(B) x) noexcept
 {
-  E e{}; for (decltype(B) y(1); y <= x / B; ++e, y *= B); return e;
+  x /= B; E e{}; for (decltype(B) y(1); y <= x; ++e, y *= B); return e;
 }
 
 template <typename U, typename E>
