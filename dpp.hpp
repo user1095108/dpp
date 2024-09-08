@@ -129,7 +129,7 @@ inline constexpr auto pwrs{
 };
 
 template <auto B, typename E = std::size_t>
-consteval E log(decltype(B) x, E e = {}) noexcept
+consteval E log(decltype(B) const x, E const e = {}) noexcept
 {
   return pow(B, e) > x ? e - 1 : log<B, E>(x, e + 1);
 }
