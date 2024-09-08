@@ -128,7 +128,7 @@ inline constexpr auto pwrs{
   }(std::make_index_sequence<E + 1>())
 };
 
-template <auto B, typename E>
+template <auto B, typename E = std::size_t>
 consteval E log(decltype(B) x, E e = {}) noexcept
 {
   return pow(B, e) > x ? e - 1 : log<B, E>(x, e + 1);
@@ -138,28 +138,26 @@ template <typename U, auto E>
 inline constexpr auto maxaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<
-      std::pair<decltype(E), U>, log<decltype(E)(2), std::size_t>(E)>{
-        std::pair(
-          pow(decltype(E)(2), sizeof...(I) - I),
-          max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
-        )...
-      };
-  }(std::make_index_sequence<log<decltype(E)(2), std::size_t>(E)>())
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E)>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - I),
+        max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E)>())
 };
 
 template <typename U, auto E>
 inline constexpr auto minaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<
-      std::pair<decltype(E), U>, log<decltype(E)(2), std::size_t>(E)>{
-        std::pair(
-          pow(decltype(E)(2), sizeof...(I) - I),
-          min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
-        )...
-      };
-  }(std::make_index_sequence<log<decltype(E)(2), std::size_t>(E)>())
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E)>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - I),
+        min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E)>())
 };
 
 template <typename T>
