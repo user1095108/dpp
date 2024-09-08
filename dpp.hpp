@@ -178,15 +178,13 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   if (intt::is_neg(ma))
     for (auto& [e, m]: minaligns<U, maxpow10e<T, E>()>)
     {
-      if (!i) break;
-      else if ((i >= e) && (ma >= m))
+      if (!i) break; else if ((i >= e) && (ma >= m))
         i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
     }
   else
     for (auto& [e, m]: maxaligns<U, maxpow10e<T, E>()>)
     {
-      if (!i) break;
-      else if ((i >= e) && (ma <= m))
+      if (!i) break; else if ((i >= e) && (ma <= m))
         i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
     }
 
