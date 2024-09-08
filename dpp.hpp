@@ -158,10 +158,10 @@ inline constexpr auto minaligns{
 
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
-  std::remove_cvref_t<decltype(ea)> i) noexcept
+  std::remove_reference_t<decltype(ea)> i) noexcept
 {
-  using U = std::remove_cvref_t<decltype(ma)>;
-  using E = std::remove_cvref_t<decltype(ea)>;
+  using U = std::remove_reference_t<decltype(ma)>;
+  using E = std::remove_reference_t<decltype(ea)>;
 
   {
     auto const e0(std::min(i, ar::coeff<maxpow10e<T, E>()>()));
