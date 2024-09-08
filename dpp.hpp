@@ -176,7 +176,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   }
 
   if (intt::is_neg(ma))
-    for (auto& j: std::as_const(minaligns<U, maxpow10e<T, E>()>))
+    for (auto& j: minaligns<U, maxpow10e<T, E>()>)
     {
       if (!i) break;
       else if ((i >= std::get<0>(j)) && (ma >= std::get<1>(j)))
@@ -184,7 +184,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[std::get<0>(j)];
     }
   else
-    for (auto& j: std::as_const(maxaligns<U, maxpow10e<T, E>()>))
+    for (auto& j: maxaligns<U, maxpow10e<T, E>()>)
     {
       if (!i) break;
       else if ((i >= std::get<0>(j)) && (ma <= std::get<1>(j)))
