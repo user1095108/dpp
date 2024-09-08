@@ -140,9 +140,8 @@ inline constexpr auto maxaligns{
   {
     return std::array<std::pair<decltype(E), U>, log<U(2), decltype(E)>(E)>{
       std::pair(
-        pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)),
-        max_v<U> /
-        pow(U(10), pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)))
+        pow(decltype(E)(2), sizeof...(I) - I),
+        max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
       )...
     };
   }(std::make_index_sequence<log<U(2), decltype(E)>(E)>())
@@ -154,9 +153,8 @@ inline constexpr auto minaligns{
   {
     return std::array<std::pair<decltype(E), U>, log<U(2), decltype(E)>(E)>{
       std::pair(
-        pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)),
-        min_v<U> /
-        pow(U(10), pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)))
+        pow(decltype(E)(2), sizeof...(I) - I),
+        min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
       )...
     };
   }(std::make_index_sequence<log<U(2), decltype(E)>(E)>())
