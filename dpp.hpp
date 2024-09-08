@@ -25,6 +25,29 @@ namespace detail
 {
 
 template <typename U>
+using double_t = std::conditional_t<
+    std::is_same_v<U, std::int8_t>,
+    std::int16_t,
+    std::conditional_t<
+      std::is_same_v<U, std::int16_t>,
+      std::int32_t,
+      std::conditional_t<
+        std::is_same_v<U, std::int32_t>,
+        std::int64_t,
+        std::conditional_t<
+          std::is_same_v<U, std::int64_t>,
+          DPP_INT128T,
+          std::conditional_t<
+            intt::is_intt_v<U>,
+            intt::detail::double_t<U>,
+            void
+          >
+        >
+      >
+    >
+  >;
+
+template <typename U>
 concept arithmetic =
   std::is_arithmetic_v<U> ||
   intt::is_intt_v<U> ||
@@ -105,36 +128,38 @@ inline constexpr auto pwrs{
   }(std::make_index_sequence<E + 1>())
 };
 
-template <auto B>
-consteval auto log(decltype(B) x, decltype(x) e = {}) noexcept -> decltype(e)
+template <auto B, typename E>
+consteval E log(decltype(B) x, E e = {}) noexcept
 {
-  return pow(B, e) > x ? e : log<B>(x, e + 1);
+  return pow(B, e) > x ? e - 1 : log<B, E>(x, e + 1);
 }
 
-template <typename U, typename I, std::size_t E>
+template <typename U, auto E>
 inline constexpr auto maxaligns{
-  []<auto ...Is>(std::index_sequence<Is...>) noexcept
+  []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<I, U>, E>{
+    return std::array<std::pair<decltype(E), U>, E>{
       std::pair(
-        pow(I(2), I(sizeof...(Is) - Is)),
-        max_v<U> / pow(U(10), pow(I(2), I(sizeof...(Is) - Is)))
+        pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)),
+        max_v<U> /
+        pow(U(10), pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)))
       )...
     };
-  }(std::make_index_sequence<log<I(2)>(E) - 1>())
+  }(std::make_index_sequence<log<U(2), decltype(E)>(E)>())
 };
 
-template <typename U, typename I, std::size_t E>
+template <typename U, auto E>
 inline constexpr auto minaligns{
-  []<auto ...Is>(std::index_sequence<Is...>) noexcept
+  []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<I, U>, E>{
+    return std::array<std::pair<decltype(E), U>, E>{
       std::pair(
-        pow(I(2), I(sizeof...(Is) - Is)),
-        min_v<U> / pow(U(10), pow(I(2), I(sizeof...(Is) - Is)))
+        pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)),
+        min_v<U> /
+        pow(U(10), pow(decltype(E)(2), decltype(E)(sizeof...(I) - I)))
       )...
     };
-  }(std::make_index_sequence<log<I(2)>(E) - 1>())
+  }(std::make_index_sequence<log<U(2), decltype(E)>(E)>())
 };
 
 template <typename T>
@@ -142,61 +167,38 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_cvref_t<decltype(ea)> i) noexcept
 {
   using U = std::remove_cvref_t<decltype(ma)>;
-  using I = std::remove_cvref_t<decltype(ea)>;
+  using E = std::remove_cvref_t<decltype(ea)>;
 
   {
-    auto const e0(std::min(i, ar::coeff<maxpow10e<T, I>()>()));
+    auto const e0(std::min(i, ar::coeff<maxpow10e<T, E>()>()));
 
     i -= e0;
     ea -= e0;
-    ma *= pwrs<U(10), maxpow10e<T, I>() + 1>[e0];
+    ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e0];
   }
 
   if (intt::is_neg(ma))
-    for (auto j(std::cbegin(minaligns<U, I, maxpow10e<T, I>()>));
-      i && (std::cend(minaligns<U, I, maxpow10e<T, I>()>) != j); ++j)
+    for (auto j(std::cbegin(minaligns<U, maxpow10e<T, E>()>));
+      i && (std::cend(minaligns<U, maxpow10e<T, E>()>) != j); ++j)
     {
       if ((i >= std::get<0>(*j)) && (ma >= std::get<1>(*j)))
         i -= std::get<0>(*j), ea -= std::get<0>(*j),
-        ma *= pwrs<U(10), maxpow10e<T, I>() + 1>[std::get<0>(*j)];
+        ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[std::get<0>(*j)];
     }
   else
-    for (auto j(std::cbegin(maxaligns<U, I, maxpow10e<T, I>()>));
-      i && (std::cend(maxaligns<U, I, maxpow10e<T, I>()>) != j); ++j)
+    for (auto j(std::cbegin(maxaligns<U, maxpow10e<T, E>()>));
+      i && (std::cend(maxaligns<U, maxpow10e<T, E>()>) != j); ++j)
     {
       if ((i >= std::get<0>(*j)) && (ma <= std::get<1>(*j)))
         i -= std::get<0>(*j), ea -= std::get<0>(*j),
-        ma *= pwrs<U(10), maxpow10e<T, I>() + 1>[std::get<0>(*j)];
+        ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[std::get<0>(*j)];
     }
 
   if (i)
-    mb /= pwrs<U(10), maxpow10e<T, I>() + 1>[
-        std::min(i, ar::coeff<maxpow10e<T, I>() + 1>())
+    mb /= pwrs<U(10), maxpow10e<T, E>() + 1>[
+        std::min(i, ar::coeff<maxpow10e<T, E>() + 1>())
       ];
 }
-
-template <typename U>
-using double_t = std::conditional_t<
-    std::is_same_v<U, std::int8_t>,
-    std::int16_t,
-    std::conditional_t<
-      std::is_same_v<U, std::int16_t>,
-      std::int32_t,
-      std::conditional_t<
-        std::is_same_v<U, std::int32_t>,
-        std::int64_t,
-        std::conditional_t<
-          std::is_same_v<U, std::int64_t>,
-          DPP_INT128T,
-          std::conditional_t<
-            intt::is_intt_v<U>,
-            intt::detail::double_t<U>,
-            void
-          >
-        >
-      >
-    >
-  >;
 
 }
 
