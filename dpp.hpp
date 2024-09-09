@@ -301,8 +301,8 @@ public:
     }
   }
 
-  template <detail::integral U, detail::integral F>
-  constexpr dpp(U m, F e) noexcept
+  template <detail::integral U>
+  constexpr dpp(U m, exp2_t e) noexcept
   {
     if constexpr(detail::is_signed_v<U> &&
       (ar::bit_size_v<U> > ar::bit_size_v<T>))
@@ -344,7 +344,7 @@ public:
     }
   }
 
-  constexpr dpp(detail::integral auto const m) noexcept: dpp(m, E{}) { }
+  constexpr dpp(detail::integral auto const m) noexcept: dpp(m, {}) { }
 
   template <typename U, typename V>
   constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
