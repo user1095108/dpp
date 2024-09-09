@@ -236,13 +236,13 @@ public:
     {
       if (m < ar::coeff<U(mmin)>())
       {
-        for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); m /= 10, ++e);
+        for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
 
         m = (m - 5) / 10;
       }
       else if (m > ar::coeff<U(mmax)>())
       {
-        for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+        for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
 
         m = (m + 5) / 10;
       }
@@ -252,7 +252,7 @@ public:
     {
       if (m > ar::coeff<U(mmax)>())
       {
-        for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); m /= 10, ++e);
+        for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
 
         m = (m + 5) / 10;
       }
@@ -261,7 +261,7 @@ public:
     //
     if (e <= ar::coeff<emax>()) [[likely]]
     {
-      for (; (e <= ar::coeff<emin>()) && m; m /= 10, ++e);
+      for (; (e <= ar::coeff<emin>()) && m; ++e, m /= 10);
 
       e_ = (m_ = m) ? E(e) : E{};
     }
