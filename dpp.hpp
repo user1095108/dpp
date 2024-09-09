@@ -3,7 +3,7 @@
 # pragma once
 
 #include <float.h>
-
+#include <cassert>
 #include "intt/intt.hpp"
 
 #if defined(__SIZEOF_INT128__)
@@ -134,26 +134,54 @@ template <typename U, auto E>
 inline constexpr auto maxaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E)>{
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
       std::pair(
-        pow(decltype(E)(2), sizeof...(I) - I),
-        max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
       )...
     };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E)>())
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
 template <typename U, auto E>
 inline constexpr auto minaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E)>{
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
       std::pair(
-        pow(decltype(E)(2), sizeof...(I) - I),
-        min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - I))
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
       )...
     };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E)>())
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
+template <typename T, typename U, auto E>
+inline constexpr auto maxnorms{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
+        5
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
+template <typename T, typename U, auto E>
+inline constexpr auto minnorms{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
+        5
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
 template <typename T>
@@ -172,12 +200,14 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   }
 
   if (intt::is_neg(ma))
+   //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
     for (auto& [e, m]: minaligns<U, maxpow10e<T, E>()>)
     {
       if (!i) break; else if ((i >= e) && (ma >= m))
         i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
     }
   else
+    //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
     for (auto& [e, m]: maxaligns<U, maxpow10e<T, E>()>)
     {
       if (!i) break; else if ((i >= e) && (ma <= m))
@@ -228,8 +258,51 @@ public:
   dpp(dpp const&) = default;
   dpp(dpp&&) = default;
 
-  template <detail::integral U>
-  constexpr dpp(U m, exp2_t e) noexcept
+  constexpr dpp(sig2_t m, exp2_t e) noexcept
+  {
+    using U = sig2_t;
+    using F = exp2_t;
+
+    if (m < ar::coeff<U(mmin)>())
+    {
+      //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
+      for (auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
+      {
+        if (m < m0)
+          e += e0,
+          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+      }
+
+      ++e; m = (m - 5) / 10;
+    }
+    else if (m > ar::coeff<U(mmax)>())
+    {
+      //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
+      for (auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
+      {
+        if (m > m0)
+          e += e0,
+          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+      }
+
+      ++e; m = (m + 5) / 10;
+    }
+
+    //
+    if (e <= ar::coeff<emax>()) [[likely]]
+    {
+      for (; (e <= ar::coeff<emin>()) && m; ++e, m /= 10);
+
+      e_ = (m_ = m) ? E(e) : E{};
+    }
+    else [[unlikely]]
+    {
+      *this = nan;
+    }
+  }
+
+  template <detail::integral U, detail::integral F>
+  constexpr dpp(U m, F e) noexcept
   {
     if constexpr(detail::is_signed_v<U> &&
       (ar::bit_size_v<U> > ar::bit_size_v<T>))
@@ -271,7 +344,7 @@ public:
     }
   }
 
-  constexpr dpp(detail::integral auto const m) noexcept: dpp(m, {}) { }
+  constexpr dpp(detail::integral auto const m) noexcept: dpp(m, E{}) { }
 
   template <typename U, typename V>
   constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
