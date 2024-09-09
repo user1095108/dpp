@@ -163,8 +163,8 @@ inline constexpr auto maxnorms{
     return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
       std::pair(
         pow(decltype(E)(2), sizeof...(I) - 1 - I),
-        U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
-        5
+        U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
+        I ? 0 : -5;
       )...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
@@ -178,7 +178,7 @@ inline constexpr auto minnorms{
       std::pair(
         pow(decltype(E)(2), sizeof...(I) - 1 - I),
         U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
-        5
+        I ? 0 : 5;
       )...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
