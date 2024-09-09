@@ -266,26 +266,28 @@ public:
     if (m < ar::coeff<U(mmin)>())
     {
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
-      for (auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
+      for (++e;
+        auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
       {
         if (m < m0)
           e += e0,
           m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
 
-      ++e; m = (m - 5) / 10;
+      m = (m - 5) / 10;
     }
     else if (m > ar::coeff<U(mmax)>())
     {
       //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
-      for (auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
+      for (++e;
+        auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
       {
         if (m > m0)
           e += e0,
           m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
 
-      ++e; m = (m + 5) / 10;
+      m = (m + 5) / 10;
     }
 
     //
