@@ -913,9 +913,8 @@ std::string to_string(dpp<T, E> const& a)
     if (m) [[likely]]
     {
       if (intt::is_neg(e = a.exp())) // for (; !(m % 10); ++e, m /= 10);
-        for (auto& e0:
-          std::as_const(detail::slashes<detail::maxpow10e<T, F>()>))
-        {
+        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
+        { // slash zeros
           if (auto& m0(detail::pwrs<T(10), detail::maxpow10e<T, F>()>[e0]);
             !(m % m0)) e += e0, m /= m0;
         }
@@ -996,11 +995,11 @@ struct hash<dpp::dpp<T, E>>
     }
     else if ((m = a.sig())) [[likely]]
     { // unique everything
-      // for (; !(m % 10); ++e, m /= 10); // slash zeros
       using namespace dpp::detail;
 
-      for (auto& e0: std::as_const(slashes<maxpow10e<T, F>()>))
-      {
+      // for (; !(m % 10); ++e, m /= 10); // slash zeros
+      for (auto& e0: slashes<maxpow10e<T, F>()>)
+      { // slash zeros
         if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
           e += e0, m /= m0;
       }
