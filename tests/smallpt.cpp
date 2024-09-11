@@ -1,6 +1,6 @@
 #include "../dpp.hpp"
 #include <math.h>   // smallpt, a Path Tracer by Kevin Beason, 2008
-#include <stdlib.h> // Make : g++ -O3 -fopenmp smallpt.cpp -o smallpt
+#include <stdlib.h> // Make : g++ -std=c++20 -Ofast -fopenmp smallpt.cpp -o smallpt
 #include <stdio.h>  //        Remove "-fopenmp" for g++ version < 4.2
 struct Vec {        // Usage: time ./smallpt 5000 && xv image.ppm
   dpp::d64 x, y, z;                  // position, also color (r,g,b)
@@ -16,7 +16,7 @@ struct Vec {        // Usage: time ./smallpt 5000 && xv image.ppm
 struct Ray { Vec o, d; Ray(Vec o_, Vec d_) : o(o_), d(d_) {} };
 enum Refl_t { DIFF, SPEC, REFR };  // material types, used in radiance()
 struct Sphere {
-  dpp::d64 rad;       // radius
+  dpp::d64 rad;     // radius
   Vec p, e, c;      // position, emission, color
   Refl_t refl;      // reflection type (DIFFuse, SPECular, REFRactive)
   Sphere(dpp::d64 rad_, Vec p_, Vec e_, Vec c_, Refl_t refl_):
@@ -47,7 +47,7 @@ inline bool intersect(const Ray &r, dpp::d64 &t, int &id){
   return t<inf;
 }
 Vec radiance(const Ray &r, int depth, unsigned short *Xi){
-  dpp::d64 t;                               // distance to intersection
+  dpp::d64 t;                             // distance to intersection
   int id=0;                               // id of intersected object
   if (!intersect(r, t, id)) return Vec(); // if miss, return black
   const Sphere &obj = spheres[id];        // the hit object
