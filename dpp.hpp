@@ -184,15 +184,12 @@ inline constexpr auto minnorms{
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
-template <typename U, auto E>
+template <auto E>
 inline constexpr auto slashes{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
-      std::pair(
-        pow(decltype(E)(2), sizeof...(I) - 1 - I),
-        pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
-      )...
+    return std::array<decltype(E), log<decltype(E)(2)>(E) + 1>{
+      pow(decltype(E)(2), sizeof...(I) - 1 - I)...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
@@ -916,8 +913,12 @@ std::string to_string(dpp<T, E> const& a)
     if (m) [[likely]]
     {
       if (intt::is_neg(e = a.exp())) // for (; !(m % 10); ++e, m /= 10);
-        for (auto& [e0, m0]: detail::slashes<T, detail::maxpow10e<T, F>()>)
-          if (!(m % m0)) e += e0, m /= m0;
+        for (auto& e0:
+          std::as_const(detail::slashes<detail::maxpow10e<T, F>()>))
+        {
+          if (auto& m0(detail::pwrs<T(10), detail::maxpow10e<T, F>()>[e0]);
+            !(m % m0)) e += e0, m /= m0;
+        }
     }
     else [[unlikely]]
     {
@@ -997,8 +998,12 @@ struct hash<dpp::dpp<T, E>>
     { // unique everything
       // for (; !(m % 10); ++e, m /= 10); // slash zeros
       using namespace dpp::detail;
-      for (auto& [e0, m0]: slashes<T, maxpow10e<T, F>()>)
-        if (!(m % m0)) e += e0, m /= m0;
+
+      for (auto& e0: std::as_const(slashes<maxpow10e<T, F>()>))
+      {
+        if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
+          e += e0, m /= m0;
+      }
     }
     else [[unlikely]]
     { // unique zero
