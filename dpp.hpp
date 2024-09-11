@@ -163,8 +163,8 @@ inline constexpr auto maxnorms{
     return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
       std::pair(
         pow(decltype(E)(2), sizeof...(I) - 1 - I),
-        U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
-        U(I ? 0 : -5)
+        U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
+        U(I ? 0 : 5)
       )...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
@@ -274,7 +274,7 @@ public:
           m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
 
-      m = (m - 5) / 10;
+      m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
     {
@@ -287,7 +287,7 @@ public:
           m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
 
-      m = (m + 5) / 10;
+      m = (m + U(5)) / U(10);
     }
 
     //
@@ -313,13 +313,13 @@ public:
       {
         for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
 
-        m = (m - 5) / 10;
+        m = (m - U(5)) / U(10);
       }
       else if (m > ar::coeff<U(mmax)>())
       {
         for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
 
-        m = (m + 5) / 10;
+        m = (m + U(5)) / U(10);
       }
     }
     else if constexpr(std::is_unsigned_v<U> &&
@@ -329,7 +329,7 @@ public:
       {
         for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
 
-        m = (m + 5) / 10;
+        m = (m + U(5)) / U(10);
       }
     }
 
@@ -571,6 +571,7 @@ public:
     else if (m_) [[likely]]
     {
       using U = sig2_t;
+      using F = exp2_t;
 
       constexpr auto e0(detail::maxpow10e<T, exp2_t>());
 
@@ -578,9 +579,21 @@ public:
       auto m(ar::coeff<detail::pow(sig2_t(10), e0)>() * sig2_t(m_));
 
       if (intt::is_neg(m))
-        for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+        //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+        for (auto& [e0, m0]: detail::minaligns<U, detail::maxpow10e<T, F>()>)
+        {
+          if (m >= m0)
+            e -= e0,
+            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+        }
       else
-        for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+        //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+        for (auto& [e0, m0]: detail::maxaligns<U, detail::maxpow10e<T, F>()>)
+        {
+          if (m <= m0)
+            e -= e0,
+            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+        }
 
       return dpp(m / sig2_t(o.m_), e);
     }
@@ -774,15 +787,15 @@ constexpr auto round(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
 { // multiplicative inverse or reciprocal
-  using sig2_t = typename dpp<T, E>::sig2_t;
-  using exp2_t = typename dpp<T, E>::exp2_t;
+  using U = typename dpp<T, E>::sig2_t;
+  using F = typename dpp<T, E>::exp2_t;
 
-  constexpr auto e0{detail::maxpow10e<sig2_t, exp2_t>()};
+  constexpr auto e0{detail::maxpow10e<U, F>()};
 
   if (isnan(a) || !a.m_) [[unlikely]] return nan; else
     [[likely]] return dpp<T, E>{
-        ar::coeff<detail::pow(sig2_t(10), e0)>() / sig2_t(a.m_),
-        ar::coeff<exp2_t(-e0)>() - exp2_t(a.e_)
+        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
+        ar::coeff<F(-e0)>() - F(a.e_)
       };
 }
 
