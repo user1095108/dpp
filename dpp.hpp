@@ -573,7 +573,7 @@ public:
       using U = sig2_t;
       using F = exp2_t;
 
-      constexpr auto e0(detail::maxpow10e<T, exp2_t>());
+      constexpr auto e0(detail::maxpow10e<T, F>());
 
       auto e(exp2_t(e_) - exp2_t(o.e_) - e0);
       auto m(ar::coeff<detail::pow(sig2_t(10), e0)>() * sig2_t(m_));
@@ -794,8 +794,7 @@ constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
 
   if (isnan(a) || !a.m_) [[unlikely]] return nan; else
     [[likely]] return dpp<T, E>{
-        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_),
-        ar::coeff<F(-e0)>() - F(a.e_)
+        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_), F(-F(a.e_)) - e0
       };
 }
 
