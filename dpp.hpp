@@ -307,7 +307,7 @@ public:
       if (e <= ar::coeff<F(emin)>())
         for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
         {
-          if (!m) break; else if (e <= ar::coeff<F(emin + 1)>() - e0)
+          if (!m) break; else if (e + e0 <= ar::coeff<F(emin + 1)>())
             e += e0,
             m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
