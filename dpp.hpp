@@ -900,7 +900,7 @@ std::string to_string(dpp<T, E> const& a)
 
     if (m) [[likely]]
     {
-      if (intt::is_neg(e = a.exp())) for (; !(m % 10); m /= 10, ++e);
+      if (intt::is_neg(e = a.exp())) for (; !(m % 10); ++e, m /= 10);
     }
     else [[unlikely]]
     {
@@ -977,7 +977,7 @@ struct hash<dpp::dpp<T, E>>
     }
     else if ((m = a.sig())) [[likely]]
     { // unique everything
-      for (; !(m % 10); m /= 10, ++e); // slash zeros
+      for (; !(m % 10); ++e, m /= 10); // slash zeros
     }
     else [[unlikely]]
     { // unique zero
