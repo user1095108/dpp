@@ -184,6 +184,19 @@ inline constexpr auto minnorms{
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
+template <typename U, auto E>
+inline constexpr auto slashes{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
@@ -889,6 +902,8 @@ constexpr auto to_decimal(auto const& s) noexcept ->
 template <typename T, typename E>
 std::string to_string(dpp<T, E> const& a)
 {
+  using F = typename dpp<T, E>::exp2_t;
+
   if (isnan(a)) [[unlikely]]
   {
     return {"nan", 3};
@@ -896,11 +911,13 @@ std::string to_string(dpp<T, E> const& a)
   else [[likely]]
   {
     auto m(a.sig());
-    typename dpp<T, E>::exp2_t e;
+    F e;
 
     if (m) [[likely]]
     {
-      if (intt::is_neg(e = a.exp())) for (; !(m % 10); ++e, m /= 10);
+      if (intt::is_neg(e = a.exp())) // for (; !(m % 10); ++e, m /= 10);
+        for (auto& [e0, m0]: detail::slashes<T, detail::maxpow10e<T, F>()>)
+          if (!(m % m0)) e += e0, m /= m0;
     }
     else [[unlikely]]
     {
@@ -962,14 +979,15 @@ namespace std
 template <typename T, typename E>
 struct hash<dpp::dpp<T, E>>
 {
-  using exp2_t = typename dpp::dpp<T, E>::exp2_t;
+  using U = typename dpp::dpp<T, E>::sig2_t;
+  using F = typename dpp::dpp<T, E>::exp2_t;
 
   constexpr auto operator()(dpp::dpp<T, E> const& a)
     noexcept(noexcept(std::hash<T>()(std::declval<T>()),
-      std::hash<exp2_t>()(std::declval<exp2_t>())))
+      std::hash<F>()(std::declval<F>())))
   {
     T m;
-    exp2_t e(a.exp());
+    F e(a.exp());
 
     if (dpp::isnan(a)) [[unlikely]]
     { // unique nan
@@ -977,7 +995,10 @@ struct hash<dpp::dpp<T, E>>
     }
     else if ((m = a.sig())) [[likely]]
     { // unique everything
-      for (; !(m % 10); ++e, m /= 10); // slash zeros
+      // for (; !(m % 10); ++e, m /= 10); // slash zeros
+      using namespace dpp::detail;
+      for (auto& [e0, m0]: slashes<T, maxpow10e<T, F>()>)
+        if (!(m % m0)) e += e0, m /= m0;
     }
     else [[unlikely]]
     { // unique zero
@@ -987,8 +1008,7 @@ struct hash<dpp::dpp<T, E>>
     //
     auto const s(std::hash<decltype(m)>()(m));
 
-    return s ^ (std::hash<decltype(e)>()(e) + intt::consts::ISR +
-      (s << 6) + (s >> 2));
+    return s ^ (std::hash<F>()(e) + intt::consts::ISR + (s << 6) + (s >> 2));
   }
 };
 
