@@ -575,7 +575,7 @@ public:
 
       constexpr auto e0(detail::maxpow10e<T, exp2_t>());
 
-      auto e(ar::coeff<exp2_t(-e0)>() + exp2_t(e_) - exp2_t(o.e_));
+      auto e(exp2_t(e_) - exp2_t(o.e_) - e0);
       auto m(ar::coeff<detail::pow(sig2_t(10), e0)>() * sig2_t(m_));
 
       if (intt::is_neg(m))
