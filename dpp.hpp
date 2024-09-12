@@ -301,7 +301,7 @@ public:
     }
 
     //
-    if (e <= ar::coeff<emax>()) [[likely]]
+    if (e <= ar::coeff<F(emax)>()) [[likely]]
     {
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
       if (e <= ar::coeff<F(emin)>())
@@ -351,9 +351,9 @@ public:
     }
 
     //
-    if (e <= ar::coeff<emax>()) [[likely]]
+    if (e <= ar::coeff<exp2_t(emax)>()) [[likely]]
     {
-      while ((e <= ar::coeff<emin>()) && m) ++e, m /= 10;
+      while ((e <= ar::coeff<exp2_t(emin)>()) && m) ++e, m /= 10;
 
       e_ = (m_ = m) ? E(e) : E{};
     }
