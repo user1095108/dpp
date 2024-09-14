@@ -180,23 +180,21 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   if (intt::is_neg(ma))
   {
    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto e(std::cbegin(slashes<detail::maxpow10e<T, F>()>));
-      i && (std::cend(slashes<detail::maxpow10e<T, F>()>) != e); ++e)
+    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
     {
-      if ((i >= *e) &&
-        (ma >= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - *e]))
-        i -= *e, ea -= *e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[*e];
+      if (!e) break; else if ((i >= e) &&
+        (ma >= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
+        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
     }
   }
   else
   {
     //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto e(std::cbegin(slashes<detail::maxpow10e<T, F>()>));
-      i && (std::cend(slashes<detail::maxpow10e<T, F>()>) != e); ++e)
+    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
     {
-      if ((i >= *e) &&
-        (ma <= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - *e]))
-        i -= *e, ea -= *e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[*e];
+      if (!e) break; else if ((i >= e) &&
+        (ma <= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
+        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
     }
   }
 
