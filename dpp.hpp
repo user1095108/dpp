@@ -576,25 +576,23 @@ public:
       if (intt::is_neg(m))
       {
         //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
-        for (auto e0(std::cbegin(detail::slashes<detail::maxpow10e<T, F>()>));
-          std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0; ++e0)
+        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
         {
           if (m >= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[
-            detail::maxpow10e<T, F>() - *e0])
-            e -= *e0,
-            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[*e0];
+            detail::maxpow10e<T, F>() - e0])
+            e -= e0,
+            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
       }
       else
       {
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
-        for (auto e0(std::cbegin(detail::slashes<detail::maxpow10e<T, F>()>));
-          std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0; ++e0)
+        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
         {
           if (m <= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[
-            detail::maxpow10e<T, F>() - *e0])
-            e -= *e0,
-            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[*e0];
+            detail::maxpow10e<T, F>() - e0])
+            e -= e0,
+            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
       }
 
