@@ -274,7 +274,7 @@ public:
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
       auto m0(std::cbegin(detail::minnorms<T, U, detail::maxpow10e<T, F>()>));
       for (auto e0(std::cbegin(detail::slashes<detail::maxpow10e<T, F>()>));
-        (std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0);
+        std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0;
         ++e0, ++m0)
       {
         if (m < *m0)
@@ -289,7 +289,7 @@ public:
       //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
       auto m0(std::cbegin(detail::maxnorms<T, U, detail::maxpow10e<T, F>()>));
       for (auto e0(std::cbegin(detail::slashes<detail::maxpow10e<T, F>()>));
-        (std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0);
+        std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0;
         ++e0, ++m0)
       {
         if (m > *m0)
