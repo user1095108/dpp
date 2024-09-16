@@ -199,34 +199,42 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
 {
   using U = std::remove_reference_t<decltype(ma)>;
-  using E = std::remove_reference_t<decltype(ea)>;
+  using F = std::remove_reference_t<decltype(ea)>;
 
   {
-    auto const e0(std::min(i, ar::coeff<maxpow10e<T, E>()>()));
+    auto const e0(std::min(i, ar::coeff<maxpow10e<T, F>()>()));
 
     i -= e0;
     ea -= e0;
-    ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e0];
+    ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e0];
   }
 
   if (intt::is_neg(ma))
+  {
    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto& [e, m]: minaligns<U, maxpow10e<T, E>()>)
+    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
     {
-      if (!i) break; else if ((i >= e) && (ma >= m))
-        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
+      if (!e || (ma < ar::coeff<detail::min_v<U> / 10>())) break;
+      else if ((i >= e) &&
+        (ma >= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
+        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
     }
+  }
   else
+  {
     //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto& [e, m]: maxaligns<U, maxpow10e<T, E>()>)
+    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
     {
-      if (!i) break; else if ((i >= e) && (ma <= m))
-        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
+      if (!e || (ma > ar::coeff<detail::max_v<U> / 10>())) break;
+      else if ((i >= e) &&
+        (ma <= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
+        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
     }
+  }
 
   if (i)
-    mb /= pwrs<U(10), maxpow10e<T, E>() + 1>[
-        std::min(i, ar::coeff<maxpow10e<T, E>() + 1>())
+    mb /= pwrs<U(10), maxpow10e<T, F>() + 1>[
+        std::min(i, ar::coeff<maxpow10e<T, F>() + 1>())
       ];
 }
 
