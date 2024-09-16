@@ -930,7 +930,8 @@ std::string to_string(dpp<T, E> const& a)
       if (intt::is_neg(e = a.exp())) // for (; !(m % 10); ++e, m /= 10);
         for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
         { // slash zeros
-          if (auto& m0(detail::pwrs<T(10), detail::maxpow10e<T, F>()>[e0]);
+          if (m % 10) break;
+          else if (auto& m0(detail::pwrs<T(10), detail::maxpow10e<T, F>()>[e0]);
             !(m % m0)) e += e0, m /= m0;
         }
     }
@@ -1015,7 +1016,8 @@ struct hash<dpp::dpp<T, E>>
       // for (; !(m % 10); ++e, m /= 10); // slash zeros
       for (auto& e0: slashes<maxpow10e<T, F>()>)
       { // slash zeros
-        if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
+        if (m % 10) break;
+        else if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
           e += e0, m /= m0;
       }
     }
