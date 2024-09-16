@@ -79,7 +79,7 @@ template <typename U> inline constexpr U max_v(~min_v<U>);
 template <auto B, typename E = std::size_t>
 consteval E log(decltype(B) x) noexcept
 {
-  x /= B; E e{}; for (decltype(B) y(1); y <= x;) ++e, y *= B; return e;
+  x /= B; E e{}; for (decltype(B) y(1); y <= x; ++e, y *= B); return e;
 }
 
 template <typename U, typename E>
@@ -130,6 +130,60 @@ inline constexpr auto pwrs{
   }(std::make_index_sequence<E + 1>())
 };
 
+template <typename U, auto E>
+inline constexpr auto maxaligns{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
+template <typename U, auto E>
+inline constexpr auto minaligns{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
+template <typename T, typename U, auto E>
+inline constexpr auto maxnorms{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
+        U(I ? 0 : 5)
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
+template <typename T, typename U, auto E>
+inline constexpr auto minnorms{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
+      std::pair(
+        pow(decltype(E)(2), sizeof...(I) - 1 - I),
+        U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
+        U(I ? 0 : 5)
+      )...
+    };
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
 template <auto E>
 inline constexpr auto slashes{
   []<auto ...I>(std::index_sequence<I...>) noexcept
@@ -140,67 +194,39 @@ inline constexpr auto slashes{
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
-template <typename T, typename U, auto E>
-inline constexpr auto maxnorms{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<U, log<decltype(E)(2)>(E) + 1>{
-      U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
-template <typename T, typename U, auto E>
-inline constexpr auto minnorms{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<U, log<decltype(E)(2)>(E) + 1>{
-      U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
 {
   using U = std::remove_reference_t<decltype(ma)>;
-  using F = std::remove_reference_t<decltype(ea)>;
+  using E = std::remove_reference_t<decltype(ea)>;
 
   {
-    auto const e0(std::min(i, ar::coeff<maxpow10e<T, F>()>()));
+    auto const e0(std::min(i, ar::coeff<maxpow10e<T, E>()>()));
 
     i -= e0;
     ea -= e0;
-    ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e0];
+    ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e0];
   }
 
   if (intt::is_neg(ma))
-  {
    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
+    for (auto& [e, m]: minaligns<U, maxpow10e<T, E>()>)
     {
-      if (!e || (ma < ar::coeff<detail::min_v<U> / 10>())) break;
-      else if ((i >= e) &&
-        (ma >= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
-        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
+      if (!i) break; else if ((i >= e) && (ma >= m))
+        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
     }
-  }
   else
-  {
     //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
+    for (auto& [e, m]: maxaligns<U, maxpow10e<T, E>()>)
     {
-      if (!e || (ma > ar::coeff<detail::max_v<U> / 10>())) break;
-      else if ((i >= e) &&
-        (ma <= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
-        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
+      if (!i) break; else if ((i >= e) && (ma <= m))
+        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, E>() + 1>[e];
     }
-  }
 
   if (i)
-    mb /= pwrs<U(10), maxpow10e<T, F>() + 1>[
-        std::min(i, ar::coeff<maxpow10e<T, F>() + 1>())
+    mb /= pwrs<U(10), maxpow10e<T, E>() + 1>[
+        std::min(i, ar::coeff<maxpow10e<T, E>() + 1>())
       ];
 }
 
@@ -250,38 +276,28 @@ public:
     if (m < ar::coeff<U(mmin)>())
     {
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
-      auto m0(std::cbegin(detail::minnorms<T, U, detail::maxpow10e<T, F>()>));
-      for (auto e0(std::cbegin(detail::slashes<detail::maxpow10e<T, F>()>));
-        std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0;
-        ++e0, ++m0)
+      for (++e;
+        auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
       {
-        if (m >= ar::coeff<U(10 * U(mmin))>()) break;
-        else if (m < *m0)
-          e += *e0,
-          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[*e0];
+        if (m < m0)
+          e += e0,
+          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
 
-      if (m < ar::coeff<U(10 * U(mmin) + 5)>()) ++e, m /= 10;
-
-      ++e; m = (m - U(5)) / U(10);
+      m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
     {
       //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
-      auto m0(std::cbegin(detail::maxnorms<T, U, detail::maxpow10e<T, F>()>));
-      for (auto e0(std::cbegin(detail::slashes<detail::maxpow10e<T, F>()>));
-        std::cend(detail::slashes<detail::maxpow10e<T, F>()>) != e0;
-        ++e0, ++m0)
+      for (++e;
+        auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
       {
-        if (m <= ar::coeff<U(10 * U(mmax))>()) break;
-        else if (m > *m0)
-          e += *e0,
-          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[*e0];
+        if (m > m0)
+          e += e0,
+          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
 
-      if (m > ar::coeff<U(10 * U(mmax) - 5)>()) ++e, m /= 10;
-
-      ++e; m = (m + U(5)) / U(10);
+      m = (m + U(5)) / U(10);
     }
 
     //
@@ -580,29 +596,21 @@ public:
       auto m(ar::coeff<detail::pow(sig2_t(10), e0)>() * sig2_t(m_));
 
       if (intt::is_neg(m))
-      {
         //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
-        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
+        for (auto& [e0, m0]: detail::minaligns<U, detail::maxpow10e<T, F>()>)
         {
-          if (m < ar::coeff<detail::min_v<U> / 10>()) break;
-          else if (m >= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[
-            detail::maxpow10e<T, F>() - e0])
+          if (m >= m0)
             e -= e0,
             m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
-      }
       else
-      {
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
-        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
+        for (auto& [e0, m0]: detail::maxaligns<U, detail::maxpow10e<T, F>()>)
         {
-          if (m > ar::coeff<detail::max_v<U> / 10>()) break;
-          else if (m <= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[
-            detail::maxpow10e<T, F>() - e0])
+          if (m <= m0)
             e -= e0,
             m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
-      }
 
       return dpp(m / sig2_t(o.m_), e);
     }
@@ -914,7 +922,6 @@ std::string to_string(dpp<T, E> const& a)
       if (intt::is_neg(e = a.exp())) // for (; !(m % 10); ++e, m /= 10);
         for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
         { // slash zeros
-          if (m % T(10)) break; else
           if (auto& m0(detail::pwrs<T(10), detail::maxpow10e<T, F>()>[e0]);
             !(m % m0)) e += e0, m /= m0;
         }
@@ -1000,8 +1007,7 @@ struct hash<dpp::dpp<T, E>>
       // for (; !(m % 10); ++e, m /= 10); // slash zeros
       for (auto& e0: slashes<maxpow10e<T, F>()>)
       { // slash zeros
-        if (m % T(10)) break;
-        else if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
+        if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
           e += e0, m /= m0;
       }
     }
