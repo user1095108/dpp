@@ -208,26 +208,27 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e0];
   }
 
-  if (intt::is_neg(ma))
-    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
-    do
-    for (auto& [e, m]: minaligns<U, maxpow10e<T, F>()>)
-    {
-      if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) break;
-      else if ((i >= e) && (ma >= m))
-        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
-    }
-    while (i && (ma >= ar::coeff<U(min_v<U> / 10)>()));
-  else
-    //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
-    do
-    for (auto& [e, m]: maxaligns<U, maxpow10e<T, F>()>)
-    {
-      if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) break;
-      else if ((i >= e) && (ma <= m))
-        i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
-    }
-    while (i && (ma <= ar::coeff<U(max_v<U> / 10)>()));
+  [&]() noexcept
+  {
+    if (intt::is_neg(ma))
+      //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
+      for (;;)
+      for (auto& [e, m]: minaligns<U, maxpow10e<T, F>()>)
+      {
+        if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
+        else if ((i >= e) && (ma >= m))
+          i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
+      }
+    else
+      //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
+      for (;;)
+      for (auto& [e, m]: maxaligns<U, maxpow10e<T, F>()>)
+      {
+        if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
+        else if ((i >= e) && (ma <= m))
+          i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
+      }
+  }();
 
   if (i)
     mb /= pwrs<U(10), maxpow10e<T, F>() + 1>[
@@ -281,30 +282,34 @@ public:
     if (m < ar::coeff<U(mmin)>())
     {
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
-      do
-      for (auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
+      [&]() noexcept
       {
-        if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) break;
-        else if (m < m0)
-          e += e0,
-          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
-      }
-      while (m < ar::coeff<U(10 * U(mmin) + 5)>());
+        for (;;)
+        for (auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
+        {
+          if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
+          else if (m < m0)
+            e += e0,
+            m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+        }
+      }();
 
       ++e; m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
     {
       //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
-      do
-      for (auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
+      [&]() noexcept
       {
-        if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) break;
-        else if (m > m0)
-          e += e0,
-          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
-      }
-      while (m > ar::coeff<U(10 * U(mmax) - 5)>());
+        for (;;)
+        for (auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
+        {
+          if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
+          else if (m > m0)
+            e += e0,
+            m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+        }
+      }();
 
       ++e; m = (m + U(5)) / U(10);
     }
@@ -313,15 +318,17 @@ public:
     if (e <= ar::coeff<F(emax)>()) [[likely]]
     {
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
-      do
-      for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
+      [&]() noexcept
       {
-        if ((e > ar::coeff<F(emin)>()) || !m) break;
-        else if (e + e0 <= ar::coeff<F(emin + 1)>())
-          e += e0,
-          m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
-      }
-      while ((e <= ar::coeff<F(emin)>()) && m);
+        for (;;)
+        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
+        {
+          if ((e > ar::coeff<F(emin)>()) || !m) return;
+          else if (e + e0 <= ar::coeff<F(emin + 1)>())
+            e += e0,
+            m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+        }
+      }();
 
       e_ = (m_ = m) ? E(e) : E{};
     }
@@ -606,34 +613,35 @@ public:
       auto e(exp2_t(e_) - exp2_t(o.e_) - e0);
       auto m(ar::coeff<detail::pow(U(10), e0)>() * U(m_));
 
-      if (intt::is_neg(m))
+      [&]() noexcept
       {
-        //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
-        do
-        for (auto& [e0, m0]: detail::minaligns<U, detail::maxpow10e<T, F>()>)
+        if (intt::is_neg(m))
         {
-          if (m < ar::coeff<U(detail::min_v<U> / 10)>()) break;
-          else if (m >= m0)
-            e -= e0,
-            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+          //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+          for (;;)
+          for (auto& [e0, m0]: detail::minaligns<U, detail::maxpow10e<T, F>()>)
+          {
+            if (m < ar::coeff<U(detail::min_v<U> / 10)>()) return;
+            else if (m >= m0)
+              e -= e0,
+              m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+          }
+          //assert(m < ar::coeff<U(detail::min_v<U> / 10)>());
         }
-        while (m >= ar::coeff<U(detail::min_v<U> / 10)>());
-        //assert(m < ar::coeff<U(detail::min_v<U> / 10)>());
-      }
-      else
-      {
-        //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
-        do
-        for (auto& [e0, m0]: detail::maxaligns<U, detail::maxpow10e<T, F>()>)
+        else
         {
-          if (m > ar::coeff<U(detail::max_v<U> / 10)>()) break;
-          else if (m <= m0)
-            e -= e0,
-            m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+          //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+          for (;;)
+          for (auto& [e0, m0]: detail::maxaligns<U, detail::maxpow10e<T, F>()>)
+          {
+            if (m > ar::coeff<U(detail::max_v<U> / 10)>()) return;
+            else if (m <= m0)
+              e -= e0,
+              m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+          }
+          //assert(m > ar::coeff<U(detail::max_v<U> / 10)>());
         }
-        while (m <= ar::coeff<U(detail::max_v<U> / 10)>());
-        //assert(m > ar::coeff<U(detail::max_v<U> / 10)>());
-      }
+      }();
 
       return dpp(m / sig2_t(o.m_), e);
     }
