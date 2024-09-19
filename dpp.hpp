@@ -626,7 +626,6 @@ public:
               e -= e0,
               m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
           }
-          //assert(m < ar::coeff<U(detail::min_v<U> / 10)>());
         }
         else
         {
@@ -639,7 +638,6 @@ public:
               e -= e0,
               m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
           }
-          //assert(m > ar::coeff<U(detail::max_v<U> / 10)>());
         }
       }();
 
