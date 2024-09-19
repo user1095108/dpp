@@ -282,7 +282,8 @@ public:
       while (m < ar::coeff<U(10 * U(mmin) + 5)>())
       for (auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
       {
-        if (m < m0)
+        if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) break;
+        else if (m < m0)
           e += e0,
           m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
@@ -295,7 +296,8 @@ public:
       while (m > ar::coeff<U(10 * U(mmax) - 5)>())
       for (auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
       {
-        if (m > m0)
+        if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) break;
+        else if (m > m0)
           e += e0,
           m /= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
       }
