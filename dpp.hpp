@@ -619,7 +619,8 @@ public:
         {
           //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto& [e0, m0]: detail::minaligns<U, detail::maxpow10e<T, F>()>)
+          for (auto& [e0, m0]:
+            detail::minaligns<U, detail::maxpow10e<T, F>()>)
           {
             if (m < ar::coeff<U(detail::min_v<U> / 10)>()) return;
             else if (m >= m0)
@@ -631,7 +632,8 @@ public:
         {
           //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto& [e0, m0]: detail::maxaligns<U, detail::maxpow10e<T, F>()>)
+          for (auto& [e0, m0]:
+            detail::maxaligns<U, detail::maxpow10e<T, F>()>)
           {
             if (m > ar::coeff<U(detail::max_v<U> / 10)>()) return;
             else if (m <= m0)
