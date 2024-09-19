@@ -78,7 +78,7 @@ template <typename U> inline constexpr U max_v(~min_v<U>);
 template <auto B, typename E = std::size_t>
 consteval E log(decltype(B) x) noexcept
 {
-  x /= B; E e{}; for (decltype(B) y(1); y <= x; ++e, y *= B); return e;
+  x /= B; E e{}; for (decltype(B) y(1); y <= x;) ++e, y *= B; return e;
 }
 
 template <typename U, typename E>
@@ -284,7 +284,7 @@ public:
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
       [&]() noexcept
       {
-        for (;;)
+        for (++e;;)
         for (auto& [e0, m0]: detail::minnorms<T, U, detail::maxpow10e<T, F>()>)
         {
           if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
@@ -294,14 +294,14 @@ public:
         }
       }();
 
-      ++e; m = (m - U(5)) / U(10);
+      m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
     {
       //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
       [&]() noexcept
       {
-        for (;;)
+        for (++e;;)
         for (auto& [e0, m0]: detail::maxnorms<T, U, detail::maxpow10e<T, F>()>)
         {
           if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
@@ -311,7 +311,7 @@ public:
         }
       }();
 
-      ++e; m = (m + U(5)) / U(10);
+      m = (m + U(5)) / U(10);
     }
 
     //
