@@ -307,6 +307,7 @@ public:
     if (e <= ar::coeff<F(emax)>()) [[likely]]
     {
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
+      while ((e <= ar::coeff<F(emin)>()) && m)
       for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
       {
         if ((e > ar::coeff<F(emin)>()) || !m) break;
