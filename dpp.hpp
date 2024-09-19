@@ -3,7 +3,6 @@
 # pragma once
 
 #include <float.h>
-#include <cassert>
 #include "intt/intt.hpp"
 
 #if defined(__SIZEOF_INT128__)
@@ -210,27 +209,23 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   }
 
   if (intt::is_neg(ma))
-  {
-   //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
+    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
+    while (i && (ma >= ar::coeff<U(min_v<U> / 10)>()))
+    for (auto& [e, m]: minaligns<U, maxpow10e<T, F>()>)
     {
-      if (!e || (ma < ar::coeff<detail::min_v<U> / 10>())) break;
-      else if ((i >= e) &&
-        (ma >= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
+      if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) break;
+      else if ((i >= e) && (ma >= m))
         i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
     }
-  }
   else
-  {
     //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
-    for (auto& e: slashes<detail::maxpow10e<T, F>()>)
+    while (i && (ma <= ar::coeff<U(max_v<U> / 10)>()))
+    for (auto& [e, m]: maxaligns<U, maxpow10e<T, F>()>)
     {
-      if (!e || (ma > ar::coeff<detail::max_v<U> / 10>())) break;
-      else if ((i >= e) &&
-        (ma <= pwrs<U(10), maxpow10e<T, F>() + 1>[maxpow10e<T, F>() - e]))
+      if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) break;
+      else if ((i >= e) && (ma <= m))
         i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
     }
-  }
 
   if (i)
     mb /= pwrs<U(10), maxpow10e<T, F>() + 1>[
@@ -601,24 +596,34 @@ public:
       constexpr auto e0(detail::maxpow10e<T, F>());
 
       auto e(exp2_t(e_) - exp2_t(o.e_) - e0);
-      auto m(ar::coeff<detail::pow(sig2_t(10), e0)>() * sig2_t(m_));
+      auto m(ar::coeff<detail::pow(U(10), e0)>() * U(m_));
 
       if (intt::is_neg(m))
+      {
         //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+        while (m >= ar::coeff<U(detail::min_v<U> / 10)>())
         for (auto& [e0, m0]: detail::minaligns<U, detail::maxpow10e<T, F>()>)
         {
-          if (m >= m0)
+          if (m < ar::coeff<U(detail::min_v<U> / 10)>()) break;
+          else if (m >= m0)
             e -= e0,
             m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
+        assert(m < ar::coeff<U(detail::min_v<U> / 10)>());
+      }
       else
+      {
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+        while (m <= ar::coeff<U(detail::max_v<U> / 10)>())
         for (auto& [e0, m0]: detail::maxaligns<U, detail::maxpow10e<T, F>()>)
         {
-          if (m <= m0)
+          if (m > ar::coeff<U(detail::max_v<U> / 10)>()) break;
+          else if (m <= m0)
             e -= e0,
             m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
         }
+        assert(m > ar::coeff<U(detail::max_v<U> / 10)>());
+      }
 
       return dpp(m / sig2_t(o.m_), e);
     }
