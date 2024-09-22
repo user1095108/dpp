@@ -217,6 +217,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e0];
   }
 
+  constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
+
   [&]() noexcept
   {
     if (intt::is_neg(ma))
@@ -241,12 +243,12 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
   if (i) [&]() noexcept
     {
-      for (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());;)
+      for (;;)
       {
-        auto e0(end);
+        auto e0(end)
 
         do
-        { // slash zeros
+        {
           if (!i || !mb) return;
           else if (auto const e02(pwrs<T(2), end>[e0]); e02 <= i)
             i -= e02, mb /= pwrs2<T(10), maxpow10e<T>()>[e0];
