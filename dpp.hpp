@@ -81,7 +81,7 @@ consteval E log(decltype(B) x) noexcept
   x /= B; E e{}; for (decltype(B) y(1); y <= x;) ++e, y *= B; return e;
 }
 
-template <typename U, typename E>
+template <typename U, typename E = std::size_t>
 consteval auto maxpow10e() noexcept
 {
   return log<U(10), E>(max_v<U>);
@@ -128,6 +128,16 @@ inline constexpr auto pwrs{
     return std::array<decltype(X), E + 1>{pow(X, I)...};
   }(std::make_index_sequence<E + 1>())
 };
+
+template <auto X, std::size_t E>
+inline constexpr auto pwrs2{
+  []<auto ...I>(std::index_sequence<I...>) noexcept
+  {
+    return std::array<decltype(X), log<decltype(E)(2)>(E) + 1>{
+      pow(X, pow(decltype(E)(2), I))...};
+  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+};
+
 
 template <typename U, auto E>
 inline constexpr auto maxaligns{
@@ -950,13 +960,26 @@ std::string to_string(dpp<T, E> const& a)
 
     if (m) [[likely]]
     {
-      if (intt::is_neg(e = a.exp())) // for (; !(m % 10); ++e, m /= 10);
-        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
-        { // slash zeros
-          if (m % T(10)) break;
-          else if (auto& m0(detail::pwrs<T(10), detail::maxpow10e<T, F>()>[e0]);
-            !(m % m0)) e += e0, m /= m0;
-        }
+      if (intt::is_neg(e = a.exp()))
+      { // for (; !(m % 10); ++e, m /= 10);
+        using namespace detail;
+
+        [&]() noexcept
+        {
+          for (constexpr auto end(log<T(2)>(maxpow10e<T>()));;)
+          {
+            auto e0(end);
+
+            do
+            { // slash zeros
+              if (m % T(10)) return;
+              else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[e0]);
+                !(m % m0)) e += pwrs<T(2), end>[e0], m /= m0;
+            }
+            while (e0--);
+          }
+        }();
+      }
     }
     else [[unlikely]]
     {
@@ -1034,15 +1057,24 @@ struct hash<dpp::dpp<T, E>>
     }
     else if ((m = a.sig())) [[likely]]
     { // unique everything
+      // for (; !(m % 10); ++e, m /= 10); // slash zeros
       using namespace dpp::detail;
 
-      // for (; !(m % 10); ++e, m /= 10); // slash zeros
-      for (auto& e0: slashes<maxpow10e<T, F>()>)
-      { // slash zeros
-        if (m % T(10)) break;
-        else if (auto& m0(pwrs<T(10), maxpow10e<T, F>()>[e0]); !(m % m0))
-          e += e0, m /= m0;
-      }
+      [&]() noexcept
+      {
+        for (constexpr auto end(log<T(2)>(maxpow10e<T>()));;)
+        {
+          auto e0(end);
+
+          do
+          { // slash zeros
+            if (m % T(10)) return;
+            else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[e0]);
+              !(m % m0)) e += pwrs<T(2), end>[e0], m /= m0;
+          }
+          while (e0--);
+        }
+      }();
     }
     else [[unlikely]]
     { // unique zero
