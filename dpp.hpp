@@ -487,36 +487,20 @@ public:
   template <detail::integral U>
   constexpr explicit operator U() const noexcept
   { // this function is unsafe, take a look at to_integral() for safety
+    using F = exp2_t;
+
     if (intt::is_neg(e_))
     {
-      using F = exp2_t;
-
-      F e1(-F(e_)); // overflow prevention
       auto m(m_);
 
-      [&]() noexcept
-      {
-        for (constexpr auto end(ar::coeff<detail::log<T(2)>(
-          detail::maxpow10e<T>())>());;)
-        {
-          auto e0(end);
-
-          do
-          {
-            if (!e1 || !m) return;
-            else if (auto const e02(detail::pwrs<F(2), end>[e0]); e1 >= e02)
-              e1 -= e02,
-              m /= detail::pwrs2<T(10), detail::maxpow10e<T>()>[e0];
-          }
-          while (e0--);
-        }
-      }();
+      detail::pow(T(10), F(-F(e_)), [&](auto&& x) noexcept { m /= x; });
 
       return m;
     }
     else
     {
       U m(m_);
+      F e1(e_);
 
       detail::pow(U(10), e_, [&](auto&& x) noexcept { m *= x; });
 
