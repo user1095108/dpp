@@ -273,15 +273,15 @@ public:
     using U = sig2_t;
     using F = exp2_t;
 
+    using namespace detail;
+
+    constexpr auto end(ar::coeff<detail::log<T(2)>(maxpow10e<T>())>());
+
     if (m < ar::coeff<U(mmin)>())
     {
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
       [&]() noexcept
       {
-        using namespace detail;
-
-        constexpr auto end(ar::coeff<detail::log<T(2)>(maxpow10e<T>())>());
-
         for (++e;;)
         {
           auto e0(end);
@@ -303,10 +303,6 @@ public:
       //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
       [&]() noexcept
       {
-        using namespace detail;
-
-        constexpr auto end(ar::coeff<detail::log<T(2)>(maxpow10e<T>())>());
-
         for (++e;;)
         {
           auto e0(end);
@@ -330,10 +326,6 @@ public:
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
       [&]() noexcept
       {
-        using namespace detail;
-
-        constexpr auto end(ar::coeff<detail::log<T(2)>(maxpow10e<T>())>());
-
         for (;;)
         {
           auto e0(end);
@@ -496,14 +488,15 @@ public:
         for (constexpr auto end(ar::coeff<detail::log<T(2)>(
           detail::maxpow10e<T>())>());;)
         {
+          using namespace detail;
+
           auto e0(end);
 
           do
           {
             if (!e1 || !m) return;
-            else if (auto const e02(detail::pwrs<F(2), end>[e0]); e1 >= e02)
-              e1 -= e02,
-              m /= detail::pwrs2<T(10), detail::maxpow10e<T>()>[e0];
+            else if (auto const e02(pwrs<F(2), end>[e0]); e1 >= e02)
+              e1 -= e02, m /= pwrs2<T(10), maxpow10e<T>()>[e0];
           }
           while (e0--);
         }
