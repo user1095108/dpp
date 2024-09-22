@@ -492,15 +492,31 @@ public:
     if (intt::is_neg(e_))
     {
       auto m(m_);
+      F e1(-F(e_)); // overflow prevention
 
-      detail::pow(T(10), F(-F(e_)), [&](auto&& x) noexcept { m /= x; });
+      [&]() noexcept
+      {
+        for (constexpr auto end(ar::coeff<detail::log<T(2)>(
+          detail::maxpow10e<T>())>());;)
+        {
+          auto e0(end);
+
+          do
+          {
+            if (!e1 || !m) return;
+            else if (auto const e02(detail::pwrs<F(2), end>[e0]); e1 >= e02)
+              e1 -= e02,
+              m /= detail::pwrs2<T(10), detail::maxpow10e<T>()>[e0];
+          }
+          while (e0--);
+        }
+      }();
 
       return m;
     }
     else
     {
       U m(m_);
-      F e1(e_);
 
       detail::pow(U(10), e_, [&](auto&& x) noexcept { m *= x; });
 
