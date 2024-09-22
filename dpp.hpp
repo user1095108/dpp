@@ -347,8 +347,7 @@ public:
             if ((e > ar::coeff<F(emin)>()) || !m) return;
             else if (auto const e02(pwrs<F(2), end>[e0]);
               e + e02 <= ar::coeff<F(emin + 1)>())
-              e += e02,
-              m /= detail::pwrs2<U(10), detail::maxpow10e<T>()>[e0];
+              e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
           }
           while (e0--);
         }
