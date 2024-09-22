@@ -138,7 +138,6 @@ inline constexpr auto pwrs2{
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
-
 template <typename U, auto E>
 inline constexpr auto maxaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
@@ -240,10 +239,21 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       }
   }();
 
-  if (i)
-    mb /= pwrs<U(10), maxpow10e<T, F>() + 1>[
-        std::min(i, ar::coeff<maxpow10e<T, F>() + 1>())
-      ];
+  if (i) [&]() noexcept
+    {
+      for (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());;)
+      {
+        auto e0(end);
+
+        do
+        { // slash zeros
+          if (!i || !mb) return;
+          else if (auto const e02(pwrs<T(2), end>[e0]); e02 <= i)
+            i -= e02, mb /= pwrs2<T(10), maxpow10e<T>()>[e0];
+        }
+        while (e0--);
+      }
+    }();
 }
 
 }
@@ -966,7 +976,7 @@ std::string to_string(dpp<T, E> const& a)
 
         [&]() noexcept
         {
-          for (constexpr auto end(log<T(2)>(maxpow10e<T>()));;)
+          for (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());;)
           {
             auto e0(end);
 
@@ -1062,7 +1072,7 @@ struct hash<dpp::dpp<T, E>>
 
       [&]() noexcept
       {
-        for (constexpr auto end(log<T(2)>(maxpow10e<T>()));;)
+        for (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());;)
         {
           auto e0(end);
 
