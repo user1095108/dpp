@@ -245,7 +245,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     {
       for (;;)
       {
-        auto e0(end)
+        auto e0(end);
 
         do
         {
