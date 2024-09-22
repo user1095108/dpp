@@ -283,16 +283,12 @@ public:
       [&]() noexcept
       {
         for (++e;;)
+        for (auto e0(end); auto& m0: minnorms<T, U, maxpow10e<T>()>)
         {
-          auto e0(end);
-
-          for (auto& m0: minnorms<T, U, maxpow10e<T>()>)
-          {
-            if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
-            else if (auto const e02(pwrs<F(2), end>[e0]); m < m0)
-              e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
-            --e0;
-          }
+          if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
+          else if (auto const e02(pwrs<F(2), end>[e0]); m < m0)
+            e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
+          --e0;
         }
       }();
 
@@ -304,16 +300,12 @@ public:
       [&]() noexcept
       {
         for (++e;;)
+        for (auto e0(end); auto& m0: maxnorms<T, U, maxpow10e<T>()>)
         {
-          auto e0(end);
-
-          for (auto& m0: maxnorms<T, U, maxpow10e<T>()>)
-          {
-            if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
-            else if (auto const e02(pwrs<F(2), end>[e0]); m > m0)
-              e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
-            --e0;
-          }
+          if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
+          else if (auto const e02(pwrs<F(2), end>[e0]); m > m0)
+            e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
+          --e0;
         }
       }();
 
@@ -1077,7 +1069,6 @@ struct hash<dpp::dpp<T, E>>
       {
         using namespace dpp::detail;
 
-        for (;;)
         for (constexpr auto end(
           ar::coeff<dpp::detail::log<T(2)>(maxpow10e<T>())>());;)
         {
