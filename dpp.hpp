@@ -245,15 +245,15 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     {
       for (;;)
       {
-        auto e0(end);
+        auto e(end);
 
         do
         {
           if (!i || !mb) return;
-          else if (auto const e02(pwrs<T(2), end>[e0]); e02 <= i)
-            i -= e02, mb /= pwrs2<T(10), maxpow10e<T>()>[e0];
+          else if (auto const e2(pwrs<T(2), end>[e]); e2 <= i)
+            i -= e2, mb /= pwrs2<T(10), maxpow10e<T>()>[e];
         }
-        while (e0--);
+        while (e--);
       }
     }();
 }
