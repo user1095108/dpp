@@ -142,11 +142,8 @@ template <typename U, auto E>
 inline constexpr auto maxaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
-      std::pair(
-        pow(decltype(E)(2), sizeof...(I) - 1 - I),
-        max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
-      )...
+    return std::array<U, log<decltype(E)(2)>(E) + 1>{
+      max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
@@ -155,11 +152,8 @@ template <typename U, auto E>
 inline constexpr auto minaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<std::pair<decltype(E), U>, log<decltype(E)(2)>(E) + 1>{
-      std::pair(
-        pow(decltype(E)(2), sizeof...(I) - 1 - I),
-        min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))
-      )...
+    return std::array<U, log<decltype(E)(2)>(E) + 1>{
+      min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
@@ -209,14 +203,6 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   using U = std::remove_reference_t<decltype(ma)>;
   using F = std::remove_reference_t<decltype(ea)>;
 
-  {
-    auto const e0(std::min(i, ar::coeff<maxpow10e<T, F>()>()));
-
-    i -= e0;
-    ea -= e0;
-    ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e0];
-  }
-
   constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
 
   [&]() noexcept
@@ -224,20 +210,26 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     if (intt::is_neg(ma))
       //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
       for (;;)
-      for (auto& [e, m]: minaligns<U, maxpow10e<T, F>()>)
       {
-        if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
-        else if ((i >= e) && (ma >= m))
-          i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
+        for (auto e(end); auto& m: minaligns<U, maxpow10e<T>()>)
+        {
+          if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
+          else if (auto const e2(pwrs<T(2), end>[e]); (i >= e2) && (ma >= m))
+            i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
+          --e;
+        }
       }
     else
       //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
       for (;;)
-      for (auto& [e, m]: maxaligns<U, maxpow10e<T, F>()>)
       {
-        if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
-        else if ((i >= e) && (ma <= m))
-          i -= e, ea -= e, ma *= pwrs<U(10), maxpow10e<T, F>() + 1>[e];
+        for (auto e(end); auto& m: maxaligns<U, maxpow10e<T>()>)
+        {
+          if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
+          else if (auto const e2(pwrs<T(2), end>[e]); (i >= e2) && (ma <= m))
+            i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
+          --e;
+        }
       }
   }();
 
@@ -637,30 +629,38 @@ public:
 
       [&]() noexcept
       {
+        using namespace detail;
+
+        constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
+
         if (intt::is_neg(m))
         {
           //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto& [e0, m0]:
-            detail::minaligns<U, detail::maxpow10e<T, F>()>)
           {
-            if (m < ar::coeff<U(detail::min_v<U> / 10)>()) return;
-            else if (m >= m0)
-              e -= e0,
-              m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+            for (auto e0(end);
+              auto& m0: minaligns<U, maxpow10e<T>()>)
+            {
+              if (m < ar::coeff<U(min_v<U> / 10)>()) return;
+              else if (auto const e02(pwrs<T(2), end>[e0]); m >= m0)
+                e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
+              --e0;
+            }
           }
         }
         else
         {
           //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto& [e0, m0]:
-            detail::maxaligns<U, detail::maxpow10e<T, F>()>)
           {
-            if (m > ar::coeff<U(detail::max_v<U> / 10)>()) return;
-            else if (m <= m0)
-              e -= e0,
-              m *= detail::pwrs<U(10), detail::maxpow10e<T, F>() + 1>[e0];
+            for (auto e0(end);
+              auto& m0: maxaligns<U, maxpow10e<T>()>)
+            {
+              if (m > ar::coeff<U(max_v<U> / 10)>()) return;
+              else if (auto const e02(pwrs<T(2), end>[e0]); m <= m0)
+                e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
+              --e0;
+            }
           }
         }
       }();
