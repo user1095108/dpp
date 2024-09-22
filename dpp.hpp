@@ -624,15 +624,15 @@ public:
       using U = sig2_t;
       using F = exp2_t;
 
-      constexpr auto e0(detail::maxpow10e<T, F>());
+      using namespace detail;
+
+      constexpr auto e0(maxpow10e<T, F>());
 
       auto e(F(e_) - F(o.e_) - e0);
-      auto m(ar::coeff<detail::pow(U(10), e0)>() * U(m_));
+      auto m(ar::coeff<pow(U(10), e0)>() * U(m_));
 
       [&]() noexcept
       {
-        using namespace detail;
-
         if (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
           intt::is_neg(m))
         {
