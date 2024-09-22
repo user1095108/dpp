@@ -195,6 +195,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
 {
   using U = std::remove_reference_t<decltype(ma)>;
+  using F = std::remove_reference_t<decltype(ea)>;
 
   constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
 
@@ -207,7 +208,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         for (auto e(end); auto& m: minaligns<U, maxpow10e<T>()>)
         {
           if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
-          else if (auto const e2(pwrs<T(2), end>[e]); (i >= e2) && (ma >= m))
+          else if (auto const e2(pwrs<F(2), end>[e]); (i >= e2) && (ma >= m))
             i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
           --e;
         }
@@ -219,7 +220,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         for (auto e(end); auto& m: maxaligns<U, maxpow10e<T>()>)
         {
           if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
-          else if (auto const e2(pwrs<T(2), end>[e]); (i >= e2) && (ma <= m))
+          else if (auto const e2(pwrs<F(2), end>[e]); (i >= e2) && (ma <= m))
             i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
           --e;
         }
@@ -235,8 +236,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         do
         {
           if (!i || !mb) return;
-          else if (auto const e2(pwrs<T(2), end>[e]); e2 <= i)
-            i -= e2, mb /= pwrs2<T(10), maxpow10e<T>()>[e];
+          else if (auto const e2(pwrs<F(2), end>[e]); e2 <= i)
+            i -= e2, mb /= pwrs2<U(10), maxpow10e<T>()>[e];
         }
         while (e--);
       }
@@ -302,7 +303,7 @@ public:
           for (auto& m0: minnorms<T, U, detail::maxpow10e<T>()>)
           {
             if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
-            else if (auto const e02(pwrs<T(2), end>[e0]); m < m0)
+            else if (auto const e02(pwrs<F(2), end>[e0]); m < m0)
               e += e02,
               m /= pwrs2<U(10), maxpow10e<T>()>[e0];
             --e0;
@@ -328,7 +329,7 @@ public:
           for (auto& m0: maxnorms<T, U, detail::maxpow10e<T>()>)
           {
             if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
-            else if (auto const e02(pwrs<T(2), end>[e0]); m > m0)
+            else if (auto const e02(pwrs<F(2), end>[e0]); m > m0)
               e += e02,
               m /= pwrs2<U(10), maxpow10e<T>()>[e0];
             --e0;
@@ -490,7 +491,9 @@ public:
   { // this function is unsafe, take a look at to_integral() for safety
     if (intt::is_neg(e_))
     {
-      exp2_t e1(-exp2_t(e_)); // overflow prevention
+      using F = exp2_t;
+
+      F e1(-F(e_)); // overflow prevention
       auto m(m_);
 
       [&]() noexcept
@@ -503,7 +506,7 @@ public:
           do
           {
             if (!e1 || !m) return;
-            else if (auto const e02(detail::pwrs<T(2), end>[e0]); e1 >= e02)
+            else if (auto const e02(detail::pwrs<F(2), end>[e0]); e1 >= e02)
               e1 -= e02,
               m /= detail::pwrs2<T(10), detail::maxpow10e<T>()>[e0];
           }
@@ -660,7 +663,7 @@ public:
               auto& m0: minaligns<U, maxpow10e<T>()>)
             {
               if (m < ar::coeff<U(min_v<U> / 10)>()) return;
-              else if (auto const e02(pwrs<T(2), end>[e0]); m >= m0)
+              else if (auto const e02(pwrs<F(2), end>[e0]); m >= m0)
                 e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
               --e0;
             }
@@ -675,7 +678,7 @@ public:
               auto& m0: maxaligns<U, maxpow10e<T>()>)
             {
               if (m > ar::coeff<U(max_v<U> / 10)>()) return;
-              else if (auto const e02(pwrs<T(2), end>[e0]); m <= m0)
+              else if (auto const e02(pwrs<F(2), end>[e0]); m <= m0)
                 e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
               --e0;
             }
@@ -1004,7 +1007,7 @@ std::string to_string(dpp<T, E> const& a)
             { // slash zeros
               if (m % T(10)) return;
               else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[e0]);
-                !(m % m0)) e += pwrs<T(2), end>[e0], m /= m0;
+                !(m % m0)) e += pwrs<F(2), end>[e0], m /= m0;
             }
             while (e0--);
           }
@@ -1101,7 +1104,7 @@ struct hash<dpp::dpp<T, E>>
           { // slash zeros
             if (m % T(10)) return;
             else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[e0]);
-              !(m % m0)) e += pwrs<T(2), end>[e0], m /= m0;
+              !(m % m0)) e += pwrs<F(2), end>[e0], m /= m0;
           }
           while (e0--);
         }
