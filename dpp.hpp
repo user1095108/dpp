@@ -180,16 +180,6 @@ inline constexpr auto minnorms{
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
 
-template <auto E>
-inline constexpr auto slashes{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<decltype(E), log<decltype(E)(2)>(E) + 1>{
-      pow(decltype(E)(2), sizeof...(I) - 1 - I)...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
@@ -344,13 +334,23 @@ public:
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
       [&]() noexcept
       {
+        using namespace detail;
+
+        constexpr auto end(ar::coeff<detail::log<T(2)>(maxpow10e<T>())>());
+
         for (;;)
-        for (auto& e0: detail::slashes<detail::maxpow10e<T, F>()>)
         {
-          if ((e > ar::coeff<F(emin)>()) || !m) return;
-          else if (e + e0 <= ar::coeff<F(emin + 1)>())
-            e += e0,
-            m /= detail::pwrs<U(10), detail::maxpow10e<T>() + 1>[e0];
+          auto e0(end);
+
+          do
+          {
+            if (auto const e02(pwrs<F(2), end>[e0]);
+              (e > ar::coeff<F(emin)>()) || !m) return;
+            else if (e + e02 <= ar::coeff<F(emin + 1)>())
+              e += e02,
+              m /= detail::pwrs2<U(10), detail::maxpow10e<T>()>[e0];
+          }
+          while (e0--);
         }
       }();
 
