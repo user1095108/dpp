@@ -194,26 +194,22 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     if (intt::is_neg(ma))
       //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
       for (;;)
+      for (auto e(end); auto& m: minaligns<U, maxpow10e<T>()>)
       {
-        for (auto e(end); auto& m: minaligns<U, maxpow10e<T>()>)
-        {
-          if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
-          else if (auto const e2(pwrs<F(2), end>[e]); (i >= e2) && (ma >= m))
-            i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
-          --e;
-        }
+        if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
+        else if (auto const e2(pwrs<F(2), end>[e]); (i >= e2) && (ma >= m))
+          i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
+        --e;
       }
     else
       //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
       for (;;)
+      for (auto e(end); auto& m: maxaligns<U, maxpow10e<T>()>)
       {
-        for (auto e(end); auto& m: maxaligns<U, maxpow10e<T>()>)
-        {
-          if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
-          else if (auto const e2(pwrs<F(2), end>[e]); (i >= e2) && (ma <= m))
-            i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
-          --e;
-        }
+        if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
+        else if (auto const e2(pwrs<F(2), end>[e]); (i >= e2) && (ma <= m))
+          i -= e2, ea -= e2, ma *= pwrs2<U(10), maxpow10e<T>()>[e];
+        --e;
       }
   }();
 
@@ -496,6 +492,7 @@ public:
       {
         F e1(-F(e_)); // overflow prevention
 
+        for (;;)
         for (constexpr auto end(ar::coeff<detail::log<T(2)>(
           detail::maxpow10e<T>())>());;)
         {
@@ -656,30 +653,24 @@ public:
         {
           //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
           for (;;)
+          for (auto e0(end); auto& m0: minaligns<U, maxpow10e<T>()>)
           {
-            for (auto e0(end);
-              auto& m0: minaligns<U, maxpow10e<T>()>)
-            {
-              if (m < ar::coeff<U(min_v<U> / 10)>()) return;
-              else if (auto const e02(pwrs<F(2), end>[e0]); m >= m0)
-                e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
-              --e0;
-            }
+            if (m < ar::coeff<U(min_v<U> / 10)>()) return;
+            else if (auto const e02(pwrs<F(2), end>[e0]); m >= m0)
+              e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
+            --e0;
           }
         }
         else
         {
           //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
           for (;;)
+          for (auto e0(end); auto& m0: maxaligns<U, maxpow10e<T>()>)
           {
-            for (auto e0(end);
-              auto& m0: maxaligns<U, maxpow10e<T>()>)
-            {
-              if (m > ar::coeff<U(max_v<U> / 10)>()) return;
-              else if (auto const e02(pwrs<F(2), end>[e0]); m <= m0)
-                e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
-              --e0;
-            }
+            if (m > ar::coeff<U(max_v<U> / 10)>()) return;
+            else if (auto const e02(pwrs<F(2), end>[e0]); m <= m0)
+              e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
+            --e0;
           }
         }
       }();
@@ -1093,6 +1084,7 @@ struct hash<dpp::dpp<T, E>>
       {
         using namespace dpp::detail;
 
+        for (;;)
         for (constexpr auto end(
           ar::coeff<dpp::detail::log<T(2)>(maxpow10e<T>())>());;)
         {
