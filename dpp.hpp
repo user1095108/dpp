@@ -492,10 +492,11 @@ public:
     if (intt::is_neg(e_))
     {
       auto m(m_);
-      F e1(-F(e_)); // overflow prevention
 
       [&]() noexcept
       {
+        F e1(-F(e_)); // overflow prevention
+
         for (constexpr auto end(ar::coeff<detail::log<T(2)>(
           detail::maxpow10e<T>())>());;)
         {
