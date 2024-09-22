@@ -644,7 +644,7 @@ public:
 
       constexpr auto e0(detail::maxpow10e<T, F>());
 
-      auto e(exp2_t(e_) - exp2_t(o.e_) - e0);
+      auto e(F(e_) - F(o.e_) - e0);
       auto m(ar::coeff<detail::pow(U(10), e0)>() * U(m_));
 
       [&]() noexcept
