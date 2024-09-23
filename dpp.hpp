@@ -474,7 +474,7 @@ public:
 
       [&]() noexcept
       {
-        F e1(-F(e_)); // overflow prevention
+        F e(-F(e_)); // overflow prevention
 
         for (;;)
         for (constexpr auto end(ar::coeff<detail::log<T(2)>(
@@ -486,9 +486,9 @@ public:
 
           do
           {
-            if (!e1 || !m) return;
-            else if (auto const e(pwrs<F(2), end>[i]); e1 >= e)
-              e1 -= e, m /= pwrs2<T(10), maxpow10e<T>()>[i];
+            if (!e || !m) return;
+            else if (auto const e0(pwrs<F(2), end>[i]); e >= e0)
+              e -= e0, m /= pwrs2<T(10), maxpow10e<T>()>[i];
           }
           while (i--);
         }
