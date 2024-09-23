@@ -638,24 +638,24 @@ public:
         {
           //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto e0(end); auto& m0: minaligns<U, maxpow10e<T>()>)
+          for (auto i(end); auto& m0: minaligns<U, maxpow10e<T>()>)
           {
             if (m < ar::coeff<U(min_v<U> / 10)>()) return;
-            else if (auto const e02(pwrs<F(2), end>[e0]); m >= m0)
-              e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
-            --e0;
+            else if (m >= m0)
+              e -= pwrs<F(2), end>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
+            --i;
           }
         }
         else
         {
           //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto e0(end); auto& m0: maxaligns<U, maxpow10e<T>()>)
+          for (auto i(end); auto& m0: maxaligns<U, maxpow10e<T>()>)
           {
             if (m > ar::coeff<U(max_v<U> / 10)>()) return;
-            else if (auto const e02(pwrs<F(2), end>[e0]); m <= m0)
-              e -= e02, m *= pwrs2<U(10), maxpow10e<T>()>[e0];
-            --e0;
+            else if (m <= m0)
+              e -= pwrs<F(2), end>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
+            --i;
           }
         }
       }();
