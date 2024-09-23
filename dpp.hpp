@@ -975,15 +975,15 @@ std::string to_string(dpp<T, E> const& a)
         {
           for (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());;)
           {
-            auto e0(end);
+            auto i(end);
 
             do
             { // slash zeros
               if (m % T(10)) return;
-              else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[e0]);
-                !(m % m0)) e += pwrs<F(2), end>[e0], m /= m0;
+              else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[i]);
+                !(m % m0)) e += pwrs<F(2), end>[i], m /= m0;
             }
-            while (e0--);
+            while (i--);
           }
         }();
       }
@@ -1072,15 +1072,15 @@ struct hash<dpp::dpp<T, E>>
         for (constexpr auto end(
           ar::coeff<dpp::detail::log<T(2)>(maxpow10e<T>())>());;)
         {
-          auto e0(end);
+          auto i(end);
 
           do
           { // slash zeros
             if (m % T(10)) return;
-            else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[e0]);
-              !(m % m0)) e += pwrs<F(2), end>[e0], m /= m0;
+            else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[i]);
+              !(m % m0)) e += pwrs<F(2), end>[i], m /= m0;
           }
-          while (e0--);
+          while (i--);
         }
       }();
     }
