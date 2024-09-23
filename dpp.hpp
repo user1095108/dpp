@@ -487,7 +487,7 @@ public:
           do
           {
             if (!e || !m) return;
-            else if (auto const e0(pwrs<F(2), end>[i]); e >= e0)
+            else if (auto const e0(pwrs<F(2), end>[i]); e0 <= e)
               e -= e0, m /= pwrs2<T(10), maxpow10e<T>()>[i];
           }
           while (i--);
