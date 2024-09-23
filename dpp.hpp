@@ -197,7 +197,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       for (auto j(end); auto& m: minaligns<U, maxpow10e<T>()>)
       {
         if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
-        else if (auto const e(pwrs<F(2), end>[j]); (i >= e) && (ma >= m))
+        else if (auto const e(pwrs<F(2), end>[j]); (e <= i) && (ma >= m))
           i -= e, ea -= e, ma *= pwrs2<U(10), maxpow10e<T>()>[j];
         --j;
       }
@@ -207,7 +207,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       for (auto j(end); auto& m: maxaligns<U, maxpow10e<T>()>)
       {
         if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
-        else if (auto const e(pwrs<F(2), end>[j]); (i >= e) && (ma <= m))
+        else if (auto const e(pwrs<F(2), end>[j]); (e <= i) && (ma <= m))
           i -= e, ea -= e, ma *= pwrs2<U(10), maxpow10e<T>()>[j];
         --j;
       }
@@ -222,8 +222,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         do
         {
           if (!i || !mb) return;
-          else if (auto const e2(pwrs<F(2), end>[j]); e2 <= i)
-            i -= e2, mb /= pwrs2<U(10), maxpow10e<T>()>[j];
+          else if (auto const e(pwrs<F(2), end>[j]); e <= i)
+            i -= e, mb /= pwrs2<U(10), maxpow10e<T>()>[j];
         }
         while (j--);
       }
