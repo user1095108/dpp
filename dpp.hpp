@@ -482,15 +482,15 @@ public:
         {
           using namespace detail;
 
-          auto e0(end);
+          auto i(end);
 
           do
           {
             if (!e1 || !m) return;
-            else if (auto const e02(pwrs<F(2), end>[e0]); e1 >= e02)
-              e1 -= e02, m /= pwrs2<T(10), maxpow10e<T>()>[e0];
+            else if (auto const e(pwrs<F(2), end>[i]); e1 >= e)
+              e1 -= e, m /= pwrs2<T(10), maxpow10e<T>()>[i];
           }
-          while (e0--);
+          while (i--);
         }
       }();
 
