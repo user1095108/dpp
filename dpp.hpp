@@ -283,12 +283,12 @@ public:
       [&]() noexcept
       {
         for (++e;;)
-        for (auto e0(end); auto& m0: minnorms<T, U, maxpow10e<T>()>)
+        for (auto i(end); auto& m0: minnorms<T, U, maxpow10e<T>()>)
         {
           if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
-          else if (auto const e02(pwrs<F(2), end>[e0]); m < m0)
-            e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
-          --e0;
+          else if (m < m0)
+            e += pwrs<F(2), end>[i], m /= pwrs2<U(10), maxpow10e<T>()>[i];
+          --i;
         }
       }();
 
@@ -300,12 +300,12 @@ public:
       [&]() noexcept
       {
         for (++e;;)
-        for (auto e0(end); auto& m0: maxnorms<T, U, maxpow10e<T>()>)
+        for (auto i(end); auto& m0: maxnorms<T, U, maxpow10e<T>()>)
         {
           if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
-          else if (auto const e02(pwrs<F(2), end>[e0]); m > m0)
-            e += e02, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
-          --e0;
+          else if (m > m0)
+            e += pwrs<F(2), end>[i], m /= pwrs2<U(10), maxpow10e<T>()>[i];
+          --i;
         }
       }();
 
@@ -320,16 +320,16 @@ public:
       {
         for (;;)
         {
-          auto e0(end);
+          auto i(end);
 
           do
           {
             if ((e > ar::coeff<F(emin)>()) || !m) return;
-            else if (auto const tmp(e + pwrs<F(2), end>[e0]);
+            else if (auto const tmp(e + pwrs<F(2), end>[i]);
               tmp <= ar::coeff<F(emin + 1)>())
-              e = tmp, m /= pwrs2<U(10), maxpow10e<T>()>[e0];
+              e = tmp, m /= pwrs2<U(10), maxpow10e<T>()>[i];
           }
-          while (e0--);
+          while (i--);
         }
       }();
 
