@@ -87,6 +87,9 @@ consteval auto maxpow10e() noexcept
   return log<U(10), E>(max_v<U>);
 }
 
+template <typename U>
+inline constexpr auto logend(ar::coeff<log<U(2)>(maxpow10e<U>())>());
+
 consteval auto pow(auto x, auto e) noexcept
 {
   decltype(x) r(1);
@@ -187,27 +190,29 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   using U = std::remove_reference_t<decltype(ma)>;
   using F = std::remove_reference_t<decltype(ea)>;
 
-  constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
-
   [&]() noexcept
   {
     if (intt::is_neg(ma))
       //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
       for (;;)
-      for (auto j(end); auto& m: minaligns<U, maxpow10e<T>()>)
+      for (auto j(ar::coeff<logend<T>>());
+        auto& m: minaligns<U, maxpow10e<T>()>)
       {
         if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
-        else if (auto const e(pwrs<F(2), end>[j]); (e <= i) && (ma >= m))
+        else if (auto const e(pwrs<F(2), logend<T>>[j]);
+          (e <= i) && (ma >= m))
           i -= e, ea -= e, ma *= pwrs2<U(10), maxpow10e<T>()>[j];
         --j;
       }
     else
       //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
       for (;;)
-      for (auto j(end); auto& m: maxaligns<U, maxpow10e<T>()>)
+      for (auto j(ar::coeff<logend<T>>());
+        auto& m: maxaligns<U, maxpow10e<T>()>)
       {
         if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
-        else if (auto const e(pwrs<F(2), end>[j]); (e <= i) && (ma <= m))
+        else if (auto const e(pwrs<F(2), logend<T>>[j]);
+          (e <= i) && (ma <= m))
           i -= e, ea -= e, ma *= pwrs2<U(10), maxpow10e<T>()>[j];
         --j;
       }
@@ -217,12 +222,12 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     {
       for (;;)
       {
-        auto j(end);
+        auto j(ar::coeff<logend<T>>());
 
         do
         {
           if (!i || !mb) return;
-          else if (auto const e(pwrs<F(2), end>[j]); e <= i)
+          else if (auto const e(pwrs<F(2), logend<T>>[j]); e <= i)
             i -= e, mb /= pwrs2<U(10), maxpow10e<T>()>[j];
         }
         while (j--);
@@ -275,19 +280,19 @@ public:
 
     using namespace detail;
 
-    constexpr auto end(ar::coeff<detail::log<T(2)>(maxpow10e<T>())>());
-
     if (m < ar::coeff<U(mmin)>())
     {
       //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
       [&]() noexcept
       {
         for (++e;;)
-        for (auto i(end); auto& m0: minnorms<T, U, maxpow10e<T>()>)
+        for (auto i(ar::coeff<logend<T>>());
+          auto& m0: minnorms<T, U, maxpow10e<T>()>)
         {
           if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
           else if (m < m0)
-            e += pwrs<F(2), end>[i], m /= pwrs2<U(10), maxpow10e<T>()>[i];
+            e += pwrs<F(2), logend<T>>[i],
+            m /= pwrs2<U(10), maxpow10e<T>()>[i];
           --i;
         }
       }();
@@ -300,11 +305,13 @@ public:
       [&]() noexcept
       {
         for (++e;;)
-        for (auto i(end); auto& m0: maxnorms<T, U, maxpow10e<T>()>)
+        for (auto i(ar::coeff<logend<T>>());
+          auto& m0: maxnorms<T, U, maxpow10e<T>()>)
         {
           if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
           else if (m > m0)
-            e += pwrs<F(2), end>[i], m /= pwrs2<U(10), maxpow10e<T>()>[i];
+            e += pwrs<F(2), logend<T>>[i],
+            m /= pwrs2<U(10), maxpow10e<T>()>[i];
           --i;
         }
       }();
@@ -320,12 +327,12 @@ public:
       {
         for (;;)
         {
-          auto i(end);
+          auto i(ar::coeff<logend<T>>());
 
           do
           {
             if ((e > ar::coeff<F(emin)>()) || !m) return;
-            else if (auto const tmp(e + pwrs<F(2), end>[i]);
+            else if (auto const tmp(e + pwrs<F(2), logend<T>>[i]);
               tmp <= ar::coeff<F(emin + 1)>())
               e = tmp, m /= pwrs2<U(10), maxpow10e<T>()>[i];
           }
@@ -477,17 +484,15 @@ public:
         F e(-F(e_)); // overflow prevention
 
         for (;;)
-        for (constexpr auto end(ar::coeff<detail::log<T(2)>(
-          detail::maxpow10e<T>())>());;)
         {
           using namespace detail;
 
-          auto i(end);
+          auto i(ar::coeff<logend<T>>());
 
           do
           {
             if (!e || !m) return;
-            else if (auto const e0(pwrs<F(2), end>[i]); e0 <= e)
+            else if (auto const e0(pwrs<F(2), logend<T>>[i]); e0 <= e)
               e -= e0, m /= pwrs2<T(10), maxpow10e<T>()>[i];
           }
           while (i--);
@@ -633,16 +638,16 @@ public:
 
       [&]() noexcept
       {
-        if (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());
-          intt::is_neg(m))
+        if (intt::is_neg(m))
         {
           //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto i(end); auto& m0: minaligns<U, maxpow10e<T>()>)
+          for (auto i(ar::coeff<logend<T>>());
+            auto& m0: minaligns<U, maxpow10e<T>()>)
           {
             if (m < ar::coeff<U(min_v<U> / 10)>()) return;
             else if (m >= m0)
-              e -= pwrs<F(2), end>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
+              e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
             --i;
           }
         }
@@ -650,11 +655,12 @@ public:
         {
           //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
           for (;;)
-          for (auto i(end); auto& m0: maxaligns<U, maxpow10e<T>()>)
+          for (auto i(ar::coeff<logend<T>>());
+            auto& m0: maxaligns<U, maxpow10e<T>()>)
           {
             if (m > ar::coeff<U(max_v<U> / 10)>()) return;
             else if (m <= m0)
-              e -= pwrs<F(2), end>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
+              e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
             --i;
           }
         }
@@ -973,15 +979,15 @@ std::string to_string(dpp<T, E> const& a)
 
         [&]() noexcept
         {
-          for (constexpr auto end(ar::coeff<log<T(2)>(maxpow10e<T>())>());;)
+          for (;;)
           {
-            auto i(end);
+            auto i(ar::coeff<logend<T>>());
 
             do
             { // slash zeros
               if (m % T(10)) return;
               else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[i]);
-                !(m % m0)) e += pwrs<F(2), end>[i], m /= m0;
+                !(m % m0)) e += pwrs<F(2), logend<T>>[i], m /= m0;
             }
             while (i--);
           }
@@ -1069,16 +1075,15 @@ struct hash<dpp::dpp<T, E>>
       {
         using namespace dpp::detail;
 
-        for (constexpr auto end(
-          ar::coeff<dpp::detail::log<T(2)>(maxpow10e<T>())>());;)
+        for (;;)
         {
-          auto i(end);
+          auto i(ar::coeff<logend<T>>());
 
           do
           { // slash zeros
             if (m % T(10)) return;
             else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[i]);
-              !(m % m0)) e += pwrs<F(2), end>[i], m /= m0;
+              !(m % m0)) e += pwrs<F(2), logend<T>>[i], m /= m0;
           }
           while (i--);
         }
