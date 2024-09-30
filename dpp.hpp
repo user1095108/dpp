@@ -113,17 +113,6 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-constexpr void pow(auto x, auto e, auto const f) noexcept
-  requires(std::same_as<bool, decltype(f(x))>)
-{
-  for (;;)
-  {
-    if ((e & decltype(e)(1)) && !f(x)) break;
-
-    if (e /= 2) [[likely]] x *= x; else [[unlikely]] return;
-  }
-}
-
 template <auto X, std::size_t E>
 inline constexpr auto pwrs{
   []<auto ...I>(std::index_sequence<I...>) noexcept
