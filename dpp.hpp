@@ -136,9 +136,9 @@ template <auto X, std::size_t E>
 inline constexpr auto pwrs2{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<decltype(X), log<decltype(E)(2)>(E) + 1>{
+    return std::array<decltype(X), E + 1>{
       pow(X, pow(decltype(E)(2), I))...};
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
+  }(std::make_index_sequence<E + 1>())
 };
 
 template <typename U, auto E>
@@ -201,7 +201,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) return;
         else if (auto const e(pwrs<F(2), logend<T>>[j]);
           (e <= i) && (ma >= m))
-          i -= e, ea -= e, ma *= pwrs2<U(10), maxpow10e<T>()>[j];
+          i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[j];
         --j;
       }
     else
@@ -213,7 +213,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) return;
         else if (auto const e(pwrs<F(2), logend<T>>[j]);
           (e <= i) && (ma <= m))
-          i -= e, ea -= e, ma *= pwrs2<U(10), maxpow10e<T>()>[j];
+          i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[j];
         --j;
       }
   }();
@@ -228,7 +228,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         {
           if (!i || !mb) return;
           else if (auto const e(pwrs<F(2), logend<T>>[j]); e <= i)
-            i -= e, mb /= pwrs2<U(10), maxpow10e<T>()>[j];
+            i -= e, mb /= pwrs2<U(10), logend<T>>[j];
         }
         while (j--);
       }
@@ -292,7 +292,7 @@ public:
           if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) return;
           else if (m < m0)
             e += pwrs<F(2), logend<T>>[i],
-            m /= pwrs2<U(10), maxpow10e<T>()>[i];
+            m /= pwrs2<U(10), logend<T>>[i];
           --i;
         }
       }();
@@ -311,7 +311,7 @@ public:
           if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) return;
           else if (m > m0)
             e += pwrs<F(2), logend<T>>[i],
-            m /= pwrs2<U(10), maxpow10e<T>()>[i];
+            m /= pwrs2<U(10), logend<T>>[i];
           --i;
         }
       }();
@@ -334,7 +334,7 @@ public:
             if ((e > ar::coeff<F(emin)>()) || !m) return;
             else if (auto const tmp(e + pwrs<F(2), logend<T>>[i]);
               tmp <= ar::coeff<F(emin + 1)>())
-              e = tmp, m /= pwrs2<U(10), maxpow10e<T>()>[i];
+              e = tmp, m /= pwrs2<U(10), logend<T>>[i];
           }
           while (i--);
         }
@@ -493,7 +493,7 @@ public:
           {
             if (!e || !m) return;
             else if (auto const e0(pwrs<F(2), logend<T>>[i]); e0 <= e)
-              e -= e0, m /= pwrs2<T(10), maxpow10e<T>()>[i];
+              e -= e0, m /= pwrs2<T(10), logend<T>>[i];
           }
           while (i--);
         }
@@ -647,7 +647,7 @@ public:
           {
             if (m < ar::coeff<U(min_v<U> / 10)>()) return;
             else if (m >= m0)
-              e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
+              e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), logend<T>>[i];
             --i;
           }
         }
@@ -660,7 +660,7 @@ public:
           {
             if (m > ar::coeff<U(max_v<U> / 10)>()) return;
             else if (m <= m0)
-              e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), maxpow10e<T>()>[i];
+              e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), logend<T>>[i];
             --i;
           }
         }
@@ -986,7 +986,7 @@ std::string to_string(dpp<T, E> const& a)
             do
             { // slash zeros
               if (m % T(10)) return;
-              else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[i]);
+              else if (auto& m0(pwrs2<T(10), logend<T>>[i]);
                 !(m % m0)) e += pwrs<F(2), logend<T>>[i], m /= m0;
             }
             while (i--);
@@ -1082,7 +1082,7 @@ struct hash<dpp::dpp<T, E>>
           do
           { // slash zeros
             if (m % T(10)) return;
-            else if (auto& m0(pwrs2<T(10), maxpow10e<T>()>[i]);
+            else if (auto& m0(pwrs2<T(10), logend<T>>[i]);
               !(m % m0)) e += pwrs<F(2), logend<T>>[i], m /= m0;
           }
           while (i--);
