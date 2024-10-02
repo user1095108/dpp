@@ -90,14 +90,11 @@ consteval auto maxpow10e() noexcept
 template <typename U>
 inline constexpr auto logend(ar::coeff<log<U(2)>(maxpow10e<U>())>());
 
-consteval auto pow(auto&& x, auto&& e) noexcept
+consteval auto pow(auto x, auto e) noexcept
 {
   decltype(x) r(1);
 
-  pow(std::forward<decltype(x)>(x),
-    std::forward<decltype(e)>(e),
-    [&](auto&& x) noexcept { r *= x; }
-  );
+  pow(x, e, [&](auto&& x) noexcept { r *= x; });
 
   return r;
 }
@@ -156,7 +153,7 @@ inline constexpr auto maxnorms{
   {
     return std::array<U, log<decltype(E)(2)>(E) + 1>{
       U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
-      U(I ? 0 : 5)...
+      (sizeof...(I) - 1 - I ? 0 : 5)...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
@@ -167,7 +164,7 @@ inline constexpr auto minnorms{
   {
     return std::array<U, log<decltype(E)(2)>(E) + 1>{
       U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
-      U(I ? 0 : 5)...
+      (sizeof...(I) - 1 - I ? 0 : 5)...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
 };
