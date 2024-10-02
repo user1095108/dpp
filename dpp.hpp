@@ -90,7 +90,7 @@ consteval auto maxpow10e() noexcept
 template <typename U>
 inline constexpr auto logend(ar::coeff<log<U(2)>(maxpow10e<U>())>());
 
-consteval auto pow(auto x, auto e) noexcept
+consteval auto pow(auto&& x, auto&& e) noexcept
 {
   decltype(x) r(1);
 
