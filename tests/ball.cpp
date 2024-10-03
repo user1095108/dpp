@@ -46,21 +46,16 @@ int main() {
     clearBall(ballX, ballY);
 
     // Check for collisions with the walls and bounce
-    if (ballX <= 1 || ballX >= width) {
+    if (ballX < 2 || ballX > width - 1) {
       velocityX = -velocityX; // Reverse horizontal direction
-      ballX = ballX <= 1 ? 2 : width - 1;
-    }
-    else {
-      ballX += velocityX;
     }
 
-    if (ballY <= 1 || ballY >= height) {
+    if (ballY < 2 || ballY > height - 1) {
       velocityY = -velocityY; // Reverse vertical direction
-      ballY = ballY <= 1 ? 2 : height - 1;
     }
-    else {
-      ballY += velocityY;
-    }
+
+    ballX += velocityX;
+    ballY += velocityY;
 
     // Draw the ball at the new position
     drawBall(ballX, ballY);
