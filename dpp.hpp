@@ -678,7 +678,9 @@ public:
       {
         exp2_t ea(e_), eb(o.e_); // important to prevent overflow
 
-        detail::align<T>(mb, eb, ma, ea < eb ? eb - ea : ea - eb);
+        ea < eb ?
+          detail::align<T>(mb, eb, ma, eb - ea) :
+          detail::align<T>(ma, ea, mb, ea - eb);
       }
 
       return ma <=> mb;
