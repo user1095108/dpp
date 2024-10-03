@@ -1,8 +1,7 @@
 // ball demo written by chatGPT
-#include <iostream>
 #include <chrono>
+#include <iostream>
 #include <thread>
-#include <iomanip> // For std::setprecision
 
 #include "../dpp.hpp"
 
