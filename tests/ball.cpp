@@ -46,13 +46,8 @@ int main() {
     clearBall(ballX, ballY);
 
     // Check for collisions with the walls and bounce
-    if (ballX < 2 || ballX > width - 1) {
-      velocityX = -velocityX; // Reverse horizontal direction
-    }
-
-    if (ballY < 2 || ballY > height - 1) {
-      velocityY = -velocityY; // Reverse vertical direction
-    }
+    if (ballX < 2 || ballX > width - 1) velocityX = -velocityX;
+    if (ballY < 2 || ballY > height - 1) velocityY = -velocityY;
 
     ballX += velocityX;
     ballY += velocityY;
