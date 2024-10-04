@@ -10,9 +10,9 @@ using namespace dpp::literals;
 using D = dpp::d32; // Alias for a 32-bit floating-point type from dpp
 
 // ANSI escape codes for clearing the screen and managing cursor visibility
-auto CLEAR_SCREEN = "\033[2J";   // Clear the entire terminal screen
-auto HIDE_CURSOR = "\033[?25l";  // Hide the terminal cursor
-auto SHOW_CURSOR = "\033[?25h";  // Show the terminal cursor
+auto& CLEAR_SCREEN = "\033[2J";   // Clear the entire terminal screen
+auto& HIDE_CURSOR = "\033[?25l";  // Hide the terminal cursor
+auto& SHOW_CURSOR = "\033[?25h";  // Show the terminal cursor
 
 // Function to set the cursor position using ANSI escape codes
 // x: Horizontal position (column), y: Vertical position (row)
@@ -31,9 +31,9 @@ void clearBall(D const x, D const y) {
 }
 
 int main() {
-  const int width = 40;   // Width of the terminal "screen" (columns)
-  const int height = 20;  // Height of the terminal "screen" (rows)
-  const int delayMs = 50; // Time between frames in milliseconds (controls ball speed)
+  const auto width = 40;   // Width of the terminal "screen" (columns)
+  const auto height = 20;  // Height of the terminal "screen" (rows)
+  const auto delayMs = 50; // Time between frames in milliseconds (controls ball speed)
 
   D ballX = 20;          // Initial horizontal position of the ball
   D ballY = 10;          // Initial vertical position of the ball
