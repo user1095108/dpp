@@ -313,22 +313,23 @@ public:
     if (e <= ar::coeff<F(emax)>()) [[likely]]
     {
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
-      [&]() noexcept
-      {
-        for (;;)
+      if ((e <= ar::coeff<F(emin)>()) && m)
+        [&]() noexcept
         {
-          auto i(ar::coeff<logend<T>>());
-
-          do
+          for (;;)
           {
-            if (auto const tmp(e + pwrs<F(2), logend<T>>[i]);
-              tmp <= ar::coeff<F(emin + 1)>()) [[likely]]
-              e = tmp, m /= pwrs2<U(10), logend<T>>[i];
-            else if ((e > ar::coeff<F(emin)>()) || !m) [[unlikely]] return;
+            auto i(ar::coeff<logend<T>>());
+
+            do
+            {
+              if (auto const tmp(e + pwrs<F(2), logend<T>>[i]);
+                tmp <= ar::coeff<F(emin + 1)>()) [[likely]]
+                e = tmp, m /= pwrs2<U(10), logend<T>>[i];
+              else if ((e > ar::coeff<F(emin)>()) || !m) [[unlikely]] return;
+            }
+            while (i--);
           }
-          while (i--);
-        }
-      }();
+        }();
 
       e_ = (m_ = m) ? E(e) : E{};
     }
