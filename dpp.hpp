@@ -184,10 +184,11 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       for (auto j(ar::coeff<logend<T>>());
         auto& m: minaligns<U, maxpow10e<T>()>)
       {
-        if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) [[unlikely]] return;
-        else if (auto const e(pwrs<F(2), logend<T>>[j]);
+        if (auto const e(pwrs<F(2), logend<T>>[j]);
           (e <= i) && (ma >= m)) [[likely]]
           i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[j];
+        else if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) [[unlikely]]
+          return;
         --j;
       }
     else
@@ -196,10 +197,11 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       for (auto j(ar::coeff<logend<T>>());
         auto& m: maxaligns<U, maxpow10e<T>()>)
       {
-        if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) [[unlikely]] return;
-        else if (auto const e(pwrs<F(2), logend<T>>[j]);
+        if (auto const e(pwrs<F(2), logend<T>>[j]);
           (e <= i) && (ma <= m)) [[likely]]
           i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[j];
+        else if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) [[unlikely]]
+          return;
         --j;
       }
   }();
@@ -212,9 +214,9 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
         do
         {
-          if (!i || !mb) [[unlikely]] return;
-          else if (auto const e(pwrs<F(2), logend<T>>[j]); e <= i) [[likely]]
+          if (auto const e(pwrs<F(2), logend<T>>[j]); e <= i) [[likely]]
             i -= e, mb /= pwrs2<U(10), logend<T>>[j];
+          else if (!i || !mb) [[unlikely]] return;
         }
         while (j--);
       }
@@ -275,10 +277,11 @@ public:
         for (auto i(ar::coeff<logend<T>>());
           auto& m0: minnorms<T, U, maxpow10e<T>()>)
         {
-          if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) [[unlikely]] return;
-          else if (m < m0) [[likely]]
+          if (m < m0) [[likely]]
             e += pwrs<F(2), logend<T>>[i],
             m /= pwrs2<U(10), logend<T>>[i];
+          else if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) [[unlikely]] return;
+
           --i;
         }
       }();
@@ -294,10 +297,11 @@ public:
         for (auto i(ar::coeff<logend<T>>());
           auto& m0: maxnorms<T, U, maxpow10e<T>()>)
         {
-          if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) [[unlikely]] return;
-          else if (m > m0) [[likely]]
+          if (m > m0) [[likely]]
             e += pwrs<F(2), logend<T>>[i],
             m /= pwrs2<U(10), logend<T>>[i];
+          else if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) [[unlikely]] return;
+
           --i;
         }
       }();
@@ -317,10 +321,10 @@ public:
 
           do
           {
-            if ((e > ar::coeff<F(emin)>()) || !m) [[unlikely]] return;
-            else if (auto const tmp(e + pwrs<F(2), logend<T>>[i]);
+            if (auto const tmp(e + pwrs<F(2), logend<T>>[i]);
               tmp <= ar::coeff<F(emin + 1)>()) [[likely]]
               e = tmp, m /= pwrs2<U(10), logend<T>>[i];
+            else if ((e > ar::coeff<F(emin)>()) || !m) [[unlikely]] return;
           }
           while (i--);
         }
@@ -477,9 +481,9 @@ public:
 
           do
           {
-            if (!e || !m) [[unlikely]] return;
-            else if (auto const e0(pwrs<F(2), logend<T>>[i]);
+            if (auto const e0(pwrs<F(2), logend<T>>[i]);
               e0 <= e) [[likely]] e -= e0, m /= pwrs2<T(10), logend<T>>[i];
+            else if (!e || !m) [[unlikely]] return;
           }
           while (i--);
         }
@@ -631,9 +635,9 @@ public:
           for (auto i(ar::coeff<logend<T>>());
             auto& m0: minaligns<U, maxpow10e<T>()>)
           {
-            if (m < ar::coeff<U(min_v<U> / 10)>()) [[unlikely]] return;
-            else if (m >= m0) [[likely]]
+            if (m >= m0) [[likely]]
               e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), logend<T>>[i];
+            else if (m < ar::coeff<U(min_v<U> / 10)>()) [[unlikely]] return;
             --i;
           }
         }
@@ -644,9 +648,9 @@ public:
           for (auto i(ar::coeff<logend<T>>());
             auto& m0: maxaligns<U, maxpow10e<T>()>)
           {
-            if (m > ar::coeff<U(max_v<U> / 10)>()) [[unlikely]] return;
-            else if (m <= m0) [[likely]]
+            if (m <= m0) [[likely]]
               e -= pwrs<F(2), logend<T>>[i], m *= pwrs2<U(10), logend<T>>[i];
+            else if (m > ar::coeff<U(max_v<U> / 10)>()) [[unlikely]] return;
             --i;
           }
         }
@@ -961,10 +965,10 @@ std::string to_string(dpp<T, E> const& a)
     {
       if (intt::is_neg(e = a.exp()))
       { // for (; !(m % 10); ++e, m /= 10);
-        using namespace detail;
-
         [&]() noexcept
         {
+          using namespace detail;
+
           for (;;)
           {
             auto i(ar::coeff<logend<T>>());
@@ -1069,7 +1073,8 @@ struct hash<dpp::dpp<T, E>>
           { // slash zeros
             if (m % T(10)) [[unlikely]] return;
             else if (auto& m0(pwrs2<T(10), logend<T>>[i]);
-              !(m % m0)) [[likely]] e += pwrs<F(2), logend<T>>[i], m /= m0;
+              !(m % m0)) [[likely]]
+              e += pwrs<F(2), logend<T>>[i], m /= m0;
           }
           while (i--);
         }
