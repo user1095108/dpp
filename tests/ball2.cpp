@@ -38,7 +38,7 @@ constexpr D threshold_velocity = 2; // Velocity threshold to stop the simulation
 int main() {
   const auto width = 40;   // Width of the terminal "screen" (columns)
   const auto height = 20;  // Height of the terminal "screen" (rows)
-  const auto delayMs = 10; // Time between frames in milliseconds (controls ball speed)
+  const auto delayMs = 5; // Time between frames in milliseconds (controls ball speed)
 
   D ballY = 1;
   D velocity = 0;
