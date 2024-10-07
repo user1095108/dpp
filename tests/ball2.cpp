@@ -30,10 +30,10 @@ void clearBall(D const x, D const y) {
   std::cout << setCursorPosition(x, y) << " "; // Replace 'O' with a space to "clear" the ball
 }
 
-constexpr D gravity = 1.81;  // Gravity constant (m/s^2)
-constexpr D bounce_efficiency = .8; // Percentage of energy retained after each bounce
-constexpr D time_step = .02; // Time step in seconds (for simulation accuracy)
-constexpr D threshold_velocity = 2; // Velocity threshold to stop the simulation
+const D gravity = 1.81;  // Gravity constant (m/s^2)
+const D bounce_efficiency = .8; // Percentage of energy retained after each bounce
+const D time_step = .02; // Time step in seconds (for simulation accuracy)
+const D threshold_velocity = 2; // Velocity threshold to stop the simulation
 
 int main() {
   const auto width = 40;   // Width of the terminal "screen" (columns)
