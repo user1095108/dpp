@@ -49,7 +49,8 @@ int main() {
   // Main loop simulating the ball motion
   for (;;)
   {
-    clearBall(1, ballY);
+    // Clear the ball from its current position before moving it
+    clearBall(20, ballY);
 
     // Update velocity and height using basic physics equations
     velocity += gravity * time_step; // Gravity pulls the ball downwards (increasing velocity)
@@ -62,7 +63,8 @@ int main() {
       if (std::abs(velocity) < threshold_velocity) break;
     }
 
-    drawBall(1, ballY);
+    // Draw the ball at its new position
+    drawBall(20, ballY);
 
     // Ensure the ball is drawn immediately by flushing the output buffer
     std::cout.flush();
