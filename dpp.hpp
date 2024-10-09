@@ -976,9 +976,9 @@ std::string to_string(dpp<T, E> const& a)
 
             do
             { // slash zeros
-              if (m % T(10)) [[unlikely]] return;
-              else if (auto& m0(pwrs2<T(10), logend<T>>[i]);
+              if (auto& m0(pwrs2<T(10), logend<T>>[i]);
                 !(m % m0)) [[likely]] e += pwrs<F(2), logend<T>>[i], m /= m0;
+              else if (m % T(10)) [[unlikely]] return;
             }
             while (i--);
           }
@@ -1072,10 +1072,10 @@ struct hash<dpp::dpp<T, E>>
 
           do
           { // slash zeros
-            if (m % T(10)) [[unlikely]] return;
-            else if (auto& m0(pwrs2<T(10), logend<T>>[i]);
+            if (auto& m0(pwrs2<T(10), logend<T>>[i]);
               !(m % m0)) [[likely]]
               e += pwrs<F(2), logend<T>>[i], m /= m0;
+            else if (m % T(10)) [[unlikely]] return;
           }
           while (i--);
         }
