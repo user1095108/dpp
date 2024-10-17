@@ -54,7 +54,7 @@ concept arithmetic =
 
 template <typename U>
 concept integral =
-  std::integral<U> ||
+  std::is_integral_v<U> ||
   intt::is_intt_v<U> ||
   std::is_same_v<std::remove_cv_t<U>, DPP_INT128T>;
 
