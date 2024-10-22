@@ -38,8 +38,8 @@ void drawHand(D const phi, int const h, char const ch) noexcept
   // Calculate and move the cursor to the correct (x, y) position and draw the character 'ch'
   std::cout <<
     setCursorPosition(
-      std::round(width / 2 + radius * std::sin(phih) + 1),  // Calculate x-coordinate (horizontal position)
-      std::round(height / 2 - radius * std::cos(phih) + 1)  // Calculate y-coordinate (vertical position)
+      width / 2 + std::round(radius * std::sin(phih)) + 1,  // Calculate x-coordinate (horizontal position)
+      height / 2 - std::round(radius * std::cos(phih)) + 1  // Calculate y-coordinate (vertical position)
     ) << ch; // Output the character 'ch' at the calculated position
 }
 
@@ -48,11 +48,8 @@ int main()
   // Clear the terminal and hide the cursor before starting the clock display
   std::cout << HIDE_CURSOR << CLEAR_SCREEN;
 
-  // Variables to store the current second, minute, and hour
-  int s{}, m{}, h{};
-
   // Infinite loop to continuously update the clock once every second
-  for (;;)
+  for (int s{}, m{}, h{};;) // Variables to store the current second, minute, and hour
   {
     // Get the current local time in the system's time zone
     auto const lnow(std::chrono::zoned_time{
