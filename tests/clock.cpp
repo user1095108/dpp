@@ -1,103 +1,87 @@
 // clock demo written by chatGPT
-#include <cmath>          // For mathematical functions like cos(), sin(), and M_PI (constant for π)
-#include <chrono>         // For time-related functions to get current time and handle durations
-#include <iostream>       // For input/output operations (like std::cout)
-#include <thread>         // For using sleep_for() to pause the program execution
+#include <cmath>          // For mathematical functions like cos(), sin(), and the constant M_PI (π)
+#include <chrono>         // For working with time functions like getting the current time and durations
+#include <iostream>       // For input/output operations (e.g., std::cout)
+#include <thread>         // For using sleep_for() to pause program execution
 
-#include "../dpp.hpp"     // External library that provides floating-point types and utilities
+#include "../dpp.hpp"     // External library providing floating-point types and utilities
 
-using namespace dpp::literals; // Using literals from the dpp library
+using namespace dpp::literals; // Importing custom literals from the dpp library
 
-using D = dpp::d32; // Alias for a 32-bit floating-point type from the dpp library
+using D = dpp::d32; // Defining 'D' as an alias for a 32-bit floating-point type from the dpp library
 
 #ifndef D_PI
-# define D_PI D(3.14159265358979323846264338327950288) // Definition of π if not already defined
+# define D_PI D(3.14159265358979323846264338327950288) // Define π if not already defined
 #endif // D_PI
 
-// Constants for the terminal dimensions and clock radius
-const auto width = 40;   // Width of the terminal "screen" (number of columns)
-const auto height = 20;  // Height of the terminal "screen" (number of rows)
-const auto radius = height / 2; // Radius of the clock (half of the terminal height)
+// Constants for terminal dimensions and clock radius
+const auto width = 40;   // Terminal width in characters (number of columns)
+const auto height = 20;  // Terminal height in characters (number of rows)
+const auto radius = height / 2; // Radius of the clock, proportional to half the terminal height
 
-// ANSI escape codes for controlling the terminal screen and cursor visibility
-auto& CLEAR_SCREEN = "\033[2J";   // Code to clear the entire terminal screen
-auto& HIDE_CURSOR = "\033[?25l";  // Code to hide the terminal cursor
-auto& SHOW_CURSOR = "\033[?25h";  // Code to show the terminal cursor again
+// ANSI escape codes for controlling terminal screen and cursor visibility
+auto& CLEAR_SCREEN = "\033[2J";   // Escape code to clear the terminal screen
+auto& HIDE_CURSOR = "\033[?25l";  // Escape code to hide the terminal cursor
+auto& SHOW_CURSOR = "\033[?25h";  // Escape code to show the terminal cursor
 
 // Function to set the cursor position at (x, y) in the terminal using ANSI escape codes
-std::string setCursorPosition(D const x, D const y) {
-  return "\033[" + std::to_string(int(y)) + ";" + std::to_string(int(x)) + "H"; // Format cursor position
+std::string setCursorPosition(int const x, int const y) {
+  return "\033[" + std::to_string(y) + ";" + std::to_string(x) + "H"; // Format (x, y) as an ANSI code
 }
 
-// Function to draw the current second hand on the clock at the appropriate position
-// s: seconds (0-59), c: character to draw (e.g., 'O' for marking the second hand)
-void drawSeconds(int sc, char const ch) noexcept
+// Function to draw the clock hand (second, minute, or hour) at the appropriate position
+// phi: angular velocity, h: current time unit (seconds, minutes, or hours), ch: character to draw the hand
+void drawHand(D const phi, int const h, char const ch) noexcept
 {
-  // Calculate the angle for the second hand, based on the input seconds value
-  auto const phi(D_PI / 30 * sc); // Each second corresponds to 6 degrees (π/30 radians)
+  auto const phih(phi * h);
 
-  // Draw the character 'c' at the calculated (x, y) position based on phi
+  // Calculate and move the cursor to the correct (x, y) position and draw the character 'ch'
   std::cout <<
     setCursorPosition(
-      std::round(width / 2 + radius * std::sin(phi) + 1),  // Calculate x-coordinate
-      std::round(height / 2 - radius * std::cos(phi) + 1)  // Calculate y-coordinate
-    ) << ch; // Output the character at the specified position
-}
-
-// Function to draw the current hour hand on the clock at the appropriate position
-// h: hours (0-23), c: character to draw
-void drawHours(int h, char const ch) noexcept
-{
-  // Calculate the angle for the hour hand
-  auto const phi(D_PI / 6 * h); // Each hour corresponds to 30 degrees (π/6 radians)
-
-  // Draw the character 'c' at the calculated (x, y) position based on phi
-  std::cout <<
-    setCursorPosition(
-      std::round(width / 2 + radius * std::sin(phi) + 1),  // Calculate x-coordinate
-      std::round(height / 2 - radius * std::cos(phi) + 1)  // Calculate y-coordinate
-    ) << ch; // Output the character at the specified position
+      std::round(width / 2 + radius * std::sin(phih) + 1),  // Calculate x-coordinate (horizontal position)
+      std::round(height / 2 - radius * std::cos(phih) + 1)  // Calculate y-coordinate (vertical position)
+    ) << ch; // Output the character 'ch' at the calculated position
 }
 
 int main()
 {
-  // Clear the screen and hide the cursor before starting the clock
+  // Clear the terminal and hide the cursor before starting the clock display
   std::cout << HIDE_CURSOR << CLEAR_SCREEN;
 
-  // Variables to hold the current second, minute, and hour
+  // Variables to store the current second, minute, and hour
   int s{}, m{}, h{};
 
-  // Infinite loop to continuously update the clock every second
+  // Infinite loop to continuously update the clock once every second
   for (;;)
   {
-    // Convert the current time to a local time zone
+    // Get the current local time in the system's time zone
     auto const lnow(std::chrono::zoned_time{
-      std::chrono::current_zone(), std::chrono::system_clock::now()}); // Get the local time
-    auto const ltp(lnow.get_local_time()); // Get the local time point
+      std::chrono::current_zone(), std::chrono::system_clock::now()}); // Obtain local time with time zone
+    auto const ltp(lnow.get_local_time()); // Extract the local time point
 
     // Extract hours, minutes, and seconds from the current local time
     std::chrono::hh_mm_ss const tod{ltp -
-      std::chrono::floor<std::chrono::days>(ltp)}; // Get the time of day (hh:mm:ss)
+      std::chrono::floor<std::chrono::days>(ltp)}; // Get the time of day (hours, minutes, and seconds)
 
-    // Clear the previous positions of the hands
-    drawSeconds(s, ' ');                      // Clear previous second hand
-    drawSeconds(m, ' ');                      // Clear previous minute hand
-    drawHours(h, ' ');                        // Clear previous hour hand
+    // Clear the previous positions of the clock hands
+    drawHand(D_PI / 30, s, ' ');                      // Clear the previous second hand
+    drawHand(D_PI / 30, m, ' ');                      // Clear the previous minute hand
+    drawHand(D_PI / 6, h, ' ');                       // Clear the previous hour hand
 
-    // Draw current second hand
-    drawSeconds(s = tod.seconds().count(), 'O');  // Update and draw current second hand
-    drawSeconds(m = tod.minutes().count(), 'O');  // Update and draw current minute hand
-    drawHours(h = tod.hours().count(), 'O');  // Update and draw current hour hand
+    // Draw the updated clock hands for the current time
+    drawHand(D_PI / 30, s = tod.seconds().count(), 'O');  // Draw the current second hand ('O')
+    drawHand(D_PI / 30, m = tod.minutes().count(), 'O');  // Draw the current minute hand ('O')
+    drawHand(D_PI / 6, h = tod.hours().count(), 'O');     // Draw the current hour hand ('O')
 
-    // Ensure the drawn output is immediately flushed to the terminal
+    // Flush the output to ensure the clock updates immediately
     std::cout.flush();
 
-    // Sleep for 1 second before updating the clock again
+    // Pause execution for 1 second before updating the clock again
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
-  // After exiting the loop (not reachable in this case), show the cursor again
+  // Restore the terminal cursor visibility when the program ends (though the loop is infinite)
   std::cout << SHOW_CURSOR;
 
-  return 0; // Return from main function
+  return 0; // Exit the main function (not reached in this case)
 }
