@@ -34,14 +34,13 @@ std::string setCursorPosition(D const x, D const y) {
 void drawSeconds(int sc, char const ch) noexcept
 {
   // Calculate the angle for the second hand, based on the input seconds value
-  float s, c;
-  sincosf(D_PI / 30 * sc, &s, &c); // Each second corresponds to 6 degrees (π/30 radians)
+  auto const phi(D_PI / 30 * sc); // Each second corresponds to 6 degrees (π/30 radians)
 
   // Draw the character 'c' at the calculated (x, y) position based on phi
   std::cout <<
     setCursorPosition(
-      std::round(width / 2 + radius * s + 1),  // Calculate x-coordinate
-      std::round(height / 2 - radius * c + 1)  // Calculate y-coordinate
+      std::round(width / 2 + radius * std::sin(phi) + 1),  // Calculate x-coordinate
+      std::round(height / 2 - radius * std::cos(phi) + 1)  // Calculate y-coordinate
     ) << ch; // Output the character at the specified position
 }
 
@@ -50,14 +49,13 @@ void drawSeconds(int sc, char const ch) noexcept
 void drawHours(int h, char const ch) noexcept
 {
   // Calculate the angle for the hour hand
-  float s, c;
-  sincosf(D_PI / 6 * h, &s, &c); // Each hour corresponds to 30 degrees (π/6 radians)
+  auto const phi(D_PI / 6 * h); // Each hour corresponds to 30 degrees (π/6 radians)
 
   // Draw the character 'c' at the calculated (x, y) position based on phi
   std::cout <<
     setCursorPosition(
-      std::round(width / 2 + radius * s + 1),  // Calculate x-coordinate
-      std::round(height / 2 - radius * c + 1)  // Calculate y-coordinate
+      std::round(width / 2 + radius * std::sin(phi) + 1),  // Calculate x-coordinate
+      std::round(height / 2 - radius * std::cos(phi) + 1)  // Calculate y-coordinate
     ) << ch; // Output the character at the specified position
 }
 
