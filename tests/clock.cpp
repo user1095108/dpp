@@ -31,32 +31,34 @@ std::string setCursorPosition(D const x, D const y) {
 
 // Function to draw the current second hand on the clock at the appropriate position
 // s: seconds (0-59), c: character to draw (e.g., 'O' for marking the second hand)
-void drawSeconds(int s, char const c) noexcept
+void drawSeconds(int sc, char const ch) noexcept
 {
-  // Calculate the angle (phi) for the second hand, based on the input seconds value
-  auto const phi(D_PI / 30 * s); // Each second corresponds to 6 degrees (π/30 radians)
+  // Calculate the angle for the second hand, based on the input seconds value
+  float s, c;
+  sincosf(D_PI / 30 * sc, &s, &c); // Each second corresponds to 6 degrees (π/30 radians)
 
   // Draw the character 'c' at the calculated (x, y) position based on phi
   std::cout <<
     setCursorPosition(
-      round(width / 2 + radius * std::sin(phi) + 1),  // Calculate x-coordinate
-      round(height / 2 - radius * std::cos(phi) + 1)  // Calculate y-coordinate
-    ) << c; // Output the character at the specified position
+      std::round(width / 2 + radius * s + 1),  // Calculate x-coordinate
+      std::round(height / 2 - radius * c + 1)  // Calculate y-coordinate
+    ) << ch; // Output the character at the specified position
 }
 
 // Function to draw the current hour hand on the clock at the appropriate position
 // h: hours (0-23), c: character to draw
-void drawHours(int h, char const c) noexcept
+void drawHours(int h, char const ch) noexcept
 {
-  // Calculate the angle (phi) for the hour hand, converting 24-hour format to 12-hour format if needed
-  auto const phi(D_PI / 6 * (h >= 12 ? h - 12 : h)); // Each hour corresponds to 30 degrees (π/6 radians)
+  // Calculate the angle for the hour hand
+  float s, c;
+  sincosf(D_PI / 6 * h, &s, &c); // Each hour corresponds to 30 degrees (π/6 radians)
 
   // Draw the character 'c' at the calculated (x, y) position based on phi
   std::cout <<
     setCursorPosition(
-      round(width / 2 + radius * std::sin(phi) + 1),  // Calculate x-coordinate
-      round(height / 2 - radius * std::cos(phi) + 1)  // Calculate y-coordinate
-    ) << c; // Output the character at the specified position
+      std::round(width / 2 + radius * s + 1),  // Calculate x-coordinate
+      std::round(height / 2 - radius * c + 1)  // Calculate y-coordinate
+    ) << ch; // Output the character at the specified position
 }
 
 int main()
