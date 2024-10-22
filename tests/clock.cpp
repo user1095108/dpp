@@ -72,12 +72,9 @@ int main()
   // Infinite loop to continuously update the clock every second
   for (;;)
   {
-    // Get the current time using the system clock
-    auto const now(std::chrono::system_clock::now());
-    
     // Convert the current time to a local time zone
     auto const lnow(std::chrono::zoned_time{
-      std::chrono::current_zone(), now}); // Get the local time zone
+      std::chrono::current_zone(), std::chrono::system_clock::now()}); // Get the local time
     auto const ltp(lnow.get_local_time()); // Get the local time point
 
     // Extract hours, minutes, and seconds from the current local time
