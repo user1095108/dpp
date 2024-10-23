@@ -17,17 +17,17 @@ auto& SHOW_CURSOR = "\033[?25h";  // Show the terminal cursor
 // Function to set the cursor position using ANSI escape codes
 // x: Horizontal position (column), y: Vertical position (row)
 std::string setCursorPosition(D const x, D const y) {
-  return "\033[" + std::to_string(int(y)) + ";" + std::to_string(int(x)) + "H";
+  return "\033[" + std::to_string(int(y)) + ';' + std::to_string(int(x)) + 'H';
 }
 
 // Function to draw the ball at position (x, y) in the terminal
 void drawBall(D const x, D const y) {
-  std::cout << setCursorPosition(x, y) << "O"; // Display 'O' representing the ball
+  std::cout << setCursorPosition(x, y) << 'O'; // Display 'O' representing the ball
 }
 
 // Function to clear the ball from its previous position (x, y)
 void clearBall(D const x, D const y) {
-  std::cout << setCursorPosition(x, y) << " "; // Replace 'O' with a space to "clear" the ball
+  std::cout << setCursorPosition(x, y) << ' '; // Replace 'O' with a space to "clear" the ball
 }
 
 const D gravity = 1.81;  // Gravity constant (m/s^2)
