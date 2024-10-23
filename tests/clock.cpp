@@ -27,7 +27,7 @@ auto& SHOW_CURSOR = "\033[?25h";  // Escape code to show the terminal cursor
 
 // Function to set the cursor position at (x, y) in the terminal using ANSI escape codes
 std::string setCursorPosition(D const& x, D const& y) {
-  return "\033[" + std::to_string(int(y)) + ";" + std::to_string(int(x)) + "H"; // ANSI code for cursor positioning
+  return "\033[" + std::to_string(int(y)) + ';' + std::to_string(int(x)) + 'H'; // ANSI code for cursor positioning
 }
 
 // Function to draw the clock hand (second, minute, or hour) at the appropriate position
