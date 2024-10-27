@@ -62,7 +62,7 @@ private:
         buffer[y][x] = config::CLOCK_BORDER;
       }
     }
-    
+
     // Draw hour markers
     for (int i = 0; i < 12; ++i) {
       D angle = i * config::PI / 6;
@@ -75,45 +75,45 @@ private:
       }
     }
   }
-  
+
   void drawHand(D angle, char symbol, D length_factor = 1.0) {
     D x_start = config::WIDTH / 2;
     D y_start = config::HEIGHT / 2;
     D length = config::RADIUS * length_factor;
-    
+
     for (D t = 0; t < length; t += 0.5) {
       int x = static_cast<int>(round(x_start + t * std::cos(angle)));
       int y = static_cast<int>(round(y_start + t * std::sin(angle)));
-      
+
       if (x >= 0 && x < config::WIDTH && y >= 0 && y < config::HEIGHT) {
         buffer[y][x] = symbol;
       }
     }
   }
-    
+
 public:
   TerminalClock() {
     clearBuffer();
     drawClockFace();
   }
-  
+
   void update(const std::chrono::system_clock::time_point& now) {
     auto time = std::chrono::system_clock::to_time_t(now);
     auto* timeinfo = std::localtime(&time);
-    
+
     // Calculate hand angles
     D hour_angle = (timeinfo->tm_hour % 12 + timeinfo->tm_min / 60.0) * config::PI / 6 - config::PI / 2;
     D minute_angle = timeinfo->tm_min * config::PI / 30 - config::PI / 2;
     D second_angle = timeinfo->tm_sec * config::PI / 30 - config::PI / 2;
-    
+
     // Create temporary buffer
     auto temp_buffer = buffer;
-    
+
     // Draw hands with different lengths
     drawHand(hour_angle, config::HOUR_HAND, 0.5);
     drawHand(minute_angle, config::MINUTE_HAND, 0.7);
     drawHand(second_angle, config::SECOND_HAND, 0.9);
-    
+
     // Render the buffer
     std::cout << config::HOME_CURSOR;
 
