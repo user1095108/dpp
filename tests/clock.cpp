@@ -134,12 +134,12 @@ int main() {
     // Set up signal handling
     std::signal(SIGINT, signalHandler);
     std::signal(SIGTERM, signalHandler);
-    
+
     // Initialize terminal
     std::cout << config::HIDE_CURSOR << config::CLEAR_SCREEN;
 
     TerminalClock clock;
-    
+
     // Main loop
     while (g_running) {
       auto const now = std::chrono::system_clock::now();
@@ -149,9 +149,9 @@ int main() {
       auto next_second = std::chrono::ceil<std::chrono::seconds>(now);
       std::this_thread::sleep_until(next_second);
     }
-    
+
     // Cleanup
-    std::cout << config::SHOW_CURSOR << config::CLEAR_SCREEN;
+    std::cout << config::SHOW_CURSOR;
     return 0;
   }
   catch (const std::exception& e) {
