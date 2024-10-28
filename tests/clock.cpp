@@ -17,13 +17,13 @@ namespace config {
     constexpr int WIDTH = 40;   // Width of the terminal clock display
     constexpr int HEIGHT = 20;  // Height of the terminal clock display
     constexpr int RADIUS = std::min(WIDTH, HEIGHT) / 2 - 1;  // Radius for clock face
-    
+
     // ANSI escape sequences for terminal control
-    const char* const CLEAR_SCREEN = "\033[2J";
-    const char* const HIDE_CURSOR = "\033[?25l";
-    const char* const SHOW_CURSOR = "\033[?25h";
-    const char* const HOME_CURSOR = "\033[H";
-    
+    auto& CLEAR_SCREEN = "\033[2J";
+    auto& HIDE_CURSOR = "\033[?25l";
+    auto& SHOW_CURSOR = "\033[?25h";
+    auto& HOME_CURSOR = "\033[H";
+
     // Characters used for different clock hands and border
     constexpr char HOUR_HAND = 'H';
     constexpr char MINUTE_HAND = 'M';
