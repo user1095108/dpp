@@ -57,7 +57,7 @@ class TerminalClock {
     for (D angle = 0; angle < 2 * config::PI; angle += 0.1) {
       int x = static_cast<int>(round(config::WIDTH / 2 + config::RADIUS * std::cos(angle)));
       int y = static_cast<int>(round(config::HEIGHT / 2 + config::RADIUS * std::sin(angle)));
-      
+
       if (x >= 0 && x < config::WIDTH && y >= 0 && y < config::HEIGHT) {
         buffer[y][x] = config::CLOCK_BORDER;
       }
@@ -68,7 +68,7 @@ class TerminalClock {
       D angle = i * config::PI / 6;
       int x = static_cast<int>(round(config::WIDTH / 2 + (config::RADIUS - 1) * std::cos(angle)));
       int y = static_cast<int>(round(config::HEIGHT / 2 + (config::RADIUS - 1) * std::sin(angle)));
-      
+
       if (x >= 0 && x < config::WIDTH && y >= 0 && y < config::HEIGHT) {
         auto const str(std::to_string(i + 3 > 12 ? i - 9 : i + 3));
         for (auto const c: str) buffer[y][x++] = c;
