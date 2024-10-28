@@ -439,7 +439,10 @@ public:
   }
 
   template <std::floating_point U>
-  constexpr explicit (sizeof(U) != sizeof(m_)) operator U() const noexcept
+  constexpr explicit ((sizeof(U) != sizeof(m_)) ||
+    !(std::is_same_v<U, float> || std::is_same_v<U, double> ||
+    std::is_same_v<U, long double>))
+  operator U() const noexcept
   {
     if (isnan(*this)) [[unlikely]]
     {

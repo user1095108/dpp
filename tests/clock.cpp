@@ -13,22 +13,22 @@ using D = dpp::d32;
 
 // Configuration namespace to group related constants for better readability
 namespace config {
-    constexpr D PI = D(3.14159265358979323846264338327950288);
-    constexpr int WIDTH = 40;   // Width of the terminal clock display
-    constexpr int HEIGHT = 20;  // Height of the terminal clock display
-    constexpr int RADIUS = std::min(WIDTH, HEIGHT) / 2 - 1;  // Radius for clock face
+  static inline D PI = D(3.14159265358979323846264338327950288);
+  static constexpr int WIDTH = 40;   // Width of the terminal clock display
+  static constexpr int HEIGHT = 20;  // Height of the terminal clock display
+  static constexpr int RADIUS = std::min(WIDTH, HEIGHT) / 2 - 1;  // Radius for clock face
 
-    // ANSI escape sequences for terminal control
-    auto& CLEAR_SCREEN = "\033[2J";
-    auto& HIDE_CURSOR = "\033[?25l";
-    auto& SHOW_CURSOR = "\033[?25h";
-    auto& HOME_CURSOR = "\033[H";
+  // ANSI escape sequences for terminal control
+  auto& CLEAR_SCREEN = "\033[2J";
+  auto& HIDE_CURSOR = "\033[?25l";
+  auto& SHOW_CURSOR = "\033[?25h";
+  auto& HOME_CURSOR = "\033[H";
 
-    // Characters used for different clock hands and border
-    constexpr char HOUR_HAND = 'H';
-    constexpr char MINUTE_HAND = 'M';
-    constexpr char SECOND_HAND = 'S';
-    constexpr char CLOCK_BORDER = '+';
+  // Characters used for different clock hands and border
+  static constexpr char HOUR_HAND = 'H';
+  static constexpr char MINUTE_HAND = 'M';
+  static constexpr char SECOND_HAND = 'S';
+  static constexpr char CLOCK_BORDER = '+';
 }
 
 // Global flag for graceful shutdown upon receiving a signal (e.g., CTRL+C)
