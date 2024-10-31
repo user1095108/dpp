@@ -114,7 +114,7 @@ template <auto X, std::size_t E>
 inline constexpr auto pwrs{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<decltype(X), E + 1>{pow(X, I)...};
+    return std::array<decltype(X), sizeof...(I)>{pow(X, I)...};
   }(std::make_index_sequence<E + 1>())
 };
 
@@ -122,7 +122,7 @@ template <auto X, std::size_t E>
 inline constexpr auto pwrs2{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<decltype(X), E + 1>{
+    return std::array<decltype(X), sizeof...(I)>{
       pow(X, pow(decltype(E)(2), I))...};
   }(std::make_index_sequence<E + 1>())
 };
@@ -131,7 +131,7 @@ template <typename U, auto E>
 inline constexpr auto maxaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<U, log<decltype(E)(2)>(E) + 1>{
+    return std::array<U, sizeof...(I)>{
       max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
@@ -141,7 +141,7 @@ template <typename U, auto E>
 inline constexpr auto minaligns{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<U, log<decltype(E)(2)>(E) + 1>{
+    return std::array<U, sizeof...(I)>{
       min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
     };
   }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
@@ -151,7 +151,7 @@ template <typename T, typename U, auto E>
 inline constexpr auto maxnorms{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<U, log<decltype(E)(2)>(E) + 1>{
+    return std::array<U, sizeof...(I)>{
       U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
       (sizeof...(I) - 1 - I ? 0 : 5)...
     };
@@ -162,7 +162,7 @@ template <typename T, typename U, auto E>
 inline constexpr auto minnorms{
   []<auto ...I>(std::index_sequence<I...>) noexcept
   {
-    return std::array<U, log<decltype(E)(2)>(E) + 1>{
+    return std::array<U, sizeof...(I)>{
       U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
       (sizeof...(I) - 1 - I ? 0 : 5)...
     };
