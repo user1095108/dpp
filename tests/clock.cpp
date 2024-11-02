@@ -82,7 +82,7 @@ class TerminalClock {
     D y_start = config::HEIGHT / 2;
     D length = config::RADIUS * length_factor;
 
-    for (D t = 0; t < length; t += 0.5) {
+    for (D t{}; t < length; t += 0.5) {
       int x = static_cast<int>(round(x_start + t * std::cos(angle)));
       int y = static_cast<int>(round(y_start + t * std::sin(angle)));
 
