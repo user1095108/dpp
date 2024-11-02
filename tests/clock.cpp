@@ -54,7 +54,7 @@ class TerminalClock {
   // Draws the static clock face, including border and hour markers
   void drawClockFace() {
     // Draw circle border using trigonometric calculations
-    for (D angle = 0; angle < 2 * config::PI; angle += 0.1) {
+    for (D angle{}; angle < 2 * config::PI; angle += 0.1) {
       int x = static_cast<int>(round(config::WIDTH / 2 + config::RADIUS * std::cos(angle)));
       int y = static_cast<int>(round(config::HEIGHT / 2 + config::RADIUS * std::sin(angle)));
 
@@ -64,8 +64,8 @@ class TerminalClock {
     }
 
     // Draw hour markers at each multiple of 30 degrees (for 12-hour markers)
-    for (int i = 0; i < 12; ++i) {
-      D angle = i * config::PI / 6;
+    for (int i{}; i < 12; ++i) {
+      D const angle = i * config::PI / 6;
       int x = static_cast<int>(round(config::WIDTH / 2 + (config::RADIUS - 1) * std::cos(angle)));
       int y = static_cast<int>(round(config::HEIGHT / 2 + (config::RADIUS - 1) * std::sin(angle)));
 
