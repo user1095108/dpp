@@ -50,40 +50,42 @@ int main(int const argc, char* argv[]) noexcept
   std::vector<std::vector<bool>> buffer(h);
   for (auto& row: buffer) row.resize(w);
 
-  std::mt19937_64 engine{std::random_device()()};
-  std::uniform_real_distribution<float> distribution({});
-
-  D x{}, y{};
-
-  for (std::size_t i{}; max_iter != i; ++i)
   {
-    D x1, y1;
+    std::mt19937_64 engine{std::random_device()()};
+    std::uniform_real_distribution<float> distribution({});
 
-    if (auto const r(distribution(engine)); r < .01_d32)
-    {
-      x1 = 0_d32;
-      y1 = .16_d32 * y;
-    }
-    else if (r <= .86_d32)
-    {
-      x1 = .85_d32 * x + .04_d32 * y;
-      y1 = -.04_d32 * x + .85_d32 * y + 1.6_d32;
-    }
-    else if (r <= .93_d32)
-    {
-      x1 = .2_d32 * x - .26_d32 * y;
-      y1 = .23_d32 * x + .22_d32 * y + 1.6_d32;
-    }
-    else
-    {
-      x1 = -.15_d32 * x + .28_d32 * y;
-      y1 = .26_d32 * x + .24_d32 * y + .44_d32;
-    }
+    D x{}, y{};
 
-    x = x1; y = y1;
+    for (std::size_t i{}; max_iter != i; ++i)
+    {
+      D x1, y1;
 
-    buffer[std::size_t(h * (1_d32 - y/11))]
-      [std::size_t(w * (.5_d32 + x/11))] = true;
+      if (auto const r(distribution(engine)); r < .01_d32)
+      {
+        x1 = 0_d32;
+        y1 = .16_d32 * y;
+      }
+      else if (r <= .86_d32)
+      {
+        x1 = .85_d32 * x + .04_d32 * y;
+        y1 = -.04_d32 * x + .85_d32 * y + 1.6_d32;
+      }
+      else if (r <= .93_d32)
+      {
+        x1 = .2_d32 * x - .26_d32 * y;
+        y1 = .23_d32 * x + .22_d32 * y + 1.6_d32;
+      }
+      else
+      {
+        x1 = -.15_d32 * x + .28_d32 * y;
+        y1 = .26_d32 * x + .24_d32 * y + .44_d32;
+      }
+
+      x = x1; y = y1;
+
+      buffer[std::size_t(h * (1_d32 - y/11))]
+        [std::size_t(w * (.5_d32 + x/11))] = true;
+    }
   }
 
   for (auto const& row: buffer)
