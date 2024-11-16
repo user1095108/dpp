@@ -72,7 +72,6 @@ int main(int const argc, char* argv[]) noexcept
     switch (std::atoi(argv[1]))
     { // https://en.wikipedia.org/wiki/Julia_set#Quadratic_polynomials
       default:
-      case 7:
         a = -.835_d32; b = -.2321_d32;
         break;
 
