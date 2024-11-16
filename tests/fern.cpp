@@ -1,3 +1,4 @@
+// https://en.wikipedia.org/wiki/Barnsley_fern
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
@@ -18,7 +19,7 @@ using namespace dpp::literals;
 //using D = float;
 using D = dpp::d32;
 
-static constexpr auto max_iter{1000000llu};
+static constexpr std::size_t max_iter{1000000u};
 
 int main(int const argc, char* argv[]) noexcept
 {
