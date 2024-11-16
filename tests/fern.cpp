@@ -23,7 +23,7 @@ static constexpr std::size_t max_iter{1000000u};
 
 int main(int const argc, char* argv[]) noexcept
 {
-  std::mt19937 engine{std::random_device()()};
+  std::mt19937_64 engine{std::random_device()()};
   std::uniform_real_distribution<float> distribution({});
 
   int w, h;
