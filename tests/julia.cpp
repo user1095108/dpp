@@ -17,7 +17,7 @@ using namespace dpp::literals;
 //using D = float;
 using D = dpp::d32;
 
-constexpr auto max_iter = 100u;
+static constexpr auto max_iter = 100u;
 
 constexpr auto julia(D zr, D zi, D const cr, D const ci) noexcept
 {

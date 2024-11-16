@@ -19,7 +19,7 @@ using namespace dpp::literals;
 //using D = float;
 using D = dpp::d32;
 
-constexpr auto max_iter = 100u;
+static constexpr auto max_iter = 100u;
 
 constexpr auto mandelbrot(D const cr, D const ci) noexcept
 {
