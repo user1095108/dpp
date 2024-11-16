@@ -23,9 +23,6 @@ static constexpr std::size_t max_iter{1000000u};
 
 int main(int const argc, char* argv[]) noexcept
 {
-  std::mt19937_64 engine{std::random_device()()};
-  std::uniform_real_distribution<float> distribution({});
-
   int w, h;
 
   {
@@ -52,6 +49,9 @@ int main(int const argc, char* argv[]) noexcept
 
   std::vector<std::vector<bool>> buffer(h);
   for (auto& row: buffer) row.resize(w);
+
+  std::mt19937_64 engine{std::random_device()()};
+  std::uniform_real_distribution<float> distribution({});
 
   D x{}, y{};
 
