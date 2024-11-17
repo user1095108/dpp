@@ -151,7 +151,13 @@ int main(int const argc, char* argv[]) noexcept
   std::cout << "\033[2J\033[42m";
 
   auto const dx(xmax - xmin), dy(ymax - ymin);
-  auto const s(std::max(dx, dy)), sx(D(w - 1) / s), sy(D(h - 1) / s);
+  D sx, sy;
+
+  {
+    auto const s(std::max(dx, dy));
+    sx = (w - 1) / s; sy = (h - 1) / s;
+  }
+
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
 
   for (auto const& p: points)
