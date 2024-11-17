@@ -48,6 +48,24 @@ struct part_t
     {{.09_d32, -.28_d32, .3_d32, .11_d32, 0_d32, .6_d32}, .07_d32},
     {{-.09_d32, .28_d32, .3_d32, .09_d32, 0_d32, .7_d32}, .07_d32}
   },
+  {
+    {{0_d32, 0_d32, 0_d32, .16_d32, 0_d32, 0_d32}, .01_d32},
+    {{.85_d32, .04_d32, -.04_d32, .85_d32, 0_d32, 1.6_d32}, .85_d32},
+    {{.2_d32, -.26_d32, .23_d32, .22_d32, 0_d32, 1.6_d32}, .07_d32},
+    {{-.15_d32, .28_d32, .26_d32, .24_d32, 0_d32, .44_d32}, .07_d32}
+  },
+  {
+    {{.98_d32, -.97_d32, .09_d32, .96_d32, 0_d32, 1.7_d32}, .86_d32},
+    {{.85_d32, .04_d32, -.04_d32, .85_d32, 0_d32, 1.6_d32}, .85_d32},
+    {{.2_d32, -.26_d32, .23_d32, .22_d32, 0_d32, 1.6_d32}, .07_d32},
+    {{-.15_d32, .28_d32, .26_d32, .24_d32, 0_d32, .44_d32}, .14_d32}
+  },
+  {
+    {{0_d32, 0_d32, 0_d32, 0_d32, 0_d32, 0_d32}, 0_d32},
+    {{.98_d32, -.97_d32, .09_d32, .96_d32, 0_d32, 1.7_d32}, .86_d32},
+    {{0_d32, 0_d32, 0_d32, 0_d32, 0_d32, 0_d32}, 0_d32},
+    {{-.15_d32, .28_d32, .2_d32, .24_d32, 0_d32, .44_d32}, .14_d32}
+  },
 };
 
 static constexpr std::size_t max_iter{1000000u};
@@ -78,8 +96,10 @@ int main(int const argc, char* argv[]) noexcept
     #endif
   }
 
-  std::vector<std::vector<bool>> buffer(h);
-  for (auto& row: buffer) row.resize(w);
+  auto xmax(D::min), xmin(D::max);
+  auto ymax(D::min), ymin(D::max);
+
+  std::vector<std::pair<D, D>> points;
 
   {
     part_t const* pr;
@@ -121,17 +141,29 @@ int main(int const argc, char* argv[]) noexcept
 
       x = x1; y = y1;
 
-      if (auto const row(int(h * (1_d32 - y/11))),
-        col(int(w * (.5_d32 + x/11))); (row >= 0) && (col >= 0) &&
-        (row < h) && (col < w)) buffer[row][col] = true;
+      if (x < xmin) xmin = x; if (x > xmax) xmax = x;
+      if (y < ymin) ymin = y; if (y > ymax) ymax = y;
+
+      points.push_back({x, y});
     }
   }
 
-  for (auto const& row: buffer)
-    for (auto const c: row)
-      std::cout << "\033[4" << (c ? '2' : '9') << "m ";
+  auto const dx(xmax - xmin), dy(ymax - ymin);
+  auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
+  auto const s(std::max(dx, dy)), sx(D(w - 1) / s), sy(D(h - 1) / s);
 
-  std::cout << "\033[0m";
+  std::cout << "\033[2J\033[42m";
+
+  for (auto const& p: points)
+  {
+    auto const& x(std::get<0>(p)), y(std::get<1>(p));
+
+    std::cout << "\033[" <<
+      std::to_string(int((my - y) * sy + D(h) / 2) + 1) << ';' <<
+      std::to_string(int((x - mx) * sx + D(w) / 2) + 1) << "H ";
+  }
+
+  std::cout << "\033[0m\033[" << std::to_string(h) << ";1H";
 
   return 0;
 }
