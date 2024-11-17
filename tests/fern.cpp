@@ -149,8 +149,8 @@ int main(int const argc, char* argv[]) noexcept
   }
 
   auto const dx(xmax - xmin), dy(ymax - ymin);
-  auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
   auto const s(std::max(dx, dy)), sx(D(w - 1) / s), sy(D(h - 1) / s);
+  auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
 
   std::cout << "\033[2J\033[42m";
 
