@@ -124,18 +124,18 @@ int main(int const argc, char* argv[]) noexcept
     {
       D r(distribution(engine)), x1, y1;
 
-      for (std::size_t j{}; 4 != j; ++j)
+      for (auto p(pr); &p[std::size(*parts)] != p; ++p) // p points to part
       {
-        if (auto const p(pr[j]); (3 == j) || (r < p.p))
+        if ((&p[std::size(*parts) - 1] == p) || (r < p->p))
         {
-          x1 = p.t[0] * x + p.t[1] * y + p.t[4];
-          y1 = p.t[2] * x + p.t[3] * y + p.t[5];
+          x1 = p->t[0] * x + p->t[1] * y + p->t[4];
+          y1 = p->t[2] * x + p->t[3] * y + p->t[5];
 
           break;
         }
         else
         {
-          r -= p.p;
+          r -= p->p;
         }
       }
 
