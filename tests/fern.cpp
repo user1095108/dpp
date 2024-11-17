@@ -106,7 +106,7 @@ int main(int const argc, char* argv[]) noexcept
 
       for (std::size_t j{}; 4 != j; ++j)
       {
-        if (auto const p(pr[j]); r <= p.p)
+        if (auto const p(pr[j]); (r < p.p) || (3 == j))
         {
           x1 = p.t[0] * x + p.t[1] * y + p.t[4];
           y1 = p.t[2] * x + p.t[3] * y + p.t[5];
