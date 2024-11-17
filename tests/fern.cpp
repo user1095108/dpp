@@ -121,11 +121,9 @@ int main(int const argc, char* argv[]) noexcept
 
       x = x1; y = y1;
 
-      auto const row(int(h * (1_d32 - y/11)));
-      auto const col(int(w * (.5_d32 + x/11)));
-
-      if ((row >= 0) && (col >= 0) && (row < h) && (col < w))
-        buffer[row][col] = true;
+      if (auto const row(int(h * (1_d32 - y/11))),
+        col(int(w * (.5_d32 + x/11))); (row >= 0) && (col >= 0) &&
+        (row < h) && (col < w)) buffer[row][col] = true;
     }
   }
 
