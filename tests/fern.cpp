@@ -159,15 +159,15 @@ int main(int const argc, char* argv[]) noexcept
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
-  auto const dh(D(h) / 2), dw(D(w) / 2);
+  auto const hh(D(h) / 2), hw(D(w) / 2);
 
   for (auto const& p: points)
   {
     auto const& x(std::get<0>(p)), y(std::get<1>(p));
 
     std::cout << "\033[" <<
-      std::to_string(int((my - y) * sy + dh) + 1) << ';' <<
-      std::to_string(int((x - mx) * sx + dw) + 1) << "H ";
+      std::to_string(int((my - y) * sy + hh) + 1) << ';' <<
+      std::to_string(int((x - mx) * sx + hw) + 1) << "H ";
   }
 
   std::cout << "\033[0m\033[" << std::to_string(h) << ";1H";
