@@ -144,7 +144,7 @@ int main(int const argc, char* argv[]) noexcept
       if (x < xmin) xmin = x; if (x > xmax) xmax = x;
       if (y < ymin) ymin = y; if (y > ymax) ymax = y;
 
-      points.push_back({x, y});
+      points.emplace_back(x, y);
     }
   }
 
