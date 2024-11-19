@@ -92,7 +92,7 @@ int main(int const argc, char* argv[]) noexcept
       ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
 
       w = ws.ws_col;
-      h = ws.ws_row - 1;
+      h = ws.ws_row;
     #endif
   }
 
@@ -154,22 +154,22 @@ int main(int const argc, char* argv[]) noexcept
 
   {
     auto const s(std::max(dx, dy));
-    sx = w / s; sy = h / s;
+    sx = (w - 1) / s; sy = (h - 1) / s;
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
-  auto const hh(D(h) / 2), hw(D(w) / 2);
+  auto const hh(D(h - 1) / 2 + 1), hw(D(w - 1) / 2 + 1);
 
   for (auto const& p: points)
   {
     auto const& x(std::get<0>(p)), y(std::get<1>(p));
 
     std::cout << "\033[" <<
-      std::to_string(int((my - y) * sy + hh) + 1) << ';' <<
-      std::to_string(int((x - mx) * sx + hw) + 1) << "H ";
+      std::to_string(int((my - y) * sy + hh)) << ';' <<
+      std::to_string(int((x - mx) * sx + hw)) << "H ";
   }
 
-  std::cout << "\033[0m\033[" << std::to_string(h + 1) << ";1H";
+  std::cout << "\033[0m\033[" << std::to_string(h) << ";1H";
 
   return 0;
 }
