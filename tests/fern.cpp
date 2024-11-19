@@ -169,7 +169,7 @@ int main(int const argc, char* argv[]) noexcept
       std::to_string(int((x - mx) * sx + hw)) << "H ";
   }
 
-  std::cout << "\033[0m\033[" << std::to_string(h) << ";1H";
+  std::cout << "\033[0m\033[" << std::to_string(h - 1) << ";1H";
 
   return 0;
 }
