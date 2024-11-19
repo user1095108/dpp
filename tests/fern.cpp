@@ -96,8 +96,7 @@ int main(int const argc, char* argv[]) noexcept
     #endif
   }
 
-  auto xmax(D::min), xmin(D::max);
-  auto ymax(D::min), ymin(D::max);
+  D xmax{}, xmin{}, ymax{}, ymin{};
 
   std::vector<std::pair<D, D>> points;
 
