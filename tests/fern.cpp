@@ -140,8 +140,8 @@ int main(int const argc, char* argv[]) noexcept
 
       x = x1; y = y1;
 
-      if (x < xmin) xmin = x; if (x > xmax) xmax = x;
-      if (y < ymin) ymin = y; if (y > ymax) ymax = y;
+      if (x < xmin) xmin = x; else if (x > xmax) xmax = x;
+      if (y < ymin) ymin = y; else if (y > ymax) ymax = y;
 
       points.emplace_back(x, y);
     }
