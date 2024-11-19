@@ -154,7 +154,7 @@ int main(int const argc, char* argv[]) noexcept
 
   {
     auto const s(std::max(dx, dy));
-    sx = (w - 1) / s; sy = (h - 1) / s;
+    sx = w / s; sy = h / s;
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
