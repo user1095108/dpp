@@ -158,7 +158,7 @@ int main(int const argc, char* argv[]) noexcept
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
-  auto const hh(D(h - 1) / 2 + 1), hw(D(w - 1) / 2 + 1);
+  auto const hw(D(w - 1) / 2 + 1), hh(D(h - 1) / 2 + 1);
 
   for (auto const& p: points)
   {
