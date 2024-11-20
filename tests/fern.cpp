@@ -147,8 +147,6 @@ int main(int const argc, char* argv[]) noexcept
     }
   }
 
-  std::cout << "\033[49m";
-
   std::vector<std::vector<bool>> buffer(h - 1);
   for (auto& l: buffer) l.resize(w);
 
@@ -170,6 +168,8 @@ int main(int const argc, char* argv[]) noexcept
     buffer[std::size_t((my - y) * sy + hh)]
       [std::size_t((x - mx) * sx + hw)] = true;
   }
+
+  std::cout << "\033[49m";
 
   for (bool oldc{}; auto const& l: buffer)
   {
