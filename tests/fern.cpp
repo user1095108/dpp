@@ -147,29 +147,45 @@ int main(int const argc, char* argv[]) noexcept
     }
   }
 
-  std::cout << "\033[2J\033[42m";
+  std::cout << "\033[49m";
+
+  std::vector<std::vector<bool>> buffer(h - 1);
+  for (auto& l: buffer) l.resize(w);
 
   auto const dx(xmax - xmin), dy(ymax - ymin);
   D sx, sy;
 
   {
     auto const s(std::max(dx, dy));
-    sx = (w - 1) / s; sy = (h - 1) / s;
+    sx = (w - 1) / s; sy = (h - 2) / s;
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
-  auto const hw(D(w - 1) / 2 + 1), hh(D(h - 1) / 2 + 1);
+  auto const hw(D(w - 1) / 2), hh(D(h - 2) / 2);
 
   for (auto const& p: points)
   {
     auto& [x, y](p);
 
-    std::cout << "\033[" <<
-      std::to_string(int((my - y) * sy + hh)) << ';' <<
-      std::to_string(int((x - mx) * sx + hw)) << "H ";
+    buffer[std::size_t((my - y) * sy + hh)]
+      [std::size_t((x - mx) * sx + hw)] = true;
   }
 
-  std::cout << "\033[0m\033[" << std::to_string(h) << ";1H";
+  for (bool oldc{}; auto const& l: buffer)
+  {
+    for (auto const c: l)
+    {
+      if (oldc != c)
+      {
+        oldc = c;
+        std::cout << "\033[4" << (c ? '2' : '9') << 'm';
+      }
+
+      std::cout << ' ';
+    }
+  }
+
+  std::cout << "\033[0m";
 
   return 0;
 }
