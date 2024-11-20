@@ -162,7 +162,7 @@ int main(int const argc, char* argv[]) noexcept
 
   for (auto const& p: points)
   {
-    auto& x(std::get<0>(p)), &y(std::get<1>(p));
+    auto& [x, y](p);
 
     std::cout << "\033[" <<
       std::to_string(int((my - y) * sy + hh)) << ';' <<
