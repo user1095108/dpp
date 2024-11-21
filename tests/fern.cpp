@@ -161,13 +161,9 @@ int main(int const argc, char* argv[]) noexcept
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
   auto const hw(D(w - 1) / 2), hh(D(h - 1) / 2);
 
-  for (auto const& p: points)
-  {
-    auto& [x, y](p);
-
+  for (auto const& [x, y]: points)
     buffer[std::size_t((my - y) * sy + hh)]
       [std::size_t((x - mx) * sx + hw)] = true;
-  }
 
   std::cout << "\033[49m";
 
