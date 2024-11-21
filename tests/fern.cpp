@@ -86,7 +86,7 @@ int main(int const argc, char* argv[]) noexcept
       CONSOLE_SCREEN_BUFFER_INFO csbi;
       GetConsoleScreenBufferInfo(handle, &csbi);
       w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-      h = csbi.srWindow.Bottom - csbi.srWindow.Top;
+      h = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
     #else
       struct winsize ws;
       ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
