@@ -171,13 +171,13 @@ int main(int const argc, char* argv[]) noexcept
 
   std::cout << "\033[49m";
 
-  for (bool oldc{}; auto const& l: buffer)
+  for (bool prevc{}; auto const& l: buffer)
   {
     for (auto const c: l)
     {
-      if (oldc != c)
+      if (prevc != c)
       {
-        oldc = c;
+        prevc = c;
         std::cout << "\033[4" << (c ? '2' : '9') << 'm';
       }
 
