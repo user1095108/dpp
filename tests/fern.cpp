@@ -150,12 +150,11 @@ int main(int const argc, char* argv[]) noexcept
   std::vector<std::vector<bool>> buffer(--h);
   for (auto& l: buffer) l.resize(w);
 
-  auto const dx(xmax - xmin), dy(ymax - ymin);
   D sx, sy;
 
   {
-    auto const s(std::max(dx, dy));
-    sx = (w - 1) / s; sy = (h - 1) / s;
+    auto const s(std::min(w, h));
+    sx = s / (xmax - xmin); sy = s / (ymax - ymin);
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
