@@ -147,7 +147,7 @@ int main(int const argc, char* argv[]) noexcept
     }
   }
 
-  std::vector<std::vector<bool>> buffer(h - 1);
+  std::vector<std::vector<bool>> buffer(--h);
   for (auto& l: buffer) l.resize(w);
 
   auto const dx(xmax - xmin), dy(ymax - ymin);
@@ -155,11 +155,11 @@ int main(int const argc, char* argv[]) noexcept
 
   {
     auto const s(std::max(dx, dy));
-    sx = (w - 1) / s; sy = (h - 2) / s;
+    sx = (w - 1) / s; sy = (h - 1) / s;
   }
 
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
-  auto const hw(D(w - 1) / 2), hh(D(h - 2) / 2);
+  auto const hw(D(w - 1) / 2), hh(D(h - 1) / 2);
 
   for (auto const& p: points)
   {
