@@ -123,9 +123,9 @@ int main(int const argc, char* argv[]) noexcept
     {
       D r(distribution(engine)), x1, y1;
 
-      for (auto p(pr); &p[std::size(*parts)] != p; ++p) // p points to part
+      for (auto p(pr); &pr[std::size(*parts)] != p; ++p) // p points to part
       {
-        if ((&p[std::size(*parts) - 1] == p) || (r < p->p))
+        if ((&pr[std::size(*parts) - 1] == p) || (r < p->p))
         {
           x1 = p->t[0] * x + p->t[1] * y + p->t[4];
           y1 = p->t[2] * x + p->t[3] * y + p->t[5];
