@@ -150,20 +150,13 @@ int main(int const argc, char* argv[]) noexcept
   std::vector<std::vector<bool>> buffer(--h);
   for (auto& l: buffer) l.resize(w);
 
-  D sx, sy;
-
-  {
-    auto const s(std::min(w, h));
-
-    sx = s / (xmax - xmin); sy = s / (ymax - ymin);
-  }
-
   auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
+  auto const s(std::min(w / (xmax - xmin), h / (ymax - ymin)));
   auto const hw(D(w - 1) / 2), hh(D(h - 1) / 2);
 
   for (auto const& [x, y]: points)
-    buffer[std::size_t((my - y) * sy + hh)]
-      [std::size_t((x - mx) * sx + hw)] = true;
+    buffer[std::size_t((my - y) * s + hh)]
+      [std::size_t((x - mx) * s + hw)] = true;
 
   std::cout << "\033[49m";
 
