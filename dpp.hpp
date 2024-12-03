@@ -637,12 +637,12 @@ public:
         if (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
+            auto m0(std::as_const(minaligns<U, maxpow10e<T>()>).data());
+
             return (
               [&]() noexcept -> bool
               {
-                constexpr auto J(logend<T> - I);
-
-                if (auto& m0(minaligns<U, maxpow10e<T>()>[I]); m >= m0) [[likely]]
+                if (constexpr auto J(logend<T> - I); m >= *m0++) [[likely]]
                   e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
                 else if (m < ar::coeff<U(min_v<U> / 10)>()) [[unlikely]]
                   return true;
@@ -659,12 +659,12 @@ public:
         if (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
+            auto m0(std::as_const(maxaligns<U, maxpow10e<T>()>).data());
+
             return (
               [&]() noexcept -> bool
               {
-                constexpr auto J(logend<T> - I);
-
-                if (auto& m0(maxaligns<U, maxpow10e<T>()>[I]); m <= m0) [[likely]]
+                if (constexpr auto J(logend<T> - I); m <= *m0++) [[likely]]
                   e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
                 else if (m > ar::coeff<U(max_v<U> / 10)>()) [[unlikely]]
                   return true;
