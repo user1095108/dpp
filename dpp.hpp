@@ -165,9 +165,9 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
           [&]() noexcept -> bool
           {
             constexpr auto J(logend<T> - I);
-            constexpr auto cmp(min_v<U> / pow(U(10), pow(F(2), J)));
             constexpr auto e2(ar::coeff<pow(F(2), J)>());
-            constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
+            constexpr auto f2(ar::coeff<pow(U(10), e2)>());
+            constexpr auto cmp(ar::coeff<min_v<U> / f2>());
 
             if ((e2 <= i) && (ma >= cmp)) i -= e2, ea -= e2, ma *= f2;
 
@@ -183,10 +183,9 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
           [&]() noexcept -> bool
           {
             constexpr auto J(logend<T> - I);
-            constexpr auto cmp(ar::coeff<max_v<U> /
-              pow(U(10), pow(F(2), J))>());
             constexpr auto e2(ar::coeff<pow(F(2), J)>());
-            constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
+            constexpr auto f2(ar::coeff<pow(U(10), e2)>());
+            constexpr auto cmp(ar::coeff<max_v<U> / f2>());
 
             if ((e2 <= i) && (ma <= cmp)) i -= e2, ea -= e2, ma *= f2;
 
@@ -627,10 +626,9 @@ public:
               [&]() noexcept -> bool
               {
                 constexpr auto J(logend<T> - I);
-                constexpr auto cmp(ar::coeff<min_v<U> /
-                  pow(U(10), pow(F(2), J))>());
                 constexpr auto e2(ar::coeff<pow(F(2), J)>());
-                constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
+                constexpr auto f2(ar::coeff<pow(U(10), e2)>());
+                constexpr auto cmp(ar::coeff<min_v<U> / f2>());
 
                 if (m >= cmp) e -= e2, m *= f2;
 
@@ -646,10 +644,9 @@ public:
               [&]() noexcept -> bool
               {
                 constexpr auto J(logend<T> - I);
-                constexpr auto cmp(ar::coeff<max_v<U> /
-                  pow(U(10), pow(F(2), J))>());
                 constexpr auto e2(ar::coeff<pow(F(2), J)>());
-                constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
+                constexpr auto f2(ar::coeff<pow(U(10), e2)>());
+                constexpr auto cmp(ar::coeff<max_v<U> / f2>());
 
                 if (m <= cmp) e -= e2, m *= f2;
 
