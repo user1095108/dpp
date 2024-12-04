@@ -635,12 +635,12 @@ public:
         while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
-            auto& m0(std::as_const(minaligns<U, maxpow10e<T>()>));
+            auto& maln(minaligns<U, maxpow10e<T>()>);
 
             return (
               [&]() noexcept -> bool
               {
-                if (constexpr auto J(logend<T> - I); m >= m0[I]) [[likely]]
+                if (constexpr auto J(logend<T> - I); m >= maln[I]) [[likely]]
                   e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
                 else if (m < ar::coeff<U(min_v<U> / 10)>()) [[unlikely]]
                   return false;
@@ -653,12 +653,12 @@ public:
         while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
-            auto& m0(std::as_const(maxaligns<U, maxpow10e<T>()>));
+            auto& maln(maxaligns<U, maxpow10e<T>()>);
 
             return (
               [&]() noexcept -> bool
               {
-                if (constexpr auto J(logend<T> - I); m <= m0[I]) [[likely]]
+                if (constexpr auto J(logend<T> - I); m <= maln[I]) [[likely]]
                   e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
                 else if (m > ar::coeff<U(max_v<U> / 10)>()) [[unlikely]]
                   return false;
