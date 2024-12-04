@@ -647,8 +647,7 @@ public:
 
                 return true;
               }() && ...);
-          }(std::make_index_sequence<
-            minaligns<U, maxpow10e<T>()>.size()>()));
+          }(std::make_index_sequence<minaligns<U, maxpow10e<T>()>.size()>()));
       else
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
         while (
@@ -666,8 +665,7 @@ public:
 
                 return true;
               }() && ...);
-          }(std::make_index_sequence<
-            std::size(maxaligns<U, maxpow10e<T>()>)>()));
+          }(std::make_index_sequence<maxaligns<U, maxpow10e<T>()>.size()>()));
 
       return dpp(m / sig2_t(o.m_), e);
     }
