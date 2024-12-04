@@ -127,26 +127,6 @@ inline constexpr auto pwrs2{
   }(std::make_index_sequence<E + 1>())
 };
 
-template <typename U, auto E>
-inline constexpr auto maxaligns{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<U, sizeof...(I)>{
-      max_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
-template <typename U, auto E>
-inline constexpr auto minaligns{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<U, sizeof...(I)>{
-      min_v<U> / pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I))...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
 template <typename T, typename U, auto E>
 inline constexpr auto maxnorms{
   []<auto ...I>(std::index_sequence<I...>) noexcept
@@ -181,16 +161,15 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     while (
       [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
       {
-        auto& maln(minaligns<U, maxpow10e<T>()>);
-
         return (
           [&]() noexcept -> bool
           {
             constexpr auto J(logend<T> - I);
+            constexpr auto cmp(min_v<U> / pow(U(10), pow(F(2), J)));
+            constexpr auto e2(ar::coeff<pow(F(2), J)>());
+            constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
 
-            if (auto const e(pwrs<F(2), logend<T>>[J]);
-              (e <= i) && (ma >= maln[I]))
-              i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[J];
+            if ((e2 <= i) && (ma >= cmp)) i -= e2, ea -= e2, ma *= f2;
 
             return i && (ma >= ar::coeff<U(min_v<U> / 10)>());
           }() && ...);
@@ -200,16 +179,16 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
     while (
       [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
       {
-        auto& maln(maxaligns<U, maxpow10e<T>()>);
-
         return (
           [&]() noexcept -> bool
           {
             constexpr auto J(logend<T> - I);
+            constexpr auto cmp(ar::coeff<max_v<U> /
+              pow(U(10), pow(F(2), J))>());
+            constexpr auto e2(ar::coeff<pow(F(2), J)>());
+            constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
 
-            if (auto const e(pwrs<F(2), logend<T>>[J]);
-              (e <= i) && (ma <= maln[I]))
-              i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[J];
+            if ((e2 <= i) && (ma <= cmp)) i -= e2, ea -= e2, ma *= f2;
 
             return i && (ma <= ar::coeff<U(max_v<U> / 10)>());
           }() && ...);
@@ -222,9 +201,10 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         [&]() noexcept -> bool
         {
           constexpr auto J(logend<T> - I);
+          constexpr auto e2(ar::coeff<pow(F(2), J)>());
+          constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
 
-          if (auto const e(pwrs<F(2), logend<T>>[J]); e <= i)
-            i -= e, mb /= pwrs2<U(10), logend<T>>[J];
+          if (e2 <= i) i -= e2, mb /= f2;
 
           return i && mb;
         }() && ...);
@@ -643,14 +623,16 @@ public:
         while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
-            auto& maln(minaligns<U, maxpow10e<T>()>);
-
             return (
               [&]() noexcept -> bool
               {
-                if (constexpr auto J(logend<T> - I); m >= maln[I])
-                  e -= pwrs<F(2), logend<T>>[J],
-                  m *= pwrs2<U(10), logend<T>>[J];
+                constexpr auto J(logend<T> - I);
+                constexpr auto cmp(ar::coeff<min_v<U> /
+                  pow(U(10), pow(F(2), J))>());
+                constexpr auto e2(ar::coeff<pow(F(2), J)>());
+                constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
+
+                if (m >= cmp) e -= e2, m *= f2;
 
                 return m >= ar::coeff<U(min_v<U> / 10)>();
               }() && ...);
@@ -660,14 +642,16 @@ public:
         while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
-            auto& maln(maxaligns<U, maxpow10e<T>()>);
-
             return (
               [&]() noexcept -> bool
               {
-                if (constexpr auto J(logend<T> - I); m <= maln[I])
-                  e -= pwrs<F(2), logend<T>>[J],
-                  m *= pwrs2<U(10), logend<T>>[J];
+                constexpr auto J(logend<T> - I);
+                constexpr auto cmp(ar::coeff<max_v<U> /
+                  pow(U(10), pow(F(2), J))>());
+                constexpr auto e2(ar::coeff<pow(F(2), J)>());
+                constexpr auto f2(ar::coeff<pow(U(10), pow(F(2), J))>());
+
+                if (m <= cmp) e -= e2, m *= f2;
 
                 return m <= ar::coeff<U(max_v<U> / 10)>();
               }() && ...);
