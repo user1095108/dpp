@@ -631,7 +631,6 @@ public:
       auto m(ar::coeff<pow(U(10), e0)>() * U(m_));
 
       if (intt::is_neg(m))
-      {
         //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
         while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
@@ -649,10 +648,8 @@ public:
                 return true;
               }() && ...);
           }(std::make_index_sequence<
-            std::size(minaligns<U, maxpow10e<T>()>)>()));
-      }
+            minaligns<U, maxpow10e<T>()>.size()>()));
       else
-      {
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
         while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
@@ -671,7 +668,6 @@ public:
               }() && ...);
           }(std::make_index_sequence<
             std::size(maxaligns<U, maxpow10e<T>()>)>()));
-      }
 
       return dpp(m / sig2_t(o.m_), e);
     }
