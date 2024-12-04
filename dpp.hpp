@@ -189,12 +189,10 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
             constexpr auto J(logend<T> - I);
 
             if (auto const e(pwrs<F(2), logend<T>>[J]);
-              (e <= i) && (ma >= maln[I])) [[likely]]
+              (e <= i) && (ma >= maln[I]))
               i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[J];
-            else if (!i || (ma < ar::coeff<U(min_v<U> / 10)>())) [[unlikely]]
-              return false;
 
-            return true;
+            return i && (ma >= ar::coeff<U(min_v<U> / 10)>());
           }() && ...);
       }(std::make_index_sequence<logend<T> + 1>()));
   else
@@ -210,12 +208,10 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
             constexpr auto J(logend<T> - I);
 
             if (auto const e(pwrs<F(2), logend<T>>[J]);
-              (e <= i) && (ma <= maln[I])) [[likely]]
+              (e <= i) && (ma <= maln[I]))
               i -= e, ea -= e, ma *= pwrs2<U(10), logend<T>>[J];
-            else if (!i || (ma > ar::coeff<U(max_v<U> / 10)>())) [[unlikely]]
-              return false;
 
-            return true;
+            return i && (ma <= ar::coeff<U(max_v<U> / 10)>());
           }() && ...);
       }(std::make_index_sequence<logend<T> + 1>()));
 
@@ -227,11 +223,10 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         {
           constexpr auto J(logend<T> - I);
 
-          if (auto const e(pwrs<F(2), logend<T>>[J]); e <= i) [[likely]]
+          if (auto const e(pwrs<F(2), logend<T>>[J]); e <= i)
             i -= e, mb /= pwrs2<U(10), logend<T>>[J];
-          else if (!i || !mb) [[unlikely]] return false;
 
-          return true;
+          return i && mb;
         }() && ...);
     }(std::make_index_sequence<logend<T> + 1>()));
 }
@@ -653,12 +648,11 @@ public:
             return (
               [&]() noexcept -> bool
               {
-                if (constexpr auto J(logend<T> - I); m >= maln[I]) [[likely]]
-                  e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
-                else if (m < ar::coeff<U(min_v<U> / 10)>()) [[unlikely]]
-                  return false;
+                if (constexpr auto J(logend<T> - I); m >= maln[I])
+                  e -= pwrs<F(2), logend<T>>[J],
+                  m *= pwrs2<U(10), logend<T>>[J];
 
-                return true;
+                return m >= ar::coeff<U(min_v<U> / 10)>();
               }() && ...);
           }(std::make_index_sequence<logend<T> + 1>()));
       else
@@ -671,12 +665,11 @@ public:
             return (
               [&]() noexcept -> bool
               {
-                if (constexpr auto J(logend<T> - I); m <= maln[I]) [[likely]]
-                  e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
-                else if (m > ar::coeff<U(max_v<U> / 10)>()) [[unlikely]]
-                  return false;
+                if (constexpr auto J(logend<T> - I); m <= maln[I])
+                  e -= pwrs<F(2), logend<T>>[J],
+                  m *= pwrs2<U(10), logend<T>>[J];
 
-                return true;
+                return m <= ar::coeff<U(max_v<U> / 10)>();
               }() && ...);
           }(std::make_index_sequence<logend<T> + 1>()));
 
