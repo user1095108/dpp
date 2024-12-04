@@ -633,8 +633,7 @@ public:
       if (intt::is_neg(m))
       {
         //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
-        for (;;)
-        if (
+        while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
             auto& m0(std::as_const(minaligns<U, maxpow10e<T>()>));
@@ -645,18 +644,17 @@ public:
                 if (constexpr auto J(logend<T> - I); m >= m0[I]) [[likely]]
                   e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
                 else if (m < ar::coeff<U(min_v<U> / 10)>()) [[unlikely]]
-                  return true;
+                  return false;
 
-                return false;
-              }() || ...);
+                return true;
+              }() && ...);
           }(std::make_index_sequence<
-            std::size(minaligns<U, maxpow10e<T>()>)>())) break;
+            std::size(minaligns<U, maxpow10e<T>()>)>()));
       }
       else
       {
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
-        for (;;)
-        if (
+        while (
           [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
           {
             auto& m0(std::as_const(maxaligns<U, maxpow10e<T>()>));
@@ -667,12 +665,12 @@ public:
                 if (constexpr auto J(logend<T> - I); m <= m0[I]) [[likely]]
                   e -= pwrs<F(2), logend<T>>[J], m *= pwrs2<U(10), logend<T>>[J];
                 else if (m > ar::coeff<U(max_v<U> / 10)>()) [[unlikely]]
-                  return true;
+                  return false;
 
-                return false;
-              }() || ...);
+                return true;
+              }() && ...);
           }(std::make_index_sequence<
-            std::size(maxaligns<U, maxpow10e<T>()>)>())) break;
+            std::size(maxaligns<U, maxpow10e<T>()>)>()));
       }
 
       return dpp(m / sig2_t(o.m_), e);
