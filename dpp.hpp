@@ -228,8 +228,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
           constexpr auto J(logend<T> - I);
 
           if (auto const e(pwrs<F(2), logend<T>>[J]); e <= i) [[likely]]
-              i -= e, mb /= pwrs2<U(10), logend<T>>[J];
-            else if (!i || !mb) [[unlikely]] return false;
+            i -= e, mb /= pwrs2<U(10), logend<T>>[J];
+          else if (!i || !mb) [[unlikely]] return false;
 
           return true;
         }() && ...);
