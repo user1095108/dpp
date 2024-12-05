@@ -986,9 +986,9 @@ namespace literals
 
 #define DPP_LITERAL__(ID)\
 template <char ...c>\
-constexpr auto operator "" _d ## ID() noexcept\
+constexpr auto operator ""_d##ID() noexcept\
 {\
-  return to_decimal<d ## ID>(std::initializer_list<char>{c...});\
+  return to_decimal<d##ID>(std::initializer_list<char>{c...});\
 }
 
 DPP_LITERAL__(16) DPP_LITERAL__(24) DPP_LITERAL__(32) DPP_LITERAL__(48)
