@@ -458,27 +458,26 @@ public:
 
     if (intt::is_neg(e_))
     {
+      using namespace detail;
+
       auto m(m_);
 
-      [&]() noexcept
-      {
-        F e(-F(e_)); // overflow prevention
-
-        for (;;)
+      while (
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
         {
-          using namespace detail;
+          F e(-F(e_)); // overflow prevention
 
-          auto i(ar::coeff<logend<T>>());
+          return (
+            [&]() noexcept -> bool
+            {
+              constexpr auto J(logend<T> - I);
+              constexpr auto e0(ar::coeff<pow(F(2), J)>());
 
-          do
-          {
-            if (auto const e0(pwrs<F(2), logend<T>>[i]);
-              e0 <= e) [[likely]] e -= e0, m /= pwrs2<T(10), logend<T>>[i];
-            else if (!e || !m) [[unlikely]] return;
-          }
-          while (i--);
-        }
-      }();
+              if (e0 <= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
+
+              return e && m;
+            }() && ...);
+        }(std::make_index_sequence<logend<T> + 1>()));
 
       return m;
     }
