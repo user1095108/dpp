@@ -127,28 +127,6 @@ inline constexpr auto pwrs2{
   }(std::make_index_sequence<E + 1>())
 };
 
-template <typename T, typename U, auto E>
-inline constexpr auto maxnorms{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<U, sizeof...(I)>{
-      U(max_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) -
-      (sizeof...(I) - 1 - I ? 0 : 5)...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
-template <typename T, typename U, auto E>
-inline constexpr auto minnorms{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<U, sizeof...(I)>{
-      U(min_v<T>) * pow(U(10), pow(decltype(E)(2), sizeof...(I) - 1 - I)) +
-      (sizeof...(I) - 1 - I ? 0 : 5)...
-    };
-  }(std::make_index_sequence<log<decltype(E)(2)>(E) + 1>())
-};
-
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
@@ -256,42 +234,48 @@ public:
     using namespace detail;
 
     if (m < ar::coeff<U(mmin)>())
-    {
-      //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
-      [&]() noexcept
-      {
-        for (++e;;)
-        for (auto i(ar::coeff<logend<T>>());
-          auto& m0: minnorms<T, U, maxpow10e<T>()>)
-        {
-          if (m < m0) [[likely]]
-            e += pwrs<F(2), logend<T>>[i],
-            m /= pwrs2<U(10), logend<T>>[i];
-          else if (m >= ar::coeff<U(10 * U(mmin) + 5)>()) [[unlikely]] return;
+    { //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
+      ++e;
 
-          --i;
-        }
-      }();
+      while (
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+        {
+          return (
+            [&]() noexcept -> bool
+            {
+              constexpr auto J(logend<T> - I);
+              constexpr auto e0(ar::coeff<pow(F(2), J)>());
+              constexpr auto f(ar::coeff<pow(U(10), e0)>());
+              constexpr auto cmp(U(min_v<T>) * f + (J ? 0 : 5));
+
+              if (m < cmp) e += e0, m /= f;
+
+              return m < ar::coeff<U(10 * U(mmin) + 5)>();
+            }() && ...);
+        }(std::make_index_sequence<logend<T> + 1>()));
 
       m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
-    {
-      //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
-      [&]() noexcept
-      {
-        for (++e;;)
-        for (auto i(ar::coeff<logend<T>>());
-          auto& m0: maxnorms<T, U, maxpow10e<T>()>)
-        {
-          if (m > m0) [[likely]]
-            e += pwrs<F(2), logend<T>>[i],
-            m /= pwrs2<U(10), logend<T>>[i];
-          else if (m <= ar::coeff<U(10 * U(mmax) - 5)>()) [[unlikely]] return;
+    { //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
+      ++e;
 
-          --i;
-        }
-      }();
+      while (
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+        {
+          return (
+            [&]() noexcept -> bool
+            {
+              constexpr auto J(logend<T> - I);
+              constexpr auto e0(ar::coeff<pow(F(2), J)>());
+              constexpr auto f(ar::coeff<pow(U(10), e0)>());
+              constexpr auto cmp(U(max_v<T>) * f - (J ? 0 : 5));
+
+              if (m > cmp) e += e0, m /= f;
+
+              return m > ar::coeff<U(10 * U(mmax) - 5)>();
+            }() && ...);
+        }(std::make_index_sequence<logend<T> + 1>()));
 
       m = (m + U(5)) / U(10);
     }
