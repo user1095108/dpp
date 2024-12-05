@@ -300,7 +300,6 @@ public:
             }() && ...);
         }(std::make_index_sequence<logend<T> + 1>()));
 
-
       e_ = (m_ = m) ? E(e) : E{};
     }
     else [[unlikely]]
