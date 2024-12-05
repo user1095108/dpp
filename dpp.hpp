@@ -110,23 +110,6 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-template <auto X, std::size_t E>
-inline constexpr auto pwrs{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<decltype(X), sizeof...(I)>{pow(X, I)...};
-  }(std::make_index_sequence<E + 1>())
-};
-
-template <auto X, std::size_t E>
-inline constexpr auto pwrs2{
-  []<auto ...I>(std::index_sequence<I...>) noexcept
-  {
-    return std::array<decltype(X), sizeof...(I)>{
-      pow(X, pow(decltype(E)(2), I))...};
-  }(std::make_index_sequence<E + 1>())
-};
-
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
@@ -944,23 +927,23 @@ std::string to_string(dpp<T, E> const& a)
     {
       if (intt::is_neg(e = a.exp()))
       { // for (; !(m % 10); ++e, m /= 10);
-        [&]() noexcept
-        {
-          using namespace detail;
+        using namespace detail;
 
-          for (;;)
-          {
-            auto i(ar::coeff<logend<T>>());
+        while (
+          [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+          { // slash zeros
+            return (
+              [&]() noexcept -> bool
+              {
+                constexpr auto J(logend<T> - I);
+                constexpr auto e0(ar::coeff<pow(F(2), J)>());
+                constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
-            do
-            { // slash zeros
-              if (auto& m0(pwrs2<T(10), logend<T>>[i]);
-                !(m % m0)) [[likely]] e += pwrs<F(2), logend<T>>[i], m /= m0;
-              else if (m % T(10)) [[unlikely]] return;
-            }
-            while (i--);
-          }
-        }();
+                if (!(m % f)) e += e0, m /= f;
+
+                return !(m % T(10));
+              }() && ...);
+          }(std::make_index_sequence<logend<T> + 1>()));
       }
     }
     else [[unlikely]]
@@ -1040,24 +1023,23 @@ struct hash<dpp::dpp<T, E>>
     else if ((m = a.sig())) [[likely]]
     { // unique everything
       // for (; !(m % 10); ++e, m /= 10); // slash zeros
-      [&]() noexcept
-      {
-        using namespace dpp::detail;
+      using namespace dpp::detail;
 
-        for (;;)
-        {
-          auto i(ar::coeff<logend<T>>());
+      while (
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+        { // slash zeros
+          return (
+            [&]() noexcept -> bool
+            {
+              constexpr auto J(logend<T> - I);
+              constexpr auto e0(ar::coeff<dpp::detail::pow(F(2), J)>());
+              constexpr auto f(ar::coeff<dpp::detail::pow(T(10), e0)>());
 
-          do
-          { // slash zeros
-            if (auto& m0(pwrs2<T(10), logend<T>>[i]);
-              !(m % m0)) [[likely]]
-              e += pwrs<F(2), logend<T>>[i], m /= m0;
-            else if (m % T(10)) [[unlikely]] return;
-          }
-          while (i--);
-        }
-      }();
+              if (!(m % f)) e += e0, m /= f;
+
+              return !(m % T(10));
+            }() && ...);
+        }(std::make_index_sequence<logend<T> + 1>()));
     }
     else [[unlikely]]
     { // unique zero
