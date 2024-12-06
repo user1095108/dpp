@@ -226,7 +226,7 @@ public:
               constexpr auto J(ar::coeff<logend<T> - I>());
               constexpr auto e0(ar::coeff<pow(F(2), J)>());
               constexpr auto f(ar::coeff<pow(U(10), e0)>());
-              constexpr auto cmp(U(min_v<T>) * f + (J ? 0 : 5));
+              constexpr auto cmp(ar::coeff<U(min_v<T>) * f + (J ? 0 : 5)>());
 
               if (m < cmp) e += e0, m /= f;
 
@@ -249,7 +249,7 @@ public:
               constexpr auto J(ar::coeff<logend<T> - I>());
               constexpr auto e0(ar::coeff<pow(F(2), J)>());
               constexpr auto f(ar::coeff<pow(U(10), e0)>());
-              constexpr auto cmp(U(max_v<T>) * f - (J ? 0 : 5));
+              constexpr auto cmp(ar::coeff<U(max_v<T>) * f - (J ? 0 : 5)>());
 
               if (m > cmp) e += e0, m /= f;
 
