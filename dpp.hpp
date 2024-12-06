@@ -426,14 +426,14 @@ public:
       while (
         [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
         {
-          F e(-F(e_)); // overflow prevention
+          F e(e_);
 
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+              constexpr auto e0(ar::coeff<-pow(F(2), logend<T> - I)>());
 
-              if (e0 <= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
+              if (e0 >= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
 
               return e && m;
             }() && ...);
