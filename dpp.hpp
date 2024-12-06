@@ -431,7 +431,7 @@ public:
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto e0(ar::coeff<-pow(F(2), logend<T> - I)>());
+              constexpr auto e0(ar::coeff<F(-pow(F(2), logend<T> - I))>());
 
               if (e0 >= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
 
