@@ -125,8 +125,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         return (
           [&]() noexcept -> bool
           {
-            constexpr auto J(logend<T> - I);
-            constexpr auto e(ar::coeff<pow(F(2), J)>());
+            constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
             constexpr auto f(ar::coeff<pow(U(10), e)>());
             constexpr auto cmp(ar::coeff<min_v<U> / f>());
 
@@ -143,8 +142,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         return (
           [&]() noexcept -> bool
           {
-            constexpr auto J(logend<T> - I);
-            constexpr auto e(ar::coeff<pow(F(2), J)>());
+            constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
             constexpr auto f(ar::coeff<pow(U(10), e)>());
             constexpr auto cmp(ar::coeff<max_v<U> / f>());
 
@@ -160,8 +158,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
       return (
         [&]() noexcept -> bool
         {
-          constexpr auto J(logend<T> - I);
-          constexpr auto e(ar::coeff<pow(F(2), J)>());
+          constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
           constexpr auto f(ar::coeff<pow(U(10), e)>());
 
           if (e <= i) i -= e, mb /= f;
@@ -226,7 +223,7 @@ public:
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto J(logend<T> - I);
+              constexpr auto J(ar::coeff<logend<T> - I>());
               constexpr auto e0(ar::coeff<pow(F(2), J)>());
               constexpr auto f(ar::coeff<pow(U(10), e0)>());
               constexpr auto cmp(U(min_v<T>) * f + (J ? 0 : 5));
@@ -249,7 +246,7 @@ public:
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto J(logend<T> - I);
+              constexpr auto J(ar::coeff<logend<T> - I>());
               constexpr auto e0(ar::coeff<pow(F(2), J)>());
               constexpr auto f(ar::coeff<pow(U(10), e0)>());
               constexpr auto cmp(U(max_v<T>) * f - (J ? 0 : 5));
@@ -273,8 +270,7 @@ public:
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto J(logend<T> - I);
-              constexpr auto e0(ar::coeff<pow(F(2), J)>());
+              constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
 
               if (auto const tmp(e + e0); tmp <= ar::coeff<F(emin + 1)>())
                 e = tmp, m /= ar::coeff<pow(U(10), e0)>();
@@ -435,8 +431,7 @@ public:
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto J(logend<T> - I);
-              constexpr auto e0(ar::coeff<pow(F(2), J)>());
+              constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
 
               if (e0 <= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
 
@@ -589,12 +584,11 @@ public:
             return (
               [&]() noexcept -> bool
               {
-                constexpr auto J(logend<T> - I);
-                constexpr auto e2(ar::coeff<pow(F(2), J)>());
-                constexpr auto f(ar::coeff<pow(U(10), e2)>());
+                constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+                constexpr auto f(ar::coeff<pow(U(10), e0)>());
                 constexpr auto cmp(ar::coeff<min_v<U> / f>());
 
-                if (m >= cmp) e -= e2, m *= f;
+                if (m >= cmp) e -= e0, m *= f;
 
                 return m >= ar::coeff<U(min_v<U> / 10)>();
               }() && ...);
@@ -607,12 +601,11 @@ public:
             return (
               [&]() noexcept -> bool
               {
-                constexpr auto J(logend<T> - I);
-                constexpr auto e2(ar::coeff<pow(F(2), J)>());
-                constexpr auto f(ar::coeff<pow(U(10), e2)>());
+                constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+                constexpr auto f(ar::coeff<pow(U(10), e0)>());
                 constexpr auto cmp(ar::coeff<max_v<U> / f>());
 
-                if (m <= cmp) e -= e2, m *= f;
+                if (m <= cmp) e -= e0, m *= f;
 
                 return m <= ar::coeff<U(max_v<U> / 10)>();
               }() && ...);
@@ -935,8 +928,7 @@ std::string to_string(dpp<T, E> const& a)
             return (
               [&]() noexcept -> bool
               {
-                constexpr auto J(logend<T> - I);
-                constexpr auto e0(ar::coeff<pow(F(2), J)>());
+                constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
                 constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
                 if (!(m % f)) e += e0, m /= f;
@@ -1024,6 +1016,7 @@ struct hash<dpp::dpp<T, E>>
     { // unique everything
       // for (; !(m % 10); ++e, m /= 10); // slash zeros
       using namespace dpp::detail;
+      using dpp::detail::pow;
 
       while (
         [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
@@ -1031,9 +1024,8 @@ struct hash<dpp::dpp<T, E>>
           return (
             [&]() noexcept -> bool
             {
-              constexpr auto J(logend<T> - I);
-              constexpr auto e0(ar::coeff<dpp::detail::pow(F(2), J)>());
-              constexpr auto f(ar::coeff<dpp::detail::pow(T(10), e0)>());
+              constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+              constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
               if (!(m % f)) e += e0, m /= f;
 
