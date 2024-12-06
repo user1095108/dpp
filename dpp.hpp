@@ -808,7 +808,7 @@ constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
 
   if (isnan(a) || !a.m_) [[unlikely]] return nan; else
     [[likely]] return dpp<T, E>{
-        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_), F(-F(a.e_)) - e0
+        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_), -e0 - F(a.e_)
       };
 }
 
