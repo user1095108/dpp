@@ -159,9 +159,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
         [&]() noexcept -> bool
         {
           constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
-          constexpr auto f(ar::coeff<pow(U(10), e)>());
 
-          if (e <= i) i -= e, mb /= f;
+          if (e <= i) i -= e, mb /= ar::coeff<pow(U(10), e)>();
 
           return i && mb;
         }() && ...);
