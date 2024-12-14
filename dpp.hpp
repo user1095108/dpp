@@ -168,9 +168,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
 template <typename T, typename E>
   requires(detail::is_signed_v<T> && detail::is_signed_v<E>)
-class dpp
+struct dpp
 {
-public:
   using sig_t = T;
 
   static constexpr auto mmin{detail::min_v<T>};
@@ -193,10 +192,8 @@ public:
       detail::double_t<E>
     >; // int type wide enough to deal with exponents
 
-public:
   T m_; E e_;
 
-public:
   dpp() = default;
 
   dpp(dpp const&) = default;
