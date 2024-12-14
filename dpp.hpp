@@ -75,17 +75,14 @@ inline constexpr U min_v(
 
 template <typename U> inline constexpr U max_v(~min_v<U>);
 
-template <auto B, typename E = std::size_t>
+template <auto B, typename E = std::size_t> requires(integral<decltype(B)>)
 consteval E log(decltype(B) x) noexcept
 {
   x /= B; E e{}; for (decltype(B) y(1); y <= x;) ++e, y *= B; return e;
 }
 
 template <typename U, typename E = std::size_t>
-consteval auto maxpow10e() noexcept
-{
-  return log<U(10), E>(max_v<U>);
-}
+consteval auto maxpow10e() noexcept { return log<U(10), E>(max_v<U>); }
 
 template <typename U>
 inline constexpr auto logend(ar::coeff<log<U(2)>(maxpow10e<U>())>());
