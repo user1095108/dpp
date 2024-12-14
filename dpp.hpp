@@ -71,7 +71,7 @@ inline constexpr std::size_t sig_bit_size_v(
 
 template <typename U>
 inline constexpr U min_v(
-  is_signed_v<U> ? U(2) * -(U(1) << (ar::bit_size_v<U> - 2)) : U{});
+  is_signed_v<U> ? U(1) << (ar::bit_size_v<U> - 1) : U{});
 
 template <typename U> inline constexpr U max_v(~min_v<U>);
 
