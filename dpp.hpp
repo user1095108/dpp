@@ -208,9 +208,7 @@ struct dpp
 
     if (m < ar::coeff<U(mmin)>())
     { //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
-      ++e;
-
-      while (
+      for (++e;
         [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
         {
           return (
@@ -225,15 +223,13 @@ struct dpp
 
               return m < ar::coeff<U(10 * U(mmin) + 5)>();
             }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()));
+        }(std::make_index_sequence<logend<T> + 1>()););
 
       m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
     { //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
-      ++e;
-
-      while (
+      for (++e;
         [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
         {
           return (
@@ -248,7 +244,7 @@ struct dpp
 
               return m > ar::coeff<U(10 * U(mmax) - 5)>();
             }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()));
+        }(std::make_index_sequence<logend<T> + 1>()););
 
       m = (m + U(5)) / U(10);
     }
