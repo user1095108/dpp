@@ -66,12 +66,12 @@ inline constexpr auto is_signed_v(
 
 template <std::floating_point U>
 inline constexpr std::size_t sig_bit_size_v(
-  std::is_same_v<U, float> ? FLT_MANT_DIG :
-  std::is_same_v<U, double> ? DBL_MANT_DIG : LDBL_MANT_DIG);
+  std::is_same_v<std::remove_cv_t<U>, float> ? FLT_MANT_DIG :
+  std::is_same_v<std::remove_cv_t<U>, double> ? DBL_MANT_DIG : LDBL_MANT_DIG);
 
 template <typename U>
 inline constexpr U min_v(
-  is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{});
+  is_signed_v<U> ? U(2) * -(U(1) << (ar::bit_size_v<U> - 2)) : U{});
 
 template <typename U> inline constexpr U max_v(~min_v<U>);
 
