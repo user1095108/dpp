@@ -116,43 +116,43 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
   if (intt::is_neg(ma))
     //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
-    while (
-      [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-      {
-        return (
-          [&]() noexcept -> bool
-          {
-            constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
-            constexpr auto f(ar::coeff<pow(U(10), e)>());
-            constexpr auto cmp(ar::coeff<min_v<U> / f>());
+    [&]<auto ...I>(std::index_sequence<I...>) noexcept
+    {
+      (
+        [&]() noexcept -> bool
+        {
+          constexpr auto e(ar::coeff<pow(F(2), logend<U> - I)>());
+          constexpr auto f(ar::coeff<pow(U(10), e)>());
+          constexpr auto cmp(ar::coeff<min_v<U> / f>());
 
-            if ((e <= i) && (ma >= cmp)) i -= e, ea -= e, ma *= f;
+          if ((e <= i) && (ma >= cmp)) i -= e, ea -= e, ma *= f;
 
-            return i && (ma >= ar::coeff<U(min_v<U> / 10)>());
-          }() && ...);
-      }(std::make_index_sequence<logend<T> + 1>()));
+          return i && (ma >= ar::coeff<U(min_v<U> / 10)>());
+        }() && ...
+      );
+    }(std::make_index_sequence<logend<U> + 1>());
   else
     //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
-    while (
-      [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-      {
-        return (
-          [&]() noexcept -> bool
-          {
-            constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
-            constexpr auto f(ar::coeff<pow(U(10), e)>());
-            constexpr auto cmp(ar::coeff<max_v<U> / f>());
-
-            if ((e <= i) && (ma <= cmp)) i -= e, ea -= e, ma *= f;
-
-            return i && (ma <= ar::coeff<U(max_v<U> / 10)>());
-          }() && ...);
-      }(std::make_index_sequence<logend<T> + 1>()));
-
-  if (i) while (
-    [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+    [&]<auto ...I>(std::index_sequence<I...>) noexcept
     {
-      return (
+      (
+        [&]() noexcept -> bool
+        {
+          constexpr auto e(ar::coeff<pow(F(2), logend<U> - I)>());
+          constexpr auto f(ar::coeff<pow(U(10), e)>());
+          constexpr auto cmp(ar::coeff<max_v<U> / f>());
+
+          if ((e <= i) && (ma <= cmp)) i -= e, ea -= e, ma *= f;
+
+          return i && (ma <= ar::coeff<U(max_v<U> / 10)>());
+        }() && ...
+      );
+    }(std::make_index_sequence<logend<U> + 1>());
+
+  if (i)
+    [&]<auto ...I>(std::index_sequence<I...>) noexcept
+    {
+      (
         [&]() noexcept -> bool
         {
           constexpr auto e(ar::coeff<pow(F(2), logend<T> - I)>());
@@ -160,8 +160,9 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
           if (e <= i) i -= e, mb /= ar::coeff<pow(U(10), e)>();
 
           return i && mb;
-        }() && ...);
-    }(std::make_index_sequence<logend<T> + 1>()));
+        }() && ...
+      );
+    }(std::make_index_sequence<logend<T> + 1>());
 }
 
 }
@@ -208,43 +209,47 @@ struct dpp
 
     if (m < ar::coeff<U(mmin)>())
     { //for (++e; m < ar::coeff<U(10 * U(mmin) + 5)>(); ++e, m /= 10);
-      for (++e;
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-        {
-          return (
-            [&]() noexcept -> bool
-            {
-              constexpr auto J(ar::coeff<logend<T> - I>());
-              constexpr auto e0(ar::coeff<pow(F(2), J)>());
-              constexpr auto f(ar::coeff<pow(U(10), e0)>());
-              constexpr auto cmp(ar::coeff<U(min_v<T>) * f + (J ? 0 : 5)>());
+      ++e;
 
-              if (m < cmp) e += e0, m /= f;
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        (
+          [&]() noexcept
+          {
+            constexpr auto J(ar::coeff<logend<T> - I>());
+            constexpr auto e0(ar::coeff<pow(F(2), J)>());
+            constexpr auto f(ar::coeff<pow(U(10), e0)>());
+            constexpr auto cmp(ar::coeff<U(min_v<T>) * f + (J ? 0 : 5)>());
 
-              return m < ar::coeff<U(10 * U(mmin) + 5)>();
-            }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()););
+            if (m < cmp) e += e0, m /= f;
+
+            return m < ar::coeff<U(10 * U(mmin) + 5)>();
+          }() && ...
+        );
+      }(std::make_index_sequence<logend<T> + 1>());
 
       m = (m - U(5)) / U(10);
     }
     else if (m > ar::coeff<U(mmax)>())
     { //for (++e; m > ar::coeff<U(10 * U(mmax) - 5)>(); ++e, m /= 10);
-      for (++e;
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-        {
-          return (
-            [&]() noexcept -> bool
-            {
-              constexpr auto J(ar::coeff<logend<T> - I>());
-              constexpr auto e0(ar::coeff<pow(F(2), J)>());
-              constexpr auto f(ar::coeff<pow(U(10), e0)>());
-              constexpr auto cmp(ar::coeff<U(max_v<T>) * f - (J ? 0 : 5)>());
+      ++e;
 
-              if (m > cmp) e += e0, m /= f;
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr auto J(ar::coeff<logend<T> - I>());
+            constexpr auto e0(ar::coeff<pow(F(2), J)>());
+            constexpr auto f(ar::coeff<pow(U(10), e0)>());
+            constexpr auto cmp(ar::coeff<U(max_v<T>) * f - (J ? 0 : 5)>());
 
-              return m > ar::coeff<U(10 * U(mmax) - 5)>();
-            }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()););
+            if (m > cmp) e += e0, m /= f;
+
+            return m > ar::coeff<U(10 * U(mmax) - 5)>();
+          }() && ...
+        );
+      }(std::make_index_sequence<logend<T> + 1>());
 
       m = (m + U(5)) / U(10);
     }
@@ -253,11 +258,11 @@ struct dpp
     if (e <= ar::coeff<F(emax)>()) [[likely]]
     {
       //while ((e <= ar::coeff<F(emin)>()) && m) ++e, m /= 10;
-      if (e <= ar::coeff<F(emin)>()) while (
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+      if (e <= ar::coeff<F(emin)>())
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept
         {
-          return (
-            [&]() noexcept -> bool
+          (
+            [&]() noexcept
             {
               constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
 
@@ -265,8 +270,9 @@ struct dpp
                 e = tmp, m /= ar::coeff<pow(U(10), e0)>();
 
               return (e <= ar::coeff<F(emin)>()) && m;
-            }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()));
+            }() && ...
+          );
+        }(std::make_index_sequence<logend<T> + 1>());
 
       e_ = (m_ = m) ? E(e) : E{};
     }
@@ -412,21 +418,21 @@ struct dpp
 
       auto m(m_);
 
-      while (
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-        {
-          F e(e_);
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        F e(e_);
 
-          return (
-            [&]() noexcept -> bool
-            {
-              constexpr auto e0(ar::coeff<F(-pow(F(2), logend<T> - I))>());
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr auto e0(ar::coeff<F(-pow(F(2), logend<T> - I))>());
 
-              if (e0 >= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
+            if (e0 >= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
 
-              return e && m;
-            }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()));
+            return e && m;
+          }() && ...
+        );
+      }(std::make_index_sequence<logend<T> + 1>());
 
       return m;
     }
@@ -567,36 +573,38 @@ struct dpp
 
       if (intt::is_neg(m))
         //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
-        while (
-          [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
+        (
+          [&]<auto ...I>(std::index_sequence<I...>) noexcept
           {
-            return (
+            (
               [&]() noexcept -> bool
               {
-                constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+                constexpr auto e0(ar::coeff<pow(F(2), logend<U> - I)>());
                 constexpr auto f(ar::coeff<pow(U(10), e0)>());
 
                 if (m >= ar::coeff<min_v<U> / f>()) e -= e0, m *= f;
 
                 return m >= ar::coeff<U(min_v<U> / 10)>();
-              }() && ...);
-          }(std::make_index_sequence<logend<T> + 1>()));
+              }() && ...
+            );
+          }(std::make_index_sequence<logend<U> + 1>())
+        );
       else
         //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
-        while (
-          [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-          {
-            return (
-              [&]() noexcept -> bool
-              {
-                constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
-                constexpr auto f(ar::coeff<pow(U(10), e0)>());
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept
+        {
+          (
+            [&]() noexcept -> bool
+            {
+              constexpr auto e0(ar::coeff<pow(F(2), logend<U> - I)>());
+              constexpr auto f(ar::coeff<pow(U(10), e0)>());
 
-                if (m <= ar::coeff<max_v<U> / f>()) e -= e0, m *= f;
+              if (m <= ar::coeff<max_v<U> / f>()) e -= e0, m *= f;
 
-                return m <= ar::coeff<U(max_v<U> / 10)>();
-              }() && ...);
-          }(std::make_index_sequence<logend<T> + 1>()));
+              return m <= ar::coeff<U(max_v<U> / 10)>();
+            }() && ...
+          );
+        }(std::make_index_sequence<logend<U> + 1>());
 
       return dpp(m / sig2_t(o.m_), e);
     }
@@ -909,20 +917,20 @@ std::string to_string(dpp<T, E> const& a)
       { // for (; !(m % 10); ++e, m /= 10);
         using namespace detail;
 
-        while (
-          [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-          { // slash zeros
-            return (
-              [&]() noexcept -> bool
-              {
-                constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
-                constexpr auto f(ar::coeff<pow(T(10), e0)>());
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept
+        { // slash zeros
+          (
+            [&]() noexcept -> bool
+            {
+              constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+              constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
-                if (!(m % f)) e += e0, m /= f;
+              if (!(m % f)) e += e0, m /= f;
 
-                return !(m % T(10));
-              }() && ...);
-          }(std::make_index_sequence<logend<T> + 1>()));
+              return !(m % T(10));
+            }() && ...
+          );
+        }(std::make_index_sequence<logend<T> + 1>());
       }
     }
     else [[unlikely]]
@@ -1005,20 +1013,20 @@ struct hash<dpp::dpp<T, E>>
       using namespace dpp::detail;
       using dpp::detail::pow;
 
-      while (
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept -> bool
-        { // slash zeros
-          return (
-            [&]() noexcept -> bool
-            {
-              constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
-              constexpr auto f(ar::coeff<pow(T(10), e0)>());
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      { // slash zeros
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
+            constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
-              if (!(m % f)) e += e0, m /= f;
+            if (!(m % f)) e += e0, m /= f;
 
-              return !(m % T(10));
-            }() && ...);
-        }(std::make_index_sequence<logend<T> + 1>()));
+            return !(m % T(10));
+          }() && ...
+        );
+      }(std::make_index_sequence<logend<T> + 1>());
     }
     else [[unlikely]]
     { // unique zero
