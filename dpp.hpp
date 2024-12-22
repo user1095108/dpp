@@ -266,8 +266,8 @@ struct dpp
             {
               constexpr auto e0(ar::coeff<pow(F(2), logend<T> - I)>());
 
-              if (auto const tmp(e + e0); tmp <= ar::coeff<F(emin + 1)>())
-                e = tmp, m /= ar::coeff<pow(U(10), e0)>();
+              if (auto const e1(e0 + e); e1 <= ar::coeff<F(emin + 1)>())
+                e = e1, m /= ar::coeff<pow(U(10), e0)>();
 
               return (e <= ar::coeff<F(emin)>()) && m;
             }() && ...
