@@ -87,15 +87,6 @@ consteval auto maxpow10e() noexcept { return log<U(10), E>(max_v<U>); }
 template <typename U>
 inline constexpr auto logend(ar::coeff<log<U(2)>(maxpow10e<U>())>());
 
-consteval auto pow(auto const x, auto const e) noexcept
-{
-  std::remove_const_t<decltype(x)> r(1);
-
-  pow(x, e, [&](auto&& x) noexcept { r *= x; });
-
-  return r;
-}
-
 constexpr void pow(auto x, auto e, auto const f) noexcept
   requires(std::same_as<void, decltype(f(x))>)
 {
@@ -105,6 +96,15 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
 
     if (e /= decltype(e)(2)) [[likely]] x *= x; else [[unlikely]] return;
   }
+}
+
+consteval auto pow(auto const x, auto const e) noexcept
+{
+  auto r(decltype(x)(1));
+
+  pow(x, e, [&](auto&& x) noexcept { r *= x; });
+
+  return r;
 }
 
 template <typename T>
