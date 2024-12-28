@@ -568,7 +568,7 @@ struct dpp
 
       using namespace detail;
 
-      constexpr auto e0(maxpow10e<T, F>());
+      constexpr auto e0(ar::coeff<maxpow10e<T, F>()>());
 
       auto e(F(e_) - F(o.e_) - e0);
       auto m(ar::coeff<pow(U(10), e0)>() * U(m_));
