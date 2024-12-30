@@ -90,7 +90,7 @@ consteval auto maxpow10e() noexcept
 template <typename U, typename E = std::size_t>
 consteval auto maxpow2e() noexcept
 {
-  return ar::coeff<log<U(2), E>(maxpow10e<U, E>())>();
+  return log<U(2), E>(maxpow10e<U, E>());
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
