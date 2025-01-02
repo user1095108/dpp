@@ -94,7 +94,6 @@ consteval auto maxpow2e() noexcept
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
-  requires(std::same_as<void, decltype(f(x))>)
 {
   for (;;)
   {
