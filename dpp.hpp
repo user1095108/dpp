@@ -205,7 +205,7 @@ struct dpp
   dpp(dpp const&) = default;
   dpp(dpp&&) = default;
 
-  constexpr dpp(sig2_t m, exp2_t e) noexcept
+  constexpr dpp(sig2_t m, exp2_t e = {}) noexcept
   {
     using U = sig2_t;
     using F = exp2_t;
@@ -284,7 +284,7 @@ struct dpp
   }
 
   template <detail::integral U>
-  constexpr dpp(U m, exp2_t e) noexcept
+  constexpr dpp(U m, exp2_t e = {}) noexcept
   { // we need extra bits, hence exp2_t
     if constexpr(detail::is_signed_v<U> &&
       (ar::bit_size_v<U> > ar::bit_size_v<T>))
@@ -326,8 +326,6 @@ struct dpp
     }
   }
 
-  constexpr dpp(detail::integral auto const m) noexcept: dpp(m, {}) { }
-
   template <typename U, typename V>
   constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
 
@@ -366,6 +364,8 @@ struct dpp
   }
 
   //
+  constexpr dpp(direct_t, sig_t const m) noexcept: m_(m), e_{} { }
+
   constexpr dpp(direct_t, sig_t const m, exp_t const e) noexcept:
     m_(m), e_(e)
   {
@@ -401,8 +401,8 @@ struct dpp
       auto a(*this);
 
       e2 <= 0 ?
-        detail::pow(dpp(direct, 2, {}), e2, [&](auto&& x) noexcept {a *= x;}):
-        detail::pow(dpp(direct, 2, {}), e2, [&](auto&& x) noexcept {a /= x;});
+        detail::pow(dpp(direct, 2), e2, [&](auto&& x) noexcept {a *= x;}):
+        detail::pow(dpp(direct, 2), e2, [&](auto&& x) noexcept {a /= x;});
 
       return std::ldexp(U(sig_t(a)), e2);
     }
@@ -466,12 +466,12 @@ struct dpp
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    return *this += ar::coeff<dpp{direct, 1, {}}>();
+    return *this += ar::coeff<dpp{direct, 1}>();
   }
 
   constexpr auto& operator--() noexcept
   {
-    return *this -= ar::coeff<dpp{direct, 1, {}}>();
+    return *this -= ar::coeff<dpp{direct, 1}>();
   }
 
   constexpr auto operator++(int) noexcept
@@ -766,7 +766,7 @@ constexpr auto abs(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto trunc(dpp<T, E> const& a) noexcept
 {
-  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(direct, T(a), {});
+  return !intt::is_neg(a.exp()) || isnan(a) ? a : dpp<T, E>(direct, T(a));
 }
 
 template <typename T, typename E>
