@@ -401,8 +401,8 @@ struct dpp
       auto a(*this);
 
       e2 <= 0 ?
-        detail::pow(dpp(direct, 2), e2, [&](auto&& x) noexcept {a *= x;}):
-        detail::pow(dpp(direct, 2), e2, [&](auto&& x) noexcept {a /= x;});
+        detail::pow(dpp(direct, T(2)), e2, [&](auto&& x) noexcept {a *= x;}):
+        detail::pow(dpp(direct, T(2)), e2, [&](auto&& x) noexcept {a /= x;});
 
       return std::ldexp(U(sig_t(a)), e2);
     }
@@ -466,12 +466,12 @@ struct dpp
   // increment, decrement
   constexpr auto& operator++() noexcept
   {
-    return *this += ar::coeff<dpp{direct, 1}>();
+    return *this += ar::coeff<dpp{direct, T(1)}>();
   }
 
   constexpr auto& operator--() noexcept
   {
-    return *this -= ar::coeff<dpp{direct, 1}>();
+    return *this -= ar::coeff<dpp{direct, T(1)}>();
   }
 
   constexpr auto operator++(int) noexcept
@@ -788,7 +788,7 @@ constexpr auto floor(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto round(dpp<T, E> const& a) noexcept
 {
-  dpp<T, E> const c(direct, 5, -1);
+  dpp<T, E> const c(direct, T(5), E(-1));
 
   return intt::is_neg(a.exp()) ?
     trunc(intt::is_neg(a.sig()) ? a - c : a + c) :
