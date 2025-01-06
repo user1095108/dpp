@@ -364,9 +364,9 @@ struct dpp
   }
 
   //
-  constexpr dpp(direct_t, sig_t const m) noexcept: m_(m), e_{} { }
+  constexpr dpp(direct_t, sig_t const& m) noexcept: m_(m), e_{} { }
 
-  constexpr dpp(direct_t, sig_t const m, exp_t const e) noexcept:
+  constexpr dpp(direct_t, sig_t const& m, exp_t const& e) noexcept:
     m_(m), e_(e)
   {
   }
