@@ -527,15 +527,15 @@ struct dpp
     {
       return nan;
     }
+    else if (!m_) [[unlikely]]
+    { // prevent overflow
+      if (ar::coeff<mmin>() == o.m_) [[unlikely]]
+        return dpp(ar::coeff<sig2_t(-sig2_t(mmin))>(), o.e_); else
+          [[likely]] return dpp(direct, -o.m_, o.e_);
+    }
     else if (!o.m_) [[unlikely]]
     {
       return *this;
-    }
-    else if (!m_) [[unlikely]]
-    { // prevent overflow
-      return ar::coeff<mmin>() == o.m_ ?
-        dpp(ar::coeff<sig2_t(-sig2_t(mmin))>(), o.e_) :
-        dpp(direct, -o.m_, o.e_);
     }
     else [[likely]]
     {
