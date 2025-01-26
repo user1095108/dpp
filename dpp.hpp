@@ -97,7 +97,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
 {
   for (;;)
   {
-    if (e & decltype(e)(1)) f(x);
+    if (e & true) f(x);
 
     if (e /= decltype(e)(2)) [[likely]] x *= x; else [[unlikely]] return;
   }
