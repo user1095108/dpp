@@ -379,7 +379,7 @@ struct dpp
   //
   constexpr explicit operator bool() const noexcept
   {
-    return isnan(*this) || m_;
+    return m_ || isnan(*this);
   }
 
   template <std::floating_point U>
