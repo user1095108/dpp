@@ -490,7 +490,7 @@ struct dpp
   constexpr dpp operator-() const noexcept
   { // we need to do it like this, as negating the sig can overflow
     if (isnan(*this)) [[unlikely]] return nan; else [[likely]]
-      return dpp(direct, -(m_ | (ar::coeff<mmin>() == m_)), e_);
+      return dpp(direct, ar::coeff<mmin>() == m_ ? ar::coeff<mmax>():-m_, e_);
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
@@ -526,7 +526,7 @@ struct dpp
     }
     else if (!m_) [[unlikely]]
     { // prevent overflow
-      return dpp(direct, -(o.m_ | (ar::coeff<mmin>() == o.m_)), o.e_);
+      return dpp(direct, ar::coeff<mmin>() == m_ ? ar::coeff<mmax>():-m_, e_);
     }
     else if (!o.m_) [[unlikely]]
     {
