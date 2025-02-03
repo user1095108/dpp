@@ -4,12 +4,12 @@
 
 #include "../dpp.hpp"
 
-template <typename T>
+template <typename T, auto B = 2>
 auto eps() noexcept
 {
   T e(1);
 
-  while ((1 + e / 2) != 1) e /= 2;
+  while ((1 + e / B) != 1) e /= B;
 
   return e;
 }
@@ -20,10 +20,10 @@ int main()
   std::cout << eps<float>() << std::endl;
   std::cout << eps<double>() << std::endl;
   std::cout << eps<long double>() << std::endl;
-  std::cout << eps<dpp::d16>() << std::endl;
-  std::cout << eps<dpp::d32>() << std::endl;
-  std::cout << eps<dpp::d64>() << std::endl;
-  std::cout << eps<dpp::d128>() << std::endl;
+  std::cout << eps<dpp::d16, 10>() << std::endl;
+  std::cout << eps<dpp::d32, 10>() << std::endl;
+  std::cout << eps<dpp::d64, 10>() << std::endl;
+  std::cout << eps<dpp::d128, 10>() << std::endl;
 
   return 0;
 }
