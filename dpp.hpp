@@ -219,7 +219,7 @@ struct dpp
         (
           [&]() noexcept
           {
-            constexpr auto J(ar::coeff<maxpow2e<T>() - I>());
+            constexpr auto J(ar::coeff<maxpow2e<U>() - 1 - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
             constexpr auto cmp(ar::coeff<U(min_v<T>) * f + (J ? 0 : 5)>());
@@ -229,7 +229,7 @@ struct dpp
             return m < ar::coeff<U(10 * U(mmin) + 5)>();
           }() && ...
         );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
+      }(std::make_index_sequence<maxpow2e<U>()>());
 
       ++e; m = (m - U(5)) / U(10);
     }
@@ -240,7 +240,7 @@ struct dpp
         (
           [&]() noexcept -> bool
           {
-            constexpr auto J(ar::coeff<maxpow2e<T>() - I>());
+            constexpr auto J(ar::coeff<maxpow2e<U>() - 1 - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
             constexpr auto cmp(ar::coeff<U(max_v<T>) * f - (J ? 0 : 5)>());
@@ -250,7 +250,7 @@ struct dpp
             return m > ar::coeff<U(10 * U(mmax) - 5)>();
           }() && ...
         );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
+      }(std::make_index_sequence<maxpow2e<U>()>());
 
       ++e; m = (m + U(5)) / U(10);
     }
