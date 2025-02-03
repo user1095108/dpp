@@ -178,8 +178,8 @@ struct dpp
 {
   using sig_t = T;
 
-  static constexpr auto mmin{detail::min_v<T>};
-  static constexpr auto mmax{detail::max_v<T>};
+  static constexpr T mmax{detail::max_v<T>};
+  static constexpr T mmin{-mmax};
 
   using sig2_t = std::conditional_t<
       ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::intmax_t>,
@@ -488,10 +488,9 @@ struct dpp
   constexpr dpp operator+() const noexcept { return *this; }
 
   constexpr dpp operator-() const noexcept
-  { // we need to do it like this, as negating the sig can overflow
+  {
     if (isnan(*this)) [[unlikely]] return nan; else [[likely]]
-      return dpp(direct,
-        ar::coeff<mmin>() == m_ ? ar::coeff<mmax>() : -m_, e_);
+      return dpp(direct, -m_, e_);
   }
 
   constexpr dpp operator+(dpp const& o) const noexcept
@@ -526,9 +525,8 @@ struct dpp
       return nan;
     }
     else if (!m_) [[unlikely]]
-    { // prevent overflow
-      return dpp(direct,
-        ar::coeff<mmin>() == o.m_ ? ar::coeff<mmax>() : -o.m_, o.e_);
+    {
+      return dpp(direct, -o.m_, o.e_);
     }
     else if (!o.m_) [[unlikely]]
     {
@@ -881,10 +879,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     //
-    return {
-        neg ? r : ar::coeff<T::mmin>() == r ? ar::coeff<T::mmax>() : -r,
-        e
-      };
+    return {neg ? r : -r, e};
   }
 }
 
