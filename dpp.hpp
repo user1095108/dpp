@@ -96,7 +96,7 @@ consteval auto maxpow2e() noexcept
 template <typename U, typename E = std::size_t>
 consteval auto halfmaxpow2e() noexcept
 {
-  return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<U> / 2 + 1)));
+  return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<U> / 2)));
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
@@ -228,7 +228,7 @@ struct dpp
             constexpr auto J(ar::coeff<halfmaxpow2e<U>() - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
-            constexpr auto cmp(ar::coeff<U(min_v<T>) * f + (J ? 0 : 5)>());
+            constexpr auto cmp(ar::coeff<U(mmin) * f + (J ? 0 : 5)>());
 
             if (m < cmp) e += e0, m /= f;
 
@@ -249,7 +249,7 @@ struct dpp
             constexpr auto J(ar::coeff<halfmaxpow2e<U>() - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
-            constexpr auto cmp(ar::coeff<U(max_v<T>) * f - (J ? 0 : 5)>());
+            constexpr auto cmp(ar::coeff<U(mmax) * f - (J ? 0 : 5)>());
 
             if (m > cmp) e += e0, m /= f;
 
