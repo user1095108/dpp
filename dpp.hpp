@@ -94,7 +94,7 @@ consteval auto maxpow2e() noexcept
 }
 
 template <typename U, typename T, typename E = std::size_t>
-consteval auto halfmaxpow2e() noexcept
+consteval auto maxpow2e2() noexcept
 {
   return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<T> - 1)));
 }
@@ -188,8 +188,8 @@ struct dpp
   static constexpr auto mmin{T(-mmax)};
 
   using sig2_t = std::conditional_t<
-      ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::intmax_t>,
-      std::intmax_t,
+      ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::int64_t>,
+      std::int64_t,
       detail::double_t<T>
     >;
 
@@ -225,7 +225,7 @@ struct dpp
         (
           [&]() noexcept
           {
-            constexpr auto J(ar::coeff<halfmaxpow2e<U, T>() - I>());
+            constexpr auto J(ar::coeff<maxpow2e2<U, T>() - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
             constexpr auto cmp(ar::coeff<U(mmin) * f + (J ? 0 : 5)>());
@@ -235,7 +235,7 @@ struct dpp
             return m < ar::coeff<U(10 * U(mmin) + 5)>();
           }() && ...
         );
-      }(std::make_index_sequence<halfmaxpow2e<U, T>() + 1>());
+      }(std::make_index_sequence<maxpow2e2<U, T>() + 1>());
 
       ++e; m = (m - U(5)) / U(10);
     }
@@ -246,7 +246,7 @@ struct dpp
         (
           [&]() noexcept -> bool
           {
-            constexpr auto J(ar::coeff<halfmaxpow2e<U, T>() - I>());
+            constexpr auto J(ar::coeff<maxpow2e2<U, T>() - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
             constexpr auto cmp(ar::coeff<U(mmax) * f - (J ? 0 : 5)>());
@@ -256,7 +256,7 @@ struct dpp
             return m > ar::coeff<U(10 * U(mmax) - 5)>();
           }() && ...
         );
-      }(std::make_index_sequence<halfmaxpow2e<U, T>() + 1>());
+      }(std::make_index_sequence<maxpow2e2<U, T>() + 1>());
 
       ++e; m = (m + U(5)) / U(10);
     }
