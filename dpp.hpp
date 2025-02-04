@@ -93,10 +93,10 @@ consteval auto maxpow2e() noexcept
   return log<U(2), E>(maxpow10e<U, E>());
 }
 
-template <typename U, typename E = std::size_t>
+template <typename U, typename T, typename E = std::size_t>
 consteval auto halfmaxpow2e() noexcept
 {
-  return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<U> / 2)));
+  return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<T> - 1)));
 }
 
 constexpr void pow(auto x, auto e, auto const f) noexcept
@@ -225,7 +225,7 @@ struct dpp
         (
           [&]() noexcept
           {
-            constexpr auto J(ar::coeff<halfmaxpow2e<U>() - I>());
+            constexpr auto J(ar::coeff<halfmaxpow2e<U, T>() - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
             constexpr auto cmp(ar::coeff<U(mmin) * f + (J ? 0 : 5)>());
@@ -235,7 +235,7 @@ struct dpp
             return m < ar::coeff<U(10 * U(mmin) + 5)>();
           }() && ...
         );
-      }(std::make_index_sequence<halfmaxpow2e<U>() + 1>());
+      }(std::make_index_sequence<halfmaxpow2e<U, T>() + 1>());
 
       ++e; m = (m - U(5)) / U(10);
     }
@@ -246,7 +246,7 @@ struct dpp
         (
           [&]() noexcept -> bool
           {
-            constexpr auto J(ar::coeff<halfmaxpow2e<U>() - I>());
+            constexpr auto J(ar::coeff<halfmaxpow2e<U, T>() - I>());
             constexpr auto e0(ar::coeff<pow(F(2), J)>());
             constexpr auto f(ar::coeff<pow(U(10), e0)>());
             constexpr auto cmp(ar::coeff<U(mmax) * f - (J ? 0 : 5)>());
@@ -256,7 +256,7 @@ struct dpp
             return m > ar::coeff<U(10 * U(mmax) - 5)>();
           }() && ...
         );
-      }(std::make_index_sequence<halfmaxpow2e<U>() + 1>());
+      }(std::make_index_sequence<halfmaxpow2e<U, T>() + 1>());
 
       ++e; m = (m + U(5)) / U(10);
     }
