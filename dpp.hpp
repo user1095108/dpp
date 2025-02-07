@@ -944,15 +944,11 @@ std::string to_string(dpp<T, E> const& a)
     if (intt::is_neg(e))
     {
       auto const neg(intt::is_neg(m));
+      typename dpp<T, E>::exp2_t const n(r.size() - neg + e);
 
-      if (decltype(e) const n(r.size() - neg + e); n > 0)
-      {
-        r.insert(n + neg, 1, '.');
-      }
-      else
-      { // n <= 0
+      n > 0 ?
+        r.insert(n + neg, 1, '.') :
         r.insert(neg, std::string("0.", 2).append(-n, '0'));
-      }
     }
     else // if (e > 0)
     {
