@@ -944,7 +944,7 @@ std::string to_string(dpp<T, E> const& a)
     if (intt::is_neg(e))
     {
       auto const neg(intt::is_neg(m));
-      typename dpp<T, E>::exp2_t const n(r.size() - neg + e);
+      auto const n(r.size() - neg + e);
 
       n > 0 ?
         r.insert(n + neg, 1, '.') :
