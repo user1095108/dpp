@@ -493,11 +493,7 @@ struct dpp
   // arithmetic
   constexpr dpp operator+() const noexcept { return *this; }
 
-  constexpr dpp operator-() const noexcept
-  {
-    if (isnan(*this)) [[unlikely]] return nan; else [[likely]]
-      return dpp(direct, -m_, e_);
-  }
+  constexpr dpp operator-() const noexcept { return dpp(direct, -m_, e_); }
 
   constexpr dpp operator+(dpp const& o) const noexcept
   {
