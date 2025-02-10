@@ -854,8 +854,8 @@ constexpr T to_decimal(std::input_iterator auto i,
           {
             if (r < ar::coeff<T::mmin / 10>()) [[unlikely]] ++e -= dcp;
             else if (decltype(r) const t(10 * r), d(*i - '0');
-              t >= ar::coeff<T::mmin>() + d) e -= dcp, r = t - d;
-            else ++e -= dcp;
+              t >= ar::coeff<T::mmin>() + d) [[likely]] e -= dcp, r = t - d;
+            else [[unlikely]] ++e -= dcp;
 
             continue;
           }
