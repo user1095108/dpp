@@ -841,7 +841,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 
     //
     typename T::sig_t r{};
-    typename T::exp2_t e{};
+    typename T::exp_t e{};
 
     for (bool dcp{}; end != i; ++i)
     {
@@ -877,7 +877,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     //
-    return {neg ? r : -r, e};
+    return {direct, neg ? r : -r, e};
   }
 }
 
