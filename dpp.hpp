@@ -862,7 +862,7 @@ constexpr T to_decimal(std::input_iterator auto i,
             }
           }
 
-          break;
+          return nan;
 
         case '.':
           if (dcp) [[unlikely]] return nan; else [[likely]]
