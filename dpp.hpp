@@ -850,19 +850,17 @@ constexpr T to_decimal(std::input_iterator auto i,
         [[likely]] case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
           if ((ar::coeff<typename T::exp_t(T::emin + 1)>() != e) &&
-            (r >= ar::coeff<T::mmin / 10>())) [[likely]]
+            (ar::coeff<typename T::exp_t(T::emax)>() != e))
           {
-            if (decltype(r) const t(10 * r), d(*i - '0');
-              t >= ar::coeff<T::mmin>() + d) [[likely]]
-            {
-              r = t - d;
-              e -= dcp;
+            if (r < ar::coeff<T::mmin / 10>()) [[unlikely]] ++e -= dcp;
+            else if (decltype(r) const t(10 * r), d(*i - '0');
+              t >= ar::coeff<T::mmin>() + d) e -= dcp, r = t - d;
+            else ++e -= dcp;
 
-              continue;
-            }
+            continue;
           }
-
-          return nan;
+          else
+            return nan;
 
         case '.':
           if (dcp) [[unlikely]] return nan; else [[likely]]
