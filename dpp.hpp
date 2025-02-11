@@ -364,9 +364,7 @@ struct dpp
       *this = dpp(sig_t(a), e10);
     }
     else [[unlikely]]
-    {
       *this = nan;
-    }
   }
 
   //
@@ -395,9 +393,7 @@ struct dpp
   operator U() const noexcept
   {
     if (isnan(*this)) [[unlikely]]
-    {
       return NAN;
-    }
     else [[likely]]
     {
       int const e2(
@@ -498,17 +494,11 @@ struct dpp
   constexpr dpp operator+(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
-    {
       return nan;
-    }
     else if (!m_) [[unlikely]]
-    {
       return o;
-    }
     else if (!o.m_) [[unlikely]]
-    {
       return *this;
-    }
     else [[likely]]
     {
       sig2_t ma(m_), mb(o.m_);
@@ -523,17 +513,11 @@ struct dpp
   constexpr dpp operator-(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
-    {
       return nan;
-    }
     else if (!m_) [[unlikely]]
-    {
       return dpp(direct, -o.m_, o.e_);
-    }
     else if (!o.m_) [[unlikely]]
-    {
       return *this;
-    }
     else [[likely]]
     {
       sig2_t ma(m_), mb(o.m_);
@@ -554,9 +538,7 @@ struct dpp
   constexpr dpp operator/(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o) || !o.m_) [[unlikely]]
-    {
       return nan;
-    }
     else if (m_) [[likely]]
     {
       using U = sig2_t;
@@ -607,22 +589,16 @@ struct dpp
       return dpp(m / sig2_t(o.m_), e);
     }
     else [[unlikely]]
-    {
       return {};
-    }
   }
 
   //
   constexpr std::partial_ordering operator<=>(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
-    {
       return std::partial_ordering::unordered;
-    }
     else if (!m_ || !o.m_) [[unlikely]]
-    {
       return m_ <=> o.m_;
-    }
     else [[likely]]
     {
       sig2_t ma(m_), mb(o.m_);
@@ -894,9 +870,7 @@ std::string to_string(dpp<T, E> const& a)
   using F = typename dpp<T, E>::exp2_t;
 
   if (isnan(a)) [[unlikely]]
-  {
     return {"nan", 3};
-  }
   else [[likely]]
   {
     auto m(a.sig());
@@ -925,9 +899,7 @@ std::string to_string(dpp<T, E> const& a)
       }
     }
     else [[unlikely]]
-    {
       e = {};
-    }
 
     //
     using intt::to_string;
@@ -945,9 +917,7 @@ std::string to_string(dpp<T, E> const& a)
         r.insert(neg, std::string("0.", 2).append(-n, '0'));
     }
     else // if (e > 0)
-    {
       r.append(e, '0');
-    }
 
     //
     return r;
@@ -990,10 +960,8 @@ struct hash<dpp::dpp<T, E>>
     T m;
     F e(a.exp());
 
-    if (dpp::isnan(a)) [[unlikely]]
-    { // unique nan
+    if (dpp::isnan(a)) [[unlikely]] // unique nan
       m = {};
-    }
     else if ((m = a.sig())) [[likely]]
     { // unique everything
       // for (; !(m % 10); ++e, m /= 10); // slash zeros
@@ -1015,10 +983,8 @@ struct hash<dpp::dpp<T, E>>
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
     }
-    else [[unlikely]]
-    { // unique zero
+    else [[unlikely]] // unique zero
       e = {};
-    }
 
     //
     auto const s(std::hash<decltype(m)>()(m));
