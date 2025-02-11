@@ -853,7 +853,7 @@ constexpr T to_decimal(std::input_iterator auto i,
     }
 
     //
-    return dpp(direct, neg ? r : -r, e);
+    return {direct, neg ? r : typename T::sig_t(-r), e};
   }
 }
 
