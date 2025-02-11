@@ -910,7 +910,7 @@ std::string to_string(dpp<T, E> const& a)
     if (intt::is_neg(e))
     {
       auto const neg(intt::is_neg(m));
-      F const n(r.size() - neg + e);
+      auto const n(F(r.size() - neg) + e);
 
       n > 0 ?
         r.insert(n + neg, 1, '.') :
