@@ -332,8 +332,7 @@ struct dpp
     }
   }
 
-  template <typename U, typename V>
-  constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
+  constexpr dpp(bool const m) noexcept: dpp(direct, m) { }
 
   constexpr dpp(std::floating_point auto a) noexcept
   {
@@ -366,6 +365,9 @@ struct dpp
     else [[unlikely]]
       *this = nan;
   }
+
+  template <typename U, typename V>
+  constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
 
   //
   constexpr dpp(direct_t, sig_t const& m) noexcept: m_(m), e_{} { }
