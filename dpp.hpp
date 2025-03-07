@@ -747,13 +747,13 @@ constexpr auto trunc(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto ceil(dpp<T, E> const& a) noexcept
 {
-  auto const t(trunc(a)); return t + !intt::is_neg(a.sig());
+  return trunc(a) + !intt::is_neg(a.sig());
 }
 
 template <typename T, typename E>
 constexpr auto floor(dpp<T, E> const& a) noexcept
 {
-  auto const t(trunc(a)); return t - intt::is_neg(a.sig());
+  return trunc(a) - intt::is_neg(a.sig());
 }
 
 template <typename T, typename E>
