@@ -64,7 +64,7 @@ int main()
   { // the Golden Ratio (φ) using Newton-Raphson for √5
     auto const sqrt5{approx([](auto const x){return midpoint(x, 5 / x);})};
 
-    std::cout << "Approximation of φ (Golden Ratio): " << (1 + sqrt5) / 2 << std::endl;
+    std::cout << "Approximation of φ (Golden Ratio): " << midpoint(D(1), sqrt5) << std::endl;
   }
 
   { // ln(2) using the Gregory series
