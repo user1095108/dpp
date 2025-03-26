@@ -119,8 +119,7 @@ int main()
 
         for (;;)
         {
-          x = y;
-          y = f(x);
+          y = f(x = y);
 
           if (auto const diffn(std::abs(y - x)); diffn < diff)
             diff = diffn; else break;
