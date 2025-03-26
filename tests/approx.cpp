@@ -15,8 +15,8 @@ int main()
   { // π using the Leibniz series
     D leibniz_pi{};
 
-    for (std::size_t i{}; i != iterations; ++i)
-      leibniz_pi += D(i % 2 ? -1 : 1) / (2 * i + 1);
+    std::size_t i(iterations - 1);
+    do { leibniz_pi += D(i % 2 ? -1 : 1) / (2 * i + 1); } while (i--);
 
     std::cout << "Approximation of π: " << 4 * leibniz_pi << std::endl;
   }
@@ -31,30 +31,38 @@ int main()
     std::cout << "Approximation of e: " << e_approximation << std::endl;
   }
 
+  auto const approx([&](auto const f) noexcept
+    {
+      D x, y{1}, diff(FLT_MAX);
+
+      for (;;)
+      {
+        y = f(x = y);
+
+        if (auto const diffn(std::abs(y - x)); diffn < diff)
+          diff = diffn; else break;
+      }
+
+      return x;
+    }
+  );
+
   { // √2 using the Newton-Raphson method
-    D sqrt2(1); // Initial guess for √2
-
-    for (std::size_t i{}; i != iterations; ++i)
-      sqrt2 = (sqrt2 + D(2) / sqrt2) / 2;
-
-    std::cout << "Approximation of √2: " << sqrt2 << std::endl;
+    std::cout << "Approximation of √2: " <<
+      approx([](auto const x){return (x + 2 / x) / 2;}) << std::endl;
   }
 
   { // the Golden Ratio (φ) using Newton-Raphson for √5
-    D sqrt5{1}; // Initial guess for √5
+    auto sqrt5{approx([](auto const x){return (x + 5 / x) / 2;})};
 
-    for (std::size_t i{}; i != iterations; ++i)
-      sqrt5 = (sqrt5 + D(5) / sqrt5) / 2;
-
-    D golden_ratio = (D(1) + sqrt5) / D(2);
-
-    std::cout << "Approximation of φ (Golden Ratio): " << golden_ratio << std::endl;
+    std::cout << "Approximation of φ (Golden Ratio): " << (1 + sqrt5) / 2 << std::endl;
   }
 
   { // ln(2) using the Gregory series
     D ln2{};
 
-    for (std::size_t i{1}; i <= iterations; ++i) ln2 += D(i % 2 ? 1 : -1) / i;
+    std::size_t i(iterations);
+    do { ln2 += D(i % 2 ? 1 : -1) / i; } while (--i);
 
     std::cout << "Approximation of ln(2): " << ln2 << std::endl;
   }
@@ -113,22 +121,6 @@ int main()
   }
 
   {
-    auto const approx([&](auto const f) noexcept
-      {
-        D x, y{1}, diff(FLT_MAX);
-
-        for (;;)
-        {
-          y = f(x = y);
-
-          if (auto const diffn(std::abs(y - x)); diffn < diff)
-            diff = diffn; else break;
-        }
-
-        return x;
-      }
-    );
-
     std::cout << "Approximation of Plastic ratio: " <<
       approx([](auto const x){return (2*x*x*x + 1) / (3*x*x - 1);}) << std::endl;
     std::cout << "Approximation of Golden ratio: " <<
