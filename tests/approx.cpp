@@ -99,7 +99,7 @@ int main()
       using dpp::midpoint;
       using std::midpoint;
 
-      D const m(midpoint(l, h));
+      auto const m(midpoint(l, h));
 
       if ((m == l) || (m == h)) break;
 
