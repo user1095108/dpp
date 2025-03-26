@@ -3,6 +3,12 @@
 
 #include "../midpoint.hpp"
 
+auto pow(auto const x, auto const e) noexcept ->
+  std::remove_const_t<decltype(x)>
+{
+  return !e ? 1 : 1 == e ? x : (e % 2 ? x : 1) * pow(x * x, e / 2);
+}
+
 int main()
 {
 //using D = long double;
@@ -47,13 +53,16 @@ int main()
     }
   );
 
+  using dpp::midpoint;
+  using std::midpoint;
+
   { // √2 using the Newton-Raphson method
     std::cout << "Approximation of √2: " <<
-      approx([](auto const x){return (x + 2 / x) / 2;}) << std::endl;
+      approx([](auto const x){return midpoint(x, 2 / x);}) << std::endl;
   }
 
   { // the Golden Ratio (φ) using Newton-Raphson for √5
-    auto sqrt5{approx([](auto const x){return (x + 5 / x) / 2;})};
+    auto const sqrt5{approx([](auto const x){return midpoint(x, 5 / x);})};
 
     std::cout << "Approximation of φ (Golden Ratio): " << (1 + sqrt5) / 2 << std::endl;
   }
@@ -86,38 +95,21 @@ int main()
 
   { // Liouville's constant
     D liouville{};
-    D factorial(1);
+    std::uintmax_t factorial(1);
 
     for (std::size_t k{1}; k <= 10; factorial *= ++k)
-    {
-      D power(10);
-      for (std::size_t i{1}; i != factorial; ++i) power *= 10;
-
-      liouville += 1 / power;
-    }
+      liouville += 1 / pow(D(10), factorial);
 
     std::cout << "Approximation of Liouville's constant: " << liouville << std::endl;
   }
 
   {
-    D l(1), h(2);
+    D m;
 
-    for (;;)
-    {
-      using dpp::midpoint;
-      using std::midpoint;
+    for (D l(1), h(2); m = midpoint(l, h), (m != l) && (m != h);)
+      if (auto const mr(pow(m, 12)); mr < 2) l = m; else h = m;
 
-      auto const m(midpoint(l, h));
-
-      if ((m == l) || (m == h)) break;
-
-      D mr(1);
-      for (std::size_t i{}; i != 12; ++i) mr *= m;
-
-      if (mr < 2) l = m; else h = m;
-    }
-
-    std::cout << "Approximation of Twelfth root of two: " << l << std::endl;
+    std::cout << "Approximation of Twelfth root of two: " << m << std::endl;
   }
 
   {
