@@ -78,10 +78,8 @@ int main()
     D liouville{};
     D factorial(1);
 
-    for (std::size_t k{1}; k <= 10; ++k)
+    for (std::size_t k{1}; k <= 10; factorial *= ++k)
     {
-      factorial *= k;
-
       D power(10);
       for (std::size_t i{1}; i != factorial; ++i) power *= 10;
 
