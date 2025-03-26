@@ -24,7 +24,7 @@ int main()
     D factorial(1);
 
     for (std::size_t i(1); i <= iterations; factorial *= ++i)
-      e_approximation += D(1) / factorial;
+      e_approximation += 1 / factorial;
 
     std::cout << "Approximation of e: " << e_approximation << std::endl;
   }
