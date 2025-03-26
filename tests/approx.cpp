@@ -1,12 +1,14 @@
 #include <iostream>
-#include "../dpp.hpp"
+#include <numeric>
+
+#include "../midpoint.hpp"
 
 int main()
 {
 //using D = long double;
   using D = dpp::d128;
 
-  constexpr auto iterations(200000);
+  constexpr auto iterations(100000);
 
   std::cout.precision(18);
 
@@ -87,6 +89,57 @@ int main()
     }
 
     std::cout << "Approximation of Liouville's constant: " << liouville << std::endl;
+  }
+
+  {
+    D l(1), h(2);
+
+    for (;;)
+    {
+      using dpp::midpoint;
+      using std::midpoint;
+
+      D const m(midpoint(l, h));
+
+      if ((m == l) || (m == h)) break;
+
+      D mr(1);
+      for (std::size_t i{}; i != 12; ++i) mr *= m;
+
+      if (mr < 2) l = m; else h = m;
+    }
+
+    std::cout << "Approximation of Twelfth root of two: " << l << std::endl;
+  }
+
+  {
+    auto const approx([&](auto const f) noexcept
+      {
+        D x, y{1}, diff(FLT_MAX);
+
+        for (;;)
+        {
+          x = y;
+          y = f(x);
+
+          if (auto const diffn(std::abs(y - x)); diffn < diff)
+            diff = diffn; else break;
+        }
+
+        return x;
+      }
+    );
+
+    std::cout << "Approximation of Plastic ratio: " <<
+      approx([](auto const x){return (2*x*x*x + 1) / (3*x*x - 1);}) << std::endl;
+    std::cout << "Approximation of Golden ratio: " <<
+      approx([](auto const x){return (2*x + 1) / (x + 1);}) << std::endl;
+    std::cout << "Approximation of Silver ratio: " <<
+      approx([](auto const x){return (3*x + 1) / (x + 1);}) << std::endl;
+    std::cout << "Approximation of Supergolden ratio: " <<
+      approx([](auto const x){return (2*x*x*x + 1) / (3*x*x - x);}) << std::endl;
+    std::cout << "Approximation of Supersilver ratio: " <<
+      approx([](auto const x){return (2*x*x*x + 1) / (3*x*x - 2*x);}) << std::endl;
   }
 
   return 0;

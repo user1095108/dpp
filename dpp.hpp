@@ -506,7 +506,7 @@ struct dpp
       sig2_t ma(m_), mb(o.m_);
       exp2_t ea(e_), eb(o.e_);
 
-      return ea < eb ?
+      return e_ < o.e_ ?
         (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma + mb, eb)) :
         (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma + mb, ea));
     }
@@ -525,7 +525,7 @@ struct dpp
       sig2_t ma(m_), mb(o.m_);
       exp2_t ea(e_), eb(o.e_);
 
-      return ea < eb ?
+      return e_ < o.e_ ?
         (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma - mb, eb)) :
         (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma - mb, ea));
     }
@@ -608,7 +608,7 @@ struct dpp
       {
         exp2_t ea(e_), eb(o.e_); // important to prevent overflow
 
-        ea < eb ?
+        e_ < o.e_ ?
           detail::align<T>(mb, eb, ma, eb - ea) :
           detail::align<T>(ma, ea, mb, ea - eb);
       }
