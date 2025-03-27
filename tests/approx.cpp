@@ -33,7 +33,7 @@ int main()
     D leibniz_pi{};
 
     std::size_t i(iterations - 1);
-    do { leibniz_pi += D(i % 2 ? -1 : 1) / (2 * i + 1); } while (i--);
+    do { leibniz_pi += (i % 2 ? -1 : 1) / (2 * D(i) + 1); } while (i--);
 
     std::cout << "Approximation of π: " << 4 * leibniz_pi << std::endl;
   }
