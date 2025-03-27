@@ -14,9 +14,20 @@ int main()
 //using D = long double;
   using D = dpp::d128;
 
+  using dpp::midpoint; using std::midpoint;
+
   constexpr auto iterations(100000);
 
   std::cout.precision(18);
+
+  { // π using Continued fractions
+    std::size_t i(80);
+    D x(2 * i + 3);
+
+    do { x = D(2 * i + 1) + D(i + 1) * D(i + 1) / x; } while (i--);
+
+    std::cout << "Approximation of π: " << 4 / x << std::endl;
+  }
 
   { // π using the Leibniz series
     D leibniz_pi{};
@@ -37,24 +48,21 @@ int main()
     std::cout << "Approximation of e: " << e_approximation << std::endl;
   }
 
-  auto const approx([&](auto const f) noexcept
+  auto const approx([&](auto const f, D const x0 = 1) noexcept
     {
-      D x, y{1}, diff(FLT_MAX);
+      D x, y{x0}, diff(FLT_MAX);
 
       for (;;)
       {
         y = f(x = y);
 
-        if (auto const diffn(std::abs(y - x)); diffn < diff)
+        if (auto const diffn(abs(y - x)); diffn < diff)
           diff = diffn; else break;
       }
 
-      return x;
+      return midpoint(x, y);
     }
   );
-
-  using dpp::midpoint;
-  using std::midpoint;
 
   { // √2 using the Newton-Raphson method
     std::cout << "Approximation of √2: " <<
