@@ -125,6 +125,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   using U = std::remove_reference_t<decltype(ma)>;
   using F = std::remove_reference_t<decltype(ea)>;
 
+  if (!ma || !mb) { ea -= i; return; }
+
   if (intt::is_neg(ma))
     //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
     [&]<auto ...I>(std::index_sequence<I...>) noexcept
@@ -495,40 +497,26 @@ struct dpp
 
   constexpr dpp operator+(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o)) [[unlikely]]
-      return nan;
-    else if (!m_) [[unlikely]]
-      return o;
-    else if (!o.m_) [[unlikely]]
-      return *this;
-    else [[likely]]
-    {
-      sig2_t ma(m_), mb(o.m_);
-      exp2_t ea(e_), eb(o.e_);
+    if (isnan(*this) || isnan(o)) [[unlikely]] return nan;
 
-      return e_ < o.e_ ?
-        (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma + mb, eb)) :
-        (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma + mb, ea));
-    }
+    sig2_t ma(m_), mb(o.m_);
+    exp2_t ea(e_), eb(o.e_);
+
+    return e_ < o.e_ ?
+      (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma + mb, eb)) :
+      (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma + mb, ea));
   }
 
   constexpr dpp operator-(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o)) [[unlikely]]
-      return nan;
-    else if (!m_) [[unlikely]]
-      return dpp(direct, -o.m_, o.e_);
-    else if (!o.m_) [[unlikely]]
-      return *this;
-    else [[likely]]
-    {
-      sig2_t ma(m_), mb(o.m_);
-      exp2_t ea(e_), eb(o.e_);
+    if (isnan(*this) || isnan(o)) [[unlikely]] return nan;
 
-      return e_ < o.e_ ?
-        (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma - mb, eb)) :
-        (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma - mb, ea));
-    }
+    sig2_t ma(m_), mb(o.m_);
+    exp2_t ea(e_), eb(o.e_);
+
+    return e_ < o.e_ ?
+      (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma - mb, eb)) :
+      (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma - mb, ea));
   }
 
   constexpr dpp operator*(dpp const& o) const noexcept
@@ -599,22 +587,15 @@ struct dpp
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
       return std::partial_ordering::unordered;
-    else if (!m_ || !o.m_) [[unlikely]]
-      return m_ <=> o.m_;
-    else [[likely]]
-    {
-      sig2_t ma(m_), mb(o.m_);
 
-      {
-        exp2_t ea(e_), eb(o.e_); // important to prevent overflow
+    sig2_t ma(m_), mb(o.m_);
+    exp2_t ea(e_), eb(o.e_); // important to prevent overflow
 
-        e_ < o.e_ ?
-          detail::align<T>(mb, eb, ma, eb - ea) :
-          detail::align<T>(ma, ea, mb, ea - eb);
-      }
+    e_ < o.e_ ?
+      detail::align<T>(mb, eb, ma, eb - ea) :
+      detail::align<T>(ma, ea, mb, ea - eb);
 
-      return ma <=> mb;
-    }
+    return ma <=> mb;
   }
 
   //
