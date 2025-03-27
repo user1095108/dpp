@@ -125,7 +125,8 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   using U = std::remove_reference_t<decltype(ma)>;
   using F = std::remove_reference_t<decltype(ea)>;
 
-  if (!mb) [[unlikely]] return; else if (!ma) [[unlikely]] { ea -= i; return; }
+  if (!mb) [[unlikely]] return;
+  else if (!ma) [[unlikely]] { ea -= i; return; }
   else if (intt::is_neg(ma))
     //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
     [&]<auto ...I>(std::index_sequence<I...>) noexcept
