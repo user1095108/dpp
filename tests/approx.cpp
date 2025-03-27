@@ -1,7 +1,7 @@
 #include <iostream>
 #include <numeric>
 
-#include "../midpoint.hpp"
+#include "../dpp.hpp"
 
 auto pow(auto const x, auto const e) noexcept ->
   std::remove_const_t<decltype(x)>
