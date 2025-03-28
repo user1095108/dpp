@@ -771,7 +771,7 @@ constexpr dpp<T, E> midpoint(dpp<T, E> const& a, dpp<T, E> const& b) noexcept
   if (isnan(a) || isnan(b)) [[unlikely]] return nan;
 
   U ma(a.m_), mb(b.m_);
-  E ea(a.e_), eb(b.e_);
+  F ea(a.e_), eb(b.e_);
 
   return a.e_ < b.e_ ?
     (detail::align<T>(mb, eb, ma, eb - ea),
