@@ -30,6 +30,15 @@ int main()
     std::cout << "Approximation of π: " << 4 / x << std::endl;
   }
 
+  { // e using Continued fractions
+    std::size_t i(80);
+    D x((i + 1) % 3 ? 1 : 2 * (i + 1) / 3);
+
+    do { x = (i % 3 ? 1 : 2 * i / 3) + 1 / x; } while (--i);
+
+    std::cout << "Approximation of e: " << 1 + x << std::endl;
+  }
+
   auto const approx([&](auto const f, D const& x0 = 1) noexcept
     {
       D x, y{x0}, diff(FLT_MAX);
