@@ -495,29 +495,21 @@ struct dpp
 
   constexpr dpp operator-() const noexcept { return dpp(direct, -m_, e_); }
 
-  constexpr dpp operator+(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o)) [[unlikely]] return nan;
-
-    sig2_t ma(m_), mb(o.m_);
-    exp2_t ea(e_), eb(o.e_);
-
-    return e_ < o.e_ ?
-      (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma + mb, eb)) :
-      (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma + mb, ea));
+  #define DPP_OPERATOR_PM__(OP)\
+  constexpr dpp operator OP(dpp const& o) const noexcept\
+  {\
+    if (isnan(*this) || isnan(o)) [[unlikely]] return nan;\
+\
+    sig2_t ma(m_), mb(o.m_);\
+    exp2_t ea(e_), eb(o.e_);\
+\
+    return e_ < o.e_ ?\
+      (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma OP mb, eb)) :\
+      (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma OP mb, ea));\
   }
 
-  constexpr dpp operator-(dpp const& o) const noexcept
-  {
-    if (isnan(*this) || isnan(o)) [[unlikely]] return nan;
-
-    sig2_t ma(m_), mb(o.m_);
-    exp2_t ea(e_), eb(o.e_);
-
-    return e_ < o.e_ ?
-      (detail::align<T>(mb, eb, ma, eb - ea), dpp(ma - mb, eb)) :
-      (detail::align<T>(ma, ea, mb, ea - eb), dpp(ma - mb, ea));
-  }
+  DPP_OPERATOR_PM__(+)
+  DPP_OPERATOR_PM__(-)
 
   constexpr dpp operator*(dpp const& o) const noexcept
   {
