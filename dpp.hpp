@@ -286,9 +286,7 @@ struct dpp
       e_ = (m_ = m) ? E(e) : E{};
     }
     else [[unlikely]]
-    {
       *this = nan;
-    }
   }
 
   template <detail::integral U>
@@ -329,9 +327,7 @@ struct dpp
       e_ = (m_ = m) ? E(e) : E{};
     }
     else [[unlikely]]
-    {
       *this = nan;
-    }
   }
 
   constexpr dpp(bool const m) noexcept: dpp(direct, m) { }
