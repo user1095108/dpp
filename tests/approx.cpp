@@ -106,6 +106,8 @@ int main()
       approx([](auto const x){return (2*x*x*x + 1) / (3*x*x - x);}) << std::endl;
     std::cout << "Approximation of Supersilver ratio: " <<
       approx([](auto const x){return (2*x*x*x + 1) / (3*x*x - 2*x);}) << std::endl;
+    std::cout << "Approximation of Twelfth root of two: " <<
+      approx([](auto const x){return (11*pow(x, 12) + 2) / (12*pow(x, 11));}) << std::endl;
   }
 
   { // π using the Leibniz series
