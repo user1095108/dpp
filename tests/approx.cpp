@@ -43,7 +43,7 @@ int main()
     std::size_t i(80);
     D x(2);
 
-    do { x = 2 + 1 / x; } while (--i);
+    do { x = 2 + 1 / x; } while (i--);
 
     std::cout << "Approximation of √2: " << x - 1 << std::endl;
   }
@@ -55,6 +55,15 @@ int main()
     do { x = 1 + 1 / x; } while (--i);
 
     std::cout << "Approximation of φ (Golden Ratio): " << x << std::endl;
+  }
+
+  { // √5 using Continued fractions
+    std::size_t i(80);
+    D x(4);
+
+    do { x = 4 + 1 / x; } while (i--);
+
+    std::cout << "Approximation of √5: " << x - 2 << std::endl;
   }
 
   auto const approx([&](auto const f, D const& x0 = 1) noexcept
