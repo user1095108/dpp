@@ -39,6 +39,24 @@ int main()
     std::cout << "Approximation of e: " << 1 + x << std::endl;
   }
 
+  { // √2 using Continued fractions
+    std::size_t i(80);
+    D x(2);
+
+    do { x = 2 + 1 / x; } while (--i);
+
+    std::cout << "Approximation of √2: " << x - 1 << std::endl;
+  }
+
+  { // φ (Golden Ratio) using Continued fractions
+    std::size_t i(80);
+    D x(1);
+
+    do { x = 1 + 1 / x; } while (--i);
+
+    std::cout << "Approximation of φ (Golden Ratio): " << x << std::endl;
+  }
+
   auto const approx([&](auto const f, D const& x0 = 1) noexcept
     {
       D x, y{x0}, diff(FLT_MAX);
