@@ -147,10 +147,10 @@ int main()
   }
 
   { // e using the series expansion
-    D e_approximation{};
+    D e_approximation(1);
     D factorial(1);
 
-    for (std::size_t i(1); i <= iterations; factorial *= ++i)
+    for (std::size_t i(1); i != iterations; factorial *= ++i)
       e_approximation += 1 / factorial;
 
     std::cout << "Approximation of e: " << e_approximation << std::endl;
