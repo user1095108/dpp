@@ -390,7 +390,7 @@ struct dpp
   {
     if (isnan(*this)) [[unlikely]] return NAN; else [[likely]]
     {
-      U a(m_);
+      U const a(m_);
 
       auto const k(detail::pow(U(10), e_));
 
