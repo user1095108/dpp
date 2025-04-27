@@ -394,11 +394,11 @@ struct dpp
   {
     if (isnan(*this)) [[unlikely]] return NAN; else [[likely]]
     {
-      U a(m_);
+      auto a(std::ldexp(U(m_), e_));
 
       e_ < E{} ?
-        detail::pow(U(10), e_, [&](auto const x) noexcept {a /= x;}):
-        detail::pow(U(10), e_, [&](auto const x) noexcept {a *= x;});
+        detail::pow(U(5), e_, [&](auto const x) noexcept { a /= x; }) :
+        detail::pow(U(5), e_, [&](auto const x) noexcept { a *= x; });
 
       return a;
     }
