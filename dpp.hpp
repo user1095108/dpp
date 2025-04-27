@@ -109,7 +109,7 @@ constexpr void pow(auto x, auto e, auto const f) noexcept
   }
 }
 
-consteval auto pow(auto const x, auto const e) noexcept
+constexpr auto pow(auto const x, auto const e) noexcept
 {
   auto r(decltype(x)(1));
 
@@ -350,11 +350,9 @@ struct dpp
       e2 -= bits;
 
       //
-      decltype(a) k(1);
-
       int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
 
-      detail::pow(decltype(a)(10), e10, [&](auto const x) noexcept {k *= x;});
+      auto const k(detail::pow(decltype(a)(10), e10));
 
       *this = dpp(sig_t(std::ldexp(e10 <= 0 ? a * k : a / k, e2)), e10);
     }
@@ -392,9 +390,9 @@ struct dpp
   {
     if (isnan(*this)) [[unlikely]] return NAN; else [[likely]]
     {
-      U a(m_), k(1);
+      U a(m_);
 
-      detail::pow(U(10), e_, [&](auto const x) noexcept { k *= x; });
+      auto const k(detail::pow(U(10), e_));
 
       return e_ < E{} ? a / k : a * k;
     }
