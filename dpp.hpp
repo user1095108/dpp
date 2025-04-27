@@ -428,13 +428,7 @@ struct dpp
       return m;
     }
     else
-    {
-      U m(m_);
-
-      detail::pow(U(10), e_, [&](auto&& x) noexcept { m *= x; });
-
-      return m;
-    }
+      return U(m_) * detail::pow(U(10), e_);
   }
 
   // assignment
