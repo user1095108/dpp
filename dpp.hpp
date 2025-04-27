@@ -350,13 +350,13 @@ struct dpp
       e2 -= bits;
 
       //
+      decltype(a) k(1);
+
       int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
 
-      e10 <= 0 ?
-        detail::pow(decltype(a)(10), e10, [&](auto&& x) noexcept {a *= x;}) :
-        detail::pow(decltype(a)(10), e10, [&](auto&& x) noexcept {a /= x;});
+      detail::pow(decltype(a)(10), e10, [&](auto const x) noexcept {k *= x;});
 
-      *this = dpp(sig_t(std::ldexp(a, e2)), e10);
+      *this = dpp(sig_t(std::ldexp(e10 <= 0 ? a * k : a / k, e2)), e10);
     }
     else [[unlikely]]
       *this = nan;
@@ -392,13 +392,11 @@ struct dpp
   {
     if (isnan(*this)) [[unlikely]] return NAN; else [[likely]]
     {
-      U a(m_);
+      U a(m_), k(1);
 
-      e_ < E{} ?
-        detail::pow(U(10), e_, [&](auto const x) noexcept { a /= x; }) :
-        detail::pow(U(10), e_, [&](auto const x) noexcept { a *= x; });
+      detail::pow(U(10), e_, [&](auto const x) noexcept { k *= x; });
 
-      return a;
+      return e_ < E{} ? a / k : a * k;
     }
   }
 
