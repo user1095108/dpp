@@ -352,13 +352,11 @@ struct dpp
       //
       int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
 
-      a = std::ldexp(a, e2 - e10);
-
       e10 <= 0 ?
-        detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a *= x;}) :
-        detail::pow(decltype(a)(5), e10, [&](auto&& x) noexcept {a /= x;});
+        detail::pow(decltype(a)(10), e10, [&](auto&& x) noexcept {a *= x;}) :
+        detail::pow(decltype(a)(10), e10, [&](auto&& x) noexcept {a /= x;});
 
-      *this = dpp(sig_t(a), e10);
+      *this = dpp(sig_t(std::ldexp(a, e2)), e10);
     }
     else [[unlikely]]
       *this = nan;
