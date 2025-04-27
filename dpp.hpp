@@ -392,21 +392,15 @@ struct dpp
     std::is_same_v<U, long double>))
   operator U() const noexcept
   {
-    if (isnan(*this)) [[unlikely]]
-      return NAN;
-    else [[likely]]
+    if (isnan(*this)) [[unlikely]] return NAN; else [[likely]]
     {
-      int const e2(
-        std::ceil(int(e_) * 3.32192809488736234787031942948939017586483139f)
-      );
+      U a(m_);
 
-      auto a(*this);
+      e_ < E{} ?
+        detail::pow(U(10), e_, [&](auto const x) noexcept {a /= x;}):
+        detail::pow(U(10), e_, [&](auto const x) noexcept {a *= x;});
 
-      e2 <= 0 ?
-        detail::pow(dpp(direct, T(2)), e2, [&](auto&& x) noexcept {a *= x;}):
-        detail::pow(dpp(direct, T(2)), e2, [&](auto&& x) noexcept {a /= x;});
-
-      return std::ldexp(U(sig_t(a)), e2);
+      return a;
     }
   }
 
