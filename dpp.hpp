@@ -99,23 +99,14 @@ consteval auto maxpow2e2() noexcept
   return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<T> - 1)));
 }
 
-constexpr void pow(auto x, auto e, auto const f) noexcept
+constexpr auto pow(auto x, auto e) noexcept
 {
-  for (;;)
+  for (auto r(decltype(x)(1));;)
   {
-    if (e & decltype(e)(1)) f(x);
+    if (e & decltype(e)(1)) r *= x;
 
-    if (e /= decltype(e)(2)) [[likely]] x *= x; else [[unlikely]] return;
+    if (e /= decltype(e)(2)) [[likely]] x *= x; else [[unlikely]] return r;
   }
-}
-
-constexpr auto pow(auto const x, auto const e) noexcept
-{
-  auto r(decltype(x)(1));
-
-  pow(x, e, [&](auto&& x) noexcept { r *= x; });
-
-  return r;
 }
 
 template <typename T>
