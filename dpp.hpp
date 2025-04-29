@@ -345,8 +345,8 @@ struct dpp
 
       auto const k(detail::pow(decltype(a)(10), e10));
 
-      *this = dpp(sig_t(std::round(std::ldexp(
-        e10 <= 0 ? a * k : a / k, e2))), e10);
+      *this =
+        dpp(T(std::round(std::ldexp(e10 <= 0 ? a * k : a / k, e2))), e10);
     }
     else [[unlikely]]
       *this = nan;
@@ -390,7 +390,11 @@ struct dpp
 
       auto const k(detail::pow(dpp(direct, T(2)), e2));
 
-      return std::ldexp(U(round(e_ <= 0 ? *this * k : *this / k).m_), e2);
+      auto const a(e_ <= E{} ? *this * k : *this / k);
+
+      dpp const c(direct, T(5), E(-1));
+
+      return std::ldexp(U(T(intt::is_neg(a.m_) ? a - c : a + c)), e2);
     }
   }
 
