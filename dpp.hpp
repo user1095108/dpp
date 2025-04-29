@@ -345,7 +345,8 @@ struct dpp
 
       auto const k(detail::pow(decltype(a)(10), e10));
 
-      *this = dpp(sig_t(std::ldexp(e10 <= 0 ? a * k : a / k, e2)), e10);
+      *this = dpp(sig_t(std::round(std::ldexp(
+        e10 <= 0 ? a * k : a / k, e2))), e10);
     }
     else [[unlikely]]
       *this = nan;
@@ -379,13 +380,17 @@ struct dpp
     std::is_same_v<U, long double>))
   operator U() const noexcept
   {
-    if (isnan(*this)) [[unlikely]] return NAN; else [[likely]]
+    if (isnan(*this)) [[unlikely]]
+      return NAN;
+    else [[likely]]
     {
-      U const a(m_);
+      int const e2(
+        std::ceil(int(e_) * 3.32192809488736234787031942948939017586483139f)
+      );
 
-      auto const k(detail::pow(U(10), e_));
+      auto const k(detail::pow(dpp(direct, T(2)), e2));
 
-      return e_ < E{} ? a / k : a * k;
+      return std::ldexp(U(round(e_ <= 0 ? *this * k : *this / k).m_), e2);
     }
   }
 
