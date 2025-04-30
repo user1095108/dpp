@@ -392,7 +392,7 @@ struct dpp
 
       auto const a(e_ <= E{} ? *this * k : *this / k);
 
-      dpp const c(direct, T(5), E(-1));
+      constexpr dpp c(direct, T(5), E(-1));
 
       return std::ldexp(U(T(intt::is_neg(a.m_) ? a - c : a + c)), e2);
     }
@@ -710,7 +710,7 @@ constexpr auto floor(dpp<T, E> const& a) noexcept
 template <typename T, typename E>
 constexpr auto round(dpp<T, E> const& a) noexcept
 {
-  dpp<T, E> const c(direct, T(5), E(-1));
+  constexpr dpp<T, E> c(direct, T(5), E(-1));
 
   return intt::is_neg(a.exp()) ?
     trunc(intt::is_neg(a.sig()) ? a - c : a + c) :
