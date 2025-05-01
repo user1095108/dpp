@@ -384,9 +384,7 @@ struct dpp
       return NAN;
     else [[likely]]
     {
-      int const e2(
-        std::ceil(int(e_) * 3.32192809488736234787031942948939017586483139f)
-      );
+      int const e2(std::ceil(int(e_) * 3.32192809488736234787031942948939f));
 
       auto const k(detail::pow(dpp(direct, T(2)), e2));
 
