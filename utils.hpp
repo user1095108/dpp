@@ -7,6 +7,7 @@
 namespace dpp
 {
 
+//
 template <typename T, typename E>
 constexpr dpp<T, E> div2(dpp<T, E> const& a) noexcept
 {
