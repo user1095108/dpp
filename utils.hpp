@@ -68,6 +68,17 @@ constexpr dpp<T, E> div10(dpp<T, E> const& a) noexcept
   return dpp<T, E>(a.m_, F(a.e_) - F(E10));
 }
 
+template <auto E2 = 1, typename T, typename E>
+constexpr dpp<T, E> mul2(dpp<T, E> const& a) noexcept
+{
+  using U = typename dpp<T, E>::sig2_t;
+  using F = typename dpp<T, E>::exp2_t;
+
+  if (isnan(a)) [[unlikely]] return nan;
+
+  return dpp<T, E>(U(a.m_) << E2, F(a.e_));
+}
+
 }
 
 #endif // DPP_UTILS_HPP
