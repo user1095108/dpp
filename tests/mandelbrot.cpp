@@ -31,7 +31,7 @@ constexpr auto mandelbrot(D const cr, D const ci) noexcept
   {
     if (auto const zr2(zr * zr), zi2(zi * zi); zr2 + zi2 <= 4)
     {
-      zi = 2 * zr * zi + ci;
+      zi = fma(2 * zr, zi, ci); // zi = 2 * zr * zi + ci;
       zr = zr2 - zi2 + cr;
     }
     else
