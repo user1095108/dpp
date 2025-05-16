@@ -58,7 +58,7 @@ constexpr dpp<T, E> div8(dpp<T, E> const& a) noexcept
   return dpp<T, E>(U(125) * U(a.m_), F(a.e_) - F(3));
 }
 
-template <auto E10 = 1, typename T, typename E>
+template <int E10 = 1, typename T, typename E>
 constexpr dpp<T, E> div10(dpp<T, E> const& a) noexcept
 {
   using F = typename dpp<T, E>::exp2_t;
@@ -68,7 +68,7 @@ constexpr dpp<T, E> div10(dpp<T, E> const& a) noexcept
   return dpp<T, E>(a.m_, F(a.e_) - F(E10));
 }
 
-template <auto E2 = 1, typename T, typename E>
+template <int E2 = 1, typename T, typename E>
 constexpr dpp<T, E> mul2(dpp<T, E> const& a) noexcept
 {
   using U = typename dpp<T, E>::sig2_t;
