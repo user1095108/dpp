@@ -9,6 +9,7 @@
 #endif
 
 #include <iostream>
+#include <numeric>
 #include <random>
 
 #include "../dpp.hpp"
@@ -150,7 +151,7 @@ int main(int const argc, char* argv[]) noexcept
   std::vector<std::vector<bool>> buffer(--h);
   for (auto& l: buffer) l.resize(w);
 
-  auto const mx((xmax + xmin) / 2), my((ymax + ymin) / 2);
+  auto const mx(midpoint(xmin, xmax)), my(midpoint(ymin, ymax));
   auto const sx(w / (xmax - xmin)), sy(h / (ymax - ymin));
   auto const hw(D(w - 1) / 2), hh(D(h - 1) / 2);
 
