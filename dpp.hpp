@@ -753,73 +753,68 @@ template <typename T>
 constexpr T to_decimal(std::input_iterator auto i,
   decltype(i) const end) noexcept
 {
-  if (i == end) [[unlikely]]
-  {
-    return nan;
-  }
-  else [[likely]]
-  {
-    bool neg{};
+  if (i == end) [[unlikely]] return nan;
 
+  bool neg{};
+
+  switch (*i)
+  {
+    [[likely]] case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+    case '.':
+      break;
+
+    case '-':
+      neg = true;
+      [[fallthrough]];
+
+    case '+':
+      ++i;
+      break;
+
+    [[unlikely]] default:
+      return nan;
+  }
+
+  //
+  typename T::sig_t r{};
+  typename T::exp_t e{};
+
+  for (bool dcp{}; end != i; ++i)
+  {
     switch (*i)
     {
       [[likely]] case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
+        if ((ar::coeff<typename T::exp_t(T::emin + 1)>() != e) &&
+          (ar::coeff<typename T::exp_t(T::emax)>() != e))
+        {
+          if (r < ar::coeff<T::mmin / 10>()) [[unlikely]] ++e -= dcp;
+          else if (decltype(r) const t(10 * r), d(*i - '0');
+            t >= ar::coeff<T::mmin>() + d) [[likely]] e -= dcp, r = t - d;
+          else [[unlikely]] ++e -= dcp, r = ar::coeff<T::mmin>();
+
+          continue;
+        }
+        else
+          return nan;
+
       case '.':
-        break;
+        if (dcp) [[unlikely]] return nan; else [[likely]]
+          { dcp = true; continue; }
 
-      case '-':
-        neg = true;
-        [[fallthrough]];
-
-      case '+':
-        ++i;
+      case '\0':
         break;
 
       [[unlikely]] default:
         return nan;
     }
 
-    //
-    typename T::sig_t r{};
-    typename T::exp_t e{};
-
-    for (bool dcp{}; end != i; ++i)
-    {
-      switch (*i)
-      {
-        [[likely]] case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if ((ar::coeff<typename T::exp_t(T::emin + 1)>() != e) &&
-            (ar::coeff<typename T::exp_t(T::emax)>() != e))
-          {
-            if (r < ar::coeff<T::mmin / 10>()) [[unlikely]] ++e -= dcp;
-            else if (decltype(r) const t(10 * r), d(*i - '0');
-              t >= ar::coeff<T::mmin>() + d) [[likely]] e -= dcp, r = t - d;
-            else [[unlikely]] ++e -= dcp, r = ar::coeff<T::mmin>();
-
-            continue;
-          }
-          else
-            return nan;
-
-        case '.':
-          if (dcp) [[unlikely]] return nan; else [[likely]]
-            { dcp = true; continue; }
-
-        case '\0':
-          break;
-
-        [[unlikely]] default:
-          return nan;
-      }
-
-      break;
-    }
-
-    //
-    return {direct, neg ? r : typename T::sig_t(-r), e};
+    break;
   }
+
+  //
+  return {direct, neg ? r : typename T::sig_t(-r), e};
 }
 
 template <typename T>
