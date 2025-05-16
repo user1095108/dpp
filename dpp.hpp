@@ -748,6 +748,23 @@ constexpr dpp<T, E> midpoint(dpp<T, E> const& a, dpp<T, E> const& b) noexcept
     dpp<T, E>(U(5) * (ma + mb), ea - F(1)));
 }
 
+template <typename T, typename E>
+constexpr dpp<T, E> fma(dpp<T, E> const& a, dpp<T, E> const& b,
+  dpp<T, E> const& c) noexcept
+{
+  using U = typename dpp<T, E>::sig2_t;
+  using F = typename dpp<T, E>::exp2_t;
+
+  if (isnan(a) || isnan(b) || isnan(c)) [[unlikely]] return nan;
+
+  U ma(U(a.m_) * U(b.m_)), mb(c.m_);
+  F ea(F(a.e_) + F(b.e_)), eb(c.e_);
+
+  return ea < eb ?
+    (detail::align<T>(mb, eb, ma, eb - ea), dpp<T, E>(ma + mb, eb)) :
+    (detail::align<T>(ma, ea, mb, ea - eb), dpp<T, E>(ma + mb, ea));
+}
+
 // conversions
 template <typename T>
 constexpr T to_decimal(std::input_iterator auto i,
