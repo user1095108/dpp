@@ -829,59 +829,56 @@ std::string to_string(dpp<T, E> const& a)
 {
   using F = typename dpp<T, E>::exp2_t;
 
-  if (isnan(a)) [[unlikely]]
-    return {"nan", 3};
-  else [[likely]]
+  if (isnan(a)) [[unlikely]] return {"nan", 3};
+
+  auto m(a.sig());
+  F e;
+
+  if (m) [[likely]]
   {
-    auto m(a.sig());
-    F e;
+    if (intt::is_neg(e = a.exp()))
+    { // for (; !(m % 10); ++e, m /= 10);
+      using namespace detail;
 
-    if (m) [[likely]]
-    {
-      if (intt::is_neg(e = a.exp()))
-      { // for (; !(m % 10); ++e, m /= 10);
-        using namespace detail;
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      { // slash zeros
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept
-        { // slash zeros
-          (
-            [&]() noexcept -> bool
-            {
-              constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-              constexpr auto f(ar::coeff<pow(T(10), e0)>());
+            if (!(m % f)) e += e0, m /= f;
 
-              if (!(m % f)) e += e0, m /= f;
-
-              return !(m % T(10));
-            }() && ...
-          );
-        }(std::make_index_sequence<maxpow2e<T>() + 1>());
-      }
+            return !(m % T(10));
+          }() && ...
+        );
+      }(std::make_index_sequence<maxpow2e<T>() + 1>());
     }
-    else [[unlikely]]
-      e = {};
-
-    //
-    using intt::to_string;
-    using std::to_string;
-
-    auto r(to_string(m));
-
-    if (intt::is_neg(e))
-    {
-      auto const neg(intt::is_neg(m));
-      auto const n(F(r.size() - neg) + e);
-
-      n > 0 ?
-        r.insert(n + neg, 1, '.') :
-        r.insert(neg, std::string("0.", 2).append(-n, '0'));
-    }
-    else // if (e > 0)
-      r.append(e, '0');
-
-    //
-    return r;
   }
+  else [[unlikely]]
+    e = {};
+
+  //
+  using intt::to_string;
+  using std::to_string;
+
+  auto r(to_string(m));
+
+  if (intt::is_neg(e))
+  {
+    auto const neg(intt::is_neg(m));
+    auto const n(F(r.size() - neg) + e);
+
+    n > 0 ?
+      r.insert(n + neg, 1, '.') :
+      r.insert(neg, std::string("0.", 2).append(-n, '0'));
+  }
+  else // if (e > 0)
+    r.append(e, '0');
+
+  //
+  return r;
 }
 
 //////////////////////////////////////////////////////////////////////////////
