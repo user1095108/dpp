@@ -722,12 +722,11 @@ constexpr dpp<T, E> inv(dpp<T, E> const& a) noexcept
   using U = typename dpp<T, E>::sig2_t;
   using F = typename dpp<T, E>::exp2_t;
 
+  if (isnan(a) || !a.m_) [[unlikely]] return nan;
+
   constexpr auto e0{ar::coeff<F(-detail::maxpow10e<U, F>())>()};
 
-  if (isnan(a) || !a.m_) [[unlikely]] return nan; else
-    [[likely]] return dpp<T, E>{
-        ar::coeff<detail::pow(U(10), e0)>() / U(a.m_), e0 - F(a.e_)
-      };
+  return {ar::coeff<detail::pow(U(10), e0)>() / U(a.m_), e0 - F(a.e_)};
 }
 
 template <typename T, typename E>
