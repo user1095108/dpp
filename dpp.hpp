@@ -759,8 +759,8 @@ constexpr dpp<T, E> fma(dpp<T, E> const& a, dpp<T, E> const& b,
   F ea(F(a.e_) + F(b.e_)), eb(c.e_);
 
   return ea < eb ?
-    (detail::align<T>(mb *= U(10), eb, ma, eb - ea),
-    dpp<T, E>(ma + mb / U(10), eb)) :
+    (detail::align<T>(mb <<= 1, eb, ma, eb - ea),
+    dpp<T, E>(ma + (mb >> 1), eb)) :
     (detail::align<T>(ma, ea, mb, ea - eb), dpp<T, E>(ma + mb, ea));
 }
 
