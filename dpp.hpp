@@ -819,11 +819,8 @@ constexpr T to_decimal(std::input_iterator auto i,
         if (dcp) [[unlikely]] return nan; else [[likely]]
           { dcp = true; continue; }
 
-      [[unlikely]] case '\0': [[unlikely]] case '\n':
-        break;
-
       [[unlikely]] default:
-        return nan;
+        break;
     }
 
     break;
