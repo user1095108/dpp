@@ -767,7 +767,7 @@ constexpr dpp<T, E> fma(dpp<T, E> const& a, dpp<T, E> const& b,
 // conversions
 template <typename T>
 constexpr T to_decimal(std::input_iterator auto i,
-  decltype(i) const end) noexcept
+  decltype(i) const end)
 {
   if (i == end) [[unlikely]] return nan;
 
@@ -834,7 +834,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 }
 
 template <typename T>
-constexpr auto to_decimal(auto const& s) noexcept ->
+constexpr auto to_decimal(auto const& s) ->
   decltype(std::begin(s), std::end(s), T())
 {
   return to_decimal<T>(std::begin(s), std::end(s));
