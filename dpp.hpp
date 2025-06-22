@@ -815,11 +815,11 @@ constexpr T to_decimal(std::input_iterator auto i,
         else
           return nan;
 
-      case '.':
+      [[unlikely]] case '.':
         if (dcp) [[unlikely]] return nan; else [[likely]]
           { dcp = true; continue; }
 
-      case '\0':
+      [[unlikely]] case '\0': [[unlikely]] case '\n':
         break;
 
       [[unlikely]] default:
@@ -838,6 +838,12 @@ constexpr auto to_decimal(auto const& s) noexcept ->
   decltype(std::begin(s), std::end(s), T())
 {
   return to_decimal<T>(std::begin(s), std::end(s));
+}
+
+template <typename T, typename E>
+inline auto& operator>>(std::istream& i, dpp<T, E>& p)
+{
+  p = to_decimal<dpp<T, E>>(std::istreambuf_iterator<char>(i), {}); return i;
 }
 
 template <typename T, typename E>
