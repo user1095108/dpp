@@ -843,7 +843,9 @@ constexpr auto to_decimal(auto const& s) ->
 template <typename T, typename E>
 auto& operator>>(std::istream& i, dpp<T, E>& p)
 {
-  p = to_decimal<dpp<T, E>>(std::istreambuf_iterator<char>(i), {}); return i;
+  if (std::istream::sentry s(i); s)
+    p = to_decimal<dpp<T, E>>(std::istreambuf_iterator<char>(i), {});
+  return i;
 }
 
 template <typename T, typename E>
