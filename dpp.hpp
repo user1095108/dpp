@@ -822,8 +822,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       }
 
       [[unlikely]] case '.':
-        if (dcp) [[unlikely]] return nan; else [[likely]]
-          { dcp = true; continue; }
+        if (dcp) [[unlikely]] break; else [[likely]] { dcp = true; continue; }
 
       [[unlikely]] default:
         break;
