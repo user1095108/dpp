@@ -793,6 +793,8 @@ constexpr T to_decimal(std::input_iterator auto i,
   }
 
   //
+  bool digitconsumed{};
+
   typename T::sig_t r{};
   typename T::exp_t e{};
 
@@ -802,6 +804,9 @@ constexpr T to_decimal(std::input_iterator auto i,
     {
       [[likely]] case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
+      {
+        digitconsumed = true;
+
         if ((ar::coeff<typename T::exp_t(T::emin + 1)>() != e) &&
           (ar::coeff<typename T::exp_t(T::emax)>() != e))
         {
@@ -814,6 +819,7 @@ constexpr T to_decimal(std::input_iterator auto i,
         }
         else
           return nan;
+      }
 
       [[unlikely]] case '.':
         if (dcp) [[unlikely]] return nan; else [[likely]]
@@ -827,7 +833,7 @@ constexpr T to_decimal(std::input_iterator auto i,
   }
 
   //
-  return {direct, neg ? r : typename T::sig_t(-r), e};
+  return digitconsumed ? T(direct, neg ? r : typename T::sig_t(-r), e) : nan;
 }
 
 template <typename T>
