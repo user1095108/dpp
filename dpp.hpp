@@ -804,18 +804,20 @@ constexpr T to_decimal(std::input_iterator auto i,
     {
       [[likely]] case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9':
-        if (digitconsumed = true; (ar::coeff<T::emax>() != e) &&
-          (ar::coeff<typename T::exp_t(T::emin + 1)>() != e))
-        {
-          if (r < ar::coeff<T::mmin / 10>()) [[unlikely]] ++e -= dcp;
-          else if (decltype(r) const t(10 * r), d(*i - '0');
-            t >= ar::coeff<T::mmin>() + d) [[likely]] e -= dcp, r = t - d;
-          else [[unlikely]] ++e -= dcp, r = ar::coeff<T::mmin>();
+        if (digitconsumed = true; r < ar::coeff<T::mmin / 10>()) [[unlikely]]
+          if ((e <= ar::coeff<T::emax>() - 1) &&
+            (e + 1 >= ar::coeff<T::emin>() + dcp)) [[likely]]
+            ++e -= dcp; else [[unlikely]] return nan;
+        else if (decltype(r) const t(10 * r), d(*i - '0');
+          t >= ar::coeff<T::mmin>() + d) [[likely]]
+          if (e >= ar::coeff<T::emin>() + dcp) e -= dcp, r = t - d;
+          else return nan;
+        else [[unlikely]]
+          if ((e <= ar::coeff<T::emax>() - 1) &&
+            (e + 1 >= ar::coeff<T::emin>() + dcp)) [[likely]] ++e -= dcp,
+            r = ar::coeff<T::mmin>(); else [[unlikely]] return nan;
 
-          continue;
-        }
-        else
-          return nan;
+        continue;
 
       [[unlikely]] case '.':
         if (dcp) [[unlikely]] break; else [[likely]] { dcp = true; continue; }
