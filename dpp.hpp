@@ -771,6 +771,7 @@ constexpr T to_decimal(std::input_iterator auto i,
 {
   if (i == end) [[unlikely]] return nan;
 
+  //
   bool neg{};
 
   switch (*i)
