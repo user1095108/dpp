@@ -843,7 +843,11 @@ template <typename T, typename E>
 auto& operator>>(std::istream& i, dpp<T, E>& p)
 {
   if (std::istream::sentry s(i); s)
+  {
     p = to_decimal<dpp<T, E>>(std::istreambuf_iterator<char>(i), {});
+    if (i && !i.eof()) i.unget();
+  }
+
   return i;
 }
 
