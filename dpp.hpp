@@ -567,15 +567,6 @@ struct dpp
   }
 
   //
-  friend auto& operator<<(std::ostream& os, dpp const& p)
-  {
-    if (std::ostream::sentry s(os); s)
-      os << to_string(p);
-
-    return os;
-  }
-
-  //
 #if !defined(__clang__)
   static constexpr dpp eps{sig2_t(1), -detail::maxpow10e<T, exp2_t>()};
   static constexpr dpp max{direct, mmax, emax};
@@ -841,6 +832,14 @@ constexpr auto to_decimal(auto const& s) ->
   decltype(std::begin(s), std::end(s), T())
 {
   return to_decimal<T>(std::begin(s), std::end(s));
+}
+
+template <typename T, typename E>
+auto& operator<<(std::ostream& os, dpp<T, E> const& p)
+{
+  if (std::ostream::sentry s(os); s) os << to_string(p);
+
+  return os;
 }
 
 template <typename T, typename E>
