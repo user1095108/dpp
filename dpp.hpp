@@ -569,7 +569,10 @@ struct dpp
   //
   friend auto& operator<<(std::ostream& os, dpp const& p)
   {
-    return os << to_string(p);
+    if (std::ostream::sentry s(os); s)
+      os << to_string(p);
+
+    return os;
   }
 
   //
@@ -841,9 +844,12 @@ constexpr auto to_decimal(auto const& s) ->
 }
 
 template <typename T, typename E>
-auto& operator>>(std::istream& i, dpp<T, E>& p)
+auto& operator>>(std::istream& is, dpp<T, E>& p)
 {
-  p = to_decimal<dpp<T, E>>(*std::istream_iterator<std::string>(i)); return i;
+  if (std::istream::sentry s(is, true); s)
+    p = to_decimal<dpp<T, E>>(*std::istream_iterator<std::string>(is));
+
+  return is;
 }
 
 template <typename T, typename E>
