@@ -803,7 +803,7 @@ constexpr T to_decimal(std::input_iterator auto i,
           if ((e <= ar::coeff<T::emax - E(1)>()) &&
             (e + 1 > ar::coeff<T::emin>() + dcp)) [[likely]] ++e -= dcp;
             else [[unlikely]] return nan;
-        else if (decltype(r) const t(10 * r), d(*i - '0');
+        else [[likely]] if (decltype(r) const t(10 * r), d(*i - '0');
           t >= ar::coeff<T::mmin>() + d) [[likely]]
           if (e > ar::coeff<T::emin>() + dcp) [[likely]] e -= dcp, r = t - d;
           else [[unlikely]] return nan;
