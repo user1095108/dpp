@@ -808,8 +808,8 @@ constexpr T to_decimal(std::input_iterator auto i,
           if (e > ar::coeff<T::emin>() + dcp) [[likely]] e -= dcp, r = t - d;
           else [[unlikely]] return nan;
         else [[unlikely]] if ((e <= ar::coeff<T::emax - E(1)>()) &&
-          (e + 1 > ar::coeff<T::emin>() + dcp)) [[likely]] ++e -= dcp,
-          r = ar::coeff<T::mmin>(); else [[unlikely]] return nan;
+          (e + 1 > ar::coeff<T::emin>() + dcp)) [[likely]] ++e -= dcp;
+          else [[unlikely]] return nan;
 
         continue;
 
