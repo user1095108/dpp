@@ -109,6 +109,27 @@ constexpr auto pow(auto x, auto e) noexcept
   }
 }
 
+constexpr void slash_zeros(auto& m, auto& e) noexcept
+{ // for (; !(m % 10); ++e, m /= 10);
+  using T = std::remove_cvref_t<decltype(m)>;
+  using F = std::remove_cvref_t<decltype(e)>;
+
+  [&]<auto ...I>(std::index_sequence<I...>) noexcept
+  { // slash zeros
+    (
+      [&]() noexcept -> bool
+      {
+        constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+        constexpr auto f(ar::coeff<pow(T(10), e0)>());
+
+        if (!(m % f)) e += e0, m /= f;
+
+        return !(m % T(10));
+      }() && ...
+    );
+  }(std::make_index_sequence<maxpow2e<T>() + 1>());
+}
+
 template <typename T>
 constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   std::remove_reference_t<decltype(ea)> i) noexcept
@@ -864,24 +885,7 @@ std::string to_string(dpp<T, E> const& a)
   if (m) [[likely]]
   {
     if (intt::is_neg(e = a.exp()))
-    { // for (; !(m % 10); ++e, m /= 10);
-      using namespace detail;
-
-      [&]<auto ...I>(std::index_sequence<I...>) noexcept
-      { // slash zeros
-        (
-          [&]() noexcept -> bool
-          {
-            constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-            constexpr auto f(ar::coeff<pow(T(10), e0)>());
-
-            if (!(m % f)) e += e0, m /= f;
-
-            return !(m % T(10));
-          }() && ...
-        );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
-    }
+      detail::slash_zeros(m, e);
   }
   else [[unlikely]]
     e = {};
@@ -946,27 +950,8 @@ struct hash<dpp::dpp<T, E>>
 
     if (dpp::isnan(a)) [[unlikely]] // unique nan
       m = {};
-    else if ((m = a.sig())) [[likely]]
-    { // unique everything
-      // for (; !(m % 10); ++e, m /= 10); // slash zeros
-      using namespace dpp::detail;
-      using dpp::detail::pow;
-
-      [&]<auto ...I>(std::index_sequence<I...>) noexcept
-      { // slash zeros
-        (
-          [&]() noexcept -> bool
-          {
-            constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-            constexpr auto f(ar::coeff<pow(T(10), e0)>());
-
-            if (!(m % f)) e += e0, m /= f;
-
-            return !(m % T(10));
-          }() && ...
-        );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
-    }
+    else if ((m = a.sig())) [[likely]] // unique everything
+      dpp::detail::slash_zeros(m, e);
     else [[unlikely]] // unique zero
       e = {};
 
