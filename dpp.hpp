@@ -882,13 +882,7 @@ std::string to_string(dpp<T, E> const& a)
   auto m(a.sig());
   F e;
 
-  if (m) [[likely]]
-  {
-    if (intt::is_neg(e = a.exp()))
-      detail::slash_zeros(m, e);
-  }
-  else [[unlikely]]
-    e = {};
+  m ? detail::slash_zeros(m, e = a.exp()), e : e = {};
 
   //
   using intt::to_string;
