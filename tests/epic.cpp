@@ -12,7 +12,7 @@ using namespace dpp::literals;
 #define WIDTH      80
 #define HEIGHT     24
 #define FPS        60
-#define DURATION   4.0          /* seconds until implosion */
+#define DURATION   4.0_d64      /* seconds until implosion */
 
 static char front[HEIGHT][WIDTH];
 static char back[HEIGHT][WIDTH];
@@ -123,7 +123,7 @@ int main(void)
     t_start = now();
     srand((unsigned)time(NULL));
 
-    while (1) {
+    for (;;) {
         D t = now() - t_start;
         if (t > DURATION + 0.5_d64) break;
         shockwave(t);
