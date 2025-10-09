@@ -86,7 +86,7 @@ int main() {
         std::vector<std::string> buf(HEIGHT, std::string(WIDTH, ' '));
 
         // --- draw edges ---
-        for (auto [i,j] : cubeEdges) {
+        for (auto const [i,j] : cubeEdges) {
           auto const& [a, b](std::tie(screen[i], screen[j]));
 
           int x0 = a.x, y0 = a.y;
