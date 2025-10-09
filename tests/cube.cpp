@@ -68,9 +68,7 @@ Vec2 project(const Vec3& v) {
 
 // ---------- main loop ----------
 int main() {
-    D angleX{}, angleY{};
-
-    for (;;) {
+    for (D angleX{}, angleY{};;) {
         // --- build rotation matrix for this frame ---
         Mat3 R = rotationMatrix(angleX, angleY);
 
