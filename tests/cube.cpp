@@ -16,7 +16,7 @@ using D = dpp::d32;
 constexpr int    WIDTH  = 80;          // console columns
 constexpr int    HEIGHT = 24;          // console rows
 constexpr D SCALE  = 40_d32;           // zoom factor
-constexpr D Z_DIST = 5.5_d32;          // camera distance
+constexpr D Z_DIST = 5.7_d32;          // camera distance
 constexpr D THETA  = 0.05_d32;         // rotation speed (radians per frame)
 
 // ---------- basic 3-D math ----------
@@ -117,7 +117,7 @@ int main() {
 
         // --- update rotation ---
         angleX += THETA;
-        angleY += THETA * 0.7;
+        angleY += THETA * 0.7_d32;
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 }
