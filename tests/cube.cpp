@@ -86,27 +86,26 @@ int main() {
         std::vector<std::string> buf(HEIGHT, std::string(WIDTH, ' '));
 
         // --- draw edges ---
-        auto drawLine = [&](const Vec2& a, const Vec2& b) {
-            int x0 = a.x, y0 = a.y;
-            int x1 = b.x, y1 = b.y;
-            int dx = std::abs(x1 - x0);
-            int dy = std::abs(y1 - y0);
-            int sx = (x0 < x1) - (x0 > x1);
-            int sy = (y0 < y1) - (y0 > y1);
-            int err = dx - dy;
+        for (auto [i,j] : cubeEdges) {
+          auto const& [a, b](std::tie(screen[i], screen[j]));
 
-            for (;;) {
-                if (x0 >= 0 && x0 < WIDTH && y0 >= 0 && y0 < HEIGHT)
-                    buf[y0][x0] = '#';
-                if (x0 == x1 && y0 == y1) break;
-                int e2 = 2 * err;
-                if (e2 > -dy) { err -= dy; x0 += sx; }
-                if (e2 <  dx) { err += dx; y0 += sy; }
-            }
-        };
+          int x0 = a.x, y0 = a.y;
+          int const x1 = b.x, y1 = b.y;
+          int const dx = std::abs(x1 - x0);
+          int const dy = std::abs(y1 - y0);
+          int const sx = (x0 < x1) - (x0 > x1);
+          int const sy = (y0 < y1) - (y0 > y1);
+          int err = dx - dy;
 
-        for (auto [i,j] : cubeEdges)
-            drawLine(screen[i], screen[j]);
+          for (;;) {
+              if (x0 >= 0 && x0 < WIDTH && y0 >= 0 && y0 < HEIGHT)
+                  buf[y0][x0] = '#';
+              if (x0 == x1 && y0 == y1) break;
+              int const e2 = 2 * err;
+              if (e2 > -dy) { err -= dy; x0 += sx; }
+              if (e2 <  dx) { err += dx; y0 += sy; }
+          }
+        }
 
         // --- present frame ---
         clearScreen();
