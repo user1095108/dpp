@@ -1,6 +1,7 @@
-#include <array>
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
+#include <array>
 #include <iostream>
 #include <ranges>
 #include <string>
@@ -84,7 +85,7 @@ int main() {
 
         // --- raster buffer ---
         std::array<std::array<char, WIDTH>, HEIGHT> buf;
-        for (auto& row : buf) row.fill(' ');
+        std::fill(buf.front().data(), buf.front().data() + sizeof(buf), ' ');
 
         // --- draw edges ---
         for (auto const [i, j] : cubeEdges) {
