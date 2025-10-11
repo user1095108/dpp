@@ -75,7 +75,7 @@ int main() {
 
         std::transform(cubeVertices.begin(), cubeVertices.end(),
           screen.begin(),
-          [R = rotationMatrix(angleX, angleY)](auto&& p) noexcept
+          [R = rotationMatrix(angleX, angleY)](auto const& p) noexcept
           {
             return project(R * p);
           }
