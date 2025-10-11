@@ -72,6 +72,8 @@ Vec2 project(const Vec3& v) noexcept {
 
 // ---------- main loop ----------
 int main() {
+    std::array<std::array<char, WIDTH>, HEIGHT> buf;
+
     auto now(std::chrono::steady_clock::now());
 
     for (D angleX{}, angleY{};;) {
@@ -88,7 +90,6 @@ int main() {
         );
 
         // --- raster buffer ---
-        std::array<std::array<char, WIDTH>, HEIGHT> buf;
         std::fill(buf.front().data(), buf.front().data() + sizeof(buf), ' ');
 
         // --- draw edges ---
