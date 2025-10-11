@@ -72,9 +72,9 @@ Vec2 project(const Vec3& v) noexcept {
 
 // ---------- main loop ----------
 int main() {
-    for (D angleX{}, angleY{};;) {
-        auto const now(std::chrono::steady_clock::now());
+    auto now(std::chrono::steady_clock::now());
 
+    for (D angleX{}, angleY{};;) {
         // --- transform vertices, project to 2D ---
         std::array<Vec2, vertices.size()> screen;
 
@@ -124,7 +124,7 @@ int main() {
         angleY += THETA * 0.7_d32;
 
         //
-        std::this_thread::sleep_until(now + 33ms);
+        std::this_thread::sleep_until(now += 33ms);
     }
 
     return 0;
