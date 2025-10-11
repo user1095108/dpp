@@ -1,3 +1,4 @@
+#include <execution>
 #include <array>
 #include <cmath>
 #include <cstdlib>
@@ -69,13 +70,16 @@ Vec2 project(const Vec3& v) {
 // ---------- main loop ----------
 int main() {
     for (D angleX{}, angleY{};;) {
-        // --- build rotation matrix for this frame ---
-        Mat3 R = rotationMatrix(angleX, angleY);
-
         // --- transform vertices, project to 2D ---
         std::array<Vec2, cubeVertices.size()> screen;
-        for (std::size_t i{}; cubeVertices.size() != i; ++i)
-            screen[i] = project(R * cubeVertices[i]);
+
+        std::transform(cubeVertices.begin(), cubeVertices.end(),
+          screen.begin(),
+          [R = rotationMatrix(angleX, angleY)](auto&& p) noexcept
+          {
+            return project(R * p);
+          }
+        );
 
         // --- raster buffer ---
         std::vector<std::string> buf(HEIGHT, std::string(WIDTH, ' '));
