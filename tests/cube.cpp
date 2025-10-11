@@ -72,15 +72,10 @@ int main() {
         // --- build rotation matrix for this frame ---
         Mat3 R = rotationMatrix(angleX, angleY);
 
-        // --- transform vertices ---
-        std::array<Vec3,8> world;
-        for (std::size_t i = 0; i < 8; ++i)
-            world[i] = R * cubeVertices[i];
-
-        // --- project to 2D ---
-        std::array<Vec2,8> screen;
-        for (std::size_t i = 0; i < 8; ++i)
-            screen[i] = project(world[i]);
+        // --- transform vertices, project to 2D ---
+        std::array<Vec2, cubeVertices.size()> screen;
+        for (std::size_t i{}; cubeVertices.size() != i; ++i)
+            screen[i] = project(R * cubeVertices[i]);
 
         // --- raster buffer ---
         std::vector<std::string> buf(HEIGHT, std::string(WIDTH, ' '));
