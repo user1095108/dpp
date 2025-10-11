@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <ranges>
 #include <string>
 #include <thread>
 #include <vector>
@@ -26,13 +27,13 @@ struct Vec2 { int x{}, y{}; };
 
 using Mat3 = std::array<std::array<D, 3>, 3>;
 
-inline Vec3 operator*(const Mat3& m, const Vec3& v) {
+inline Vec3 operator*(const Mat3& m, const Vec3& v) noexcept {
     return { m[0][0]*v.x + m[0][1]*v.y + m[0][2]*v.z,
              m[1][0]*v.x + m[1][1]*v.y + m[1][2]*v.z,
              m[2][0]*v.x + m[2][1]*v.y + m[2][2]*v.z };
 }
 
-Mat3 rotationMatrix(D const ax, D const ay) {
+Mat3 rotationMatrix(D const ax, D const ay) noexcept {
     const D cx = std::cos(ax), sx = std::sin(ax);
     const D cy = std::cos(ay), sy = std::sin(ay);
     return {  cy,  sx*sy,  cx*sy,
@@ -61,7 +62,7 @@ void clearScreen() {
 #endif
 }
 
-Vec2 project(const Vec3& v) {
+Vec2 project(const Vec3& v) noexcept {
     const D z = v.z + Z_DIST;
     return { int(SCALE * v.x / z + WIDTH  / 2),
              int(SCALE * v.y / z + HEIGHT / 2) };
@@ -73,19 +74,20 @@ int main() {
         // --- transform vertices, project to 2D ---
         std::array<Vec2, cubeVertices.size()> screen;
 
-        std::transform(cubeVertices.begin(), cubeVertices.end(),
-          screen.begin(),
-          [R = rotationMatrix(angleX, angleY)](auto const& p) noexcept
-          {
-            return project(R * p);
-          }
+        std::ranges::transform(
+            cubeVertices,
+            screen.begin(),
+            [R = rotationMatrix(angleX, angleY)](auto const& p) noexcept
+            {
+              return project(R * p);
+            }
         );
 
         // --- raster buffer ---
         std::vector<std::string> buf(HEIGHT, std::string(WIDTH, ' '));
 
         // --- draw edges ---
-        for (auto const [i,j] : cubeEdges) {
+        for (auto const [i, j] : cubeEdges) {
           auto const& [a, b](std::tie(screen[i], screen[j]));
 
           int x0 = a.x, y0 = a.y;
