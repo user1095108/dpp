@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <iostream>
 #include <ranges>
 #include <string>
@@ -11,6 +12,7 @@
 #include "../dpp.hpp"
 
 using namespace dpp::literals;
+using namespace std::chrono_literals;
 
 using D = dpp::d32;
 
@@ -42,12 +44,12 @@ Mat3 rotationMatrix(D const ax, D const ay) noexcept {
 }
 
 // ---------- cube geometry ----------
-const std::array<Vec3,8> cubeVertices = {{
+const std::array<Vec3,8> vertices = {{
     {-1,-1,-1}, { 1,-1,-1}, { 1, 1,-1}, {-1, 1,-1},
     {-1,-1, 1}, { 1,-1, 1}, { 1, 1, 1}, {-1, 1, 1}
 }};
 
-const std::array<std::pair<int,int>,12> cubeEdges = {{
+const std::array<std::pair<int,int>,12> edges = {{
     {0,1},{1,2},{2,3},{3,0},   // back face
     {4,5},{5,6},{6,7},{7,4},   // front face
     {0,4},{1,5},{2,6},{3,7}    // connecting edges
@@ -71,11 +73,13 @@ Vec2 project(const Vec3& v) noexcept {
 // ---------- main loop ----------
 int main() {
     for (D angleX{}, angleY{};;) {
+        auto const now(std::chrono::steady_clock::now());
+
         // --- transform vertices, project to 2D ---
-        std::array<Vec2, cubeVertices.size()> screen;
+        std::array<Vec2, vertices.size()> screen;
 
         std::ranges::transform(
-            cubeVertices,
+            vertices,
             screen.begin(),
             [R = rotationMatrix(angleX, angleY)](auto const& p) noexcept
             {
@@ -88,7 +92,7 @@ int main() {
         std::fill(buf.front().data(), buf.front().data() + sizeof(buf), ' ');
 
         // --- draw edges ---
-        for (auto const [i, j] : cubeEdges) {
+        for (auto const [i, j] : edges) {
           auto const& [a, b](std::tie(screen[i], screen[j]));
 
           int x0 = a.x, y0 = a.y;
@@ -118,7 +122,9 @@ int main() {
         // --- update rotation ---
         angleX += THETA;
         angleY += THETA * 0.7_d32;
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+        //
+        std::this_thread::sleep_until(now + 33ms);
     }
 
     return 0;
