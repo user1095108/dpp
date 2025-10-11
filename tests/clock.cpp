@@ -119,10 +119,8 @@ public:
 
     // Move cursor to home position and render buffer
     std::cout << config::HOME_CURSOR;
-    for (const auto& row : buffer) {
-      for (char c : row) std::cout << c;
-      std::cout << '\n';
-    }
+    for (const auto& row : buffer)
+      std::cout << std::string_view(row.data(), config::WIDTH) << '\n';
     std::cout.flush();
 
     // Restore the original buffer without hands for the next update

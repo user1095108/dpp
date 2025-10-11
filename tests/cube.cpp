@@ -1,4 +1,3 @@
-#include <execution>
 #include <array>
 #include <cmath>
 #include <cstdlib>
@@ -84,7 +83,8 @@ int main() {
         );
 
         // --- raster buffer ---
-        std::vector<std::string> buf(HEIGHT, std::string(WIDTH, ' '));
+        std::array<std::array<char, WIDTH>, HEIGHT> buf;
+        for (auto& row : buf) row.fill(' ');
 
         // --- draw edges ---
         for (auto const [i, j] : cubeEdges) {
@@ -110,7 +110,8 @@ int main() {
 
         // --- present frame ---
         clearScreen();
-        for (const auto& row : buf) std::cout << row << '\n';
+        for (const auto& row : buf)
+          std::cout << std::string_view(row.data(), WIDTH) << '\n';
         std::cout.flush();
 
         // --- update rotation ---
