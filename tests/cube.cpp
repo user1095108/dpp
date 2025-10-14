@@ -56,7 +56,7 @@ const std::array<std::pair<int,int>,12> edges = {{
 }};
 
 // ---------- rasterisation helpers ----------
-void clearScreen() {
+void clearScreen() noexcept(noexcept(std::system(""))) {
 #ifdef _WIN32
     std::system("cls");
 #else
