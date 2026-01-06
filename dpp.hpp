@@ -198,8 +198,8 @@ struct dpp
 {
   using sig_t = T;
 
-  static constexpr auto mmax{detail::max_v<T>};
-  static constexpr auto mmin{T(-mmax)};
+  static constexpr sig_t mmax{detail::max_v<T>};
+  static constexpr sig_t mmin{-mmax};
 
   using sig2_t = std::conditional_t<
       ar::bit_size_v<detail::double_t<T>> <= ar::bit_size_v<std::int64_t>,
@@ -209,8 +209,8 @@ struct dpp
 
   using exp_t = E;
 
-  static constexpr auto emin{detail::min_v<E>};
-  static constexpr auto emax{detail::max_v<E>};
+  static constexpr exp_t emin{detail::min_v<E>};
+  static constexpr exp_t emax{detail::max_v<E>};
 
   using exp2_t = std::conditional_t<
       ar::bit_size_v<detail::double_t<E>> <= ar::bit_size_v<int>,
