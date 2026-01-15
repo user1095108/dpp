@@ -3,6 +3,7 @@
 # pragma once
 
 #include <float.h>
+#include <limits> // quiet_NaN()
 #include "intt/intt.hpp"
 
 #if defined(__SIZEOF_INT128__)
@@ -402,7 +403,7 @@ struct dpp
   operator U() const noexcept
   {
     if (isnan(*this)) [[unlikely]]
-      return NAN;
+      return std::numeric_limits<U>::quiet_NaN();
     else [[likely]]
     {
       int const e2(std::ceil(int(e_) * 3.32192809488736234787031942948939f));
