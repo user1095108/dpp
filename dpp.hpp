@@ -404,18 +404,16 @@ struct dpp
   {
     if (isnan(*this)) [[unlikely]]
       return std::numeric_limits<U>::quiet_NaN();
-    else [[likely]]
-    {
-      int const e2(std::ceil(int(e_) * 3.32192809488736234787031942948939f));
 
-      auto const k(detail::pow(dpp(direct, T(2)), e2));
+    int const e2(std::ceil(int(e_) * 3.32192809488736234787031942948939f));
 
-      auto const a(e_ <= E{} ? *this * k : *this / k);
+    auto const k(detail::pow(dpp(direct, T(2)), e2));
 
-      constexpr dpp c(direct, T(5), E(-1));
+    auto const a(e_ <= E{} ? *this * k : *this / k);
 
-      return std::ldexp(U(T(intt::is_neg(a.m_) ? a - c : a + c)), e2);
-    }
+    constexpr dpp c(direct, T(5), E(-1));
+
+    return std::ldexp(U(T(intt::is_neg(a.m_) ? a - c : a + c)), e2);
   }
 
   template <detail::integral U>
