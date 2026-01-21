@@ -347,31 +347,27 @@ struct dpp
 
   constexpr dpp(std::floating_point auto a) noexcept
   {
-    if (std::isfinite(a)) [[likely]]
+    if (!std::isfinite(a)) [[unlikely]] { *this = nan; return; }
+
+    enum
     {
-      enum
-      {
-        bits = std::min(
-            detail::sig_bit_size_v<decltype(a)>,
-            ar::bit_size_v<sig_t> - 1
-          )
-      };
+      bits = std::min(
+          detail::sig_bit_size_v<decltype(a)>,
+          ar::bit_size_v<sig_t> - 1
+        )
+    };
 
-      int e2;
+    int e2;
 
-      a = std::ldexp(std::frexp(a, &e2), bits);
-      e2 -= bits;
+    a = std::ldexp(std::frexp(a, &e2), bits);
+    e2 -= bits;
 
-      //
-      int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
+    //
+    int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
 
-      auto const k(detail::pow(decltype(a)(10), e10));
+    auto const k(detail::pow(decltype(a)(10), e10));
 
-      *this =
-        dpp(T(std::round(std::ldexp(e10 <= 0 ? a * k : a / k, e2))), e10);
-    }
-    else [[unlikely]]
-      *this = nan;
+    *this = dpp(T(std::round(std::ldexp(e10 <= 0 ? a * k : a / k, e2))), e10);
   }
 
   template <typename U, typename V>
@@ -402,8 +398,7 @@ struct dpp
     std::is_same_v<U, long double>))
   operator U() const noexcept
   {
-    if (isnan(*this)) [[unlikely]]
-      return std::numeric_limits<U>::quiet_NaN();
+    if (isnan(*this)) [[unlikely]] return std::numeric_limits<U>::quiet_NaN();
 
     int const e2(std::ceil(int(e_) * 3.32192809488736234787031942948939f));
 
