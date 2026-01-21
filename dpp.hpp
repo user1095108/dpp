@@ -523,10 +523,10 @@ struct dpp
 
     using namespace detail;
 
-    constexpr auto e0(ar::coeff<maxpow10e<T, F>()>());
+    constexpr F e0(ar::coeff<maxpow10e<T, F>()>());
 
-    auto e(F(e_) - F(o.e_) - e0);
-    auto m(ar::coeff<pow(U(10), e0)>() * U(m_));
+    F e(F(e_) - F(o.e_) - e0);
+    U m(ar::coeff<pow(U(10), e0)>() * U(m_));
 
     if (intt::is_neg(m))
       //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
@@ -536,8 +536,8 @@ struct dpp
           (
             [&]() noexcept -> bool
             {
-              constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-              constexpr auto f(ar::coeff<pow(U(10), e0)>());
+              constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+              constexpr U f(ar::coeff<pow(U(10), e0)>());
 
               if (m >= ar::coeff<min_v<U> / f>()) e -= e0, m *= f;
 
@@ -553,8 +553,8 @@ struct dpp
         (
           [&]() noexcept -> bool
           {
-            constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-            constexpr auto f(ar::coeff<pow(U(10), e0)>());
+            constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr U f(ar::coeff<pow(U(10), e0)>());
 
             if (m <= ar::coeff<max_v<U> / f>()) e -= e0, m *= f;
 
