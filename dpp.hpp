@@ -515,40 +515,22 @@ struct dpp
 
   constexpr dpp operator/(dpp const& o) const noexcept
   {
-    if (isnan(*this) || isnan(o) || !o.m_) [[unlikely]]
-      return nan;
-    else if (m_) [[likely]]
-    {
-      using U = sig2_t;
-      using F = exp2_t;
+    if (isnan(*this) || isnan(o) || !o.m_) [[unlikely]] return nan;
+    else if (!m_) [[unlikely]] return {};
 
-      using namespace detail;
+    using U = sig2_t;
+    using F = exp2_t;
 
-      constexpr auto e0(ar::coeff<maxpow10e<T, F>()>());
+    using namespace detail;
 
-      auto e(F(e_) - F(o.e_) - e0);
-      auto m(ar::coeff<pow(U(10), e0)>() * U(m_));
+    constexpr auto e0(ar::coeff<maxpow10e<T, F>()>());
 
-      if (intt::is_neg(m))
-        //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
-        (
-          [&]<auto ...I>(std::index_sequence<I...>) noexcept
-          {
-            (
-              [&]() noexcept -> bool
-              {
-                constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-                constexpr auto f(ar::coeff<pow(U(10), e0)>());
+    auto e(F(e_) - F(o.e_) - e0);
+    auto m(ar::coeff<pow(U(10), e0)>() * U(m_));
 
-                if (m >= ar::coeff<min_v<U> / f>()) e -= e0, m *= f;
-
-                return m >= ar::coeff<U(min_v<U> / 10)>();
-              }() && ...
-            );
-          }(std::make_index_sequence<maxpow2e<T>() + 1>())
-        );
-      else
-        //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+    if (intt::is_neg(m))
+      //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+      (
         [&]<auto ...I>(std::index_sequence<I...>) noexcept
         {
           (
@@ -557,17 +539,31 @@ struct dpp
               constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
               constexpr auto f(ar::coeff<pow(U(10), e0)>());
 
-              if (m <= ar::coeff<max_v<U> / f>()) e -= e0, m *= f;
+              if (m >= ar::coeff<min_v<U> / f>()) e -= e0, m *= f;
 
-              return m <= ar::coeff<U(max_v<U> / 10)>();
+              return m >= ar::coeff<U(min_v<U> / 10)>();
             }() && ...
           );
-        }(std::make_index_sequence<maxpow2e<T>() + 1>());
+        }(std::make_index_sequence<maxpow2e<T>() + 1>())
+      );
+    else
+      //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr auto f(ar::coeff<pow(U(10), e0)>());
 
-      return dpp(m / sig2_t(o.m_), e);
-    }
-    else [[unlikely]]
-      return {};
+            if (m <= ar::coeff<max_v<U> / f>()) e -= e0, m *= f;
+
+            return m <= ar::coeff<U(max_v<U> / 10)>();
+          }() && ...
+        );
+      }(std::make_index_sequence<maxpow2e<T>() + 1>());
+
+    return dpp(m / sig2_t(o.m_), e);
   }
 
   //
