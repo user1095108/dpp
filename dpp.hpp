@@ -416,32 +416,29 @@ struct dpp
   { // this function is unsafe, take a look at to_integral() for safety
     using F = exp2_t;
 
-    if (intt::is_neg(e_))
+    if (!intt::is_neg(e_)) return U(m_) * detail::pow(U(10), e_);
+
+    using namespace detail;
+
+    auto m(m_);
+
+    [&]<auto ...I>(std::index_sequence<I...>) noexcept
     {
-      using namespace detail;
+      F e(e_);
 
-      auto m(m_);
+      (
+        [&]() noexcept -> bool
+        {
+          constexpr auto e0(ar::coeff<F(-pow(F(2), maxpow2e<T>() - I))>());
 
-      [&]<auto ...I>(std::index_sequence<I...>) noexcept
-      {
-        F e(e_);
+          if (e0 >= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
 
-        (
-          [&]() noexcept -> bool
-          {
-            constexpr auto e0(ar::coeff<F(-pow(F(2), maxpow2e<T>() - I))>());
+          return e && m;
+        }() && ...
+      );
+    }(std::make_index_sequence<maxpow2e<T>() + 1>());
 
-            if (e0 >= e) e -= e0, m /= ar::coeff<pow(T(10), e0)>();
-
-            return e && m;
-          }() && ...
-        );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
-
-      return m;
-    }
-    else
-      return U(m_) * detail::pow(U(10), e_);
+    return m;
   }
 
   // assignment
