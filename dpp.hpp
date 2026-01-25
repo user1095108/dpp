@@ -821,7 +821,7 @@ constexpr T to_decimal(std::input_iterator auto i,
       [[unlikely]] case '.':
         if (dcp) [[unlikely]] break; else [[likely]] { dcp = true; continue; }
 
-      [[unlikely]] default:
+      default:
         break;
     }
 
