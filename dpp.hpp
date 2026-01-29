@@ -141,7 +141,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   if (!i || !mb) [[unlikely]] return;
   else if (!ma) [[unlikely]] { ea -= i; return; }
   else if (intt::is_neg(ma))
-    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
+    //for (; i && (ma > ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
     [&]<auto ...I>(std::index_sequence<I...>) noexcept
     {
       (
@@ -153,12 +153,12 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
           if ((e <= i) && (ma >= cmp)) i -= e, ea -= e, ma *= f;
 
-          return i && (ma >= ar::coeff<U(min_v<U> / 10)>());
+          return i && (ma > ar::coeff<U(min_v<U> / 10)>());
         }() && ...
       );
     }(std::make_index_sequence<maxpow2e<U>() + 1>());
   else
-    //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
+    //for (; i && (ma < ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
     [&]<auto ...I>(std::index_sequence<I...>) noexcept
     {
       (
@@ -170,7 +170,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
 
           if ((e <= i) && (ma <= cmp)) i -= e, ea -= e, ma *= f;
 
-          return i && (ma <= ar::coeff<U(max_v<U> / 10)>());
+          return i && (ma < ar::coeff<U(max_v<U> / 10)>());
         }() && ...
       );
     }(std::make_index_sequence<maxpow2e<U>() + 1>());
@@ -521,7 +521,7 @@ struct dpp
     U m(ar::coeff<pow(U(10), e0)>() * U(m_));
 
     if (intt::is_neg(m))
-      //for (; m >= ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
+      //for (; m > ar::coeff<detail::min_v<U> / 10>(); m *= U(10), --e);
       (
         [&]<auto ...I>(std::index_sequence<I...>) noexcept
         {
@@ -533,13 +533,13 @@ struct dpp
 
               if (m >= ar::coeff<min_v<U> / f>()) e -= e0, m *= f;
 
-              return m >= ar::coeff<U(min_v<U> / 10)>();
+              return m > ar::coeff<U(min_v<U> / 10)>();
             }() && ...
           );
         }(std::make_index_sequence<maxpow2e<T>() + 1>())
       );
     else
-      //for (; m <= ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
+      //for (; m < ar::coeff<detail::max_v<U> / 10>(); m *= U(10), --e);
       [&]<auto ...I>(std::index_sequence<I...>) noexcept
       {
         (
@@ -550,7 +550,7 @@ struct dpp
 
             if (m <= ar::coeff<max_v<U> / f>()) e -= e0, m *= f;
 
-            return m <= ar::coeff<U(max_v<U> / 10)>();
+            return m < ar::coeff<U(max_v<U> / 10)>();
           }() && ...
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
