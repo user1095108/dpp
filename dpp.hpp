@@ -903,8 +903,8 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
     }
     else if (p = to_decimal<dpp<T, E>>(i, end); nan == p)
       is.setstate(std::ios::failbit);
-    else for (i = {is}; (end != i) &&
-      std::isdigit(static_cast<unsigned char>(*i)); ++i);
+    else
+      while ((end != i) && std::isdigit(static_cast<unsigned char>(*i))) ++i;
   }
 
   return is;
