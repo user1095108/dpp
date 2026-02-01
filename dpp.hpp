@@ -848,8 +848,9 @@ auto& operator<<(std::ostream& os, dpp<T, E> const& p)
 template <typename T, typename E>
 auto& operator>>(std::istream& is, dpp<T, E>& p)
 {
-  if (std::istream::sentry s(is, true); s)
-    p = to_decimal<dpp<T, E>>(*std::istream_iterator<std::string>(is));
+  if (auto const i(std::istream_iterator<std::string>{is});
+    std::istream_iterator<std::string>{} != i)
+    p = to_decimal<dpp<T, E>>(*i);
 
   return is;
 }
