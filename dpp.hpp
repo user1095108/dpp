@@ -889,7 +889,7 @@ auto& operator<<(std::ostream& os, dpp<T, E> const& p)
 template <typename T, typename E>
 auto& operator>>(std::istream& is, dpp<T, E>& p)
 {
-  if (std::istream::sentry s(is); s)
+  if (std::istream::sentry s(is); s) [[likely]]
   {
     std::istreambuf_iterator<char> const end;
 
