@@ -816,6 +816,7 @@ constexpr T to_decimal(std::input_iterator auto i,
             { e -= dcp; r = t - d; continue; } }
         else [[unlikely]] if (dcp) break; else
           if (e <= ar::coeff<T::emax - E(1)>()) [[likely]] { ++e; continue; }
+
         return nan;
 
       [[unlikely]] case '.':
@@ -848,9 +849,23 @@ auto& operator<<(std::ostream& os, dpp<T, E> const& p)
 template <typename T, typename E>
 auto& operator>>(std::istream& is, dpp<T, E>& p)
 {
-  if (auto const i(std::istream_iterator<std::string>{is});
-    std::istream_iterator<std::string>{} != i)
-    p = to_decimal<dpp<T, E>>(*i);
+  if (std::istream::sentry s(is); s)
+  {
+    std::istreambuf_iterator<char> const end;
+
+    if (auto i(std::istreambuf_iterator<char>{is}); (end != i) && ('n' == *i))
+    { // check for nan
+      if (p = nan; (end != ++i) && ('a' == *i))
+        if ((end != ++i) && ('n' == *i))
+          return ++i, is;
+
+      is.setstate(std::ios::failbit);
+    }
+    else if (p = to_decimal<dpp<T, E>>(i, end); nan == p)
+      is.setstate(std::ios::failbit);
+    else for (i = {is}; (end != i) &&
+      std::isdigit(static_cast<unsigned char>(*i)); ++i);
+  }
 
   return is;
 }
