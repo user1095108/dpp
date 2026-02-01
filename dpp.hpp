@@ -841,36 +841,6 @@ constexpr auto to_decimal(auto const& s) ->
 }
 
 template <typename T, typename E>
-auto& operator<<(std::ostream& os, dpp<T, E> const& p)
-{ // !!!
-  return os << to_string(p);
-}
-
-template <typename T, typename E>
-auto& operator>>(std::istream& is, dpp<T, E>& p)
-{
-  if (std::istream::sentry s(is); s)
-  {
-    std::istreambuf_iterator<char> const end;
-
-    if (auto i(std::istreambuf_iterator<char>{is}); (end != i) && ('n' == *i))
-    { // check for nan
-      if (p = nan; (end != ++i) && ('a' == *i))
-        if ((end != ++i) && ('n' == *i))
-          return ++i, is;
-
-      is.setstate(std::ios::failbit);
-    }
-    else if (p = to_decimal<dpp<T, E>>(i, end); nan == p)
-      is.setstate(std::ios::failbit);
-    else for (i = {is}; (end != i) &&
-      std::isdigit(static_cast<unsigned char>(*i)); ++i);
-  }
-
-  return is;
-}
-
-template <typename T, typename E>
 std::string to_string(dpp<T, E> const& a)
 {
   using F = typename dpp<T, E>::exp2_t;
@@ -908,6 +878,36 @@ std::string to_string(dpp<T, E> const& a)
 
   //
   return r;
+}
+
+template <typename T, typename E>
+auto& operator<<(std::ostream& os, dpp<T, E> const& p)
+{ // !!!
+  return os << to_string(p);
+}
+
+template <typename T, typename E>
+auto& operator>>(std::istream& is, dpp<T, E>& p)
+{
+  if (std::istream::sentry s(is); s)
+  {
+    std::istreambuf_iterator<char> const end;
+
+    if (auto i(std::istreambuf_iterator<char>{is}); (end != i) && ('n' == *i))
+    { // check for nan
+      if (p = nan; (end != ++i) && ('a' == *i))
+        if ((end != ++i) && ('n' == *i))
+          return ++i, is;
+
+      is.setstate(std::ios::failbit);
+    }
+    else if (p = to_decimal<dpp<T, E>>(i, end); nan == p)
+      is.setstate(std::ios::failbit);
+    else for (i = {is}; (end != i) &&
+      std::isdigit(static_cast<unsigned char>(*i)); ++i);
+  }
+
+  return is;
 }
 
 //////////////////////////////////////////////////////////////////////////////
