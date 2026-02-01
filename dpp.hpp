@@ -893,7 +893,8 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
   {
     std::istreambuf_iterator<char> const end;
 
-    if (auto i(std::istreambuf_iterator<char>{is}); (end != i) && ('n' == *i))
+    if (auto i(std::istreambuf_iterator<char>{is});
+      (end != i) && ('n' == *i)) [[unlikely]]
     { // check for nan
       if (p = nan; (end != ++i) && ('a' == *i))
         if ((end != ++i) && ('n' == *i))
@@ -901,9 +902,10 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
 
       is.setstate(std::ios::failbit);
     }
-    else if (p = to_decimal<dpp<T, E>>(i, end); nan == p)
+    else if (p = to_decimal<dpp<T, E>>(i, end); nan == p) [[unlikely]]
       is.setstate(std::ios::failbit);
-    else while ((end != i) && std::isdigit((unsigned char)(*i))) ++i;
+    else [[likely]]
+      while ((end != i) && std::isdigit((unsigned char)(*i))) ++i;
   }
 
   return is;
