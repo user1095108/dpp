@@ -8,7 +8,7 @@ int main()
 
   D a;
   std::cin >> a;
-  std::cout << a << std::endl;
+  std::cout << "error: " << !std::cin << ' ' << a << std::endl;
 
   return 0;
 }
