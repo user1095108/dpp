@@ -841,10 +841,8 @@ constexpr auto to_decimal(auto const& s) ->
 
 template <typename T, typename E>
 auto& operator<<(std::ostream& os, dpp<T, E> const& p)
-{
-  if (std::ostream::sentry s(os); s) os << to_string(p);
-
-  return os;
+{ // !!!
+  return os << to_string(p);
 }
 
 template <typename T, typename E>
