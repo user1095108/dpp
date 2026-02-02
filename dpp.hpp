@@ -897,7 +897,7 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
       (end != i) && ('n' == *i)) [[unlikely]]
     { // check for nan
       if ((end != ++i) && ('a' == *i) && (end != ++i) && ('n' == *i))
-        ++i, p = nan;
+        p = nan, ++i;
       else
         is.setstate(std::ios::failbit);
     }
