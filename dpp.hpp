@@ -896,16 +896,15 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
     if (auto i(std::istreambuf_iterator<char>{is});
       (end != i) && ('n' == *i)) [[unlikely]]
     { // check for nan
-      if ((end != ++i) && ('a' == *i))
-        if ((end != ++i) && ('n' == *i))
-          return ++i, p = nan, is;
+      if ((end != ++i) && ('a' == *i) && (end != ++i) && ('n' == *i))
+        return ++i, p = nan, is;
 
       is.setstate(std::ios::failbit);
     }
     else if (p = to_decimal<dpp<T, E>>(i, end); nan == p) [[unlikely]]
       is.setstate(std::ios::failbit);
     else [[likely]]
-      while ((end != i) && std::isdigit((unsigned char)(*i))) ++i;
+      while (std::is_digit((unsigned char)(is.peek())) && is) is.ignore();
   }
 
   return is;
