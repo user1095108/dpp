@@ -904,7 +904,8 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
     else if (p = to_decimal<dpp<T, E>>(i, end); nan == p) [[unlikely]]
       is.setstate(std::ios::failbit);
     else [[likely]]
-      while (std::isdigit((unsigned char)(is.peek())) && is) is.ignore();
+      while (std::isdigit((unsigned char)(is.peek())) && is.good())
+        is.ignore();
   }
 
   return is;
