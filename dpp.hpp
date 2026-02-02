@@ -893,7 +893,7 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
   {
     std::istreambuf_iterator<char> const end;
 
-    if (auto i(std::istreambuf_iterator<char>{is});
+    if (std::istreambuf_iterator<char> i{is};
       (end != i) && ('n' == *i)) [[unlikely]]
     { // check for nan
       if ((end != ++i) && ('a' == *i) && (end != ++i) && ('n' == *i))
