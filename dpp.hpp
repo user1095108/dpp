@@ -904,7 +904,7 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
     else if (nan == (p = to_decimal<dpp<T, E>>(i, end)))
       is.setstate(std::ios::failbit);
     else
-      for (; end != i && std::isdigit((unsigned char)(*i)); ++i);
+      while (end != i && std::isdigit((unsigned char)(*i))) ++i;
   }
 
   return is;
