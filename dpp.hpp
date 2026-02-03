@@ -901,11 +901,10 @@ auto& operator>>(std::istream& is, dpp<T, E>& p)
       else
         is.setstate(std::ios::failbit);
     }
-    else if (p = to_decimal<dpp<T, E>>(i, end); nan == p) [[unlikely]]
+    else if (nan == (p = to_decimal<dpp<T, E>>(i, end)))
       is.setstate(std::ios::failbit);
-    else [[likely]]
-      while (is.good() && std::isdigit((unsigned char)(is.peek())) &&
-        is.good()) is.ignore();
+    else
+      for (; end != i && std::isdigit((unsigned char)(*i)); ++i);
   }
 
   return is;
