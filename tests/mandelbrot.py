@@ -14,7 +14,7 @@ def mandelbrot(cr, ci):
         zi2 = zi * zi
 
         if zr2 + zi2 <= 4:
-            zi = (zr + zr) * zi + ci
+            zi = dpp.fma(zr + zr, zi,  ci)
             zr = zr2 - zi2 + cr
         else:
             break
