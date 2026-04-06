@@ -23,7 +23,6 @@ def mandelbrot(cr, ci):
 
     return j
 
-
 def main():
     # Get terminal size (cross-platform)
     size = shutil.get_terminal_size()
