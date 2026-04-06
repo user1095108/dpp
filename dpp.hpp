@@ -371,7 +371,10 @@ struct dpp
   }
 
   template <typename U, typename V>
-  constexpr dpp(dpp<U, V> const& o) noexcept: dpp(o.sig(), o.exp()) { }
+  constexpr dpp(dpp<U, V> const& o) noexcept
+  {
+    *this = isnan(o) ? nan : dpp(o.sig(), o.exp());
+  }
 
   //
   constexpr dpp(direct_t, sig_t const& m) noexcept: m_(m), e_{} { }
