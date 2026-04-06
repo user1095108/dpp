@@ -73,6 +73,8 @@ void bind_decimal(nb::module_ &m, char const* name) {
   m.def("ceil", dpp::ceil<typename T::sig_t, typename T::exp_t>);
   m.def("round", dpp::round<typename T::sig_t, typename T::exp_t>);
 
+  m.def("inv", dpp::inv<typename T::sig_t, typename T::exp_t>);
+
   m.def("fma", dpp::fma<typename T::sig_t, typename T::exp_t>);
   m.def("midpoint", dpp::midpoint<typename T::sig_t, typename T::exp_t>);
 
