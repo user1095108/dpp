@@ -3,6 +3,8 @@
 #include "nanobind/stl/string.h"
 #include "nanobind/stl/string_view.h"
 
+#include <format>
+
 #include "sqrt.hpp"
 
 namespace nb = nanobind;
@@ -28,6 +30,9 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def(nb::init_implicit<bool>())
     .def(nb::init_implicit<std::intmax_t>())
     .def(nb::init_implicit<double>())
+
+    .def("sig", &T::sig)
+    .def("exp", &T::exp)
 
     .def(nb::self + nb::self)
     .def(nb::self - nb::self)
