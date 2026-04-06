@@ -5,7 +5,7 @@ import gc
 import sys
 import time
 
-def run_benchmark(type_name, iterations=3_000_000, repeats=10):
+def run_benchmark(type_name, iterations=3_000_000, repeats=6):
     prec_map = {"d32": 7, "d64": 16, "d128": 34}
     target_prec = prec_map.get(type_name, 28)
     decimal.getcontext().prec = target_prec
