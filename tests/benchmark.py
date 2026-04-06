@@ -3,12 +3,12 @@ import dpp
 import decimal
 from decimal import Decimal
 
-def run_benchmark(type_name, iterations=1_000_000):
+def run_benchmark(type_name, iterations=3_000_000):
     prec_map = {"d32": 7, "d64": 16, "d128": 34}
     target_prec = prec_map.get(type_name, 28)
     
     decimal.getcontext().prec = target_prec
-    print(f"--- Benchmarking {type_name} (Precision: {target_prec} digits) ---")
+    print(f"--- Benchmarking {type_name} (Precision: {decimal.getcontext().prec} digits) ---")
 
     val_str_a = "1.234567"
     val_str_b = "9.876543"
