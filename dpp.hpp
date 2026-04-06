@@ -401,17 +401,56 @@ struct dpp
     std::is_same_v<U, long double>))
   operator U() const noexcept
   {
+    using F = exp2_t;
+
+    using namespace detail;
+
     if (isnan(*this)) [[unlikely]] return std::numeric_limits<U>::quiet_NaN();
 
-    int const e2(std::ceil(int(e_) * 3.32192809488736234787031942948939f));
+    dpp a(*this);
+
+    if (intt::is_neg(a.m_))
+      (
+        [&]<auto ...I>(std::index_sequence<I...>) noexcept
+        {
+          (
+            [&]() noexcept -> bool
+            {
+              constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+              constexpr T f(ar::coeff<pow(T(10), e0)>());
+
+              if (a.m_ >= ar::coeff<min_v<T> / f>()) a.e_ -= e0, a.m_ *= f;
+
+              return a.m_ > ar::coeff<min_v<T> / 10>();
+            }() && ...
+          );
+        }(std::make_index_sequence<maxpow2e<T>() + 1>())
+      );
+    else
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr T f(ar::coeff<pow(T(10), e0)>());
+
+            if (a.m_ <= ar::coeff<max_v<T> / f>()) a.e_ -= e0, a.m_ *= f;
+
+            return a.m_ < ar::coeff<max_v<T> / 10>();
+          }() && ...
+        );
+      }(std::make_index_sequence<maxpow2e<T>() + 1>());
+
+    int const e2(std::ceil(int(a.e_) * 3.32192809488736234787031942948939f));
 
     auto const k(detail::pow(dpp(direct, T(2)), e2));
 
-    auto const a(e_ <= E{} ? *this * k : *this / k);
+    auto const b(e_ <= E{} ? a * k : a / k);
 
     constexpr dpp c(direct, T(5), E(-1));
 
-    return std::ldexp(U(T(intt::is_neg(a.m_) ? a - c : a + c)), e2);
+    return std::ldexp(U(T(intt::is_neg(a.m_) ? b - c : b + c)), e2);
   }
 
   template <detail::integral U>
