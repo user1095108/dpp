@@ -14,30 +14,26 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def_prop_ro_static("eps", [](nb::handle) noexcept { return T::eps; })
     .def_prop_ro_static("max", [](nb::handle) noexcept { return T::max; })
     .def_prop_ro_static("min", [](nb::handle) noexcept { return T::min; })
+
     .def(nb::init<>())
+
     .def(nb::init<dpp::nan_t>())
     .def(nb::init<bool>())
-    .def(nb::init<double>())
     .def(nb::init<std::intmax_t>())
+    .def(nb::init<double>())
     .def("__init__", [](T* t, std::string_view const& s) {
         new (t) T(dpp::to_decimal<T>(s));
     })
 
+    .def(nb::init_implicit<dpp::nan_t>())
+    .def(nb::init_implicit<bool>())
+    .def(nb::init_implicit<std::intmax_t>())
+    .def(nb::init_implicit<double>())
+
     .def(nb::self + nb::self)
-    .def(nb::self + std::intmax_t()).def(std::intmax_t() + nb::self)
-    .def(nb::self + double()).def(double() + nb::self)
-
     .def(nb::self - nb::self)
-    .def(nb::self - std::intmax_t()).def(std::intmax_t() - nb::self)
-    .def(nb::self - double()).def(double() - nb::self)
-
     .def(nb::self * nb::self)
-    .def(nb::self * std::intmax_t()).def(std::intmax_t() * nb::self)
-    .def(nb::self * double()).def(double() * nb::self)
-
     .def(nb::self / nb::self)
-    .def(nb::self / std::intmax_t()).def(std::intmax_t() / nb::self)
-    .def(nb::self / double()).def(double() / nb::self)
 
     .def(-nb::self)
     .def(+nb::self)
@@ -46,31 +42,13 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def(nb::self != dpp::nan_t()).def(dpp::nan_t() != nb::self)
 
     .def(nb::self == nb::self)
-    .def(nb::self == std::intmax_t()).def(std::intmax_t() == nb::self)
-    .def(nb::self == double()).def(double() == nb::self)
-
     .def(nb::self != nb::self)
-    .def(nb::self != std::intmax_t()).def(std::intmax_t() != nb::self)
-    .def(nb::self != double()).def(double() != nb::self)
-
     .def(nb::self < nb::self)
-    .def(nb::self < std::intmax_t()).def(std::intmax_t() < nb::self)
-    .def(nb::self < double()).def(double() < nb::self)
-
     .def(nb::self <= nb::self)
-    .def(nb::self <= std::intmax_t()).def(std::intmax_t() <= nb::self)
-    .def(nb::self <= double()).def(double() <= nb::self)
-
     .def(nb::self > nb::self)
-    .def(nb::self > std::intmax_t()).def(std::intmax_t() > nb::self)
-    .def(nb::self > double()).def(double() > nb::self)
-
     .def(nb::self >= nb::self)
-    .def(nb::self >= std::intmax_t()).def(std::intmax_t() >= nb::self)
-    .def(nb::self >= double()).def(double() >= nb::self)
 
-    .def("__copy__", [](T const& self) noexcept { return T(self); })
-    .def("__deepcopy__", [](T const& self, nb::dict) noexcept { return T(self); })
+    .def("__bool__", [](T const& a) noexcept { return bool(a); })
     .def("__float__", [](T const& a) noexcept { return double(a); })
     .def("__int__", [](T const& a) noexcept { return std::intmax_t(a); })
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
@@ -78,10 +56,27 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def("__repr__", [name](T const& a) {
       return std::string("dpp.", 4) + name + "(\"" + dpp::to_string(a) + "\")";
     })
+
+    .def("__copy__", [](T const& self) noexcept { return T(self); })
+    .def("__deepcopy__", [](T const& self, nb::dict) noexcept { return T(self); })
+
     .def("__getstate__", [](T const& a) { return dpp::to_string(a); })
     .def("__setstate__", [](T& a, std::string_view const& s) noexcept {
       a = dpp::to_decimal<T>(s);
     });
+
+  m.def("isnan", dpp::isnan<typename T::sig_t, typename T::exp_t>);
+
+  m.def("abs", dpp::abs<typename T::sig_t, typename T::exp_t>);
+  m.def("trunc", dpp::trunc<typename T::sig_t, typename T::exp_t>);
+  m.def("floor", dpp::floor<typename T::sig_t, typename T::exp_t>);
+  m.def("ceil", dpp::ceil<typename T::sig_t, typename T::exp_t>);
+  m.def("round", dpp::round<typename T::sig_t, typename T::exp_t>);
+
+  m.def("fma", dpp::fma<typename T::sig_t, typename T::exp_t>);
+  m.def("midpoint", dpp::midpoint<typename T::sig_t, typename T::exp_t>);
+
+  m.def("sqrt", dpp::sqrt<typename T::sig_t, typename T::exp_t>);
 }
 
 NB_MODULE(dpp, m) {
@@ -95,10 +90,4 @@ NB_MODULE(dpp, m) {
   bind_decimal<dpp::d128>(m, "d128");
   bind_decimal<dpp::d256>(m, "d256");
   bind_decimal<dpp::d512>(m, "d512");
-
-  m.def("sqrt", &dpp::sqrt<dpp::d32::sig_t, dpp::d32::exp_t>);
-  m.def("sqrt", &dpp::sqrt<dpp::d64::sig_t, dpp::d64::exp_t>);
-  m.def("sqrt", &dpp::sqrt<dpp::d128::sig_t, dpp::d128::exp_t>);
-  m.def("sqrt", &dpp::sqrt<dpp::d256::sig_t, dpp::d256::exp_t>);
-  m.def("sqrt", &dpp::sqrt<dpp::d512::sig_t, dpp::d512::exp_t>);
 }
