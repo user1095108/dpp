@@ -21,7 +21,6 @@ void bind_decimal(nb::module_ &m, char const* name) {
         new (t) T(dpp::to_decimal<T>(s));
     })
 
-    // 1. Standard Arithmetic (+, -, *, /)
     .def(nb::self + nb::self)
     .def(nb::self + std::intmax_t()).def(std::intmax_t() + nb::self)
     .def(nb::self + double()).def(double() + nb::self)
@@ -38,17 +37,9 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def(nb::self / std::intmax_t()).def(std::intmax_t() / nb::self)
     .def(nb::self / double()).def(double() / nb::self)
 
-    // 2. Augmented Assignment (+=, -=, *=, /=)
-    .def(nb::self += nb::self).def(nb::self += std::intmax_t()).def(nb::self += double())
-    .def(nb::self -= nb::self).def(nb::self -= std::intmax_t()).def(nb::self -= double())
-    .def(nb::self *= nb::self).def(nb::self *= std::intmax_t()).def(nb::self *= double())
-    .def(nb::self /= nb::self).def(nb::self /= std::intmax_t()).def(nb::self /= double())
-
-    // 3. Unary Operators
     .def(-nb::self)
     .def(+nb::self)
 
-    // 4. Comparisons (==, !=, <, <=, >, >=)
     .def(nb::self == dpp::nan_t()).def(dpp::nan_t() == nb::self)
     .def(nb::self != dpp::nan_t()) .def(dpp::nan_t() != nb::self)
 
@@ -76,7 +67,6 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def(nb::self >= std::intmax_t()).def(std::intmax_t() >= nb::self)
     .def(nb::self >= double()).def(double() >= nb::self)
 
-    // 5. Conversions & Protocols
     .def("__copy__", [](T const& self) noexcept { return T(self); })
     .def("__deepcopy__", [](T const& self, nb::dict) noexcept { return T(self); })
     .def("__float__", [](T const& a) noexcept { return double(a); })
@@ -84,11 +74,11 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
     .def("__str__", [](T const& a) { return dpp::to_string(a); })
     .def("__repr__", [name](T const& a) {
-      return std::string("dpp.") + name + "(\"" + dpp::to_string(a) + "\")";
+      return std::string("dpp.", 4) + name + "(\"" + dpp::to_string(a) + "\")";
     })
     .def("__getstate__", [](T const& a) { return dpp::to_string(a); })
     .def("__setstate__", [](T& a, std::string_view const& s) {
-      new (&a) T(dpp::to_decimal<T>(s));
+      a = dpp::to_decimal<T>(s);
     });
 }
 
