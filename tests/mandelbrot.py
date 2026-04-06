@@ -1,5 +1,4 @@
 import dpp
-import os
 import shutil
 
 max_iter = 100
@@ -24,10 +23,8 @@ def mandelbrot(cr, ci):
     return j
 
 def main():
-    # Get terminal size (cross-platform)
-    size = shutil.get_terminal_size()
-    w = size.columns
-    h = size.lines - 1
+    w, h = shutil.get_terminal_size()
+    h -= 1
 
     x0 = dpp.d32(-2)
     y = dpp.d32(1.15)
