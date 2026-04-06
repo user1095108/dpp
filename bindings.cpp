@@ -10,9 +10,13 @@ namespace nb = nanobind;
 
 template <typename T>
 void bind_decimal(nb::module_ &m, char const* name) {
-  nb::class_<T>(m, name)
-    // Constructors
-    .def(nb::init<>())
+  auto cl = nb::class_<T>(m, name);
+
+  cl.attr("eps") = T::eps;
+  cl.attr("max") = T::max;
+  cl.attr("min") = T::min;
+
+  cl.def(nb::init<>())
     .def(nb::init<dpp::nan_t>())
     .def(nb::init<bool>())
     .def(nb::init<double>())
