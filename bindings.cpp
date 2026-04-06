@@ -3,14 +3,13 @@
 #include "nanobind/stl/string.h"
 #include "nanobind/stl/string_view.h"
 
-#include "dpp.hpp"
 #include "sqrt.hpp"
 
 namespace nb = nanobind;
 
 template <typename T>
 void bind_decimal(nb::module_ &m, char const* name) {
-  auto cl = nb::class_<T>(m, name)
+  auto cl = nb::class_<T>(m, name, nb::is_final())
     .def_prop_ro_static("eps", [](nb::handle) noexcept { return T::eps; })
     .def_prop_ro_static("max", [](nb::handle) noexcept { return T::max; })
     .def_prop_ro_static("min", [](nb::handle) noexcept { return T::min; })
@@ -54,7 +53,7 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
     .def("__str__", [](T const& a) { return dpp::to_string(a); })
     .def("__repr__", [name](T const& a) {
-      return std::string("dpp.", 4) + name + "(\"" + dpp::to_string(a) + "\")";
+      return std::format("dpp.{}(\"{}\")", name, dpp::to_string(a));
     })
 
     .def("__copy__", [](T const& self) noexcept { return T(self); })
