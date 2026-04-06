@@ -4,6 +4,7 @@
 #include "nanobind/stl/string_view.h"
 
 #include "dpp.hpp"
+#include "sqrt.hpp"
 
 namespace nb = nanobind;
 
@@ -96,9 +97,16 @@ NB_MODULE(dpp, m) {
     .def(nb::init<>())
     .def("__repr__", [](dpp::nan_t const&) { return "nan"; });
   m.attr("nan") = dpp::nan_t();
+
   bind_decimal<dpp::d32>(m, "d32");
   bind_decimal<dpp::d64>(m, "d64");
   bind_decimal<dpp::d128>(m, "d128");
   bind_decimal<dpp::d256>(m, "d256");
   bind_decimal<dpp::d512>(m, "d512");
+
+  m.def("sqrt", &dpp::sqrt<dpp::d32::sig_t, dpp::d32::exp_t>);
+  m.def("sqrt", &dpp::sqrt<dpp::d64::sig_t, dpp::d64::exp_t>);
+  m.def("sqrt", &dpp::sqrt<dpp::d128::sig_t, dpp::d128::exp_t>);
+  m.def("sqrt", &dpp::sqrt<dpp::d256::sig_t, dpp::d256::exp_t>);
+  m.def("sqrt", &dpp::sqrt<dpp::d512::sig_t, dpp::d512::exp_t>);
 }

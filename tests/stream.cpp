@@ -10,7 +10,7 @@ int main()
   {
     D a;
     std::cin >> a;
-    std::cout << a << " error: " << !std::cin << std::endl;
+    std::cout << a << " double: " << double(a) << " error: " << !std::cin << std::endl;
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
