@@ -10,13 +10,11 @@ namespace nb = nanobind;
 
 template <typename T>
 void bind_decimal(nb::module_ &m, char const* name) {
-  auto cl = nb::class_<T>(m, name);
-
-  cl.attr("eps") = T::eps;
-  cl.attr("max") = T::max;
-  cl.attr("min") = T::min;
-
-  cl.def(nb::init<>())
+  auto cl = nb::class_<T>(m, name)
+    .def_prop_ro_static("eps", [](nb::handle) noexcept { return T::eps; })
+    .def_prop_ro_static("max", [](nb::handle) noexcept { return T::max; })
+    .def_prop_ro_static("min", [](nb::handle) noexcept { return T::min; })
+    .def(nb::init<>())
     .def(nb::init<dpp::nan_t>())
     .def(nb::init<bool>())
     .def(nb::init<double>())
@@ -89,7 +87,7 @@ void bind_decimal(nb::module_ &m, char const* name) {
 NB_MODULE(dpp, m) {
   nb::class_<dpp::nan_t>(m, "_NaNType")
     .def(nb::init<>())
-    .def("__repr__", [](dpp::nan_t const&) { return "nan"; });
+    .def("__repr__", [](dpp::nan_t) noexcept { return "nan"; });
   m.attr("nan") = dpp::nan_t();
 
   bind_decimal<dpp::d32>(m, "d32");
