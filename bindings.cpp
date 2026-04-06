@@ -79,15 +79,13 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def("__copy__", [](T const& self) noexcept { return T(self); })
     .def("__deepcopy__", [](T const& self, nb::dict) noexcept { return T(self); })
     .def("__float__", [](T const& a) noexcept { return double(a); })
-    .def("__int__", [](T const& a) { return (std::intmax_t)a; })
+    .def("__int__", [](T const& a) { return std::intmax_t(a); })
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
     .def("__str__", [](T const& a) { return dpp::to_string(a); })
     .def("__repr__", [name](T const& a) {
       return std::string("dpp.") + name + "(\"" + dpp::to_string(a) + "\")";
     })
-    .def("__getstate__", [](T const& a) {
-      return dpp::to_string(a);
-    })
+    .def("__getstate__", [](T const& a) { return dpp::to_string(a); })
     .def("__setstate__", [](T& a, std::string_view const& s) {
       new (&a) T(dpp::to_decimal<T>(s));
     });
