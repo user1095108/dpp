@@ -1,5 +1,5 @@
 [build-system]
-requires = ["nanobind", "setuptools>=68", "wheel"]
+requires = ["nanobind", "setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
