@@ -617,13 +617,13 @@ struct dpp
   }
 
   //
+  constexpr auto& exp() const noexcept { return e_; }
+  constexpr auto& sig() const noexcept { return m_; }
+
+  //
   static constexpr dpp eps{direct, 1, -detail::maxpow10e<T, exp_t>()};
   static constexpr dpp max{direct, mmax, emax};
   static constexpr dpp min{direct, mmin, emax};
-
-  //
-  constexpr auto& exp() const noexcept { return e_; }
-  constexpr auto& sig() const noexcept { return m_; }
 };
 
 using d1024 = dpp<intt::intt<std::uint64_t, 16>, std::int32_t>;
