@@ -25,11 +25,11 @@ ext_modules = [
             "-fno-stack-protector",
             "-fvisibility=hidden",
             "-flto=auto",
-            "-g0"
+            "-g0",
         ],
         extra_link_args=[
             "-flto=auto",
-            "-Wl,--strip-all"
+            "-Wl,--strip-all",
         ]
     )
 ]
