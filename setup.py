@@ -16,15 +16,15 @@ ext_modules = [
         include_dirs=[nb_include, nb_robin_map],
         language="c++",
         extra_compile_args=[
-            "-std=c++20",
-            "-Ofast",
-            "-DNDEBUG",
-            "-flto",
-            "-fno-stack-protector",
-            "-fvisibility=hidden",
-            "-fno-finite-math-only",
             "-Wall",
             "-Wextra",
+            "-std=c++20",
+            "-Ofast",
+            "-fno-finite-math-only",
+            "-DNDEBUG",
+            "-fno-stack-protector",
+            "-fvisibility=hidden",
+            "-flto",
             "-g0"
         ],
         extra_link_args=[
