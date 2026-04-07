@@ -617,11 +617,9 @@ struct dpp
   }
 
   //
-#if !defined(__clang__)
   static constexpr dpp eps{sig2_t(1), -detail::maxpow10e<T, exp2_t>()};
   static constexpr dpp max{direct, mmax, emax};
   static constexpr dpp min{direct, mmin, emax};
-#endif
 
   //
   constexpr auto& exp() const noexcept { return e_; }
