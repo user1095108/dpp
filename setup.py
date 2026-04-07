@@ -17,11 +17,12 @@ ext_modules = [
         language="c++",
         extra_compile_args=[
             "-std=c++20",
-            "-O3",
+            "-Ofast",
             "-DNDEBUG",
             "-flto",
             "-fno-stack-protector",
             "-fvisibility=hidden",
+            "-fno-finite-math-only",
             "-Wall",
             "-Wextra",
             "-g0"
