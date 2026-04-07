@@ -19,13 +19,17 @@ ext_modules = [
             "-std=c++20",
             "-O3",
             "-DNDEBUG",
-            "-fno-stack-protector",
             "-flto",
+            "-fno-stack-protector",
+            "-fvisibility=hidden",
             "-Wall",
             "-Wextra",
             "-g0"
         ],
-        extra_link_args=["-Wl,--strip-all", "-flto"]
+        extra_link_args=[
+            "-flto",
+            "-Wl,--strip-all"
+        ]
     )
 ]
 
