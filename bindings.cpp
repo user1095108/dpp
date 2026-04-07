@@ -62,7 +62,7 @@ void bind_decimal(nb::module_ &m, char const* name) {
     })
 
     .def("__copy__", [](T const& self) noexcept { return T(self); })
-    .def("__deepcopy__", [](T const& self, nb::dict) noexcept { return T(self); })
+    .def("__deepcopy__", [](T const& self, auto&&) noexcept { return T(self); })
 
     .def("__getstate__", [](T const& a) { return dpp::to_string(a); })
     .def("__setstate__", [](T& a, std::string_view const& s) noexcept {

@@ -21,6 +21,5 @@ ext_modules = [
 
 setup(
     name="dpp-dec-float",
-    version="1.0.0",
     ext_modules=ext_modules
 )
