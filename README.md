@@ -5,6 +5,10 @@ This is an intuitive **decimal** floating-point number library for non-critical 
     git submodule update --init
     g++ -std=c++20 -Ofast -s mandelbrot.cpp -o m
 
+for python bindings (use `gcc` as `clang` fails to compile the code):
+
+    pip install nanobind .
+
 # resources
 * [Boost.Multiprecision](https://github.com/boostorg/multiprecision)
 * [DEC64](https://github.com/douglascrockford/DEC64)
