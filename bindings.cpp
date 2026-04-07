@@ -96,6 +96,4 @@ NB_MODULE(dpp, m) {
   bind_decimal<dpp::d32>(m, "d32");
   bind_decimal<dpp::d64>(m, "d64");
   bind_decimal<dpp::d128>(m, "d128");
-  bind_decimal<dpp::d256>(m, "d256");
-  bind_decimal<dpp::d512>(m, "d512");
 }

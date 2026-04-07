@@ -15,7 +15,17 @@ ext_modules = [
         ["bindings.cpp", nb_src],
         include_dirs=[nb_include, nb_robin_map],
         language="c++",
-        extra_compile_args=["-std=c++20", "-O3", "-DNDEBUG", "-fno-stack-protector", "-Wall", "-Wextra"],
+        extra_compile_args=[
+            "-std=c++20",
+            "-O3",
+            "-DNDEBUG",
+            "-fno-stack-protector",
+            "-flto",
+            "-Wall",
+            "-Wextra",
+            "-g0"
+        ],
+        extra_link_args=["-Wl,--strip-all", "-flto"]
     )
 ]
 
