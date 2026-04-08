@@ -25,7 +25,8 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def(nb::init<std::intmax_t>())
     .def(nb::init<double>())
     .def("__init__", [](T* const t, std::string_view const& s) {
-        new (t) T(dpp::to_decimal<T>(s));
+      static_assert(std::is_trivially_default_constructible_v<T>);
+      *t = dpp::to_decimal<T>(s);
     })
 
     .def(nb::init_implicit<dpp::nan_t>())
