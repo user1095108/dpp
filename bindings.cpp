@@ -4,6 +4,7 @@
 #include "nanobind/stl/string_view.h"
 
 #include <format>
+#include <memory>
 
 #include "sqrt.hpp"
 
@@ -68,7 +69,7 @@ void bind_decimal(nb::module_ &m, char const* name) {
 
     .def("__getstate__", [](T const& a) { return dpp::to_string(a); })
     .def("__setstate__", [](T& a, std::string_view const& s) noexcept {
-      a = dpp::to_decimal<T>(s);
+      *(new (std::addressof(a)) T) = dpp::to_decimal<T>(s);
     });
 
   m.def("isnan", dpp::isnan<typename T::sig_t, typename T::exp_t>);
