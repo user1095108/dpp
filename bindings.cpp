@@ -5,6 +5,7 @@
 
 #include <format>
 #include <memory>
+#include <type_traits>
 
 #include "sqrt.hpp"
 
@@ -69,7 +70,8 @@ void bind_decimal(nb::module_ &m, char const* name) {
 
     .def("__getstate__", [](T const& a) { return dpp::to_string(a); })
     .def("__setstate__", [](T& a, std::string_view const& s) noexcept {
-      *(new (std::addressof(a)) T) = dpp::to_decimal<T>(s);
+      static_assert(std::is_trivially_default_constructible_v<T>);
+      a = dpp::to_decimal<T>(s);
     });
 
   m.def("isnan", dpp::isnan<typename T::sig_t, typename T::exp_t>);
