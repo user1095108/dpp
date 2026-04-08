@@ -23,7 +23,7 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def(nb::init<bool>())
     .def(nb::init<std::intmax_t>())
     .def(nb::init<double>())
-    .def("__init__", [](T* t, std::string_view const& s) {
+    .def("__init__", [](T* const t, std::string_view const& s) {
         new (t) T(dpp::to_decimal<T>(s));
     })
 
