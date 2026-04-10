@@ -63,10 +63,10 @@ void bind_decimal(nb::module_ &m, auto const& name) {
     .def("__float__", [](T const& a) noexcept { return double(a); })
     .def("__int__", [](T const& a) noexcept { return std::intmax_t(a); })
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
-    .def("__str__", [](T const& a) { return dpp::to_string(a); })
-    .def("__repr__", [name](T const& a) {
+    .def("__repr__", [&name](T const& a) {
       return std::format(STR(MOD_NAME)".{}(\"{}\")", name, dpp::to_string(a));
     })
+    .def("__str__", [](T const& a) { return dpp::to_string(a); })
 
     .def("__copy__", [](T const& self) noexcept { return T(self); })
     .def("__deepcopy__", [](T const& self, nb::dict const&) noexcept {
@@ -101,7 +101,7 @@ NB_MODULE(MOD_NAME, m) {
 
     nb::class_<dpp::nan_t>(m, name)
       .def(nb::init<>())
-      .def("__repr__", [name](dpp::nan_t) {
+      .def("__repr__", [&name](dpp::nan_t) {
         return std::format(STR(MOD_NAME)".{}()", name);
       });
     m.attr("nan") = dpp::nan_t();
