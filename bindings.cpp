@@ -63,6 +63,7 @@ void bind_decimal(nb::module_ &m, auto const& name) {
     .def("__float__", [](T const& a) noexcept { return double(a); })
     .def("__int__", [](T const& a) noexcept { return std::intmax_t(a); })
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
+
     .def("__repr__", [&name](T const& a) {
       return std::format(STR(MOD_NAME)".{}(\"{}\")", name, dpp::to_string(a));
     })
