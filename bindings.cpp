@@ -11,8 +11,12 @@
 
 namespace nb = nanobind;
 
+#define MOD_NAME dpp
+#define STR_HELPER(x) #x
+#define STR(x) STR_HELPER(x)
+
 template <typename T>
-void bind_decimal(nb::module_ &m, char const* name) {
+void bind_decimal(nb::module_ &m, auto const& name) {
   auto cl = nb::class_<T>(m, name, nb::is_final())
     .def_prop_ro_static("eps", [](nb::handle) noexcept { return T::eps; })
     .def_prop_ro_static("max", [](nb::handle) noexcept { return T::max; })
@@ -61,7 +65,7 @@ void bind_decimal(nb::module_ &m, char const* name) {
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
     .def("__str__", [](T const& a) { return dpp::to_string(a); })
     .def("__repr__", [name](T const& a) {
-      return std::format("dpp.{}(\"{}\")", name, dpp::to_string(a));
+      return std::format(STR(MOD_NAME)".{}(\"{}\")", name, dpp::to_string(a));
     })
 
     .def("__copy__", [](T const& self) noexcept { return T(self); })
@@ -91,11 +95,17 @@ void bind_decimal(nb::module_ &m, char const* name) {
   m.def("sqrt", dpp::sqrt<typename T::sig_t, typename T::exp_t>);
 }
 
-NB_MODULE(dpp, m) {
-  nb::class_<dpp::nan_t>(m, "dpp.nan_t")
-    .def(nb::init<>())
-    .def("__repr__", [](dpp::nan_t) noexcept { return "dpp.nan_t()"; });
-  m.attr("nan") = dpp::nan_t();
+NB_MODULE(MOD_NAME, m) {
+  {
+    auto const& name = "nan_t";
+
+    nb::class_<dpp::nan_t>(m, name)
+      .def(nb::init<>())
+      .def("__repr__", [name](dpp::nan_t) {
+        return std::format(STR(MOD_NAME)".{}()", name);
+      });
+    m.attr("nan") = dpp::nan_t();
+  }
 
   bind_decimal<dpp::d32>(m, "d32");
   bind_decimal<dpp::d64>(m, "d64");
