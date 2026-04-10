@@ -92,9 +92,9 @@ void bind_decimal(nb::module_ &m, char const* name) {
 }
 
 NB_MODULE(dpp, m) {
-  nb::class_<dpp::nan_t>(m, "_NaNType")
+  nb::class_<dpp::nan_t>(m, "dpp.nan_t")
     .def(nb::init<>())
-    .def("__repr__", [](dpp::nan_t) noexcept { return "nan"; });
+    .def("__repr__", [](dpp::nan_t) noexcept { return "dpp.nan_t()"; });
   m.attr("nan") = dpp::nan_t();
 
   bind_decimal<dpp::d32>(m, "d32");
