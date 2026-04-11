@@ -432,7 +432,7 @@ struct dpp
 
             if ((a.e_ <= -e0) && !(a.m_ % f)) a.e_ += e0, a.m_ /= f;
 
-            return (a.e_ && !(a.m_ % T(10));
+            return a.e_ && !(a.m_ % T(10));
           }() && ...
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
@@ -452,7 +452,7 @@ struct dpp
               if ((a.e_ >= e0) && (a.m_ >= ar::coeff<fmin_v<U, T> / f>()))
                 a.e_ -= e0, a.m_ *= f;
 
-              return (a.e_ && (a.m_ > ar::coeff<fmin_v<U, T> / 10>());
+              return a.e_ && (a.m_ > ar::coeff<fmin_v<U, T> / 10>());
             }() && ...
           );
         }(std::make_index_sequence<em + 1>());
@@ -468,7 +468,7 @@ struct dpp
               if ((a.e_ >= e0) && (a.m_ <= ar::coeff<fmax_v<U, T> / f>()))
                 a.e_ -= e0, a.m_ *= f;
 
-              return (a.e_ && (a.m_ < ar::coeff<fmax_v<U, T> / 10>());
+              return a.e_ && (a.m_ < ar::coeff<fmax_v<U, T> / 10>());
             }() && ...
           );
         }(std::make_index_sequence<em + 1>());
