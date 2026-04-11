@@ -421,40 +421,7 @@ struct dpp
 
     dpp a(*this);
 
-    if (a.e_ > E{})
-      if (intt::is_neg(a.m_))
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept
-        {
-          (
-            [&]() noexcept -> bool
-            {
-              constexpr F e0(ar::coeff<pow(F(2), std::min(maxpow2e<U>(), maxpow2e<T>()) - I)>());
-              constexpr T f(ar::coeff<pow(T(10), e0)>());
-
-              if ((a.e_ >= e0) && (a.m_ >= ar::coeff<fmin_v<U, T> / f>()))
-                a.e_ -= e0, a.m_ *= f;
-
-              return (a.e_ > E{}) && (a.m_ > ar::coeff<fmin_v<U, T> / 10>());
-            }() && ...
-          );
-        }(std::make_index_sequence<std::min(maxpow2e<U>(), maxpow2e<T>()) + 1>());
-      else
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept
-        {
-          (
-            [&]() noexcept -> bool
-            {
-              constexpr F e0(ar::coeff<pow(F(2), std::min(maxpow2e<U>(), maxpow2e<T>()) - I)>());
-              constexpr T f(ar::coeff<pow(T(10), e0)>());
-
-              if ((a.e_ >= e0) && (a.m_ <= ar::coeff<fmax_v<U, T> / f>()))
-                a.e_ -= e0, a.m_ *= f;
-
-              return (a.e_ > E{}) && (a.m_ < ar::coeff<fmax_v<U, T> / 10>());
-            }() && ...
-          );
-        }(std::make_index_sequence<std::min(maxpow2e<U>(), maxpow2e<T>()) + 1>());
-    else if (a.e_ < E{})
+    if (a.e_ < E{})
       [&]<auto ...I>(std::index_sequence<I...>) noexcept
       { // slash zeros
         (
