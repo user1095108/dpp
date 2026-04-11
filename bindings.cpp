@@ -4,6 +4,7 @@
 #include "nanobind/stl/string_view.h"
 
 #include <format>
+#include <iostream>
 #include <memory>
 #include <type_traits>
 

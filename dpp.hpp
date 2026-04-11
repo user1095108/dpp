@@ -70,13 +70,23 @@ inline constexpr std::size_t sig_bit_size_v(
   std::is_same_v<std::remove_cv_t<U>, float> ? FLT_MANT_DIG :
   std::is_same_v<std::remove_cv_t<U>, double> ? DBL_MANT_DIG : LDBL_MANT_DIG);
 
-template <typename U>
+template <integral U>
 inline constexpr U min_v(
   is_signed_v<U> ? ~U{} << (ar::bit_size_v<U> - 1) : U{});
 
-template <typename U> inline constexpr U max_v(~min_v<U>);
+template <integral U> inline constexpr U max_v(~min_v<U>);
 
-template <auto B, typename E = std::size_t> requires(integral<decltype(B)>)
+constexpr auto pow(auto x, auto e) noexcept
+{
+  for (auto r(decltype(x)(1));;)
+  {
+    if (e & decltype(e)(1)) r *= x;
+
+    if (e /= decltype(e)(2)) [[likely]] x *= x; else [[unlikely]] return r;
+  }
+}
+
+template <auto B, typename E = std::size_t>
 consteval E log(decltype(B) x) noexcept
 {
   x /= B; E e{}; for (decltype(B) y(1); y <= x;) ++e, y *= B; return e;
@@ -86,6 +96,12 @@ template <typename U, typename E = std::size_t>
 consteval auto maxpow10e() noexcept
 {
   return log<U(10), E>(max_v<U>);
+}
+
+template <std::floating_point U, typename E = std::size_t>
+consteval auto maxpow10e() noexcept
+{
+  return log<U(10), E>(pow(U(2), sig_bit_size_v<U>) - 1);
 }
 
 template <typename U, typename E = std::size_t>
@@ -100,15 +116,12 @@ consteval auto maxpow2e2() noexcept
   return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<T> - 1)));
 }
 
-constexpr auto pow(auto x, auto e) noexcept
-{
-  for (auto r(decltype(x)(1));;)
-  {
-    if (e & decltype(e)(1)) r *= x;
+template <std::floating_point U, integral T>
+inline constexpr T fmin_v(sig_bit_size_v<U> < ar::bit_size_v<T> - 1 ?
+  ~T{} << sig_bit_size_v<U> : max_v<T>);
 
-    if (e /= decltype(e)(2)) [[likely]] x *= x; else [[unlikely]] return r;
-  }
-}
+template <std::floating_point U, integral T>
+inline constexpr T fmax_v(~fmin_v<U, T>);
 
 constexpr void slash_zeros(auto& m, auto& e) noexcept
 { // for (; !(m % 10); ++e, m /= 10);
@@ -414,30 +427,30 @@ struct dpp
         (
           [&]() noexcept -> bool
           {
-            constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr F e0(ar::coeff<pow(F(2), std::min(maxpow2e<U>(), maxpow2e<T>()) - I)>());
             constexpr T f(ar::coeff<pow(T(10), e0)>());
 
-            if (a.m_ >= ar::coeff<min_v<T> / f>()) a.e_ -= e0, a.m_ *= f;
+            if (a.m_ >= ar::coeff<fmin_v<U, T> / f>()) a.e_ -= e0, a.m_ *= f;
 
-            return a.m_ > ar::coeff<min_v<T> / 10>();
+            return a.m_ > ar::coeff<fmin_v<U, T> / 10>();
           }() && ...
         );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
+      }(std::make_index_sequence<std::min(maxpow2e<U>(), maxpow2e<T>()) + 1>());
     else
       [&]<auto ...I>(std::index_sequence<I...>) noexcept
       {
         (
           [&]() noexcept -> bool
           {
-            constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr F e0(ar::coeff<pow(F(2), std::min(maxpow2e<U>(), maxpow2e<T>()) - I)>());
             constexpr T f(ar::coeff<pow(T(10), e0)>());
 
-            if (a.m_ <= ar::coeff<max_v<T> / f>()) a.e_ -= e0, a.m_ *= f;
+            if (a.m_ <= ar::coeff<fmax_v<U, T> / f>()) a.e_ -= e0, a.m_ *= f;
 
-            return a.m_ < ar::coeff<max_v<T> / 10>();
+            return a.m_ < ar::coeff<fmax_v<U, T> / 10>();
           }() && ...
         );
-      }(std::make_index_sequence<maxpow2e<T>() + 1>());
+      }(std::make_index_sequence<std::min(maxpow2e<U>(), maxpow2e<T>()) + 1>());
 
     auto const k(detail::pow(U(10), a.e_));
 
