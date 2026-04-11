@@ -443,7 +443,7 @@ struct dpp
     {
       auto const k(detail::pow(U(10), a.e_));
 
-      return e_ <= E{} ? U(a.m_) / k : U(a.m_) * k;
+      return e_ < E{} ? U(a.m_) / k : U(a.m_) * k;
     }
     else
     {
