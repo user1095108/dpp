@@ -421,7 +421,7 @@ struct dpp
 
     dpp a(*this);
 
-    if (a.e_ < E{})
+    if (intt::is_neg(a.e_))
       [&]<auto ...I>(std::index_sequence<I...>) noexcept
       { // pull a.e_ towards zero
         (
@@ -436,7 +436,7 @@ struct dpp
           }() && ...
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
-    else if (a.e_ > E{})
+    else if (!a.e_)
     {
       enum : std::size_t { em = std::min(maxpow2e<U>(), maxpow2e<T>()) };
 
