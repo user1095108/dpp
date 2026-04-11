@@ -362,7 +362,6 @@ struct dpp
     a = std::ldexp(std::frexp(a, &e2), bits);
     e2 -= bits;
 
-    //
     int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
 
     auto const k(detail::pow(decltype(a)(10), e10));
@@ -410,22 +409,20 @@ struct dpp
     dpp a(*this);
 
     if (intt::is_neg(a.m_))
-      (
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept
-        {
-          (
-            [&]() noexcept -> bool
-            {
-              constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-              constexpr T f(ar::coeff<pow(T(10), e0)>());
+      [&]<auto ...I>(std::index_sequence<I...>) noexcept
+      {
+        (
+          [&]() noexcept -> bool
+          {
+            constexpr F e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+            constexpr T f(ar::coeff<pow(T(10), e0)>());
 
-              if (a.m_ >= ar::coeff<min_v<T> / f>()) a.e_ -= e0, a.m_ *= f;
+            if (a.m_ >= ar::coeff<min_v<T> / f>()) a.e_ -= e0, a.m_ *= f;
 
-              return a.m_ > ar::coeff<min_v<T> / 10>();
-            }() && ...
-          );
-        }(std::make_index_sequence<maxpow2e<T>() + 1>())
-      );
+            return a.m_ > ar::coeff<min_v<T> / 10>();
+          }() && ...
+        );
+      }(std::make_index_sequence<maxpow2e<T>() + 1>());
     else
       [&]<auto ...I>(std::index_sequence<I...>) noexcept
       {
@@ -442,15 +439,24 @@ struct dpp
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
 
-    int const e2(std::ceil(int(a.e_) * 3.32192809488736234787031942948939f));
+    if constexpr(detail::sig_bit_size_v<U> + 1 >= ar::bit_size_v<T>)
+    {
+      auto const k(detail::pow(U(10), a.e_));
 
-    auto const k(detail::pow(dpp(direct, T(2)), e2));
+      return e_ <= E{} ? U(a.m_) / k : U(a.m_) * k;
+    }
+    else
+    {
+      int const e2(std::ceil(int(a.e_) * 3.32192809488736234787031942948939f));
 
-    auto const b(e_ <= E{} ? a * k : a / k);
+      auto const k(detail::pow(dpp(direct, T(2)), e2));
 
-    constexpr dpp c(direct, T(5), E(-1));
+      auto const b(a.e_ <= E{} ? a * k : a / k);
 
-    return std::ldexp(U(T(intt::is_neg(a.m_) ? b - c : b + c)), e2);
+      constexpr dpp c(direct, T(5), E(-1));
+
+      return std::ldexp(U(T(intt::is_neg(a.m_) ? b - c : b + c)), e2);
+    }
   }
 
   template <detail::integral U>

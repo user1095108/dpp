@@ -2,6 +2,7 @@
 #include <decimal/decimal>
 #endif
 
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 
