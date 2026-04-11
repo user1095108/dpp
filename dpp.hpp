@@ -439,24 +439,9 @@ struct dpp
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
 
-    if constexpr(detail::sig_bit_size_v<U> + 1 >= ar::bit_size_v<T>)
-    {
-      auto const k(detail::pow(U(10), a.e_));
+    auto const k(detail::pow(U(10), a.e_));
 
-      return e_ < E{} ? U(a.m_) / k : U(a.m_) * k;
-    }
-    else
-    {
-      int const e2(std::ceil(int(a.e_) * 3.32192809488736234787031942948939f));
-
-      auto const k(detail::pow(dpp(direct, T(2)), e2));
-
-      auto const b(a.e_ <= E{} ? a * k : a / k);
-
-      constexpr dpp c(direct, T(5), E(-1));
-
-      return std::ldexp(U(T(intt::is_neg(a.m_) ? b - c : b + c)), e2);
-    }
+    return e_ < E{} ? U(a.m_) / k : U(a.m_) * k;
   }
 
   template <detail::integral U>
