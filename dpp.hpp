@@ -98,12 +98,6 @@ consteval auto maxpow10e() noexcept
   return log<U(10), E>(max_v<U>);
 }
 
-template <std::floating_point U, typename E = std::size_t>
-consteval auto maxpow10e() noexcept
-{
-  return log<U(10), E>(pow(U(2), sig_bit_size_v<U>) - 1);
-}
-
 template <typename U, typename E = std::size_t>
 consteval auto maxpow2e() noexcept
 {
@@ -115,13 +109,6 @@ consteval auto maxpow2e2() noexcept
 {
   return log<U(2), E>(log<U(10), E>(max_v<U> >> (ar::bit_size_v<T> - 1)));
 }
-
-template <std::floating_point U, integral T>
-inline constexpr T fmin_v(sig_bit_size_v<U> < ar::bit_size_v<T> - 1 ?
-  ~T{} << sig_bit_size_v<U> : max_v<T>);
-
-template <std::floating_point U, integral T>
-inline constexpr T fmax_v(~fmin_v<U, T>);
 
 constexpr void slash_zeros(auto& m, auto& e) noexcept
 { // for (; !(m % 10); ++e, m /= 10);
