@@ -61,8 +61,8 @@ void bind_decimal(nb::module_ &m, auto const& name) {
     .def(nb::self >= nb::self)
 
     .def("__bool__", [](T const& a) noexcept { return bool(a); })
+    //.def("__int__", [](T const& a) noexcept { return std::intmax_t(a); })
     .def("__float__", [](T const& a) noexcept { return double(a); })
-    .def("__int__", [](T const& a) noexcept { return std::intmax_t(a); })
     .def("__hash__", [](T const& a) noexcept { return std::hash<T>{}(a); })
 
     .def("__repr__", [&name](T const& a) {
