@@ -76,13 +76,6 @@ inline constexpr U min_v(
 
 template <integral U> inline constexpr U max_v(~min_v<U>);
 
-template <std::floating_point U, integral T>
-inline constexpr T fmin_v(
-  ~T{} << std::min(sig_bit_size_v<U>,  ar::bit_size_v<T> - 1));
-
-template <std::floating_point U, integral T>
-inline constexpr T fmax_v(~fmin_v<U, T>);
-
 constexpr auto pow(auto x, auto e) noexcept
 {
   for (auto r(decltype(x)(1));;)
@@ -103,12 +96,6 @@ template <integral U, typename E = std::size_t>
 consteval auto maxpow10e() noexcept
 {
   return log<U(10), E>(max_v<U>);
-}
-
-template <std::floating_point U, typename E = std::size_t>
-consteval auto maxpow10e() noexcept
-{
-  return log<U(10), E>(pow(U(2), sig_bit_size_v<U>) - 1);
 }
 
 template <typename U, typename E = std::size_t>
@@ -427,52 +414,15 @@ struct dpp
         (
           [&]() noexcept -> bool
           {
-            constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-            constexpr auto f(ar::coeff<pow(T(10), e0)>());
+            constexpr F e0(ar::coeff<-pow(F(2), maxpow2e<T>() - I)>());
+            constexpr T f(ar::coeff<pow(T(10), e0)>());
 
-            if ((a.e_ <= -e0) && !(a.m_ % f)) a.e_ += e0, a.m_ /= f;
+            if ((a.e_ <= e0) && !(a.m_ % f)) a.e_ -= e0, a.m_ /= f;
 
             return a.e_ && !(a.m_ % T(10));
           }() && ...
         );
       }(std::make_index_sequence<maxpow2e<T>() + 1>());
-    else if (a.e_)
-    {
-      enum : std::size_t { em = std::min(maxpow2e<U>(), maxpow2e<T>()) };
-
-      if (intt::is_neg(a.m_))
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept
-        {
-          (
-            [&]() noexcept -> bool
-            {
-              constexpr F e0(ar::coeff<pow(F(2), em - I)>());
-              constexpr T f(ar::coeff<pow(T(10), e0)>());
-
-              if ((a.e_ >= e0) && (a.m_ >= ar::coeff<fmin_v<U, T> / f>()))
-                a.e_ -= e0, a.m_ *= f;
-
-              return a.e_ && (a.m_ > ar::coeff<fmin_v<U, T> / 10>());
-            }() && ...
-          );
-        }(std::make_index_sequence<em + 1>());
-      else
-        [&]<auto ...I>(std::index_sequence<I...>) noexcept
-        {
-          (
-            [&]() noexcept -> bool
-            {
-              constexpr F e0(ar::coeff<pow(F(2), em - I)>());
-              constexpr T f(ar::coeff<pow(T(10), e0)>());
-
-              if ((a.e_ >= e0) && (a.m_ <= ar::coeff<fmax_v<U, T> / f>()))
-                a.e_ -= e0, a.m_ *= f;
-
-              return a.e_ && (a.m_ < ar::coeff<fmax_v<U, T> / 10>());
-            }() && ...
-          );
-        }(std::make_index_sequence<em + 1>());
-    }
 
     auto const k(detail::pow(U(10), a.e_));
 
