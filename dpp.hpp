@@ -426,7 +426,7 @@ struct dpp
 
     auto const k(detail::pow(U(10), a.e_));
 
-    return a.e_ < E{} ? U(a.m_) / k : U(a.m_) * k;
+    return intt::is_neg(a.e_) ? U(a.m_) / k : U(a.m_) * k;
   }
 
   template <detail::integral U>
