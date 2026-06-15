@@ -7,6 +7,7 @@ This is an intuitive **decimal** floating-point number library for non-critical 
 
 for python bindings (use `gcc` as `clang` fails to compile the code):
 
+    git submodule update --init
     pip install nanobind .
 
 # resources
