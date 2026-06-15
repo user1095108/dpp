@@ -20,6 +20,7 @@ ext_modules = [
             "-Wall",
             "-Wextra",
             "-std=c++20",
+            "-march=native",
             "-Ofast",
             "-fno-finite-math-only",
             "-fno-stack-protector",

@@ -100,14 +100,14 @@ void bind_decimal(nb::module_ &m, auto const& name) {
 
 NB_MODULE(MOD_NAME, m) {
   {
-    auto const& name = "nan_t";
+    auto const& name("nan_t");
 
     nb::class_<dpp::nan_t>(m, name)
       .def(nb::init<>())
       .def("__repr__", [&name](dpp::nan_t) {
         return std::format(STR(MOD_NAME)".{}()", name);
       });
-    m.attr("nan") = dpp::nan_t();
+    m.attr("nan") = dpp::nan;
   }
 
   bind_decimal<dpp::d32>(m, "d32");
