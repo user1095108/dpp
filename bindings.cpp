@@ -102,7 +102,7 @@ NB_MODULE(MOD_NAME, m) {
   {
     auto const& name("nan_t");
 
-    nb::class_<dpp::nan_t>(m, name)
+    nb::class_<dpp::nan_t>(m, name, nb::is_final())
       .def(nb::init<>())
       .def("__repr__", [&name](dpp::nan_t) {
         return std::format(STR(MOD_NAME)".{}()", name);
