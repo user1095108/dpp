@@ -395,7 +395,7 @@ struct dpp
   }
 
   template <std::floating_point U>
-  constexpr explicit ((sizeof(U) != sizeof(m_)) ||
+  constexpr explicit((sizeof(U) <= sizeof(m_)) ||
     !(std::is_same_v<U, float> || std::is_same_v<U, double> ||
     std::is_same_v<U, long double>))
   operator U() const noexcept
