@@ -71,7 +71,6 @@ int main(int const argc, char* argv[]) noexcept
   D a, b;
 
   if (2 == argc)
-  {
     switch (std::atoi(argv[1]))
     { // https://en.wikipedia.org/wiki/Julia_set#Quadratic_polynomials
       default:
@@ -157,7 +156,6 @@ int main(int const argc, char* argv[]) noexcept
         a = -.39054_d32; b = -.58679_d32;
         break;
     }
-  }
   else
     a = -.835_d32, b = -.2321_d32;
 
