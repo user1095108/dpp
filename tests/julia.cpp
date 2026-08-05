@@ -164,9 +164,7 @@ int main(int const argc, char* argv[]) noexcept
     }
   }
   else
-  {
-    a = -.835_d32; b = -.2321_d32;
-  }
+    a = -.835_d32, b = -.2321_d32;
 
   D x0(-1.6_d32), y(1.15_d32);
   D const x1(1.6_d32), y1(-1.15_d32);
