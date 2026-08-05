@@ -259,7 +259,7 @@ int main(int const argc, char* argv[]) noexcept
     #endif
   }
 
-  D xmax{}, xmin{}, ymax{}, ymin{};
+  D xmax, xmin, ymax, ymin;
 
   std::vector<std::pair<D, D>> points;
 
@@ -303,8 +303,12 @@ int main(int const argc, char* argv[]) noexcept
 
       x = x1; y = y1;
 
-      if (x < xmin) xmin = x; else if (x > xmax) xmax = x; // xmin <= xmax
-      if (y < ymin) ymin = y; else if (y > ymax) ymax = y; // ymin <= ymax
+      if (!i) xmin = xmax = x, ymin = ymax = y;
+      else
+      {
+        if (x < xmin) xmin = x; else if (x > xmax) xmax = x; // xmin <= xmax
+        if (y < ymin) ymin = y; else if (y > ymax) ymax = y; // ymin <= ymax
+      }
 
       points.emplace_back(x, y);
     }
