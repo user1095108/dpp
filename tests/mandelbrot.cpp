@@ -9,6 +9,7 @@
 #include <unistd.h> // for STDOUT_FILENO
 #endif
 
+#include <cstdlib> // std::atoi
 #include <iostream>
 
 #include "../dpp.hpp"
@@ -52,21 +53,23 @@ int main() noexcept
       auto const handle(GetStdHandle(STD_OUTPUT_HANDLE));
 
       if (DWORD mode; GetConsoleMode(handle, &mode))
-      {
         SetConsoleMode(handle, mode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-      }
 
-      CONSOLE_SCREEN_BUFFER_INFO csbi;
-      GetConsoleScreenBufferInfo(handle, &csbi);
-      w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-      h = csbi.srWindow.Bottom - csbi.srWindow.Top;
+      if (CONSOLE_SCREEN_BUFFER_INFO csbi{};
+        GetConsoleScreenBufferInfo(handle, &csbi))
+        w = csbi.srWindow.Right - csbi.srWindow.Left + 1,
+        h = csbi.srWindow.Bottom - csbi.srWindow.Top;
+      else
+        w = 80, h = 24; // sane fallback
     #else
-      struct winsize ws;
-      ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-
-      w = ws.ws_col;
-      h = ws.ws_row - 1;
+      if (struct winsize ws{}; -1 != ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws))
+        w = ws.ws_col, h = ws.ws_row - 1;
+      else
+        w = 80, h = 24; // sane fallback
     #endif
+
+    if (1 > w) w = 1;
+    if (1 > h) h = 1;
   }
 
   D x0(-2_d32); D y(1.15_d32);
