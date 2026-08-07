@@ -404,7 +404,6 @@ struct dpp
       ((ar::bit_size_v<sig_t> - 1) < detail::sig_bit_size_v<long double>) ?
         false :
         std::is_same_v<U, long double> &&
-        ((ar::bit_size_v<sig_t> - 1) > detail::sig_bit_size_v<double>) &&
         ((ar::bit_size_v<sig_t> - 1) >= detail::sig_bit_size_v<long double>) ?
           false :
           true
