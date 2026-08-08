@@ -396,12 +396,12 @@ struct dpp
 
   template <std::floating_point U>
   constexpr explicit(!((std::is_same_v<U, float> &&
-    ((ar::bit_size_v<sig_t> - 1) <= detail::sig_bit_size_v<float>)) ||
+    (ar::bit_size_v<sig_t> - 1 <= detail::sig_bit_size_v<float>)) ||
     (std::is_same_v<U, double> &&
-    ((ar::bit_size_v<sig_t> - 1) > detail::sig_bit_size_v<float>) &&
-    ((ar::bit_size_v<sig_t> - 1) < detail::sig_bit_size_v<long double>)) ||
+    (ar::bit_size_v<sig_t> - 1 > detail::sig_bit_size_v<float>) &&
+    (ar::bit_size_v<sig_t> - 1 < detail::sig_bit_size_v<long double>)) ||
     (std::is_same_v<U, long double> &&
-    ((ar::bit_size_v<sig_t> - 1) >= detail::sig_bit_size_v<long double>))))
+    (ar::bit_size_v<sig_t> - 1 >= detail::sig_bit_size_v<long double>))))
   operator U() const noexcept
   {
     using F = exp2_t;

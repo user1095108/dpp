@@ -22,5 +22,9 @@ int main()
   std::cout << 2 / (1 + dpp::sqrt(5_d256)) << std::endl;
 
   //
+  std::cout << dpp::d16(std::sqrt(dpp::d16(2))) << std::endl;
+  std::cout << dpp::d24(std::sqrt(dpp::d24(2))) << std::endl;
+
+  //
   return 0;
 }
