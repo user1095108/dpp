@@ -974,8 +974,8 @@ struct hash<dpp::dpp<T, E>>
       e = {};
 
     //
-    return intt::detail::mix(intt::detail::mix(std::hash<decltype(m)>()(m) +
-      intt::consts::ISR) + std::hash<F>()(e));
+    return intt::detail::mix(intt::detail::mix(intt::consts::ISR +
+      std::hash<decltype(m)>()(m)) + std::hash<F>()(e));
   }
 };
 
