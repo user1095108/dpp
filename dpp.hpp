@@ -959,7 +959,7 @@ struct hash<dpp::dpp<T, E>>
   using U = typename dpp::dpp<T, E>::sig2_t;
   using F = typename dpp::dpp<T, E>::exp2_t;
 
-  constexpr auto operator()(dpp::dpp<T, E> const& a)
+  constexpr auto operator()(dpp::dpp<T, E> const& a) const
     noexcept(noexcept(std::hash<T>()(std::declval<T>()),
       std::hash<F>()(std::declval<F>())))
   {
@@ -974,9 +974,8 @@ struct hash<dpp::dpp<T, E>>
       e = {};
 
     //
-    auto const s(std::hash<decltype(m)>()(m));
-
-    return s ^ (std::hash<F>()(e) + intt::consts::ISR + (s << 6) + (s >> 2));
+    return intt::detail::mix(intt::detail::mix(std::hash<decltype(m)>()(m) +
+      intt::consts::ISR) + std::hash<F>()(e));
   }
 };
 
