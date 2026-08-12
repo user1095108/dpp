@@ -286,7 +286,7 @@ struct dpp
           (
             [&]() noexcept
             {
-              constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+              constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<U>() - I)>());
 
               if (auto const e1(e0 + e); e1 <= ar::coeff<F(emin + 1)>())
                 e = e1, m /= ar::coeff<pow(U(10), e0)>();
@@ -294,7 +294,7 @@ struct dpp
               return (e <= ar::coeff<F(emin)>()) && m;
             }() && ...
           );
-        }(std::make_index_sequence<maxpow2e<T>() + 1>());
+        }(std::make_index_sequence<maxpow2e<U>() + 1>());
 
       e_ = (m_ = m) ? E(e) : E{};
     }
@@ -403,7 +403,7 @@ struct dpp
     (std::is_same_v<U, long double> &&
     (ar::bit_size_v<sig_t> - 1 >= detail::sig_bit_size_v<long double>))))
   operator U() const noexcept
-  {
+  { // explicit/convenience implicit conversions to float, double, long double
     using F = exp2_t;
 
     using namespace detail;
