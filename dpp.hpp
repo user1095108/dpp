@@ -391,7 +391,7 @@ struct dpp
   //
   constexpr explicit operator bool() const noexcept
   {
-    return m_ || isnan(*this);
+    return isnan(*this) || m_;
   }
 
   template <std::floating_point U>
@@ -959,7 +959,7 @@ struct hash<dpp::dpp<T, E>>
   using U = typename dpp::dpp<T, E>::sig2_t;
   using F = typename dpp::dpp<T, E>::exp2_t;
 
-  constexpr std::size_t operator()(dpp::dpp<T, E> const& a) const
+  std::size_t operator()(dpp::dpp<T, E> const& a) const
     noexcept(noexcept(std::hash<T>()(std::declval<T>()),
       std::hash<F>()(std::declval<F>())))
   {
