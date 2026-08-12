@@ -286,7 +286,7 @@ struct dpp
           (
             [&]() noexcept
             {
-              constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<U>() - I)>());
+              constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
 
               if (auto const e1(e0 + e); e1 <= ar::coeff<F(emin + 1)>())
                 e = e1, m /= ar::coeff<pow(U(10), e0)>();
@@ -294,7 +294,7 @@ struct dpp
               return (e <= ar::coeff<F(emin)>()) && m;
             }() && ...
           );
-        }(std::make_index_sequence<maxpow2e<U>() + 1>());
+        }(std::make_index_sequence<maxpow2e<T>() + 1>());
 
       e_ = (m_ = m) ? E(e) : E{};
     }
