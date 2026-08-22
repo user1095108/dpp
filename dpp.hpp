@@ -124,9 +124,7 @@ constexpr void slash_zeros(auto& m, auto& e) noexcept
           constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
           constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
-          if (m % f) return true; else e += e0, m /= f;
-
-          return !(m % T(10));
+          return m % f ? true : (e += e0, m /= f, !(m % T(10)));
         }() && ...
       );
     }(std::make_index_sequence<maxpow2e<T>() + 1>());
