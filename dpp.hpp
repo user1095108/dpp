@@ -115,20 +115,21 @@ constexpr void slash_zeros(auto& m, auto& e) noexcept
   using T = std::remove_cvref_t<decltype(m)>;
   using F = std::remove_cvref_t<decltype(e)>;
 
-  [&]<auto ...I>(std::index_sequence<I...>) noexcept
-  { // slash zeros
-    (
-      [&]() noexcept -> bool
-      {
-        constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
-        constexpr auto f(ar::coeff<pow(T(10), e0)>());
+  if (!(m % T(10)))
+    [&]<auto ...I>(std::index_sequence<I...>) noexcept
+    { // slash zeros
+      (
+        [&]() noexcept -> bool
+        {
+          constexpr auto e0(ar::coeff<pow(F(2), maxpow2e<T>() - I)>());
+          constexpr auto f(ar::coeff<pow(T(10), e0)>());
 
-        if (!(m % f)) e += e0, m /= f;
+          if (!(m % f)) e += e0, m /= f; else return true;
 
-        return !(m % T(10));
-      }() && ...
-    );
-  }(std::make_index_sequence<maxpow2e<T>() + 1>());
+          return !(m % T(10));
+        }() && ...
+      );
+    }(std::make_index_sequence<maxpow2e<T>() + 1>());
 }
 
 template <typename T>
