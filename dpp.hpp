@@ -956,7 +956,6 @@ namespace std
 template <typename T, typename E>
 struct hash<dpp::dpp<T, E>>
 {
-  using U = typename dpp::dpp<T, E>::sig2_t;
   using F = typename dpp::dpp<T, E>::exp2_t;
 
   std::size_t operator()(dpp::dpp<T, E> const& a) const
