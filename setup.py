@@ -21,7 +21,6 @@ ext_modules = [
             "-Wextra",
             "-std=c++20",
             "-march=native",
-            "-mtune=native",
             "-Ofast",
             "-fno-finite-math-only",
             "-fno-stack-protector",
