@@ -358,9 +358,9 @@ struct dpp
 
     int const e10(std::ceil(e2 * .30102999566398119521373889472449302676f));
 
-    auto const k(detail::pow(decltype(a)(10), e10));
+    auto const k(detail::pow(decltype(a)(5), e10));
 
-    *this = dpp(T(std::round(std::ldexp(e10 <= 0 ? a * k : a / k, e2))), e10);
+    *this = dpp(T(std::round(std::ldexp(e10 <= 0 ? a * k : a / k, e2 - e10))), e10);
   }
 
   template <typename U, typename V>
