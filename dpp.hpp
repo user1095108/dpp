@@ -575,6 +575,8 @@ struct dpp
   }
 
   //
+  constexpr bool operator==(nan_t) const noexcept { return isnan(*this); }
+
   constexpr std::partial_ordering operator<=>(dpp const& o) const noexcept
   {
     if (isnan(*this) || isnan(o)) [[unlikely]]
@@ -629,18 +631,6 @@ DPP_TYPE_PROMOTION__(/)
 DPP_TYPE_PROMOTION__(<=>)
 
 // comparisons
-template <typename A, typename B>
-constexpr bool operator==(dpp<A, B> const& a, nan_t) noexcept
-{
-  return isnan(a);
-}
-
-template <typename A, typename B>
-constexpr bool operator==(nan_t, dpp<A, B> const& a) noexcept
-{
-  return isnan(a);
-}
-
 template <typename A, typename B, typename C, typename D>
 constexpr bool operator==(dpp<A, B> const& a, dpp<C, D> const& b) noexcept
 {
@@ -776,7 +766,7 @@ constexpr dpp<T, E> fma(dpp<T, E> const& a, dpp<T, E> const& b,
 
   return ea < eb ?
     (detail::align<T>(mb <<= 1, eb, ma, eb - ea),
-    dpp<T, E>(ma + (mb >> 1), eb)) :
+    dpp<T, E>(ma + (mb >> 1), eb)) : // implementation defined
     (detail::align<T>(ma, ea, mb, ea - eb), dpp<T, E>(ma + mb, ea));
 }
 
