@@ -98,6 +98,4 @@ int main() noexcept
   }
 
   std::cout << "\033[0m";
-
-  return 0;
 }
