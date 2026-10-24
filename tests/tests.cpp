@@ -2077,6 +2077,332 @@ void test_sqrt()
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// elementary functions computed with dpp arithmetic
+// (exp, log, sin, cos, tan, atan, sinh, cosh, tanh, pow -- built only on
+// dpp arithmetic and dpp::sqrt; the checks pin results to 30 digit bounds)
+//////////////////////////////////////////////////////////////////////////////
+namespace
+{
+
+// exp(x): halve the argument until it is at most 1/2, sum the Taylor
+// series, then square back up: exp(x) = exp(x/2^n)^(2^n)
+template <typename D>
+D dpp_exp(D x)
+{
+  bool const neg(x < D(0));
+
+  if (neg) x = -x;
+
+  int n(0);
+
+  while (x + x > D(1)) { x /= D(2); ++n; }
+
+  D sum(1), term(1);
+
+  for (int k = 1; k != 60; ++k)
+  {
+    term = term * x / D(k);
+    sum += term;
+  }
+
+  for (int i = 0; i != n; ++i) sum *= sum;
+
+  return neg ? D(1) / sum : sum;
+}
+
+// log(x): pull x towards 1 with repeated square roots, then
+// log(x) = 2^n * 2 * atanh((x-1)/(x+1)); x must be positive
+template <typename D>
+D dpp_log(D x)
+{
+  int n(0);
+
+  while (x * D(100) > D(101) || x * D(100) < D(99))
+  {
+    x = dpp::sqrt(x);
+    ++n;
+  }
+
+  D const z((x - D(1)) / (x + D(1))), z2(z * z);
+
+  D sum(z), term(z);
+
+  for (int k = 1; k != 20; ++k)
+  {
+    term *= z2;
+    sum += term / D(2 * k + 1);
+  }
+
+  return sum * D(1 << (n + 1));
+}
+
+// sin(x): Taylor series (the tests keep |x| below 4, 40 terms give
+// x^81/81! truncation well below 1e-70)
+template <typename D>
+D dpp_sin(D x)
+{
+  D sum(x), term(x);
+
+  for (int k = 1; k != 40; ++k)
+  {
+    term = term * -(x * x) / D((2 * k) * (2 * k + 1));
+    sum += term;
+  }
+
+  return sum;
+}
+
+// cos(x): Taylor series
+template <typename D>
+D dpp_cos(D x)
+{
+  D sum(1), term(1);
+
+  for (int k = 1; k != 40; ++k)
+  {
+    term = term * -(x * x) / D((2 * k - 1) * (2 * k));
+    sum += term;
+  }
+
+  return sum;
+}
+
+// tan(x) = sin(x) / cos(x)
+template <typename D>
+D dpp_tan(D x)
+{
+  return dpp_sin(x) / dpp_cos(x);
+}
+
+// atan(x): halve the argument via atan(x) = 2*atan(x/(1+sqrt(1+x^2)))
+// until it is at most 1/1000, then sum the Taylor series
+template <typename D>
+D dpp_atan(D x)
+{
+  bool const neg(x < D(0));
+
+  if (neg) x = -x;
+
+  int n(0);
+
+  while (x * D(1000) > D(1))
+  {
+    x = x / (D(1) + dpp::sqrt(x * x + D(1)));
+    ++n;
+  }
+
+  D const x2(x * x);
+
+  D sum(x), term(x);
+
+  for (int k = 1; k != 30; ++k)
+  {
+    term *= -x2;
+    sum += term / D(2 * k + 1);
+  }
+
+  sum *= D(1 << n);
+
+  return neg ? -sum : sum;
+}
+
+// hyperbolics via exp
+template <typename D>
+D dpp_sinh(D x)
+{
+  D const e(dpp_exp(x)), ie(D(1) / e);
+
+  return (e - ie) / D(2);
+}
+
+template <typename D>
+D dpp_cosh(D x)
+{
+  D const e(dpp_exp(x)), ie(D(1) / e);
+
+  return (e + ie) / D(2);
+}
+
+template <typename D>
+D dpp_tanh(D x)
+{
+  D const e(dpp_exp(x)), ie(D(1) / e);
+
+  return (e - ie) / (e + ie);
+}
+
+// pow(a, b) = exp(b * log(a))
+template <typename D>
+D dpp_pow(D a, D b)
+{
+  return dpp_exp(b * dpp_log(a));
+}
+
+}
+
+void test_elementary()
+{
+  SECTION("elementary functions");
+
+  // exp: exp(1) is e (independent of the 1/n! series in the numeric
+  // section), exp(1/2), exp(-1); checked against 30 digit bounds
+  {
+    auto const e_(dpp_exp(d128(1))), exp_half(dpp_exp(d128(1) / d128(2))),
+      exp_m1(dpp_exp(-d128(1)));
+
+    CHECK(e_ > 2.71828182845904523536028747135_d128);
+    CHECK(e_ < 2.71828182845904523536028747136_d128);
+    CHECK(exp_half > 1.64872127070012814684865078781_d128);
+    CHECK(exp_half < 1.64872127070012814684865078782_d128);
+    CHECK(exp_m1 > 0.367879441171442321595523770161_d128);
+    CHECK(exp_m1 < 0.367879441171442321595523770162_d128);
+
+    CHECK(std::fabs(double(e_) - std::exp(1.0)) < 1e-13);
+    CHECK(std::fabs(double(exp_half) - std::exp(0.5)) < 1e-13);
+    CHECK(std::fabs(double(exp_m1) - std::exp(-1.0)) < 1e-13);
+  }
+
+  // log: log(2), log(10), log(1.25)
+  {
+    auto const ln2_(dpp_log(d128(2))), ln10_(dpp_log(d128(10))),
+      ln125(dpp_log(d128(5) / d128(4)));
+
+    CHECK(ln2_ > 0.693147180559945309417232121458_d128);
+    CHECK(ln2_ < 0.693147180559945309417232121459_d128);
+    CHECK(ln10_ > 2.30258509299404568401799145468_d128);
+    CHECK(ln10_ < 2.30258509299404568401799145469_d128);
+    CHECK(ln125 > 0.223143551314209755766295090309_d128);
+    CHECK(ln125 < 0.223143551314209755766295090310_d128);
+
+    CHECK(std::fabs(double(ln2_) - std::log(2.0)) < 1e-13);
+    CHECK(std::fabs(double(ln10_) - std::log(10.0)) < 1e-13);
+    CHECK(std::fabs(double(ln125) - std::log(1.25)) < 1e-13);
+  }
+
+  // sin, cos, tan
+  {
+    auto const sin1_(dpp_sin(d128(1))), cos1_(dpp_cos(d128(1))),
+      sin05(dpp_sin(d128(1) / d128(2))), cos05(dpp_cos(d128(1) / d128(2))),
+      tan1_(dpp_tan(d128(1)));
+
+    CHECK(sin1_ > 0.84147098480789650665250232163_d128);
+    CHECK(sin1_ < 0.841470984807896506652502321631_d128);
+    CHECK(cos1_ > 0.540302305868139717400936607442_d128);
+    CHECK(cos1_ < 0.540302305868139717400936607443_d128);
+    CHECK(sin05 > 0.479425538604203000273287935215_d128);
+    CHECK(sin05 < 0.479425538604203000273287935216_d128);
+    CHECK(cos05 > 0.877582561890372716116281582603_d128);
+    CHECK(cos05 < 0.877582561890372716116281582604_d128);
+    CHECK(tan1_ > 1.55740772465490223050697480745_d128);
+    CHECK(tan1_ < 1.55740772465490223050697480746_d128);
+
+    CHECK(std::fabs(double(sin1_) - std::sin(1.0)) < 1e-13);
+    CHECK(std::fabs(double(cos1_) - std::cos(1.0)) < 1e-13);
+    CHECK(std::fabs(double(tan1_) - std::tan(1.0)) < 1e-13);
+  }
+
+  // atan: 4*atan(1) is pi, atan(1/2)
+  {
+    auto const pi_(dpp_atan(d128(1)) * d128(4)),
+      atan05(dpp_atan(d128(1) / d128(2)));
+
+    CHECK(pi_ > 3.14159265358979323846264338327_d128);
+    CHECK(pi_ < 3.14159265358979323846264338328_d128);
+    CHECK(atan05 > 0.463647609000806116214256231461_d128);
+    CHECK(atan05 < 0.463647609000806116214256231462_d128);
+
+    CHECK(std::fabs(double(pi_) - 4.0 * std::atan(1.0)) < 1e-13);
+    CHECK(std::fabs(double(atan05) - std::atan(0.5)) < 1e-13);
+  }
+
+  // sinh, cosh, tanh
+  {
+    auto const sinh1_(dpp_sinh(d128(1))), cosh1_(dpp_cosh(d128(1))),
+      tanh1_(dpp_tanh(d128(1)));
+
+    CHECK(sinh1_ > 1.17520119364380145688238185059_d128);
+    CHECK(sinh1_ < 1.17520119364380145688238185060_d128);
+    CHECK(cosh1_ > 1.54308063481524377847790562075_d128);
+    CHECK(cosh1_ < 1.54308063481524377847790562076_d128);
+    CHECK(tanh1_ > 0.761594155955764888119458282604_d128);
+    CHECK(tanh1_ < 0.761594155955764888119458282605_d128);
+
+    CHECK(std::fabs(double(sinh1_) - std::sinh(1.0)) < 1e-13);
+    CHECK(std::fabs(double(cosh1_) - std::cosh(1.0)) < 1e-13);
+    CHECK(std::fabs(double(tanh1_) - std::tanh(1.0)) < 1e-13);
+  }
+
+  // internal consistency at full precision
+  {
+    auto const e_(dpp_exp(d128(1))), s5(dpp_exp(d128(1) / d128(2))),
+      em(dpp_exp(-d128(1)));
+
+    CHECK(dpp::abs(s5 * s5 - e_) < .0000000000000000000000000000000001_d128);
+    CHECK(dpp::abs(e_ * em - d128(1)) < .0000000000000000000000000000000001_d128);
+  }
+  {
+    auto const s1(dpp_sin(d128(1))), c1(dpp_cos(d128(1)));
+
+    CHECK(dpp::abs(s1 * s1 + c1 * c1 - d128(1)) <
+      .0000000000000000000000000000000001_d128);
+  }
+  {
+    auto const sh(dpp_sinh(d128(1))), ch(dpp_cosh(d128(1)));
+
+    CHECK(dpp::abs(ch * ch - sh * sh - d128(1)) <
+      .0000000000000000000000000000000001_d128);
+  }
+
+  // cos(2*atan(1)) == cos(pi/2) == 0
+  CHECK(dpp::abs(dpp_cos(dpp_atan(d128(1)) * d128(2))) <
+    .00000000000000000000000000000000001_d128);
+
+  // round trips
+  CHECK(dpp_exp(dpp_log(d128(2))) > 1.9999999999999999999999999999_d128);
+  CHECK(dpp_exp(dpp_log(d128(2))) < 2.0000000000000000000000000001_d128);
+  CHECK(dpp_log(dpp_exp(d128(1))) > 0.9999999999999999999999999999_d128);
+  CHECK(dpp_log(dpp_exp(d128(1))) < 1.0000000000000000000000000001_d128);
+  CHECK(dpp_atan(dpp_tan(d128(1) / d128(2))) > 0.4999999999999999999999999999_d128);
+  CHECK(dpp_atan(dpp_tan(d128(1) / d128(2))) < 0.5000000000000000000000000001_d128);
+
+  // pow: pow(2, 1/2) reproduces the square root of 2, pow(10, 2) == 100
+  {
+    auto const pow_half(dpp_pow(d128(2), d128(1) / d128(2))),
+      p2(dpp_pow(d128(10), d128(2)));
+
+    CHECK(pow_half > 1.4142135623730950488016887242_d128);
+    CHECK(pow_half < 1.41421356237309504880168872421_d128);
+    CHECK(p2 > 99.9999999999999999999999999999_d128);
+    CHECK(p2 < 100.0000000000000000000000000001_d128);
+  }
+
+  // d256 spot checks, same bounds (intt significand arithmetic)
+  {
+    auto const e256(dpp_exp(d256(1))), ln2_256(dpp_log(d256(2))),
+      sin1_256(dpp_sin(d256(1))), pi_256(dpp_atan(d256(1)) * d256(4));
+
+    CHECK(e256 > 2.71828182845904523536028747135_d256);
+    CHECK(e256 < 2.71828182845904523536028747136_d256);
+    CHECK(ln2_256 > 0.693147180559945309417232121458_d256);
+    CHECK(ln2_256 < 0.693147180559945309417232121459_d256);
+    CHECK(sin1_256 > 0.84147098480789650665250232163_d256);
+    CHECK(sin1_256 < 0.841470984807896506652502321631_d256);
+    CHECK(pi_256 > 3.14159265358979323846264338327_d256);
+    CHECK(pi_256 < 3.14159265358979323846264338328_d256);
+  }
+
+  // d64 spot checks with wider bounds (integral significand arithmetic)
+  {
+    auto const e64(dpp_exp(d64(1))), sin1_64(dpp_sin(d64(1)));
+
+    CHECK(e64 > 2.718281828459045_d64);
+    CHECK(e64 < 2.718281828459046_d64);
+    CHECK(sin1_64 > 0.8414709848078965_d64);
+    CHECK(sin1_64 < 0.8414709848078966_d64);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // safe integral conversion (to_integral.hpp)
 //////////////////////////////////////////////////////////////////////////////
 void test_to_integral()
@@ -2341,6 +2667,7 @@ int main()
   test_to_string_more();
   test_stream_more();
   test_sqrt();
+  test_elementary();
   test_to_integral();
   test_fast_div();
   test_hashing_more();

@@ -21,8 +21,8 @@ constexpr auto sqrt(intt::is_intt auto m,
 
   if constexpr(V::words > 1)
   {
-    constexpr exp2_t e0(ar::coeff<(V::words - 1) *
-      maxpow10e<typename V::value_type, decltype(e)>() - 1>());
+    constexpr exp2_t e0(ar::coeff<V::words / 2 *
+      maxpow10e<typename V::value_type, exp2_t>() - 1>());
 
     e -= e0;
     m *= ar::coeff<pow(V(10), e0)>();
@@ -31,7 +31,7 @@ constexpr auto sqrt(intt::is_intt auto m,
   { // V::words == 1, m is doubled
     using U = std::make_unsigned_t<T>;
 
-    constexpr exp2_t e0(ar::coeff<maxpow10e<U, decltype(e)>() - 1>());
+    constexpr exp2_t e0(ar::coeff<maxpow10e<U, exp2_t>() - 1>());
 
     e -= e0;
     m *= ar::coeff<pow(V(10), e0)>();
@@ -96,7 +96,7 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
 
   if (isnan(a) || intt::is_neg(a.sig())) [[unlikely]] return dpp<T, E>(nan);
 
-  return detail::sqrt<T, E>(V(intt::direct, a.sig()), a.exp());
+  return detail::sqrt<T, E>(V(a.sig(), intt::direct), a.exp());
 }
 
 }
