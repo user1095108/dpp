@@ -1990,6 +1990,38 @@ void test_sqrt()
   static_assert(dpp::sqrt(dpp::d32(0)) == dpp::d32(0));
   static_assert(dpp::sqrt(dpp::d64(0)) == dpp::d64(0));
 
+  // sqrt of a negative value is NaN (IEEE-754), for every significand kind
+  CHECK(dpp::isnan(dpp::sqrt(d16(-4))));
+  CHECK(dpp::isnan(dpp::sqrt(d24(-4))));
+  CHECK(dpp::isnan(dpp::sqrt(d32(-4))));
+  CHECK(dpp::isnan(dpp::sqrt(d48(-4))));
+  CHECK(dpp::isnan(dpp::sqrt(d64(-4))));
+  CHECK(dpp::isnan(dpp::sqrt(d96(-4))));
+  CHECK(dpp::isnan(dpp::sqrt(d128(-4))));
+
+  // ...also with a fractional magnitude and a negative exponent
+  CHECK(dpp::isnan(dpp::sqrt(d32(direct, -4, -2))));  // -0.04
+  CHECK(dpp::isnan(dpp::sqrt(d64(direct, -25, -3)))); // -0.025
+
+  // sqrt of NaN is NaN; the guard short-circuits before the significand
+  // is ever read
+  CHECK(dpp::isnan(dpp::sqrt(d16(dpp::nan))));
+  CHECK(dpp::isnan(dpp::sqrt(d24(dpp::nan))));
+  CHECK(dpp::isnan(dpp::sqrt(d32(dpp::nan))));
+  CHECK(dpp::isnan(dpp::sqrt(d48(dpp::nan))));
+  CHECK(dpp::isnan(dpp::sqrt(d64(dpp::nan))));
+  CHECK(dpp::isnan(dpp::sqrt(d96(dpp::nan))));
+  CHECK(dpp::isnan(dpp::sqrt(d128(dpp::nan))));
+
+  // negative/NaN inputs are rejected at compile time too, and the finite
+  // non-negative results are unaffected by the new guards
+  static_assert(dpp::isnan(dpp::sqrt(dpp::d32(-4))));
+  static_assert(dpp::isnan(dpp::sqrt(dpp::d128(-9))));
+  static_assert(dpp::isnan(dpp::sqrt(dpp::d32(dpp::nan))));
+  static_assert(dpp::isnan(dpp::sqrt(dpp::d128(dpp::nan))));
+  static_assert(dpp::sqrt(dpp::d64(0)) == dpp::d64(0));
+  static_assert(dpp::sqrt(dpp::d64(4)) == dpp::d64(2));
+
   CHECK_EQ(dpp::sqrt(d64(1)), d64(1));
 
   // sqrt(2) approximations, tighter with more precision

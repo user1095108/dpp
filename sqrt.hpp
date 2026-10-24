@@ -42,9 +42,14 @@ constexpr auto sqrt(intt::is_intt auto m,
   { // 2 * V::max / 10 = V::max() / 5
     if (auto const tmp(ar::hwmul(m.v_, 10)); (e & decltype(e)(1)) ||
       (ar::ucmp(tmp, ar::coeff<V::max() / 5>().v_) <= 0))
-      --e, ar::copy(m.v_, tmp);
+    {
+      --e;
+      ar::copy(m.v_, tmp);
+    }
     else
+    {
       break;
+    }
   }
   while (ar::ucmp(m.v_, ar::coeff<V::max() / 5>().v_) <= 0);
 
@@ -66,6 +71,8 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = std::make_unsigned_t<T>;
 
+  if (isnan(a) || intt::is_neg(a.sig())) [[unlikely]] return dpp<T, E>(nan);
+
   if constexpr(std::is_same_v<U, std::uintmax_t>)
   {
     using V = intt::intt<U, 2>;
@@ -86,6 +93,8 @@ constexpr auto sqrt(dpp<T, E> const& a) noexcept
 {
   using U = typename T::value_type;
   using V = intt::intt<U, 2 * T::size()>;
+
+  if (isnan(a) || intt::is_neg(a.sig())) [[unlikely]] return dpp<T, E>(nan);
 
   return detail::sqrt<T, E>(V(intt::direct, a.sig()), a.exp());
 }
