@@ -17,6 +17,8 @@ constexpr auto sqrt(intt::is_intt auto m,
   using V = decltype(m);
   using exp2_t = decltype(e);
 
+  if (!m) [[unlikely]] return dpp<T, E>();
+
   if constexpr(V::words > 1)
   {
     constexpr exp2_t e0(ar::coeff<(V::words - 1) *
@@ -40,14 +42,9 @@ constexpr auto sqrt(intt::is_intt auto m,
   { // 2 * V::max / 10 = V::max() / 5
     if (auto const tmp(ar::hwmul(m.v_, 10)); (e & decltype(e)(1)) ||
       (ar::ucmp(tmp, ar::coeff<V::max() / 5>().v_) <= 0))
-    {
-      --e;
-      ar::copy(m.v_, tmp);
-    }
+      --e, ar::copy(m.v_, tmp);
     else
-    {
       break;
-    }
   }
   while (ar::ucmp(m.v_, ar::coeff<V::max() / 5>().v_) <= 0);
 
