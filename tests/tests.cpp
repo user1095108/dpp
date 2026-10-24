@@ -2403,6 +2403,606 @@ void test_elementary()
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// rounding-function semantics beyond the basics
+//////////////////////////////////////////////////////////////////////////////
+void test_rounding_semantics()
+{
+  SECTION("rounding semantics: half-away-from-zero, edges, identities");
+
+  // round() is round-half-away-from-zero (a +/- 0.5, then trunc), NOT
+  // round-half-to-even: every x.5 tie below rounds away from zero
+  CHECK_EQ(dpp::round(d32(direct, 5, -1)), d32(1));    //  0.5 ->  1
+  CHECK_EQ(dpp::round(d32(direct, 15, -1)), d32(2));   //  1.5 ->  2
+  CHECK_EQ(dpp::round(d32(direct, 25, -1)), d32(3));   //  2.5 ->  3 (banker's: 2)
+  CHECK_EQ(dpp::round(d32(direct, 35, -1)), d32(4));   //  3.5 ->  4
+  CHECK_EQ(dpp::round(d32(direct, 45, -1)), d32(5));   //  4.5 ->  5 (banker's: 4)
+  CHECK_EQ(dpp::round(d32(direct, -5, -1)), d32(-1));  // -0.5 -> -1
+  CHECK_EQ(dpp::round(d32(direct, -25, -1)), d32(-3)); // -2.5 -> -3 (banker's: -2)
+  CHECK_EQ(dpp::round(d32(direct, -35, -1)), d32(-4)); // -3.5 -> -4
+  CHECK_EQ(dpp::round(d16(direct, 25, -1)), d16(3));   // same contract at d16
+  CHECK_EQ(dpp::round(d32(direct, 4999, -4)), d32(0)); // 0.4999 below the tie
+  CHECK_EQ(dpp::round(d32(direct, 50001, -5)), d32(1)); // 0.50001 above the tie
+
+  // already-integral values pass through unchanged: exp >= 0 is returned
+  // as-is (same significand/exponent), a trailing fraction is canonicalized
+  {
+    auto const r(dpp::round(d32(direct, 123, 5)));
+
+    CHECK_EQ(r.sig(), 123);
+    CHECK_EQ(r.exp(), 5);
+  }
+  CHECK_EQ(dpp::round(d32(direct, 200, -2)), d32(2));
+  CHECK_EQ(dpp::round(d32(direct, -200, -2)), d32(-2));
+
+  // NaN propagates through trunc/ceil/floor (round() would too, but its
+  // implementation consults the SIGNIFICAND of NaN before any isnan guard,
+  // i.e. it reads the indeterminate NaN significand: benign for the result
+  // yet formally UB, so it is deliberately not exercised here)
+  CHECK(dpp::isnan(dpp::trunc(d32(dpp::nan))));
+  CHECK(dpp::isnan(dpp::ceil(d32(dpp::nan))));
+  CHECK(dpp::isnan(dpp::floor(d32(dpp::nan))));
+
+  // truncation towards the canonical zero
+  CHECK_EQ(dpp::trunc(d32(direct, -5, -1)), d32(0));  // -0.5 -> 0 (no -0)
+  CHECK_EQ(dpp::trunc(d32(direct, -15, -1)), d32(-1));
+
+  // ceil/floor halves and already-integral values with negative exponents
+  CHECK_EQ(dpp::ceil(d32(direct, 5, -1)), d32(1));
+  CHECK_EQ(dpp::ceil(d32(direct, -5, -1)), d32(0));
+  CHECK_EQ(dpp::floor(d32(direct, 5, -1)), d32(0));
+  CHECK_EQ(dpp::floor(d32(direct, -5, -1)), d32(-1));
+  CHECK_EQ(dpp::ceil(d32(direct, 200, -2)), d32(2));
+  CHECK_EQ(dpp::ceil(d32(direct, -200, -2)), d32(-2));
+  CHECK_EQ(dpp::floor(d32(direct, 200, -2)), d32(2));
+  CHECK_EQ(dpp::floor(d32(direct, -200, -2)), d32(-2));
+
+  // identities: ceil(x) == -floor(-x), floor(x) <= x <= ceil(x) and
+  // trunc(x) == floor(x)/ceil(x) according to the sign
+  for (auto [m, e] : {std::pair{25, -1}, {35, -1}, {-25, -1}, {-35, -1},
+    {1, -5}, {-1, -5}, {271828182, -8}, {-314159265, -8}, {200, -2}, {-200, -2}})
+  {
+    d32 const v(direct, m, e), f(dpp::floor(v)), c(dpp::ceil(v));
+
+    CHECK(c == -dpp::floor(-v));
+    CHECK(f <= v);
+    CHECK(v <= c);
+    CHECK(dpp::trunc(v) == (v < d32(0) ? c : f));
+  }
+
+  // all four are constexpr-friendly
+  static_assert(dpp::round(d32(direct, 25, -1)) == d32(3));
+  static_assert(dpp::trunc(d32(direct, 25, -1)) == d32(2));
+  static_assert(dpp::ceil(d32(direct, 15, -1)) == d32(2));
+  static_assert(dpp::floor(d32(direct, 15, -1)) == d32(1));
+  static_assert(dpp::round(d32(direct, -25, -1)) == d32(-3));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// increment/decrement, boolean conversion, nan_t comparison, x / 0
+//////////////////////////////////////////////////////////////////////////////
+void test_increment_and_boolean()
+{
+  SECTION("++, --, operator bool, == nan_t, division by zero");
+
+  // pre/post forms add/subtract exactly 1 and yield the proper value
+  d32 x(direct, 25, -1);
+
+  CHECK_EQ(x++, d32(direct, 25, -1));
+  CHECK_EQ(x, d32(direct, 35, -1));
+  CHECK_EQ(x--, d32(direct, 35, -1));
+  CHECK_EQ(x, d32(direct, 25, -1));
+  CHECK_EQ(--x, d32(direct, 15, -1));
+  CHECK_EQ(++x, d32(direct, 25, -1));
+  CHECK_EQ(++d32(direct, -5, -1), d32(direct, 5, -1)); // -0.5 -> 0.5
+  CHECK_EQ(--d32(direct, 5, -1), d32(direct, -5, -1)); // 0.5 -> -0.5
+
+  // NaN stays NaN under ++/-- and compound assignment
+  {
+    d32 n(dpp::nan);
+
+    CHECK(dpp::isnan(n++));
+    CHECK(dpp::isnan(n));
+    CHECK(dpp::isnan(--n));
+    CHECK(dpp::isnan(n));
+    CHECK(dpp::isnan(n += 1));
+  }
+  {
+    d24 n(dpp::nan);
+
+    CHECK(dpp::isnan(n++));
+    CHECK(dpp::isnan(n--));
+    CHECK(dpp::isnan(n));
+  }
+
+  // incrementing the largest d16 value absorbs the 1 (beyond precision)
+  {
+    d16 m(d16::max);
+
+    ++m;
+    CHECK(!dpp::isnan(m));
+    CHECK_EQ(m, d16::max);
+  }
+
+  // constexpr-friendliness
+  static_assert([]{ d32 y(2); ++y; return y == d32(3); }());
+  static_assert(dpp::isnan([]{ d32 y(dpp::nan); ++y; return y; }()));
+
+  // bool: false only for the canonical zero; NaN is truthy
+  CHECK(!static_cast<bool>(d32(0)));
+  CHECK(!static_cast<bool>(d32(direct, 0, -5)));
+  CHECK(static_cast<bool>(d32(-1)));
+  CHECK(static_cast<bool>(d32::eps));
+  CHECK(static_cast<bool>(d32(dpp::nan)));
+  static_assert(!static_cast<bool>(d32(0)));
+  static_assert(static_cast<bool>(d32(dpp::nan)));
+
+  // x == dpp::nan uses the nan_t overload: true iff x is NaN
+  CHECK(!(d32(1) == dpp::nan));
+  CHECK(d32(dpp::nan) == dpp::nan);
+  CHECK(d16(dpp::nan) == dpp::nan);
+  CHECK(d32(1) != dpp::nan);
+  CHECK(!(d32(dpp::nan) != dpp::nan));
+  static_assert(!(d32(1) == dpp::nan));
+  static_assert(d32(dpp::nan) == dpp::nan);
+
+  // division by zero is NaN (the library has no infinities)
+  CHECK(dpp::isnan(d32(1) / d32(0)));
+  CHECK(dpp::isnan(d32(0) / d32(0)));
+  CHECK(dpp::isnan(d32(-1) / d32(0)));
+  CHECK(dpp::isnan(d32::max / d32(0)));
+  CHECK(dpp::isnan(d24(1) / d24(0)));
+  CHECK(dpp::isnan(d32(1) / d32(direct, 0, -5))); // non-canonical zero
+  CHECK(dpp::isnan(d32(dpp::nan) / d32(0)));
+  static_assert(dpp::isnan(d32(1) / d32(0)));
+  static_assert(dpp::isnan(d24(1) / d24(0)));
+
+  // compound assignment with native right-hand sides
+  {
+    d32 c(1);
+
+    c += 2;   CHECK_EQ(c, d32(3));
+    c *= 3;   CHECK_EQ(c, d32(9));
+    c -= 4;   CHECK_EQ(c, d32(5));
+    c /= 4;   CHECK_EQ(c, d32(direct, 125, -2));
+    c += 0.5; CHECK_EQ(c, d32(direct, 175, -2));
+  }
+  {
+    d32 w(0);
+
+    w += d64(direct, 5, -1); // cross-type compound narrows via the ctor
+    CHECK_EQ(w, d32(direct, 5, -1));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// fma and midpoint semantics
+//////////////////////////////////////////////////////////////////////////////
+void test_fused_midpoint_semantics()
+{
+  SECTION("fma (single rounding) and midpoint");
+
+  // fma computes a*b+c with ONE rounding at the end: the product is kept in
+  // the doubled accumulator, so fma recovers the exact tail that two-step
+  // arithmetic loses to intermediate rounding
+  {
+    d16 const a(9999), c(direct, -9998, 4); // c = -(the d16-rounded a*a)
+
+    CHECK_EQ(a * a, d16(direct, 9998, 4)); // 99980001 rounds to 9998e4
+    CHECK_EQ(a * a + c, d16(0));           // two-step: tail lost
+    CHECK_EQ(dpp::fma(a, a, c), d16(1));   // fused: exact tail 1
+  }
+  {
+    // d32: a*a = 4611686014132420609 (19 digits); the two-step product
+    // rounds to 461168601e10 and the fused tail is exactly 4132420609
+    d32 const a(direct, 2147483647, 0), c(direct, -461168601, 10);
+
+    CHECK_EQ(a * a, d32(direct, 461168601, 10));
+    CHECK_EQ(a * a + c, d32(0));
+    CHECK_EQ(dpp::fma(a, a, c), d32(direct, 413242061, 1));
+  }
+
+  // alignment and parity across the exponent branches (exact decimal values)
+  CHECK_EQ(dpp::fma(d32(direct, 5, -1), d32(direct, 3, 0), d32(direct, 1, 0)),
+    d32(direct, 25, -1));  // 0.5*3+1 = 2.5 (product exponent below c's)
+  CHECK_EQ(dpp::fma(d32(direct, 5, -2), d32(direct, 3, 0), d32(direct, 1, 0)),
+    d32(direct, 115, -2)); // 0.05*3+1 = 1.15 (alignment shift of two)
+  CHECK_EQ(dpp::fma(d32(direct, 5, -1), d32(direct, 3, 0), d32(direct, -1, 0)),
+    d32(direct, 5, -1));   // 0.5*3-1 = 0.5 (negative c)
+  CHECK_EQ(dpp::fma(d32(direct, 3, -1), d32(direct, 3, -1), d32(direct, 1, -2)),
+    d32(direct, 1, -1));   // 0.3*0.3+0.01 = 0.1 (equal exponents)
+  CHECK_EQ(dpp::fma(d32(direct, 3, 0), d32(direct, 3, 0), d32(direct, 5, -1)),
+    d32(direct, 95, -1));  // 3*3+0.5 = 9.5 (product exponent above c's)
+  CHECK_EQ(dpp::fma(d32(direct, 2, 0), d32(direct, 5, -1), d32(direct, 1, -1)),
+    d32(direct, 11, -1));  // 2*0.5+0.1 = 1.1
+  CHECK_EQ(dpp::fma(d32(direct, 3, 0), d32(direct, 5, -1), d32(direct, 5, -1)),
+    d32(2));               // 3*0.5+0.5 = 2
+  CHECK_EQ(dpp::fma(d32(direct, 333333333, -9), d32(direct, 3, 0),
+    d32(direct, 0, 0)), d32(direct, 999999999, -9)); // (1/3)*3 + 0
+
+  // zero and NaN operands
+  CHECK_EQ(dpp::fma(d32(0), d32(5), d32(7)), d32(7));
+  CHECK_EQ(dpp::fma(d32(5), d32(0), d32(7)), d32(7));
+  CHECK_EQ(dpp::fma(d32(5), d32(0), d32(0)), d32(0));
+  CHECK(dpp::isnan(dpp::fma(d32(dpp::nan), d32(1), d32(1))));
+  CHECK(dpp::isnan(dpp::fma(d32(1), d32(dpp::nan), d32(1))));
+  CHECK(dpp::isnan(dpp::fma(d32(1), d32(1), d32(dpp::nan))));
+  static_assert(dpp::fma(d32(2), d32(3), d32(4)) == d32(10));
+  static_assert(dpp::fma(d16(9999), d16(9999), d16(direct, -9998, 4)) == d16(1));
+  static_assert(dpp::isnan(dpp::fma(d32(1), d32(1), d32(dpp::nan))));
+
+  // midpoint: the 5*(a+b) product of the two largest values needs one more
+  // exponent step than emax allows, so (unlike an IEEE-style midpoint) it is
+  // NaN even though the exact midpoint (== max) is representable
+  CHECK(dpp::isnan(dpp::midpoint(d16::max, d16::max)));
+  CHECK(dpp::isnan(dpp::midpoint(d32::max, d32::max)));
+  CHECK(dpp::isnan(dpp::midpoint(d64::max, d64::max)));
+  CHECK(dpp::isnan((d16::max + d16::max) / d16(2))); // the naive form too
+
+  // opposite signs cancel in the widened accumulator: no overflow
+  CHECK_EQ(dpp::midpoint(d16::max, d16::min), d16(0));
+  CHECK_EQ(dpp::midpoint(d32::max, d32::min), d32(0));
+
+  // exact halves (odd sums) and exact values
+  CHECK_EQ(dpp::midpoint(d32(1), d32(2)), d32(direct, 15, -1));
+  CHECK_EQ(dpp::midpoint(d32(1), d32(3)), d32(2));
+  CHECK_EQ(dpp::midpoint(d32(1), d32(4)), d32(direct, 25, -1));
+  CHECK_EQ(dpp::midpoint(d32(1), d32(6)), d32(direct, 35, -1));
+  CHECK_EQ(dpp::midpoint(d32(direct, 1, -1), d32(direct, 2, -1)),
+    d32(direct, 15, -2)); // 0.15
+  CHECK_EQ(dpp::midpoint(d32(0), d32::eps), d32(direct, 5, -10));
+  CHECK_EQ(dpp::midpoint(d16(0), d16::eps), d16(direct, 5, -5));
+
+  // agrees with a + (b - a) / 2 away from the extremes
+  CHECK_EQ(dpp::midpoint(d32(1), d32(4)),
+    d32(1) + (d32(4) - d32(1)) / d32(2));
+  CHECK_EQ(dpp::midpoint(d32(direct, 1, -1), d32(direct, 2, -1)),
+    d32(direct, 1, -1) + (d32(direct, 2, -1) - d32(direct, 1, -1)) / d32(2));
+
+  // NaN propagation
+  CHECK(dpp::isnan(dpp::midpoint(d32(dpp::nan), d32(1))));
+  CHECK(dpp::isnan(dpp::midpoint(d32(1), d32(dpp::nan))));
+  static_assert(dpp::midpoint(d32(1), d32(2)) == d32(direct, 15, -1));
+  static_assert(dpp::isnan(dpp::midpoint(d32(dpp::nan), d32(1))));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// inv (reciprocal) semantics
+//////////////////////////////////////////////////////////////////////////////
+void test_inv_semantics()
+{
+  SECTION("inv: exact reciprocals, eps, underflow, NaN");
+
+  // exact decimal reciprocals (the 2*5 = 10 family and powers of ten)
+  CHECK_EQ(dpp::inv(d32(2)), d32(direct, 5, -1));
+  CHECK_EQ(dpp::inv(d32(4)), d32(direct, 25, -2));
+  CHECK_EQ(dpp::inv(d32(5)), d32(direct, 2, -1));
+  CHECK_EQ(dpp::inv(d32(8)), d32(direct, 125, -3));
+  CHECK_EQ(dpp::inv(d32(direct, 5, -1)), d32(2));
+  CHECK_EQ(dpp::inv(d32(direct, 25, -2)), d32(4));
+  CHECK_EQ(dpp::inv(d32(direct, 125, -3)), d32(8));
+  CHECK_EQ(dpp::inv(d32(direct, 2, -1)), d32(5));
+  CHECK_EQ(dpp::inv(d32(1)), d32(1));
+  CHECK_EQ(dpp::inv(d32(-1)), d32(-1));
+  CHECK_EQ(dpp::inv(d16(2)), d16(direct, 5, -1));
+
+  // repeating reciprocals match the division result digit for digit
+  CHECK_EQ(dpp::inv(d32(3)), d32(1) / d32(3));
+  CHECK_EQ(dpp::inv(d32(3)), d32(direct, 333333333, -9));
+  CHECK_EQ(dpp::inv(d64(3)), d64(1) / d64(3));
+  CHECK_EQ(dpp::inv(d64(3)), d64(direct, 3333333333333333333LL, -19));
+  CHECK_EQ(dpp::inv(d32(direct, 3, -1)),
+    d32(direct, 1, 0) / d32(direct, 3, -1));
+  CHECK_EQ(dpp::inv(dpp::inv(d32(3))), d32(3));
+  CHECK_EQ(dpp::inv(dpp::inv(d64(3))), d64(3));
+
+  // inverting eps gives the largest power-of-ten step
+  CHECK_EQ(dpp::inv(d16::eps), d16(direct, 1, 4));
+  CHECK_EQ(dpp::inv(d32::eps), d32(direct, 1, 9));
+  CHECK_EQ(dpp::inv(d64::eps), d64(direct, 1, 18));
+
+  // reciprocals of the largest values underflow: the emin-lifting loop
+  // divides the significand down to zero -> canonical zero (flush to zero)
+  CHECK_EQ(dpp::inv(d16::max), d16(0));
+  CHECK_EQ(dpp::inv(d32::max), d32(0));
+  CHECK_EQ(d16(direct, 1, 0) / d16::max, d16(0));
+  CHECK_EQ(d32(direct, 1, 0) / d32::max, d32(0));
+
+  // sign symmetry and degenerate operands
+  CHECK_EQ(dpp::inv(d32(-3)), -dpp::inv(d32(3)));
+  CHECK(dpp::isnan(dpp::inv(d32(0))));
+  CHECK(dpp::isnan(dpp::inv(d24(0))));
+  CHECK(dpp::isnan(dpp::inv(d32(dpp::nan))));
+  CHECK(dpp::isnan(dpp::inv(d24(dpp::nan))));
+  static_assert(dpp::inv(d32(4)) == d32(direct, 25, -2));
+  static_assert(dpp::inv(d32(direct, 2, -1)) == d32(5));
+  static_assert(dpp::isnan(dpp::inv(d32(0))));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// double <-> dpp interop and exact decimal parsing
+//////////////////////////////////////////////////////////////////////////////
+void test_binary_interop_semantics()
+{
+  SECTION("double ctor, round trips, to_decimal truncation");
+
+  // the double ctor converts the binary value at the decimal granularity
+  // implied by its binary exponent scale (15..17 digits at d64): for
+  // 0.1/0.2/0.3 the binary noise (scale 1e-21) rounds away and the clean
+  // decimal values come out
+  CHECK_EQ(dpp::to_string(d64(0.1)), "0.1");
+  CHECK_EQ(dpp::to_string(d64(0.2)), "0.2");
+  CHECK_EQ(dpp::to_string(d64(0.3)), "0.3");
+  CHECK(d64(0.1) == d64(direct, 1, -1));
+  CHECK_EQ(dpp::to_string(d64(1e-9)), "0.000000001");
+  CHECK_EQ(dpp::to_string(d64(1e8)), "100000000");
+  CHECK(d64(1e8) == d64(direct, 1, 8));
+  CHECK_EQ(dpp::to_string(d64(6.02214076e23)), "602214076000000000000000");
+
+  // other values keep a decimal trace of the binary noise, so the round
+  // trip through dpp does not return the original double
+  CHECK_EQ(dpp::to_string(d64(1.0 / 3.0)), "0.3333333333333333");
+  CHECK(static_cast<double>(d64(1.0 / 3.0)) == 1.0 / 3.0);
+  CHECK_EQ(dpp::to_string(d64(2.0 / 3.0)), "0.666666666666667");
+  CHECK(static_cast<double>(d64(2.0 / 3.0)) != 2.0 / 3.0);
+  CHECK_EQ(dpp::to_string(d64(0.30000000000000004)), "0.3000000000000001");
+  CHECK(static_cast<double>(d64(0.30000000000000004)) != 0.30000000000000004);
+  CHECK_EQ(dpp::to_string(d64(123456789.123456789)), "123456789.1234568");
+  CHECK(static_cast<double>(d64(123456789.123456789)) != 123456789.123456789);
+
+  // 0.1 + 0.2 == 0.3 holds for the double ctor too (noise below precision)
+  CHECK(d64(0.1) + d64(0.2) == d64(0.3));
+
+  // non-finite and negative-zero doubles
+  CHECK(dpp::isnan(d32(INFINITY)));
+  CHECK(dpp::isnan(d32(-INFINITY)));
+  CHECK(dpp::isnan(d32(NAN)));
+  CHECK_EQ(d32(-0.0), d32(0));
+
+  // dpp -> double: exact values round trip; exponent extremes underflow to
+  // zero / overflow to infinity
+  CHECK(static_cast<double>(d64(0.5)) == 0.5);
+  CHECK(static_cast<double>(d64(direct, 1, -1)) == 0.1);
+  CHECK_EQ(static_cast<double>(d128(direct, 1, -4000)), 0.0);
+  CHECK(std::isinf(static_cast<double>(d128(direct, 1, 4000))));
+
+  // exact decimal arithmetic: accumulating the parsed 0.1 ten times gives
+  // exactly 1 at every width (the famous binary floating point failure)
+  {
+    d16 s(0);
+
+    for (int i = 0; i != 10; ++i) s += 0.1_d16;
+
+    CHECK_EQ(s, d16(1));
+  }
+  {
+    d32 s(0);
+
+    for (int i = 0; i != 10; ++i) s += 0.1_d32;
+
+    CHECK_EQ(s, d32(1));
+  }
+  {
+    d64 s(0);
+
+    for (int i = 0; i != 10; ++i) s += 0.1_d64;
+
+    CHECK_EQ(s, d64(1));
+  }
+  {
+    d128 s(0);
+
+    for (int i = 0; i != 10; ++i) s += 0.1_d128;
+
+    CHECK_EQ(s, d128(1));
+  }
+  CHECK_EQ(0.1_d32 + 0.2_d32, 0.3_d32);
+  CHECK(0.1_d64 + 0.2_d64 == 0.3_d64);
+
+  // to_decimal accepts plain decimal digits only (no scientific notation)
+  // and TRUNCATES (never rounds) once the significand is full
+  CHECK_EQ(dpp::to_decimal<d16>("0.12345"), d16(direct, 12345, -5));
+  CHECK_EQ(dpp::to_decimal<d16>("0.123456789"), d16(direct, 12345, -5));
+  CHECK_EQ(dpp::to_decimal<d16>("0.300005"), d16(direct, 3, -1)); // '5' dropped
+  CHECK_EQ(dpp::to_decimal<d16>("99999999999"), d16(direct, 9999, 7));
+  CHECK_EQ(dpp::to_decimal<d64>("1e8"), d64(1)); // stops at 'e'
+  CHECK_EQ(dpp::to_decimal<d64>("1.5e-3"), d64(direct, 15, -1));
+
+  // the dpp(U, e) constructor rounds wide integers through a doubled
+  // accumulator with a single final division: exact when the input carries
+  // a trailing zero, otherwise it sheds one more digit than necessary
+  CHECK_EQ(d32(21474836470LL), d32(direct, 214748365, 2)); // 11 digits -> 9
+  CHECK_EQ(d32(10000000000LL), d32(direct, 1, 10));        // 1e10 exact
+  CHECK_EQ(d32(-21474836480LL), d32(direct, -214748365, 2));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// numerical analysis: quadratic cancellation + Mandelbrot orbits
+//////////////////////////////////////////////////////////////////////////////
+void test_quadratic_and_mandelbrot()
+{
+  SECTION("quadratic cancellation and Mandelbrot orbits");
+
+  // x^2 - B x + 1 = 0 with B = 1e8: the small root suffers catastrophic
+  // cancellation in the textbook formula; the reciprocal form keeps all
+  // digits. The stable identities below hold EXACTLY
+  {
+    d64 const B(direct, 100000000, 0);
+    d64 const disc(B * B - d64(direct, 4, 0));
+
+    CHECK_EQ(dpp::to_string(disc), "9999999999999996");
+
+    d64 const r(dpp::sqrt(disc));
+
+    CHECK_EQ(dpp::to_string(r), "99999999.99999998");
+
+    d64 const x1((B + r) / d64(direct, 2, 0));
+    d64 const x2_naive((B - r) / d64(direct, 2, 0));
+    d64 const x2_stable(d64(direct, 1, 0) / x1);
+    auto const p([&](d64 const& x) { return x * x - B * x + d64(direct, 1, 0); });
+
+    CHECK_EQ(dpp::to_string(x1), "99999999.99999999");
+    CHECK_EQ(dpp::to_string(x2_naive), "0.00000001");
+    CHECK_EQ(dpp::to_string(x2_stable), "0.000000010000000000000001");
+    CHECK(x2_stable != x2_naive);               // cancellation is visible
+    CHECK_EQ(p(x2_naive), d64(direct, 1, -16)); // textbook error = 1e-16
+    CHECK_EQ(p(x2_stable), d64(0));             // stable root is EXACT
+    CHECK_EQ(x1 * x2_stable, d64(1));           // Vieta product exact
+    CHECK_EQ(x1 + x2_stable, B);                // Vieta sum exact
+  }
+
+  // same equation at d128: 34 digits, cross-checked against python decimal
+  {
+    d128 const B(direct, 100000000, 0);
+    d128 const r(dpp::sqrt(B * B - d128(direct, 4, 0)));
+    d128 const x1((B + r) / d128(direct, 2, 0));
+    d128 const x2(d128(direct, 1, 0) / x1);
+
+    CHECK_EQ(dpp::to_string(x1), "99999999.999999989999999999999999");
+    CHECK_EQ(dpp::to_string(x2),
+      "0.0000000100000000000000010000000000000002");
+  }
+
+  // Mandelbrot escape-time iteration z = z^2 + c in exact decimal arithmetic
+  {
+    using C = std::pair<d32, d32>;
+    auto const step([&](C const& z, C const& c)
+      {
+        return C{z.first * z.first - z.second * z.second + c.first,
+          z.first * z.second + z.second * z.first + c.second};
+      });
+    d32 const zero(direct, 0, 0);
+
+    // c = -1: the orbit is exactly 0, -1, 0, -1, ... forever
+    {
+      C z{zero, zero};
+      C const c{d32(direct, -1, 0), zero};
+      bool exact{true};
+
+      for (int i = 0; i != 31; ++i)
+      {
+        z = step(z, c);
+
+        if (z.first != ((i % 2) ? zero : d32(direct, -1, 0)) ||
+          z.second != zero) exact = false;
+      }
+
+      CHECK(exact);
+    }
+
+    // c = -2: 0 -> -2 -> 2 -> 2 -> ... (exact fixed point)
+    {
+      C z{zero, zero};
+      C const c{d32(direct, -2, 0), zero};
+
+      z = step(z, c);
+      CHECK_EQ(z.first, d32(direct, -2, 0));
+      z = step(z, c);
+      CHECK_EQ(z.first, d32(2));
+      z = step(z, c);
+      CHECK_EQ(z.first, d32(2));
+      CHECK_EQ(z.second, zero);
+    }
+
+    // c = 0.25 (parabolic boundary): z creeps monotonically towards 0.5
+    // and stays below it for 50 iterations
+    {
+      C z{zero, zero};
+      C const c{d32(direct, 25, -2), zero};
+      d32 prev(zero);
+      bool mono{true}, bnd{true};
+
+      for (int i = 0; i != 50; ++i)
+      {
+        z = step(z, c);
+
+        if (!(z.first > prev)) mono = false;
+        if (!(z.first < d32(direct, 5, -1))) bnd = false;
+
+        prev = z.first;
+      }
+
+      CHECK(mono);
+      CHECK(bnd);
+      CHECK(z.first > d32(direct, 482, -3)); // 0.482 < z50 < 0.483
+      CHECK(z.first < d32(direct, 483, -3));
+    }
+
+    // escaping points with exact orbit values
+    {
+      C z{zero, zero};
+      C const c{d32(direct, 3, 0), zero};
+
+      z = step(z, c);
+      z = step(z, c);
+      CHECK_EQ(z.first, d32(12)); // 0 -> 3 -> 12
+    }
+    {
+      C z{zero, zero};
+      C const c{d32(direct, -21, -1), zero};
+      d32 const expect[]{d32(direct, -21, -1), d32(direct, 231, -2),
+        d32(direct, 32361, -4), d32(direct, 837234321, -8)};
+
+      for (int i = 0; i != 4; ++i)
+      {
+        z = step(z, c);
+        CHECK_EQ(z.first, expect[i]);
+        CHECK_EQ(z.second, zero);
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// factorial exactness boundaries
+//////////////////////////////////////////////////////////////////////////////
+void test_factorial_exactness()
+{
+  SECTION("factorial exactness boundaries");
+
+  // d32 (10 digit significand capacity): 15! is the last exact factorial;
+  // 16! and beyond acquire rounding in their trailing digits
+  {
+    d32 f(1);
+
+    for (int i = 1; i != 13; ++i) f *= d32(i);
+
+    CHECK_EQ(f, d32(479001600)); // 12!
+    f *= d32(13); CHECK_EQ(f, d32(6227020800));
+    f *= d32(14); CHECK_EQ(f, d32(87178291200));
+    f *= d32(15); CHECK_EQ(f, d32(1307674368000)); // last exact: 15!
+    f *= d32(16); // true value 20922789888000, rounded in the last digits
+    CHECK_EQ(dpp::to_string(f), "20922789890000");
+    f *= d32(17); // true value 355687428096000
+    CHECK_EQ(dpp::to_string(f), "355687428000000");
+    f *= d32(18); // true value 6402373705728000
+    CHECK_EQ(dpp::to_string(f), "6402373700000000");
+  }
+
+  // d64 (19 digit significand capacity): 23! is the last exact factorial
+  {
+    d64 f(1);
+
+    for (int i = 1; i != 21; ++i) f *= d64(i);
+
+    CHECK_EQ(f, d64(2432902008176640000LL)); // 20!
+    f *= d64(21); CHECK_EQ(f, d64(direct, 5109094217170944000LL, 1));
+    f *= d64(22); CHECK_EQ(f, d64(direct, 1124000727777607680LL, 3));
+    f *= d64(23); // last exact
+    CHECK_EQ(f, d64(direct, 2585201673888497664LL, 4));
+    f *= d64(24); // true value 620448401733239439360000
+    CHECK_EQ(dpp::to_string(f), "620448401733239439400000");
+    f *= d64(25); // true value 15511210043330985984000000
+    CHECK_EQ(dpp::to_string(f), "15511210043330985990000000");
+    f *= d64(26); // true value 403291461126605635584000000
+    CHECK_EQ(dpp::to_string(f), "403291461126605635700000000");
+  }
+
+  // exact within constant evaluation too
+  static_assert([]{ d32 f(1); for (int i = 2; i != 11; ++i) f *= d32(i);
+    return f == d32(3628800); }()); // 10!
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // safe integral conversion (to_integral.hpp)
 //////////////////////////////////////////////////////////////////////////////
 void test_to_integral()
@@ -2668,6 +3268,13 @@ int main()
   test_stream_more();
   test_sqrt();
   test_elementary();
+  test_rounding_semantics();
+  test_increment_and_boolean();
+  test_fused_midpoint_semantics();
+  test_inv_semantics();
+  test_binary_interop_semantics();
+  test_quadratic_and_mandelbrot();
+  test_factorial_exactness();
   test_to_integral();
   test_fast_div();
   test_hashing_more();
