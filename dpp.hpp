@@ -140,7 +140,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
   if (!i || !mb) [[unlikely]] return;
   else if (!ma) [[unlikely]] { ea -= i; return; }
   else if (intt::is_neg(ma))
-    //for (; i && (ma > ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
+    //for (; i && (ma >= ar::coeff<min_v<U> / 10>()); --i, --ea, ma *= T(10));
     [&]<auto ...I>(std::index_sequence<I...>) noexcept
     {
       (
@@ -151,12 +151,12 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
           constexpr auto cmp(ar::coeff<min_v<U> / f>());
 
           return (e <= i) && (ma >= cmp) ? i -= e, ea -= e, ma *= f,
-            i && (ma > ar::coeff<U(min_v<U> / 10)>()) : true;
+            i && (ma >= ar::coeff<U(min_v<U> / 10)>()) : true;
         }() && ...
       );
     }(std::make_index_sequence<maxpow2e<U>() + 1>());
   else
-    //for (; i && (ma < ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
+    //for (; i && (ma <= ar::coeff<max_v<U> / 10>()); --i, --ea, ma *= T(10));
     [&]<auto ...I>(std::index_sequence<I...>) noexcept
     {
       (
@@ -167,7 +167,7 @@ constexpr void align(auto& ma, auto& ea, decltype(ma) mb,
           constexpr auto cmp(ar::coeff<max_v<U> / f>());
 
           return (e <= i) && (ma <= cmp) ? i -= e, ea -= e, ma *= f,
-            i && (ma < ar::coeff<U(max_v<U> / 10)>()) : true;
+            i && (ma <= ar::coeff<U(max_v<U> / 10)>()) : true;
         }() && ...
       );
     }(std::make_index_sequence<maxpow2e<U>() + 1>());
