@@ -22,7 +22,7 @@ constexpr auto sqrt(intt::is_intt auto m,
   if constexpr(V::words > 1)
   {
     constexpr exp2_t e0(ar::coeff<V::words / 2 *
-      maxpow10e<typename V::value_type, exp2_t>() - 1>());
+      maxpow10e<typename V::value_type, exp2_t>()>() - 1);
 
     e -= e0;
     m *= ar::coeff<pow(V(10), e0)>();
@@ -31,7 +31,7 @@ constexpr auto sqrt(intt::is_intt auto m,
   { // V::words == 1, m is doubled
     using U = std::make_unsigned_t<T>;
 
-    constexpr exp2_t e0(ar::coeff<maxpow10e<U, exp2_t>() - 1>());
+    constexpr exp2_t e0(ar::coeff<maxpow10e<U, exp2_t>()>() - 1);
 
     e -= e0;
     m *= ar::coeff<pow(V(10), e0)>();
@@ -40,28 +40,20 @@ constexpr auto sqrt(intt::is_intt auto m,
   //
   do
   { // 2 * V::max / 10 = V::max() / 5
+    // accept tmp if e is odd, or (e is even) if tmp can be scaled further
     if (auto const tmp(ar::hwmul(m.v_, 10)); (e & decltype(e)(1)) ||
       (ar::ucmp(tmp, ar::coeff<V::max() / 5>().v_) <= 0))
-    {
-      --e;
-      ar::copy(m.v_, tmp);
-    }
+      --e, ar::copy(m.v_, tmp);
     else
-    {
       break;
-    }
-  }
+  } // end loop if tmp can't be scaled further
   while (ar::ucmp(m.v_, ar::coeff<V::max() / 5>().v_) <= 0);
 
   //
   if constexpr(ar::seqsqrt(m.v_); V::words > 1)
-  {
     return dpp<T, E>(m, e / 2);
-  }
   else
-  {
     return dpp<T, E>(m.v_.front(), e / 2);
-  }
 }
 
 }

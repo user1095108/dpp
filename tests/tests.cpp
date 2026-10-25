@@ -1,3 +1,4 @@
+#include <cassert>
 #include "../dpp.hpp"
 #include "../sqrt.hpp"
 #include "../to_integral.hpp"
