@@ -1,9 +1,4 @@
 #include <cassert>
-#include "../dpp.hpp"
-#include "../sqrt.hpp"
-#include "../to_integral.hpp"
-#include "../utils.hpp"
-
 #include <cmath>
 #include <compare>
 #include <cstdint>
@@ -14,6 +9,12 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+#include "../dpp.hpp"
+#include "../sqrt.hpp"
+#include "../to_integral.hpp"
+#include "../utils.hpp"
+
 
 //////////////////////////////////////////////////////////////////////////////
 // tiny test framework (global scope, no namespace)

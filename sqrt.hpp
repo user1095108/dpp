@@ -37,6 +37,22 @@ constexpr auto sqrt(intt::is_intt auto m,
     m *= ar::coeff<pow(V(10), e0)>();
   }
 
+  // scale up
+  if (ar::ucmp(m.v_, ar::coeff<V::max() / 50>().v_) <= 0)
+    [&]<auto ...I>(std::index_sequence<I...>) noexcept
+    {
+      (
+        [&]() noexcept -> bool
+        {
+          constexpr auto e0(ar::coeff<pow(exp2_t(2), maxpow2e<T>() - I)>());
+          constexpr auto f(ar::coeff<pow(V(10), e0)>());
+
+          return ar::ucmp(m.v_, ar::coeff<V::max() / (50 * f)>().v_) <= 0 ?
+            e -= e0, m *= f, true: true;
+        }() && ...
+      );
+    }(std::make_index_sequence<maxpow2e<T>() + 1>());
+
   //
   do
   { // 2 * V::max / 10 = V::max() / 5
@@ -46,7 +62,7 @@ constexpr auto sqrt(intt::is_intt auto m,
       --e, ar::copy(m.v_, tmp);
     else
       break;
-  } // end loop if m can't be scaled further
+  } // continue if m can be scaled further
   while (ar::ucmp(m.v_, ar::coeff<V::max() / 5>().v_) <= 0);
 
   //
