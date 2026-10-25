@@ -46,7 +46,7 @@ constexpr auto sqrt(intt::is_intt auto m,
       --e, ar::copy(m.v_, tmp);
     else
       break;
-  } // end loop if tmp can't be scaled further
+  } // end loop if m can't be scaled further
   while (ar::ucmp(m.v_, ar::coeff<V::max() / 5>().v_) <= 0);
 
   //
